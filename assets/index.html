@@ -62,13 +62,13 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .profile-btn, .top-title-wrap {
   display: inline-flex; align-items: center; gap: 11px;
   padding: 6px 10px; border-radius: 6px;
-  font-size: clamp(16px, 1.55vw, 27px); font-weight: 600; color: #f4f8ff;
+  font-size: 16px; font-size: clamp(16px, 1.55vw, 27px); font-weight: 600; color: #f4f8ff;
   text-shadow: 0 1px 4px rgba(0,0,0,.45);
 }
 .profile-btn:hover { background: rgba(255,255,255,.08); }
 .device-switch-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: clamp(30px, 2.5vw, 42px); height: clamp(30px, 2.5vw, 42px);
+  width: 30px; width: clamp(30px, 2.5vw, 42px); height: 30px; height: clamp(30px, 2.5vw, 42px);
   border-radius: 50%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
 }
 .device-switch-btn:hover { background: rgba(255,255,255,.18); }
@@ -81,7 +81,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .top-tab {
   position: relative; height: 100%; padding: 0 10px;
   display: inline-flex; align-items: center;
-  font-size: clamp(14px, 1.25vw, 22px); color: #7c8592; font-weight: 600;
+  font-size: 14px; font-size: clamp(14px, 1.25vw, 22px); color: #7c8592; font-weight: 600;
 }
 .top-tab[aria-selected="true"] { color: #2bb79b; }
 .top-tab[aria-selected="true"]::after {
@@ -95,7 +95,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   padding: 6px 36px 12px; z-index: 12;
 }
 .qc-handle-bar {
-  display: block; width: clamp(58px, 5.5vw, 96px); height: 4px;
+  display: block; width: 58px; width: clamp(58px, 5.5vw, 96px); height: 4px;
   border-radius: 3px; background: rgba(255,255,255,.52);
   box-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
@@ -104,11 +104,11 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 /* Clock & top status */
 .bt-badge {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: clamp(11px, .85vw, 15px); color: rgba(240,247,255,.78);
+  font-size: 11px; font-size: clamp(11px, .85vw, 15px); color: rgba(240,247,255,.78);
 }
 .shell.in-detail .bt-badge { display: none; }
 .clock {
-  font-size: clamp(18px, 1.85vw, 33px); font-weight: 500;
+  font-size: 18px; font-size: clamp(18px, 1.85vw, 33px); font-weight: 500;
   letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 4px rgba(0,0,0,.45);
 }
@@ -118,7 +118,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .layout-mode-badge {
   padding: 4px 10px; border-radius: 5px;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
-  font-size: clamp(11px, .85vw, 15px); color: #e9f2fc;
+  font-size: 11px; font-size: clamp(11px, .85vw, 15px); color: #e9f2fc;
 }
 
 /* Main deck area */
@@ -150,25 +150,25 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   padding: 2% 3.5%;
   text-shadow: 0 2px 10px rgba(0,0,0,.55);
 }
-.standby-date { font-size: clamp(14px, 1.25vw, 22px); color: rgba(244,248,255,.92); margin-bottom: 2px; }
+.standby-date { font-size: 14px; font-size: clamp(14px, 1.25vw, 22px); color: rgba(244,248,255,.92); margin-bottom: 2px; }
 .standby-clock {
-  font-size: clamp(42px, 5.2vw, 88px); font-weight: 300; line-height: 1.05;
+  font-size: 42px; font-size: clamp(42px, 5.2vw, 88px); font-weight: 300; line-height: 1.05;
   letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
 }
 .standby-clock small { font-size: 0.34em; font-weight: 500; margin-left: 8px; }
 .standby-weather {
   margin-top: 14px; display: flex; flex-direction: column; gap: 4px;
-  font-size: clamp(13px, 1.1vw, 19px); color: rgba(240,247,255,.92);
+  font-size: 13px; font-size: clamp(13px, 1.1vw, 19px); color: rgba(240,247,255,.92);
 }
 .standby-temp-row { display: flex; align-items: center; gap: 10px; }
-.standby-temp { font-size: clamp(24px, 2.4vw, 40px); font-weight: 400; }
+.standby-temp { font-size: 24px; font-size: clamp(24px, 2.4vw, 40px); font-weight: 400; }
 .standby-air { color: #7ce89e; font-weight: 600; }
 .standby-media {
   margin-top: 18px; max-width: 420px; cursor: pointer;
 }
-.standby-media-tag { font-size: clamp(11px, .9vw, 15px); color: rgba(225,237,250,.78); }
-.standby-media-title { font-size: clamp(16px, 1.45vw, 25px); font-weight: 700; margin-top: 2px; }
-.standby-media-sub { font-size: clamp(12px, .95vw, 16px); color: rgba(230,240,252,.82); margin-top: 2px; }
+.standby-media-tag { font-size: 11px; font-size: clamp(11px, .9vw, 15px); color: rgba(225,237,250,.78); }
+.standby-media-title { font-size: 16px; font-size: clamp(16px, 1.45vw, 25px); font-weight: 700; margin-top: 2px; }
+.standby-media-sub { font-size: 12px; font-size: clamp(12px, .95vw, 16px); color: rgba(230,240,252,.82); margin-top: 2px; }
 
 /* Home 3-Card Layout (Systemoverview_home_2.png & 5W Mod 2.5s) */
 .home-view { position: relative; width: 100%; height: 100%; }
@@ -176,12 +176,12 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   position: absolute; top: 0; bottom: 0; overflow: hidden;
   background: rgba(20, 24, 31, 0.90);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  display: grid; grid-template-rows: 69% 31%;
+  display: grid; grid-template-rows: 65% 35%;
   box-shadow: 0 10px 28px rgba(0,0,0,.42);
 }
-.hcard-map { left: 0; width: 48.8%; }
-.hcard-media { left: 49.9%; width: 31.0%; }
-.hcard-phone { left: 82.0%; width: 18.0%; }
+.hcard-map { left: 0; width: 49.8%; }
+.hcard-media { left: 50.55%; width: 32.7%; }
+.hcard-phone { left: 84%; width: 16%; }
 
 .hcard-art {
   position: relative; width: 100%; height: 100%; overflow: hidden;
@@ -192,11 +192,11 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   position: absolute; top: 12px; left: 14px; z-index: 2;
   padding: 3px 10px; border-radius: 10px;
   background: rgba(15, 22, 28, 0.65); border: 1px solid rgba(255,255,255,.15);
-  font-size: clamp(11px, .85vw, 14px); color: #dce7f3;
+  font-size: 11px; font-size: clamp(11px, .85vw, 14px); color: #dce7f3;
 }
 .map-scale-tag {
   position: absolute; right: 14px; bottom: 10px; z-index: 2;
-  font-size: clamp(11px, .95vw, 16px); font-weight: 600; color: #dce7f5;
+  font-size: 11px; font-size: clamp(11px, .95vw, 16px); font-weight: 600; color: #dce7f5;
   text-align: center; line-height: 1.15;
   text-shadow: 0 1px 3px rgba(0,0,0,.85);
 }
@@ -211,7 +211,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
 .hcard-caption {
   position: relative; display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(14px, 1.4vw, 24px);
+  padding: 0 14px; padding: 0 clamp(14px, 1.4vw, 24px);
   background: rgba(24, 27, 33, 0.96);
   border-top: 1px solid rgba(255,255,255,.07);
 }
@@ -219,20 +219,20 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   flex: 1; min-width: 0; text-align: left; padding: 8px 0;
 }
 .hcard-caption-main strong {
-  display: block; font-size: clamp(16px, 1.45vw, 25px); font-weight: 700;
+  display: block; font-size: 16px; font-size: clamp(16px, 1.45vw, 25px); font-weight: 700;
   color: #f5f8fc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .hcard-caption-main span {
   display: flex; align-items: center; gap: 6px; margin-top: 5px;
-  font-size: clamp(12px, 1.0vw, 17px); color: #9aa5b4;
+  font-size: 12px; font-size: clamp(12px, 1.0vw, 17px); color: #9aa5b4;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .hcard-circles {
-  display: flex; align-items: center; gap: clamp(8px, .8vw, 14px);
+  display: flex; align-items: center; gap: 8px; gap: clamp(8px, .8vw, 14px);
   margin-left: 10px; flex-shrink: 0;
 }
 .circle-btn {
-  width: clamp(38px, 3.3vw, 56px); height: clamp(38px, 3.3vw, 56px);
+  width: 38px; width: clamp(38px, 3.3vw, 56px); height: 38px; height: clamp(38px, 3.3vw, 56px);
   border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,.04);
   border: 1.5px solid rgba(185, 195, 210, 0.35);
@@ -273,19 +273,19 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   display: inline-flex; align-items: center; gap: 5px;
   padding: 3px 10px; border-radius: 12px;
   background: #4cd080; color: #082313;
-  font-size: clamp(10px, .8vw, 13px); font-weight: 700;
+  font-size: 10px; font-size: clamp(10px, .8vw, 13px); font-weight: 700;
 }
 .app-badge::before {
   content: ""; width: 6px; height: 6px; border-radius: 50%; background: #082313;
 }
 .app-tile-caption {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(12px, 1.2vw, 20px);
+  padding: 0 12px; padding: 0 clamp(12px, 1.2vw, 20px);
   background: rgba(34, 38, 46, 0.78);
   border-top: 1px solid rgba(255,255,255,.1);
 }
 .app-tile-caption strong {
-  font-size: clamp(14px, 1.3vw, 22px); font-weight: 700; color: #f5f9ff;
+  font-size: 14px; font-size: clamp(14px, 1.3vw, 22px); font-weight: 700; color: #f5f9ff;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .reorder-arrows {
@@ -304,7 +304,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   display: flex; align-items: center; justify-content: center; gap: 18px;
 }
 .pager-nav-btn {
-  font-size: clamp(11px, .9vw, 15px); color: rgba(235,244,255,.78);
+  font-size: 11px; font-size: clamp(11px, .9vw, 15px); color: rgba(235,244,255,.78);
   padding: 5px 10px; border-radius: 6px;
   text-shadow: 0 1px 3px rgba(0,0,0,.6);
 }
@@ -313,12 +313,12 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   display: flex; align-items: center; gap: 8px;
 }
 .pager-bar {
-  width: clamp(22px, 2.1vw, 36px); height: 4px; border-radius: 2px;
+  width: 22px; width: clamp(22px, 2.1vw, 36px); height: 4px; border-radius: 2px;
   background: rgba(255,255,255,.28); padding: 0;
   transition: background .2s, width .2s;
 }
 .pager-bar[aria-current="true"] {
-  background: #f0f6ff; width: clamp(28px, 2.6vw, 44px);
+  background: #f0f6ff; width: 28px; width: clamp(28px, 2.6vw, 44px);
 }
 .pager-tools {
   position: absolute; right: 0; display: flex; align-items: center; gap: 6px; opacity: .78;
@@ -327,7 +327,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .pager-tool-btn {
   padding: 4px 10px; border-radius: 5px;
   background: rgba(12, 18, 26, 0.55); border: 1px solid rgba(255,255,255,.16);
-  font-size: clamp(10px, .8vw, 13px); color: #d8e6f5;
+  font-size: 10px; font-size: clamp(10px, .8vw, 13px); color: #d8e6f5;
 }
 .pager-tool-btn[aria-pressed="true"] {
   background: rgba(43, 183, 155, 0.25); border-color: #53d7c0; color: #fff;
@@ -369,12 +369,12 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   border-radius: 10px; background: #242120;
   border: 1px solid rgba(255,255,255,.12);
   display: flex; flex-direction: column; justify-content: space-between;
-  padding: clamp(14px, 1.4vw, 22px); overflow: hidden;
+  padding: 14px; padding: clamp(14px, 1.4vw, 22px); overflow: hidden;
 }
 .split-header {
   display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 2;
 }
-.split-header strong { font-size: clamp(15px, 1.25vw, 21px); color: #f3f6fb; }
+.split-header strong { font-size: 15px; font-size: clamp(15px, 1.25vw, 21px); color: #f3f6fb; }
 .split-vert-btns { display: flex; gap: 4px; }
 .split-mini-btn {
   width: 28px; height: 28px; border-radius: 6px;
@@ -415,26 +415,26 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
 }
 .navi-tool-btn {
-  width: clamp(46px, 4.1vw, 66px); flex: 1; max-height: 70px;
+  width: 46px; width: clamp(46px, 4.1vw, 66px); flex: 1; max-height: 70px;
   border-radius: 6px; background: rgba(28, 33, 40, 0.84);
   border: 1px solid rgba(255,255,255,.18);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: #e6eef8; font-size: clamp(10px, .82vw, 13px); line-height: 1.15;
+  color: #e6eef8; font-size: 10px; font-size: clamp(10px, .82vw, 13px); line-height: 1.15;
   box-shadow: 0 4px 12px rgba(0,0,0,.38);
 }
 .navi-tool-btn:hover, .navi-tool-btn[aria-pressed="true"] {
   background: rgba(43, 183, 155, 0.28); border-color: #53d7c0;
 }
 .navi-speed-overlay {
-  position: absolute; left: clamp(72px, 6.2vw, 102px); top: 14px; z-index: 4;
+  position: absolute; left: 72px; left: clamp(72px, 6.2vw, 102px); top: 14px; z-index: 4;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .navi-speed-num {
-  font-size: clamp(22px, 2.3vw, 38px); font-weight: 700; color: #fff;
+  font-size: 22px; font-size: clamp(22px, 2.3vw, 38px); font-weight: 700; color: #fff;
   text-shadow: 0 2px 6px rgba(0,0,0,.8);
 }
 .navi-cam-sign {
-  width: clamp(46px, 4.2vw, 68px); height: clamp(46px, 4.2vw, 68px);
+  width: 46px; width: clamp(46px, 4.2vw, 68px); height: 46px; height: clamp(46px, 4.2vw, 68px);
   border-radius: 50%; background: #fff; border: 5px solid #d9232a;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   color: #111; font-weight: 800; font-size: 11px;
@@ -442,18 +442,18 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .navi-cam-dist {
   padding: 2px 8px; border-radius: 6px; background: rgba(20,25,32,.88);
-  font-size: clamp(12px, 1vw, 17px); font-weight: 700; color: #fff;
+  font-size: 12px; font-size: clamp(12px, 1vw, 17px); font-weight: 700; color: #fff;
 }
 .navi-tbt-stack {
   position: absolute; right: 18px; top: 48px; z-index: 4;
   display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
-  width: clamp(190px, 21vw, 330px);
+  width: 190px; width: clamp(190px, 21vw, 330px);
 }
 .navi-tbt-sub {
   width: 88%; padding: 7px 14px; border-radius: 8px;
   background: rgba(42, 49, 60, 0.88); border: 1px solid rgba(255,255,255,.15);
   display: flex; align-items: center; justify-content: space-between;
-  font-size: clamp(14px, 1.25vw, 21px); font-weight: 600;
+  font-size: 14px; font-size: clamp(14px, 1.25vw, 21px); font-weight: 600;
 }
 .navi-tbt-main {
   width: 100%; padding: 12px 16px; border-radius: 10px;
@@ -462,16 +462,16 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   box-shadow: 0 8px 20px rgba(0,0,0,.45);
 }
 .navi-tbt-turn-icon {
-  font-size: clamp(28px, 2.8vw, 46px); color: #27c2a4; font-weight: 900; line-height: 1;
+  font-size: 28px; font-size: clamp(28px, 2.8vw, 46px); color: #27c2a4; font-weight: 900; line-height: 1;
 }
-.navi-tbt-dist { font-size: clamp(22px, 2.2vw, 38px); font-weight: 700; line-height: 1.05; }
-.navi-tbt-label { font-size: clamp(12px, 1vw, 17px); color: #cfd8e4; margin-top: 3px; }
+.navi-tbt-dist { font-size: 22px; font-size: clamp(22px, 2.2vw, 38px); font-weight: 700; line-height: 1.05; }
+.navi-tbt-label { font-size: 12px; font-size: clamp(12px, 1vw, 17px); color: #cfd8e4; margin-top: 3px; }
 .navi-lane-bar {
   position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 4;
   display: flex; align-items: center; gap: 10px;
   padding: 6px 14px; border-radius: 8px;
   background: rgba(26, 32, 40, 0.92); border: 1px solid rgba(255,255,255,.2);
-  font-size: clamp(13px, 1.1vw, 18px); font-weight: 700;
+  font-size: 13px; font-size: clamp(13px, 1.1vw, 18px); font-weight: 700;
 }
 .lane-arrow {
   padding: 2px 8px; border-right: 1px dashed rgba(255,255,255,.25); color: #d5dfe9;
@@ -496,7 +496,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .media-device-name {
-  font-size: clamp(15px, 1.35vw, 23px); color: #73a98f; font-weight: 600;
+  font-size: 15px; font-size: clamp(15px, 1.35vw, 23px); color: #73a98f; font-weight: 600;
   margin-left: 6px;
 }
 .media-center-box {
@@ -511,7 +511,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   flex: 1; min-height: 44px; padding: 0 20px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid rgba(255,255,255,.07);
-  font-size: clamp(14px, 1.25vw, 21px); color: #d6cec8;
+  font-size: 14px; font-size: clamp(14px, 1.25vw, 21px); color: #d6cec8;
   text-align: left;
 }
 .media-track-row[aria-current="true"] {
@@ -534,24 +534,24 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .media-single-header {
   display: flex; align-items: center; justify-content: space-between;
 }
-.media-single-phone { font-size: clamp(13px, 1.1vw, 19px); color: #b7c0cc; }
+.media-single-phone { font-size: 13px; font-size: clamp(13px, 1.1vw, 19px); color: #b7c0cc; }
 .media-single-title {
-  font-size: clamp(22px, 2.4vw, 42px); font-weight: 700; color: #fff;
+  font-size: 22px; font-size: clamp(22px, 2.4vw, 42px); font-weight: 700; color: #fff;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.media-single-artist { font-size: clamp(15px, 1.35vw, 23px); color: #cfd6e0; }
-.media-single-album { font-size: clamp(14px, 1.2vw, 20px); color: #67707c; }
+.media-single-artist { font-size: 15px; font-size: clamp(15px, 1.35vw, 23px); color: #cfd6e0; }
+.media-single-album { font-size: 14px; font-size: clamp(14px, 1.2vw, 20px); color: #67707c; }
 .media-controls-row {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 10px;
 }
 .media-transport-btns {
-  display: flex; align-items: center; gap: clamp(18px, 2.4vw, 42px);
+  display: flex; align-items: center; gap: 18px; gap: clamp(18px, 2.4vw, 42px);
 }
 .transport-icon-btn {
   width: 48px; height: 48px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: clamp(20px, 1.8vw, 30px); color: #f2f6fb;
+  font-size: 20px; font-size: clamp(20px, 1.8vw, 30px); color: #f2f6fb;
 }
 .transport-icon-btn:hover { background: rgba(255,255,255,.12); }
 .media-scrubber {
@@ -567,7 +567,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .media-time-pair {
   display: flex; justify-content: space-between;
-  font-size: clamp(12px, 1vw, 16px); color: #9aa3b0;
+  font-size: 12px; font-size: clamp(12px, 1vw, 16px); color: #9aa3b0;
   font-variant-numeric: tabular-nums;
 }
 .media-right-box {
@@ -575,7 +575,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
 }
 .media-album-art {
-  width: clamp(120px, 15vw, 230px); height: clamp(120px, 15vw, 230px);
+  width: 120px; width: clamp(120px, 15vw, 230px); height: 120px; height: clamp(120px, 15vw, 230px);
   border-radius: 6px; overflow: hidden;
   border: 1px solid rgba(255,255,255,.18);
   box-shadow: 0 10px 24px rgba(0,0,0,.5);
@@ -611,10 +611,10 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .phone-row:hover { background: rgba(255,255,255,.06); }
 .phone-row-left { display: flex; align-items: center; gap: 16px; }
-.call-name { font-size: clamp(15px, 1.3vw, 22px); color: #e9e2dc; font-weight: 600; }
+.call-name { font-size: 15px; font-size: clamp(15px, 1.3vw, 22px); color: #e9e2dc; font-weight: 600; }
 .phone-row-right {
   display: flex; align-items: center; gap: 20px;
-  color: #9e948c; font-size: clamp(13px, 1.1vw, 18px);
+  color: #9e948c; font-size: 13px; font-size: clamp(13px, 1.1vw, 18px);
 }
 .phone-device-pane {
   width: 25%; min-width: 160px;
@@ -640,13 +640,13 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   position: relative; border-radius: 6px;
   background: rgba(98, 86, 78, 0.72);
   border: 1px solid rgba(255,255,255,.18);
-  padding: clamp(14px, 1.4vw, 22px);
+  padding: 14px; padding: clamp(14px, 1.4vw, 22px);
   display: flex; flex-direction: column; justify-content: space-between;
   text-align: left;
 }
 .set-card:hover { background: rgba(118, 104, 94, 0.85); }
-.set-card strong { font-size: clamp(15px, 1.35vw, 23px); color: #f6f9fd; }
-.set-card span { font-size: clamp(11px, .9vw, 15px); color: #d3cdc7; margin-top: 4px; display: block; }
+.set-card strong { font-size: 15px; font-size: clamp(15px, 1.35vw, 23px); color: #f6f9fd; }
+.set-card span { font-size: 11px; font-size: clamp(11px, .9vw, 15px); color: #d3cdc7; margin-top: 4px; display: block; }
 .set-card-icon { align-self: flex-end; color: #f0f5fa; opacity: .92; }
 
 /* Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
@@ -661,7 +661,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .sl-tab {
   position: relative; padding: 14px 16px 14px 22px;
-  text-align: left; font-size: clamp(16px, 1.5vw, 26px);
+  text-align: left; font-size: 16px; font-size: clamp(16px, 1.5vw, 26px);
   color: #8b94a0; font-weight: 500; border-radius: 6px;
 }
 .sl-tab[aria-selected="true"] {
@@ -678,12 +678,12 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .sl-desc {
   padding-left: 12px; border-left: 2px solid #555e6a;
-  font-size: clamp(13px, 1.05vw, 18px); color: #8c96a3;
+  font-size: 13px; font-size: clamp(13px, 1.05vw, 18px); color: #8c96a3;
 }
 .sl-row-link, .sl-radio-row, .sl-check-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 8px; border-bottom: 1px solid rgba(255,255,255,.08);
-  font-size: clamp(15px, 1.3vw, 22px); color: #eef3f9;
+  font-size: 15px; font-size: clamp(15px, 1.3vw, 22px); color: #eef3f9;
 }
 .sl-seg-group {
   display: inline-flex; border-radius: 22px; overflow: hidden;
@@ -692,7 +692,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .sl-seg-btn {
   flex: 1; padding: 10px 18px; text-align: center;
-  font-size: clamp(14px, 1.15vw, 19px); color: #9aa3ae;
+  font-size: 14px; font-size: clamp(14px, 1.15vw, 19px); color: #9aa3ae;
   border-radius: 22px;
 }
 .sl-seg-btn[aria-pressed="true"] {
@@ -757,7 +757,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 }
 .bb-route-info {
   display: flex; align-items: center; gap: 14px;
-  font-size: clamp(13px, 1.15vw, 20px); color: #eef3f9;
+  font-size: 13px; font-size: clamp(13px, 1.15vw, 20px); color: #eef3f9;
   overflow: hidden; white-space: nowrap;
 }
 .bb-route-divider { color: rgba(255,255,255,.25); }
@@ -769,7 +769,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .bb-tab-btn {
   flex: 1; border-radius: 4px;
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  color: #8e96a2; font-size: clamp(11px, .95vw, 15px); font-weight: 600;
+  color: #8e96a2; font-size: 11px; font-size: clamp(11px, .95vw, 15px); font-weight: 600;
 }
 .bb-tab-btn[aria-selected="true"] {
   background: #279480; color: #fff;
@@ -789,7 +789,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   background: #d28a5c;
 }
 .bb-media-thumb {
-  width: clamp(32px, 3vw, 48px); height: clamp(32px, 3vw, 48px);
+  width: 32px; width: clamp(32px, 3vw, 48px); height: 32px; height: clamp(32px, 3vw, 48px);
   border-radius: 4px; overflow: hidden; flex-shrink: 0;
   border: 1px solid rgba(255,255,255,.22);
   display: flex; align-items: center; justify-content: center;
@@ -798,17 +798,17 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 .bb-media-thumb canvas { width: 100%; height: 100%; display: block; }
 .bb-media-meta { min-width: 0; flex: 1; }
 .bb-media-meta strong {
-  display: block; font-size: clamp(12px, 1.05vw, 18px); color: #eef3f9;
+  display: block; font-size: 12px; font-size: clamp(12px, 1.05vw, 18px); color: #eef3f9;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bb-media-meta span {
-  display: block; font-size: clamp(11px, .9vw, 15px); color: #8d96a2;
+  display: block; font-size: 11px; font-size: clamp(11px, .9vw, 15px); color: #8d96a2;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px;
 }
 
 /* Top Quick Control Drawer Overlay (Systemoverview_quickcontrol_2.gif) */
 .qc-drawer {
-  position: absolute; z-index: 30; inset: 0;
+  position: absolute; z-index: 30; top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(8, 10, 14, 0.96);
   display: flex; flex-direction: column; justify-content: space-between;
   padding: 1.5% 3%;
@@ -833,7 +833,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   flex: 1; border-radius: 8px;
   background: #23201e; border: 1px solid rgba(255,255,255,.12);
   padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
-  text-align: left; font-size: clamp(14px, 1.2vw, 20px); color: #ece6e0;
+  text-align: left; font-size: 14px; font-size: clamp(14px, 1.2vw, 20px); color: #ece6e0;
 }
 .qc-tile.slim { flex: 0.48; }
 .qc-tile[aria-pressed="true"] {
@@ -846,7 +846,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
 /* SVG Glyph helper */
 .ico {
-  width: clamp(18px, 1.5vw, 25px); height: clamp(18px, 1.5vw, 25px);
+  width: 18px; width: clamp(18px, 1.5vw, 25px); height: 18px; height: clamp(18px, 1.5vw, 25px);
   fill: none; stroke: currentColor; stroke-width: 1.85;
   stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
 }
@@ -857,7 +857,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   transform: translateX(-50%);
   padding: 10px 20px; border-radius: 8px;
   background: rgba(16, 28, 38, 0.95); border: 1px solid #53d7c0;
-  font-size: clamp(13px, 1.05vw, 17px); color: #f0f8ff;
+  font-size: 13px; font-size: clamp(13px, 1.05vw, 17px); color: #f0f8ff;
   box-shadow: 0 8px 24px rgba(0,0,0,.55);
 }
 
@@ -877,6 +877,203 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   .screenlayout-stage { grid-template-columns: 34% 66%; }
   .sl-preview { display: none; }
 }
+/* KitKat equivalents for the grid regions of the supplied layout. */
+.legacy .hcard, .legacy .app-tile { display: block; }
+.legacy .hcard-art { height: 65%; }
+.legacy .hcard-caption { height: 35%; }
+.legacy .app-tile-art { height: 73%; }
+.legacy .app-tile-caption { height: 27%; }
+.legacy .apps-view, .legacy .settings-grid, .legacy .screenlayout-stage,
+.legacy .bottom-bar, .legacy .qc-grid { display: flex; }
+.legacy .apps-view > * { width: 16%; margin-right: .65%; }
+.legacy .settings-grid { flex-wrap: wrap; gap: 0; }
+.legacy .settings-grid .set-card { flex: 0 0 23.5%; height: 47%; margin: 0 1.5% 6px 0; }
+.legacy .settings-grid.mode-6x1 .set-card { flex-basis: 15.2%; height: 95%; margin-right: 1%; }
+.legacy .settings-grid.mode-6x1 { flex-wrap: nowrap; overflow-x: auto; }
+.legacy .screenlayout-stage > .sl-nav, .legacy .bb-nav-keys { width: 24%; }
+.legacy .screenlayout-stage > .sl-main, .legacy .bb-center { width: 49%; }
+.legacy .screenlayout-stage > .sl-preview, .legacy .bb-media-box { width: 27%; }
+.legacy .qc-grid > * { width: 32%; padding-right: 1%; }
+.legacy .sl-main, #theme-settings-detail { overflow: auto; }
+.legacy .hcard, .legacy .set-card, .legacy .app-tile { border-radius: 12px; }
+.deck { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.home-view, .apps-view, .standby-view { touch-action: none; }
+.deck.is-sliding { overflow: hidden; }
+.deck > .pager-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.card-held { outline: 3px solid #a4d5f8; outline-offset: -4px; opacity: .78; }
+.card-target { outline: 3px solid #7fa6c2; outline-offset: -4px; }
+.card-drag-copy { position: fixed !important; pointer-events: none; z-index: 50; margin: 0; opacity: .86; transition: none; }
+.theme-control { min-height: 44px; margin: 5px; padding: 6px 14px; border: 1px solid #638195; border-radius: 8px; background: #213346; color: #f2f7fc; }
+.theme-control[aria-pressed=true] { background: #386888; }
+.theme-knob { margin: 12px 0; }
+.theme-knob output { display: inline-block; padding: 6px 12px; min-width: 6em; text-align: center; }
+.theme-state { padding: 20px; color: #bdcbd8; line-height: 1.45; }
+.theme-state h2, .theme-state h3 { margin: 8px 0; color: #eff7ff; }
+.theme-state .ico { width: 32px; height: 32px; color: #9bd1f3; }
+.theme-state .theme-control { margin: 10px 6px 0 0; }
+.theme-map-placeholder { position: absolute; inset: 0; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; }
+.theme-nav-content { margin: 0 auto; padding: 22px 24px; max-width: 460px; background: #172b3c; border-left: 3px solid #80b4d7; border-radius: 10px; }
+.map-art-status { position: absolute; top: 30%; left: 0; right: 0; text-align: center; pointer-events: none; }
+.map-art-status .ico { width: 44px; height: 44px; }
+.map-art-status p { margin-top: 7px; color: #dceaf5; }
+.theme-dialer { padding: 12px 20px; max-width: 400px; margin: 0 auto; }
+.phone-dial { display: block; width: 100%; padding: 10px; border: 1px solid #657f92; border-radius: 6px; color: #f3f8ff; background: #162838; font: inherit; font-size: 20px; }
+.theme-dial-keys { margin-top: 8px; font-size: 0; }
+.theme-dial-keys button { width: 30%; min-height: 44px; margin: 0 3% 4px 0; border: 1px solid #405c71; border-radius: 6px; background: #24394b; color: #f4f8fc; font-size: 19px; }
+.theme-dial-actions { white-space: normal; }
+.split-live-state { width: 100%; padding: 12px; }
+.split-live-state .theme-control { white-space: normal; }
+.bb-icon-tabs .tab-name { display: inline-block; font-size: 12px; margin-left: 5px; }
+@media (max-width: 1100px) { .bb-icon-tabs .tab-name { display: none; } }
+.media-state-card { margin: auto 0; }
+.frame-preview { width: 100%; max-width: 240px; max-height: 125px; object-fit: contain; margin-top: 8px; }
+.sl-preview { text-align: center; }
+.sl-preview-caption { color: #bdcbd8; font-size: 13px; margin: 6px 0; }
+.legacy .sl-preview > img { margin-right: auto; margin-left: auto; }
+.settings-grid.mode-6x1 { overflow-x: auto; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.qc-col > button + button { margin-top: 5px; }
+#theme-settings-detail { padding: 6px 15px 14px; box-sizing: border-box; }
+.sound-panel { padding: 16px 20px; margin: 12px 0; max-width: 680px; border: 1px solid #395568; border-radius: 10px; background: #162634; }
+.sound-panel output { color: #b6d9f1; font-size: 20px; }
+.sound-panel input { display: block; width: 100%; height: 46px; margin: 6px 0; accent-color: #94c6ea; }
+.sound-panel .sound-step { min-width: 48px; }
+.shell.sound-mode #split-widget, .shell.sound-mode #split-toggle-btn { display: none; }
+.shell.sound-mode #theme-settings-detail { flex: 1; min-height: 0; }
+.sound-layout { display: flex; height: 100%; min-height: 0; }
+.sound-nav { width: 23%; max-width: 330px; overflow: auto; flex-shrink: 0; border-right: 1px solid #384c5c; padding: 0 12px 6px 0; }
+.sound-nav button { display: block; text-align: left; width: 100%; min-height: 44px; padding: 7px 12px; border-radius: 5px; color: #c8d7e2; }
+.sound-nav button[aria-pressed=true] { background: #203e54; color: #f2f9ff; box-shadow: inset 3px 0 #91c7ed; }
+.sound-nav .sound-back { margin-bottom: 8px; color: #a8cde6; }
+.sound-content { flex: 1; min-width: 0; padding: 4px 20px 10px; overflow: auto; }
+.sound-content h2 { margin: 0 0 8px; font-size: 24px; }
+.sound-help { color: #c5d4df; margin: 0 0 14px; }
+.sound-info-row { position: relative; padding: 10px 3px; border-bottom: 1px solid #314453; }
+.sound-info-row span { float: right; color: #becedb; padding-left: 12px; font-size: 13px; }
+.sound-info-row .sound-unavailable-track { display: block; height: 2px; background: #385064; margin: 11px 0 4px; }
+.shell.detail-settings #split-widget, .shell.detail-settings #split-toggle-btn { display: none; }
+.shell.detail-settings #theme-settings-detail { flex: 1; min-height: 0; }
+.detail-settings-layout { display: flex; min-height: 100%; }
+.detail-settings-layout .sl-nav { width: 24%; padding: 0 16px 0 0; }
+.detail-settings-layout .sl-tab { min-height: 48px; overflow-wrap: break-word; }
+.detail-settings-main { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 0 24px; }
+.detail-settings-main > p { margin: 14px 0; }
+.detail-settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; min-height: 60px; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,.12);
+  font-size: 16px; font-size: clamp(16px, 1.25vw, 24px); text-align: left;
+}
+button.detail-settings-row:hover, button.detail-settings-row[aria-pressed=true] { background: #242b33; }
+button.detail-settings-row:after { content: '›'; color: #a0acb8; padding-left: 16px; }
+button.detail-settings-row[data-driver]:after { content: ''; }
+button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓'; color: #55bba9; }
+.detail-settings-row small { display: block; margin-top: 4px; font-size: .8em; color: #a8b3c0; }
+.detail-settings-row .sl-seg-group { width: 48%; margin: 0; }
+.detail-settings-row output { margin: 0 8px; }
+.detail-settings-actions { margin-top: auto; padding: 12px 0 0; display: flex; }
+.detail-settings-actions button, .qc-edit-actions button { flex: 1; min-height: 44px; margin: 0 4px; background: #2a2d32; border-radius: 4px; }
+.detail-settings-actions button[disabled] { opacity: .4; }
+.detail-settings-art { width: 26%; padding: 16px 10px; text-align: center; align-self: center; }
+.detail-settings-art img { width: 55%; max-width: 168px; height: auto; border-radius: 10px; }
+.detail-settings-art svg { width: 48%; height: auto; max-width: 140px; color: #8caac1; }
+.detail-settings-main input { max-width: 16em; min-width: 4em; width: 58%; color: #eef3f9; background: #20262e; border: 1px solid #667986; border-radius: 4px; padding: 10px; font: inherit; }
+.detail-settings-main .theme-control { background: #2a2d32; border-color: #424852; }
+.qc-editor { display: flex; flex: 1; flex-direction: column; min-height: 0; margin: 12px 0 0; }
+.qc-edit-list { display: flex; flex: 1; min-height: 0; overflow: auto; }
+.qc-edit-list .qc-col { flex: 1; min-width: 0; padding: 0 6px; gap: 0; }
+.qc-edit-row { flex: 1; min-height: 58px; border: 1px solid #4b4846; border-radius: 8px; background: #23201e; padding: 6px 12px; display: flex; align-items: center; font-size: 16px; font-size: clamp(16px, 1.2vw, 20px); }
+.qc-edit-row.slim { flex: .48; }
+.qc-edit-row + .qc-edit-row { margin-top: 10px; }
+.qc-edit-row label { flex: 1; min-width: 0; min-height: 44px; align-self: stretch; display: flex; align-items: center; cursor: pointer; }
+.qc-edit-row input { width: 20px; height: 20px; margin-right: 8px; flex-shrink: 0; accent-color: #55bba9; }
+.qc-edit-row button { width: 36px; height: 44px; color: #cbd3dd; }
+.qc-edit-row button[disabled] { opacity: .35; }
+.qc-edit-actions { display: flex; margin: 12px 6px 0; }
+.qc-edit-actions [data-qc-edit=save], .detail-settings-actions [data-local=profile-confirm] { background: #2a655e; }
+.qc-tile, [data-widget-handle] { touch-action: none; }
+[data-widget-handle] { cursor: move; color: #a0afbb; min-width: 30px; min-height: 34px; }
+@media(max-width: 760px) {
+  .detail-settings-layout .sl-nav { width: 32%; padding-right: 4px; }
+  .detail-settings-art { display: none; }
+  .detail-settings-main { padding: 0 10px; }
+  .qc-edit-row { flex-wrap: wrap; padding: 2px 6px; }
+}
+.sound-illustration { width: 25%; max-width: 410px; padding: 16px; flex-shrink: 0; margin: auto 0; text-align: center; color: #adcce1; }
+.sound-illustration svg { display: block; width: 100%; max-width: 230px; height: 160px; margin: 0 auto 10px; fill: none; stroke: #8bbbdc; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@media(max-height: 550px) { .sound-nav button { min-height: 35px; padding: 4px 9px; } }
+@media(max-width: 760px) { .sound-illustration { display: none; } .sound-nav { width: 36%; } .sound-content { padding-left: 12px; } .sound-info-row span { float: none; display: block; padding: 4px 0 0; } }
+.device-settings-list { margin: 0; padding: 0; }
+.device-settings-list li { list-style: none; }
+.settings-brightness { width: 100%; display: flex; align-items: center; }
+.settings-brightness input { flex: 1; margin: 0 10px; padding: 0; accent-color: #279480; }
+.aux-stage { display: flex; width: 100%; height: 100%; padding: 8px 2.2%; }
+.shell.aux-mode #split-widget, .shell.aux-mode #split-toggle-btn,
+.shell.phone-keypad-mode #split-widget, .shell.phone-keypad-mode #split-toggle-btn { display: none; }
+.search-side, .memo-side { display: flex; flex-direction: column; min-width: 0; padding-right: 20px; }
+.search-side { flex: 1.25; }
+.search-side { overflow-y: auto; }
+.search-results, .memo-list { flex: 1; min-width: 0; overflow: auto; padding-left: 20px; border-left: 1px solid #303236; }
+.search-field { display: flex; min-height: 48px; border-bottom: 1px solid #52565a; }
+.search-field input { flex: 1; min-width: 0; padding: 8px; background: none; border: 0; color: inherit; font: inherit; }
+.search-field button { min-width: 48px; color: #bac1c8; }
+.search-field input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.search-filters { margin: 12px 0; }
+.search-keyboard { padding: 12px 0; }
+.search-key-row { display: flex; }
+.search-key-row button { flex: 1; min-width: 0; min-height: 39px; height: 6.1vh; margin: 0 2px 2px 0; background: #272727; font-size: 18px; }
+.search-key-row button:hover { background: #434343; }
+.search-key-row .search-space { flex: 4; }
+.search-shortcuts { display: flex; margin-top: auto; }
+.search-shortcuts button { flex: 1; min-height: 44px; border-right: 1px solid #303236; }
+.search-results h2, .memo-list h2 { font-size: 19px; margin: 10px 0 4px; }
+.search-results .detail-settings-row { background: #202020; margin-bottom: 3px; }
+.memo-side { width: 25%; max-width: 420px; align-items: center; justify-content: center; }
+.memo-side > .ico { width: 88px; height: 88px; }
+.memo-side p { text-align: center; }
+.memo-transport { display: flex; width: 100%; }
+.memo-transport button { flex: 1; margin: 0 4px; min-height: 48px; background: #292929; }
+.memo-transport button[disabled] { opacity: .4; }
+.memo-record { color: #ed5a50; }
+.memo-list { display: flex; align-content: flex-start; flex-wrap: wrap; }
+.memo-card { width: 29%; min-width: 135px; margin: 0 8px 8px 0; background: #24211f; }
+.memo-entry { width: 100%; min-height: 145px; padding: 15px; text-align: left; }
+.memo-entry[aria-pressed=true] { box-shadow: inset 0 0 0 2px #279480; }
+.memo-entry small { display: block; margin-top: 24px; color: #b9ada5; }
+.memo-actions { display: flex; background: #313131; }
+.memo-actions button { flex: 1; min-height: 42px; }
+.memo-actions button + button { border-left: 1px solid #505050; }
+.phone-keypad-mode .phone-list-box { min-width: 0; background: transparent; border: 0; }
+.theme-dialer { display: flex; width: 100%; height: 100%; max-width: none; margin: 0; padding: 0; }
+.dial-pad { width: 43%; display: flex; flex-direction: column; }
+.theme-dial-keys { display: flex; flex-wrap: wrap; margin: 0; min-height: 0; flex: 1; }
+.theme-dial-keys button { width: 33.333%; min-height: 44px; border: 1px solid #171513; margin: 0; border-radius: 0; background: #302722; font-size: 24px; }
+.theme-dial-keys button:hover { background: #493a30; }
+.theme-dial-actions { display: flex; }
+.theme-dial-actions button { flex: 1; min-height: 46px; background: #282623; margin: 2px 1px 0; }
+.theme-dial-actions [data-dial-confirm] { background: #267261; }
+.dial-panel { flex: 1; min-width: 0; padding: 0 15px; }
+.dial-panel .phone-dial { width: 100%; background: transparent; border: 0; border-bottom: 1px solid #383838; border-radius: 0; color: inherit; font-size: 24px; }
+.dial-panel p { color: #a5acb3; }
+.standby-dial { width: 155px; height: 155px; color: #eef3f9; margin: 12px 0; }
+.standby-dial line { stroke: currentColor; stroke-linecap: round; }
+.standby-clock-style { width: 60%; max-width: 330px; }
+.standby-option { display: flex; align-items: stretch; }
+.standby-option .sl-radio-row { flex: 1; }
+.standby-option > [data-standby-options] { min-width: 54px; color: #88939e; border-bottom: 1px solid rgba(255,255,255,.08); }
+.theme-warmth { position: absolute; z-index: 40; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
+.warmth-timing { display: flex; align-items: center; }
+.warmth-timing input { min-width: 0; margin: 0 5px; }
+@media(max-width: 760px) {
+  .search-side, .memo-side { padding-right: 6px; }
+  .search-results, .memo-list { padding-left: 6px; }
+  .phone-keypad-mode .phone-device-pane { display: none; }
+  .search-key-row button { font-size: 14px; }
+}
+@media(max-height: 550px) {
+  .search-filters { margin: 6px 0; }
+  .search-keyboard { padding: 6px 0; }
+  .search-key-row button { min-height: 34px; }
+  .search-shortcuts button { min-height: 40px; }
+}
 </style>
 </head>
 <body>
@@ -895,7 +1092,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
       <!-- Detail Screen Title + Search Icon (Media_btmusic_3.png / Phone_callhistory_3.png / Settings_screenlayout) -->
       <div class="top-title-wrap" id="detail-top-title" hidden>
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <button type="button" id="detail-search-btn" aria-label="검색"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
         <span id="detail-heading-text">블루투스 오디오</span>
         <button type="button" class="device-switch-btn" id="device-switch-btn" title="기기 전환" aria-label="기기 전환">
           <svg class="ico" style="width:17px;height:17px" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="12" rx="1.5"/><rect x="13" y="8" width="7" height="12" rx="1.5"/><path d="M13 5h4l-2-2M11 19H7l2 2"/></svg>
@@ -918,7 +1115,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       <button type="button" class="layout-mode-badge" id="settings-grid-toggle" hidden>4×2 / 6×1 보기</button>
       <span class="bt-badge" id="bt-status-badge">
         <svg class="ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
-        <span>Bluetooth</span>
+        <span id="top-bluetooth-label">BT 상태 대기</span>
       </span>
       <time class="clock" id="clock">11:29<small>PM</small></time>
     </div>
@@ -930,6 +1127,13 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     <section id="view-standby" class="standby-view" aria-label="대기 화면" hidden>
       <p class="standby-date" id="standby-date">11월 18일 (수)</p>
       <div class="standby-clock" id="standby-clock">11:29<small>PM</small></div>
+      <svg class="standby-dial" id="standby-dial" viewBox="0 0 100 100" role="img" aria-label="아날로그 시계" hidden>
+        <circle cx="50" cy="50" r="47" fill="#101419" stroke="currentColor" stroke-width=".8"/>
+        <path d="M50 9v6m0 70v6M9 50h6m70 0h6" stroke="currentColor" stroke-width="1.5"/>
+        <line id="standby-hour" x1="50" y1="50" x2="50" y2="25" stroke-width="3"/>
+        <line id="standby-minute" x1="50" y1="50" x2="50" y2="15" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="2.5" fill="currentColor"/>
+      </svg>
       <div class="standby-weather">
         <div style="display:flex;align-items:center;gap:6px">
           <svg class="ico" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>
@@ -951,7 +1155,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     <!-- Page 1: Home 3-Card Screen (Systemoverview_home_2.png & 5W mod video 2.5s) -->
     <section id="view-home" class="home-view" aria-label="홈 화면">
       <!-- 1. Map Card -->
-      <article class="hcard hcard-map chamfer-br">
+      <article class="hcard hcard-map chamfer-br" data-card="map">
         <div class="hcard-art" id="map-slot" data-open="navi">
           <canvas id="home-map-canvas" aria-hidden="true"></canvas>
           <span class="map-scale-tag">Auto<br>50 m</span>
@@ -977,7 +1181,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       </article>
 
       <!-- 2. Media Card -->
-      <article class="hcard hcard-media chamfer-br">
+      <article class="hcard hcard-media chamfer-br" data-card="media">
         <div class="hcard-art" data-open="media">
           <span class="art-badge" id="home-media-badge">미디어</span>
           <canvas id="home-media-canvas" aria-hidden="true"></canvas>
@@ -1000,7 +1204,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       </article>
 
       <!-- 3. Phone Card -->
-      <article class="hcard hcard-phone chamfer-both">
+      <article class="hcard hcard-phone chamfer-both" data-card="phone">
         <div class="hcard-art" data-open="phone">
           <canvas id="home-phone-canvas" aria-hidden="true"></canvas>
         </div>
@@ -1158,9 +1362,42 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
           </aside>
         </div>
 
+        <div id="stage-search" class="aux-stage" hidden>
+          <div class="search-side">
+            <div class="search-field" role="search">
+              <input id="theme-search" type="search" maxlength="70" autocomplete="off" aria-label="시스템 검색" placeholder="설정, 전화, 미디어를 검색합니다">
+              <button type="button" id="search-clear" aria-label="검색어 지우기">×</button>
+              <button type="button" id="search-filter" aria-label="검색 카테고리" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24"><path d="M3 4h18l-7 8v7l-4 2v-9z"/></svg></button>
+            </div>
+            <div class="search-filters sl-seg-group" id="search-categories" hidden aria-label="검색 카테고리">
+              <button type="button" class="sl-seg-btn" data-search-category="all" aria-pressed="true">전체</button>
+              <button type="button" class="sl-seg-btn" data-search-category="setting" aria-pressed="false">설정</button>
+              <button type="button" class="sl-seg-btn" data-search-category="feature" aria-pressed="false">기능</button>
+            </div>
+            <div class="search-keyboard" id="search-keyboard" aria-label="검색 키보드"></div>
+            <div class="search-shortcuts">
+              <button type="button" data-host="navi">순정 지도</button><button type="button" data-host="nav-home">우리 집</button><button type="button" data-host="nav-work">회사</button>
+            </div>
+          </div>
+          <div class="search-results" id="search-results" aria-live="polite"></div>
+        </div>
+
+        <div id="stage-memo" class="aux-stage" hidden>
+          <div class="memo-side">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 11a7 7 0 0 0 14 0m-7 7v4m-4 0h8"/></svg>
+            <p id="memo-status">음성 메모</p>
+            <div class="memo-transport">
+              <button type="button" class="memo-record" id="memo-record" aria-label="녹음 시작">●</button>
+              <button type="button" id="memo-stop" aria-label="정지" disabled>■</button>
+            </div>
+          </div>
+          <div class="memo-list" id="memo-list" aria-label="녹음 목록"></div>
+        </div>
+
         <!-- D. Settings Main Grid (5W mod video 22s) -->
         <div id="stage-settings" class="settings-stage" hidden>
           <div class="settings-grid" id="settings-cards-grid"></div>
+          <div id="theme-settings-detail" hidden></div>
         </div>
 
         <!-- E. Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) -->
@@ -1172,7 +1409,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
             <button type="button" class="sl-tab" role="tab" data-sl-tab="split" aria-selected="true">분할 화면</button>
           </nav>
           <div class="sl-main" id="sl-panel-content"></div>
-          <div class="sl-preview"><canvas id="sl-preview-canvas"></canvas></div>
+          <div class="sl-preview"><canvas id="sl-preview-canvas"></canvas><img id="sl-frame-preview" class="frame-preview" alt="선택한 디지털 액자 사진" hidden><p class="sl-preview-caption" id="sl-frame-caption" hidden></p></div>
         </div>
       </div>
 
@@ -1255,19 +1492,19 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       <button type="button" class="qc-icon-btn" id="qc-close-top" aria-label="퀵 컨트롤 닫기">
         <svg class="ico" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg>
       </button>
-      <strong style="font-size:clamp(15px,1.25vw,21px);color:#cfd8e3">퀵 컨트롤</strong>
-      <button type="button" class="qc-icon-btn" id="qc-settings-btn" aria-label="설정 열기">
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+      <strong id="qc-heading" style="font-size:clamp(15px,1.25vw,21px);color:#cfd8e3">퀵 컨트롤</strong>
+      <button type="button" class="qc-icon-btn" id="qc-settings-btn" aria-label="퀵 컨트롤 편집">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m10 3-.5 2.5-2 .9-2.3-1L3 7.7l1.2 2.2v2.2L3 14.3l2.2 2.3 2.3-1 2 .9.5 2.5h3.7l.5-2.5 2-.9 2.3 1 2.2-2.3-1.2-2.2V9.9l1.2-2.2-2.2-2.3-2.3 1-2-.9-.5-2.5z" transform="translate(0 1)"/></svg>
       </button>
     </div>
-    <div class="qc-grid">
+    <div class="qc-grid" id="qc-grid">
       <div class="qc-col">
         <button type="button" class="qc-tile slim" data-qc="displayOff" aria-pressed="false">
-          <div><strong>화면 끄기</strong><small>시계/대기 화면 전환</small></div>
+          <div><strong>대기 화면</strong><small>시계·사진 표시 전환</small></div>
           <svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         </button>
         <button type="button" class="qc-tile slim" data-qc="quietMode" aria-pressed="false">
-          <div><strong>조용한 모드</strong><small>뒷좌석 취침 배려</small></div>
+          <div><strong>미디어 음소거</strong><small>미디어 음량만 조절</small></div>
           <svg class="ico" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5zM22 9l-6 6M16 9l6 6"/></svg>
         </button>
         <button type="button" class="qc-tile" data-qc="voiceMemo">
@@ -1277,7 +1514,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       </div>
       <div class="qc-col">
         <button type="button" class="qc-tile" data-qc="soundSettings">
-          <div><strong>사운드 설정</strong><small>이퀄라이저 · 음장 효과</small></div>
+          <div><strong>사운드 설정</strong><small>미디어 음량</small></div>
           <svg class="ico" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
         </button>
         <button type="button" class="qc-tile" data-qc="screenLayout">
@@ -1286,8 +1523,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         </button>
       </div>
       <div class="qc-col">
-        <button type="button" class="qc-tile" data-qc="connectivity" aria-pressed="true">
-          <div><strong>기기 연결 (Bluetooth · AA)</strong><small>Galaxy S24 Ultra · Android Auto 연결됨</small></div>
+        <button type="button" class="qc-tile" data-qc="connectivity" aria-pressed="false">
+          <div><strong>기기 연결</strong><small id="qc-device-status">블루투스 상태 대기</small></div>
           <svg class="ico" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
         </button>
         <button type="button" class="qc-tile slim" data-qc="driverSwitch">
@@ -1296,12 +1533,14 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         </button>
       </div>
     </div>
+    <div class="qc-editor" id="qc-editor" hidden></div>
     <button type="button" class="qc-bottom-handle" id="qc-close-bottom" aria-label="위로 밀어 닫기">
       <span class="qc-handle-bar"></span>
     </button>
   </section>
 
   <div id="notice" class="notice" role="status" hidden></div>
+  <div id="theme-warmth" class="theme-warmth" aria-hidden="true" hidden></div>
 </div>
 
 <script>
@@ -1317,7 +1556,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     gaugeStyle: 'Classic', // 'Classic' | 'Simple'
     standbyMode: 'frame',  // 'frame' (디지털 액자) | 'clock' (시계) | 'none' (표시 없음)
     reordering: false,
-    dragIndex: null,
+    homeCards: ['map', 'media', 'phone'],
     driverIndex: 0,
     drivers: ['운전자 1', '운전자 2', '게스트'],
     devices: ['Phone Name (Galaxy S24)', 'iPhone 16 Pro'],
@@ -1355,7 +1594,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     appTiles: [
       { id: 'aa', label: 'Android Auto', color: '#3d7865', badge: '연결됨', action: 'projection' },
       { id: 'navi', label: '지도', color: '#5c5b71', action: 'navi' },
-      { id: 'search', label: '검색/경로', color: '#786752', action: 'navi' },
+      { id: 'search', label: '검색/경로', color: '#786752', action: 'search' },
       { id: 'phone', label: '전화', color: '#53676c', action: 'phone' },
       { id: 'projection', label: '폰 프로젝션', color: '#5d5c6f', action: 'projection' },
       { id: 'voicememo', label: '음성 메모', color: '#6e5e4d', action: 'voicememo' },
@@ -1369,6 +1608,9 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
     // Settings & Split-screen Widget state (Settings_screenlayout_7.png)
     settingsGrid6x1: false,
+    clock24: false,
+    standbyClock: 'digital',
+    warmth: {enabled:false, level:2, start:'19:00', end:'06:00'},
     slTab: 'split',        // 'frame' | 'cluster' | 'standby' | 'split'
     splitOpen: true,
     splitActiveIdx: 0,
@@ -1388,6 +1630,161 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   };
 
   var shell = document.getElementById('shell');
+  var inVehicle = !!window.K8Host;
+  var livePreview = inVehicle || /(?:^|[?&])vehicle=1(?:&|$)/.test(location.search);
+  var settingsSection = '';
+  var deviceSection = 'bluetooth';
+  var displaySection = 'brightness';
+  var pairedDevices = null;
+  var searchCategory = 'all';
+  var searchRecent = [];
+  var profileMode = 'detail';
+  var profileSelected = 0;
+  var editingProfileName = false;
+  var standbyClockOptions = false;
+  var qcDefaults = ['displayOff','quietMode','voiceMemo','soundSettings','screenLayout','connectivity','driverSwitch'];
+  var qcOrder = qcDefaults.slice();
+  var qcHidden = [];
+  var qcDraft = null;
+  var soundSection = 'premium';
+  var controls = { volume: null, maxVolume: 0, brightness: 75, bluetooth: null };
+  var trackKnown = false;
+  var dialNumber = '';
+  var photo = { standby: '', split: '', profile0: '', profile1: '' };
+  var frameTarget = 'standby';
+  var saveKey = 'k8-theme-ui-v1';
+  if (!window.CSS || !window.CSS.supports || !window.CSS.supports('display', 'grid')) {
+    document.documentElement.className = 'legacy';
+  }
+  function closestMove(node) {
+    while (node && node.nodeType === 1) {
+      if (node.hasAttribute('data-move')) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+  function setClass(node, name, active) {
+    if (active) node.classList.add(name);
+    else node.classList.remove(name);
+  }
+  function host(action) {
+    if (inVehicle) window.K8Host.performAction(action);
+    else showNotice('차량용 APK에서 사용할 수 있습니다.');
+  }
+  var statusIcons = {
+    map:'<path d="M12 3l7 17-7-4-7 4z"/>',
+    media:'<path d="M15 4v12a3 3 0 1 1-3-3h3m0-9 4 2"/>',
+    phone:'<path d="M6 4l4 4-2 3a9 9 0 0 0 5 5l3-2 4 4-3 2C10 20 4 14 4 7z"/>',
+    photo:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m5 16 5-5 4 4 2-2 3 3"/>'
+  };
+  function statusCard(parent, icon, title, detail, button, run) {
+    var card = document.createElement('div');
+    card.className = 'theme-state';
+    card.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + statusIcons[icon] + '</svg><h3></h3><p></p>';
+    card.querySelector('h3').textContent = title;
+    card.querySelector('p').textContent = detail;
+    if (button) {
+      var action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'theme-control';
+      action.textContent = button;
+      action.onclick = run;
+      card.appendChild(action);
+    }
+    parent.appendChild(card);
+    return card;
+  }
+  function escapeText(value) {
+    return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function saveDisplay() {
+    try {
+      localStorage.setItem(saveKey, JSON.stringify({
+        bgMode: state.bgMode, graphicStyle: state.graphicStyle, gaugeStyle: state.gaugeStyle,
+        standbyMode: state.standbyMode, settingsGrid6x1: state.settingsGrid6x1, clock24: state.clock24,
+        standbyClock:state.standbyClock, warmth:state.warmth,
+        splitOpen: state.splitOpen, driverIndex: state.driverIndex,
+        driverNames: state.drivers.slice(0, 2), qcOrder:qcOrder, qcHidden:qcHidden, searchRecent:searchRecent,
+        homeCards: state.homeCards,
+        tiles: state.appTiles.map(function (item) { return item.id; }),
+        widgets: state.splitWidgets.map(function (item) { return { id:item.id, enabled:item.enabled }; })
+      }));
+    } catch (ignored) {}
+  }
+  function restoreDisplay() {
+    try {
+      var data = JSON.parse(localStorage.getItem(saveKey) || '{}');
+      var bg = ['blue','dark'];
+      if (bg.indexOf(data.bgMode) >= 0) state.bgMode = data.bgMode;
+      if (['A','B','C'].indexOf(data.graphicStyle) >= 0) state.graphicStyle = data.graphicStyle;
+      if (['Classic','Simple'].indexOf(data.gaugeStyle) >= 0) state.gaugeStyle = data.gaugeStyle;
+      if (['frame','clock','none'].indexOf(data.standbyMode) >= 0) state.standbyMode = data.standbyMode;
+      state.settingsGrid6x1 = data.settingsGrid6x1 === true;
+      state.clock24 = data.clock24 === true;
+      if (data.standbyClock === 'analog') state.standbyClock = 'analog';
+      if (data.warmth && /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(data.warmth.start) &&
+          /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(data.warmth.end)) {
+        state.warmth = {enabled:data.warmth.enabled === true, level:Math.min(5, Math.max(1, Number(data.warmth.level) || 2)),
+          start:data.warmth.start, end:data.warmth.end};
+      }
+      if (Array.isArray(data.searchRecent)) searchRecent = data.searchRecent.filter(function (key) {
+        return typeof key === 'string' && key.length <= 70;
+      }).slice(0, 6);
+      state.splitOpen = data.splitOpen !== false;
+      if (typeof data.driverIndex === 'number' && state.drivers[data.driverIndex]) state.driverIndex = data.driverIndex;
+      if (Array.isArray(data.driverNames)) data.driverNames.slice(0,2).forEach(function (name, i) {
+        if (typeof name === 'string' && name.trim()) state.drivers[i] = name.trim().slice(0,20);
+      });
+      if (Array.isArray(data.qcOrder) && data.qcOrder.slice().sort().join(',') === qcDefaults.slice().sort().join(',')) {
+        qcOrder = data.qcOrder.slice();
+      }
+      if (Array.isArray(data.qcHidden)) qcHidden = qcDefaults.filter(function (id) { return data.qcHidden.indexOf(id) >= 0; });
+      if (Array.isArray(data.homeCards) && data.homeCards.slice().sort().join(',') === 'map,media,phone') {
+        state.homeCards = data.homeCards.slice();
+      }
+      var order = function (items, saved, getId) {
+        if (!Array.isArray(saved)) return items;
+        var result = [];
+        saved.forEach(function (entry) {
+          items.forEach(function (item) {
+            if (item.id === getId(entry) && result.indexOf(item) < 0) {
+              if (item.enabled !== undefined) item.enabled = item.fixed || entry.enabled === true;
+              result.push(item);
+            }
+          });
+        });
+        return result.concat(items.filter(function (item) { return result.indexOf(item) < 0; }));
+      };
+      state.appTiles = order(state.appTiles, data.tiles, function (item) { return item; });
+      state.splitWidgets = order(state.splitWidgets, data.widgets, function (item) { return item && item.id; });
+    } catch (ignored) {}
+  }
+  restoreDisplay();
+  if (livePreview) {
+    state.dest = null;
+    state.playing = false;
+    state.mediaSource = '';
+    state.tracks = [{title:'미디어 정보 대기', artist:'', album:'', cur:'—', dur:'—', pct:0,
+      palette:['#244258','#476478','#182b3b']}];
+    state.devices = ['블루투스 상태 대기'];
+    state.calls = [];
+    delete state.appTiles.filter(function (item) { return item.id === 'aa'; })[0].badge;
+    state.splitWidgets.forEach(function (item) { if (item.id === 'media') item.label = '미디어'; });
+    document.querySelector('.standby-weather').hidden = true;
+    document.querySelector('.map-scale-tag').hidden = true;
+    ['navi-speed-box','navi-tbt-box','navi-lane-box','navi-viewmode-btn','navi-mute-btn','navi-scale-btn','navi-zoom-btn']
+      .forEach(function (id) { document.getElementById(id).hidden = true; });
+    var mapStatus = document.createElement('div');
+    mapStatus.className = 'theme-map-placeholder';
+    statusCard(mapStatus, 'map', '순정 내비게이션', '현재 위치와 길안내는 순정 지도에서 확인할 수 있습니다.',
+      '순정 지도 열기', function () { host('navi'); }).classList.add('theme-nav-content');
+    document.getElementById('stage-navi').appendChild(mapStatus);
+    var mapArt = document.createElement('div');
+    mapArt.className = 'map-art-status';
+    mapArt.setAttribute('aria-hidden', 'true');
+    mapArt.innerHTML = '<svg class="ico" viewBox="0 0 24 24">' + statusIcons.map + '</svg><p>지도 열기</p>';
+    document.getElementById('map-slot').appendChild(mapArt);
+  }
   var notice = document.getElementById('notice');
   var noticeTimer;
 
@@ -1699,8 +2096,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     ctx.stroke();
   }
 
-  function paintAppTiles() {
-    var canvases = document.querySelectorAll('#view-apps canvas');
+  function paintAppTiles(container) {
+    var canvases = (container || document.getElementById('view-apps')).querySelectorAll('canvas');
     for (var i = 0; i < canvases.length; i++) {
       var c = canvases[i];
       var info = setupCanvas(c);
@@ -1735,19 +2132,19 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   }
 
   /* ====== Build & Render Views ====== */
-  function renderAppTilesPage() {
-    var container = document.getElementById('view-apps');
+  function renderAppTilesPage(container, page) {
+    var preview = !!container;
+    container = container || document.getElementById('view-apps');
     container.innerHTML = '';
-    container.classList.toggle('reordering', state.reordering);
-    var startIdx = state.page === 'apps2' ? 6 : 0;
+    setClass(container, 'reordering', state.reordering);
+    var startIdx = (page || state.page) === 'apps2' ? 6 : 0;
     var slice = state.appTiles.slice(startIdx, startIdx + 6);
 
     slice.forEach(function (tile, localIdx) {
       var globalIdx = startIdx + localIdx;
       var el = document.createElement('article');
       el.className = 'app-tile chamfer-both';
-      el.style.setProperty('--tile-bg', tile.color);
-      el.setAttribute('draggable', 'true');
+      el.style.backgroundColor = tile.color;
       el.setAttribute('data-idx', String(globalIdx));
 
       var badgeHtml = tile.badge ? '<span class="app-badge">' + tile.badge + '</span>' : '';
@@ -1763,9 +2160,10 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
           '</div>' +
         '</div>';
 
-      el.addEventListener('click', function (ev) {
-        var moveBtn = ev.target.closest('[data-move]');
+      if (!preview) el.addEventListener('click', function (ev) {
+        var moveBtn = closestMove(ev.target);
         if (moveBtn) {
+          if (!state.reordering) return;
           ev.stopPropagation();
           var dir = parseInt(moveBtn.getAttribute('data-move'), 10);
           var targetIdx = (globalIdx + dir + state.appTiles.length) % state.appTiles.length;
@@ -1780,45 +2178,31 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         handleTileAction(tile);
       });
 
-      el.addEventListener('dragstart', function () {
-        state.dragIndex = globalIdx;
-        el.classList.add('dragging');
-      });
-      el.addEventListener('dragend', function () {
-        el.classList.remove('dragging');
-      });
-      el.addEventListener('dragover', function (ev) {
-        ev.preventDefault();
-        el.classList.add('drag-over');
-      });
-      el.addEventListener('dragleave', function () {
-        el.classList.remove('drag-over');
-      });
-      el.addEventListener('drop', function (ev) {
-        ev.preventDefault();
-        el.classList.remove('drag-over');
-        if (state.dragIndex === null || state.dragIndex === globalIdx) return;
-        var moved = state.appTiles.splice(state.dragIndex, 1)[0];
-        state.appTiles.splice(globalIdx, 0, moved);
-        state.dragIndex = null;
-        renderAppTilesPage();
-        paintAppTiles();
-        showNotice('아이콘 위치가 변경되었습니다.');
-      });
-
       container.appendChild(el);
     });
-    paintAppTiles();
+    paintAppTiles(container);
+  }
+
+  function layoutHomeCards() {
+    var home = document.getElementById('view-home');
+    var stacked = window.innerWidth <= 650 && window.innerHeight > window.innerWidth;
+    var width = {map:49.8, media:32.7, phone:16};
+    var left = 0;
+    state.homeCards.forEach(function (name) {
+      var card = home.querySelector('[data-card="' + name + '"]');
+      card.style.left = stacked ? '' : left + '%';
+      left += width[name] + .75;
+    });
   }
 
   function handleTileAction(tile) {
     if (tile.action === 'navi' || tile.action === 'media' || tile.action === 'phone' ||
-        tile.action === 'settings' || tile.action === 'screenlayout') {
-      navigateTo(tile.action);
+        tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo') {
+      navigateTo(tile.action === 'voicememo' ? 'memo' : tile.action);
       return;
     }
-    if (window.K8Host && (tile.action === 'projection' || tile.action === 'configure' || tile.action === 'radio')) {
-      window.K8Host.performAction(tile.action);
+    if (['projection','configure','radio','connect','alerts'].indexOf(tile.action) >= 0) {
+      host(tile.action);
       return;
     }
     showNotice(tile.label + ' 실행 · 차량 연동 준비 완료');
@@ -1834,6 +2218,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     var devName = state.devices[state.deviceIndex];
 
     document.getElementById('media-phone-name').textContent = devName;
+    if (livePreview) document.getElementById('media-source-desc').textContent =
+      state.mediaSource === 'bt' ? '블루투스 오디오' : state.mediaSource === 'usb' ? 'USB 오디오' : '재생 소스 대기';
     document.getElementById('single-phone-label').textContent = devName;
     document.getElementById('single-track-index').textContent = '♪ ' + (state.trackIndex + 1) + '/' + state.tracks.length;
     document.getElementById('single-title').textContent = curTrack.title;
@@ -1860,6 +2246,11 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     }
 
     listPane.innerHTML = '';
+    if (livePreview && !trackKnown && !state.mediaSource) {
+      statusCard(listPane, 'media', '재생 정보 없음', '연결된 오디오가 재생을 시작하면 이곳에 곡 정보가 표시됩니다.',
+        '미디어 앱 열기', function () { host('media'); }).classList.add('media-state-card');
+      return;
+    }
     state.tracks.forEach(function (t, idx) {
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -1867,9 +2258,10 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       var active = idx === state.trackIndex;
       btn.setAttribute('aria-current', String(active));
       btn.innerHTML =
-        '<span>' + (idx + 1) + ' &nbsp; ' + t.title + ' <small style="opacity:.7;margin-left:8px">' + t.artist + '</small></span>' +
+        '<span>' + (idx + 1) + ' &nbsp; ' + escapeText(t.title) + ' <small style="opacity:.7;margin-left:8px">' + escapeText(t.artist) + '</small></span>' +
         (active && state.playing ? '<span class="eq-bars" aria-label="재생 중"><i></i><i></i><i></i><i></i></span>' : '<span>' + t.dur + '</span>');
       btn.addEventListener('click', function () {
+        if (livePreview) { togglePlay(); return; }
         state.trackIndex = idx;
         state.playing = true;
         updateAllStatuses();
@@ -1883,8 +2275,48 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   /* Render Phone Call History Stage (Phone_callhistory_3.png monochrome vector icons) */
   function renderPhoneStage() {
     var list = document.getElementById('phone-call-list');
+    setClass(shell, 'phone-keypad-mode', state.phoneTab === 'keypad');
     document.getElementById('phone-device-label').textContent = state.devices[state.deviceIndex];
     list.innerHTML = '';
+    if (state.phoneTab === 'keypad') {
+        list.innerHTML = '<div class="theme-dialer"><div class="dial-pad"><div class="theme-dial-keys"></div>' +
+          '<div class="theme-dial-actions"><button type="button" data-dial-delete aria-label="마지막 숫자 지우기">⌫</button>' +
+          '<button type="button" data-dial-settings aria-label="기기 연결">⚙</button>' +
+          '<button type="button" data-dial-confirm aria-label="전화 앱에서 확인"><svg class="ico" viewBox="0 0 24 24"><path d="M6.5 5 10 8.5 8 11a10 10 0 0 0 5 5l2.5-2L19 17.5c-.5 2-2 3-3.8 3C8.5 19.5 4.5 15.5 3.5 8.8 3.5 7 4.5 5.5 6.5 5z"/></svg></button></div></div>' +
+          '<div class="dial-panel"><label for="theme-phone-number">전화번호 입력</label>' +
+          '<input class="phone-dial" id="theme-phone-number" type="tel" maxlength="24"><p>전화 앱에서 발신을 확인합니다.</p></div></div>';
+        var input = list.querySelector('input');
+        input.value = dialNumber;
+        input.oninput = function () { dialNumber = input.value; };
+        var keys = list.querySelector('.theme-dial-keys');
+        '123456789*0#'.split('').forEach(function (digit) {
+          var key = document.createElement('button');
+          key.type = 'button';
+          key.textContent = digit;
+          key.onclick = function () {
+            if (input.value.length < 24) input.value += digit;
+            dialNumber = input.value;
+          };
+          keys.appendChild(key);
+        });
+        list.querySelector('[data-dial-delete]').onclick = function () { dialNumber = input.value = input.value.slice(0, -1); };
+        list.querySelector('[data-dial-settings]').onclick = openDeviceSettings;
+        list.querySelector('[data-dial-confirm]').onclick = function () {
+          var number = input.value.replace(/[ -]/g, '');
+          if (!/^\+?[0-9*#]{2,24}$/.test(number) || !/[0-9]/.test(number)) showNotice('전화번호를 입력하세요.');
+          else if (inVehicle) window.K8Host.dial(number);
+          else showNotice('전화 앱은 차량용 APK에서 열립니다.');
+        };
+        return;
+    }
+    if (livePreview) {
+        var phoneState = {history:['최근 통화','순정 전화 앱에서 최근 통화를 확인할 수 있습니다.'],
+          contacts:['연락처','차량에 동기화된 연락처는 순정 전화 앱에서 확인하세요.'],
+          messages:['메시지','연결된 전화기의 메시지 지원 여부는 순정 전화 앱에서 확인하세요.'],
+          privacy:['프라이버시','순정 전화의 프라이버시 설정은 순정 앱에서 관리합니다.']}[state.phoneTab];
+        statusCard(list, 'phone', phoneState[0], phoneState[1], '순정 전화 앱 열기', function () { host('phone'); });
+      return;
+    }
     var typeSvgs = {
       office: '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg>',
       work:   '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="1"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 16h4v4h-4z"/></svg>',
@@ -1921,39 +2353,275 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   /* Render Settings Main Grid (5W mod video 22s/26s vector icons) */
   function renderSettingsStage() {
     var grid = document.getElementById('settings-cards-grid');
-    grid.classList.toggle('mode-6x1', state.settingsGrid6x1);
+    var detail = document.getElementById('theme-settings-detail');
+    grid.hidden = !!settingsSection;
+    detail.hidden = !settingsSection;
+    setClass(shell, 'sound-mode', settingsSection === 'sound');
+    setClass(shell, 'detail-settings', ['profile','devices','general','display'].indexOf(settingsSection) >= 0);
+    var titles = {vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드', devices:'기기 연결',
+      profile:'사용자 프로필', voice:'음성인식', display:'디스플레이'};
+    document.getElementById('detail-heading-text').textContent = titles[settingsSection] || '설정';
+    document.getElementById('settings-grid-toggle').hidden = !!settingsSection;
+    if (settingsSection) { renderSettingsControls(); return; }
+    setClass(grid, 'mode-6x1', state.settingsGrid6x1);
     var items = [
       { id: 'vehicle', title: '차량', sub: '운전자 보조 · 드라이브 모드 · 클러스터 · 공조 · 시트', svg: '<path d="M5 14l2-5h10l2 5v5H5v-5z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>' },
       { id: 'general', title: '일반', sub: '시스템 정보 · 날짜/시간 · 언어 · 키보드', svg: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>' },
       { id: 'navi', title: '내비게이션', sub: '표시 · 안내 · 경로 옵션', svg: '<path d="m12 3 7 17-7-4-7 4z"/>' },
       { id: 'sound', title: '사운드', sub: '음량 · 이퀄라이저 · 주행 사운드', svg: '<path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7"/>' },
       { id: 'devices', title: '기기 연결', sub: '블루투스 · 폰 프로젝션 (Android Auto)', svg: '<rect x="4" y="6" width="10" height="12" rx="1"/><rect x="12" y="4" width="8" height="16" rx="1"/>' },
-      { id: 'profile', title: '사용자 프로필', sub: '운전자 1 · 프로필 이미지 및 연동', svg: '<circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/>' },
+      { id: 'profile', title: '사용자 프로필', sub: state.drivers[state.driverIndex] + ' · 프로필 이미지 및 연동', svg: '<circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/>' },
       { id: 'voice', title: '음성인식', sub: '호출어 · 안내음 간략화', svg: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>' },
-      { id: 'display', title: '디스플레이', sub: '화면구성 · 분할 화면 · 클러스터 테마 · 대기 화면', svg: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>' }
+      { id: 'display', title: '디스플레이', sub: '화면 밝기 · 화면구성', svg: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>' }
     ];
-    if (state.settingsGrid6x1) items = items.slice(0, 6);
     grid.innerHTML = '';
     items.forEach(function (it) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'set-card chamfer-both';
       btn.innerHTML =
-        '<div><strong>' + it.title + '</strong><span>' + it.sub + '</span></div>' +
+        '<div><strong>' + it.title + '</strong><span>' + escapeText(it.sub) + '</span></div>' +
         '<span class="set-card-icon"><svg class="ico" style="width:26px;height:26px" viewBox="0 0 24 24">' + it.svg + '</svg></span>';
-      btn.addEventListener('click', function () {
-        if (it.id === 'display') {
-          navigateTo('screenlayout');
-        } else if (it.id === 'navi') {
-          navigateTo('navi');
-        } else if (it.id === 'devices' && window.K8Host) {
-          window.K8Host.performAction('configure');
-        } else {
-          showNotice(it.title + ' 설정: ' + it.sub);
-        }
-      });
+      btn.addEventListener('click', function () { openSettingsSection(it.id); });
       grid.appendChild(btn);
     });
+  }
+
+  function openSettingsSection(section) {
+    settingsSection = section;
+    if (section === 'sound') soundSection = 'premium';
+    if (section === 'devices') deviceSection = 'bluetooth';
+    if (section === 'display') displaySection = 'brightness';
+    if (section === 'profile') { profileMode = 'detail'; editingProfileName = false; }
+    navigateTo('settings');
+    renderSettingsStage();
+  }
+
+  function renderSettingsControls() {
+    var pane = document.getElementById('theme-settings-detail');
+    if (settingsSection === 'sound') {
+      renderSoundControls(pane);
+      return;
+    }
+    var heading = { vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드',
+      devices:'기기 연결', profile:'사용자 프로필', voice:'음성인식', display:'디스플레이' }[settingsSection];
+    var start = '<button type="button" class="theme-control" data-local="settings-back">‹ 설정</button><h2>' + heading + '</h2>';
+    var external = function (action, title, style) {
+      return '<button type="button" class="' + (style || 'theme-control') + '" data-host="' + action + '">' + title + '</button>';
+    };
+    if (settingsSection === 'general') {
+      detailSettings(pane, '일반 메뉴', '<div class="sl-tab" aria-selected="true">날짜/시간</div>' +
+        external('settings-language', '언어/Language', 'sl-tab') + external('settings-keyboard', '키보드', 'sl-tab') +
+        external('settings-general', '시스템 정보 및 설정', 'sl-tab'),
+        external('settings-date', '<span>날짜 및 시간<small id="theme-date-time"></small></span>', 'detail-settings-row') +
+        '<div class="detail-settings-row"><span>시간 표기 방식</span><div class="sl-seg-group">' +
+        '<button type="button" class="sl-seg-btn" data-clock="24" aria-pressed="' + state.clock24 + '">24시간</button>' +
+        '<button type="button" class="sl-seg-btn" data-clock="12" aria-pressed="' + !state.clock24 + '">12시간</button></div></div>' +
+        '<div class="detail-settings-row"><span>테마 화면 밝기</span><div>' +
+        external('brightness-down', '−') + '<output id="theme-brightness"></output>' + external('brightness-up', '+') + '</div></div>',
+        '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="9" width="43" height="39" rx="5"/>' +
+        '<path d="M16 6v8m24-8v8M7 21h43m-34 9h6m5 0h5m-16 8h6"/>' +
+        '<circle cx="48" cy="47" r="12" fill="#121923"/><path d="M48 40v8l4 3"/></svg>');
+      updateClock();
+    } else if (settingsSection === 'display') {
+      var bright = displaySection === 'brightness';
+      var nav = '<button type="button" class="sl-tab" data-display="brightness" aria-selected="' + bright + '">화면 밝기</button>' +
+        '<button type="button" class="sl-tab" data-display="warmth" aria-selected="' + !bright + '">블루라이트</button>' +
+        '<button type="button" class="sl-tab" data-local="open-layout">화면구성</button>' + external('settings-display', '기기 디스플레이 설정', 'sl-tab');
+      var art = '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="12" width="50" height="40" rx="3"/>' +
+        (bright ? '<circle cx="32" cy="32" r="6"/><path d="M32 18v5m0 18v5M18 32h5m18 0h5M22 22l4 4m12 12 4 4m0-20-4 4M26 38l-4 4"/>' :
+          '<path d="M16 32q16-21 32 0-16 21-32 0z"/><circle cx="32" cy="32" r="5"/>') + '</svg>';
+      var content = bright ? '<p class="sl-desc">테마 창의 밝기를 기기 설정에 맡기거나 직접 조절합니다.</p>' +
+        '<button type="button" class="detail-settings-row" data-host="brightness-auto"><span>기기 밝기 사용</span><output id="theme-brightness-mode"></output></button>' +
+        '<div class="detail-settings-row"><div class="settings-brightness">' + external('brightness-down', '−') +
+        '<input id="theme-brightness-range" type="range" min="25" max="100" aria-label="테마 창 밝기">' + external('brightness-up', '+') +
+        '<output id="theme-brightness"></output></div></div><div class="detail-settings-actions">' +
+        external('brightness-reset', '초기값') + '</div>' :
+        '<p class="sl-desc">지정한 시간 동안 테마 화면에 따뜻한 색을 적용합니다.</p>' +
+        '<button type="button" class="detail-settings-row" data-local="toggle-warmth" aria-pressed="' + state.warmth.enabled +
+        '"><span>블루라이트 차단</span><output>' + (state.warmth.enabled ? '켜짐' : '꺼짐') + '</output></button>' +
+        '<label class="detail-settings-row">색온도<input id="warmth-level" type="range" min="1" max="5" value="' + state.warmth.level + '"></label>' +
+        '<div class="detail-settings-row">사용자 설정<div class="warmth-timing">' +
+        '<input id="warmth-start" type="time" aria-label="시작 시간" value="' + state.warmth.start + '"> ~ ' +
+        '<input id="warmth-end" type="time" aria-label="종료 시간" value="' + state.warmth.end + '"></div></div>';
+      detailSettings(pane, '디스플레이 메뉴', nav, content, art);
+      if (bright) {
+        var range = pane.querySelector('#theme-brightness-range');
+        range.oninput = function () { document.getElementById('theme-brightness').textContent = range.value + '%'; };
+        range.onchange = function () { if (inVehicle) window.K8Host.setBrightness(Number(range.value)); };
+      } else {
+        pane.querySelector('#warmth-level').oninput = function () { state.warmth.level = Number(this.value); saveDisplay(); updateClock(); };
+        ['start','end'].forEach(function (key) {
+          pane.querySelector('#warmth-' + key).onchange = function () {
+            if (!this.value) { this.value = state.warmth[key]; return; }
+            state.warmth[key] = this.value;
+            saveDisplay(); updateClock();
+          };
+        });
+      }
+    } else if (settingsSection === 'devices') {
+      var bluetooth = deviceSection === 'bluetooth';
+      detailSettings(pane, '기기 연결 메뉴',
+        '<button type="button" class="sl-tab" data-device-section="bluetooth" aria-selected="' + bluetooth +
+        '">블루투스</button><button type="button" class="sl-tab" data-device-section="projection" aria-selected="' +
+        !bluetooth + '">폰 프로젝션</button>', bluetooth ?
+        '<div class="detail-settings-row"><span>등록 기기</span><output id="theme-bluetooth"></output></div><ol class="device-settings-list" id="theme-paired-devices"></ol>' +
+        '<div class="detail-settings-actions">' +
+        (controls.bluetooth === false ? external('bluetooth-enable', '블루투스 켜기') : '') +
+        external('settings-devices', '블루투스 연결 관리') + '</div>' :
+        external('projection', '연결된 폰 프로젝션 앱 열기', 'detail-settings-row'),
+        '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="19" y="5" width="26" height="54" rx="7"/>' +
+        '<path d="M29 11h6m-8 40h10m-8-31 9 9-7 7V18l7 7-10 10"/></svg>');
+    } else if (settingsSection === 'profile') {
+      renderProfile(pane);
+    } else {
+      var path = {vehicle:['settings-car','순정 차량 설정'],navi:['settings-nav','순정 내비 설정'],
+        voice:['settings-voice','순정 음성인식 설정']}[settingsSection];
+      pane.innerHTML = start + '<p>이 항목은 순정 설정 화면에서 변경할 수 있습니다.</p>' + external(path[0],path[1]);
+    }
+    updateControlLabels();
+  }
+
+  function detailSettings(pane, label, navigation, main, art) {
+    pane.innerHTML = '<div class="detail-settings-layout"><nav class="sl-nav" aria-label="' + label + '">' + navigation +
+      '</nav><section class="detail-settings-main">' + main + '</section><aside class="detail-settings-art">' + art + '</aside></div>';
+  }
+
+  function openProfilePicker() {
+    settingsSection = 'profile';
+    profileSelected = state.driverIndex;
+    profileMode = 'picker';
+    navigateTo('settings');
+    renderSettingsStage();
+  }
+
+  function openDeviceSettings() {
+    deviceSection = 'bluetooth';
+    settingsSection = 'devices';
+    navigateTo('settings');
+    renderSettingsStage();
+  }
+
+  function renderProfile(pane) {
+    var selecting = profileMode === 'picker';
+    var index = selecting ? profileSelected : state.driverIndex;
+    var name = escapeText(state.drivers[index]);
+    var side = '<button type="button" class="sl-tab" data-local="profile-detail" aria-selected="' + !selecting +
+      '">' + escapeText(state.drivers[state.driverIndex]) + '</button><button type="button" class="sl-tab" data-local="profile-picker" aria-selected="' +
+      selecting + '">사용자 변경</button>';
+    var main = '';
+    if (selecting) {
+      state.drivers.forEach(function (driver, i) {
+        main += '<button type="button" class="detail-settings-row" data-driver="' + i +
+          '" aria-pressed="' + (i === index) + '">' + escapeText(driver) + '</button>';
+      });
+      main += '<div class="detail-settings-actions"><button type="button" data-local="profile-confirm">확인</button></div>';
+    } else if (index === 2) {
+      main += '<p>게스트는 프로필 이름과 사진을 편집할 수 없습니다.</p>';
+    } else {
+      main += '<button type="button" class="detail-settings-row" data-local="profile-name" aria-expanded="' + editingProfileName +
+        '"><span>이름<small>' + name + '</small></span></button>';
+      if (editingProfileName) {
+        main += '<div class="detail-settings-row"><input id="theme-profile-name" aria-label="프로필 이름" maxlength="20" value="' +
+          name + '"><button type="button" class="theme-control" data-local="profile-save">저장</button></div>';
+      }
+      main += '<button type="button" class="detail-settings-row" data-host="photo-profile' + index + '">프로필 이미지</button>';
+    }
+    if (!selecting) {
+      main += '<button type="button" class="detail-settings-row" data-host="connect">Kia Connect 앱 열기</button>' +
+        '<button type="button" class="detail-settings-row" data-host="settings-profile">순정 프로필 설정 열기</button>';
+    }
+    var avatar = photo['profile' + index];
+    var preview = avatar ? '<img src="' + avatar + '" alt="프로필 사진">' :
+      '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/></svg>';
+    detailSettings(pane, '사용자 프로필 메뉴', side, main, preview + '<p>' + name + '</p>');
+  }
+
+  function renderSoundControls(pane) {
+    var items = [
+      ['premium','고급 음향',['속도 연동 음량','시동 시 오디오 음량 제한'], 'speaker'],
+      ['balance','전후/좌우',['앞뒤 소리 배분','좌우 소리 배분'], 'cabin'],
+      ['tone','고음/중음/저음',['고음','중음','저음'], 'tone'],
+      ['guidance','안내음',['안내 음량','음성 변경','내비 안내 우선'], 'speaker'],
+      ['radio','라디오 음질',['라디오 노이즈 제어'], 'speaker'],
+      ['driver','운전자 보조',['경고 음량','주행·주차 안전 우선'], 'shield'],
+      ['devices','연결 기기',['Android Auto 음량','Apple CarPlay 음량'], 'device'],
+      ['volume','미디어 음량',[], 'speaker']
+    ];
+    var art = {
+      speaker:'<path d="M11 36h13l22-17v58L24 60H11zM60 35c11 7 11 19 0 26m12-35c20 12 20 32 0 44"/>',
+      cabin:'<rect x="25" y="10" width="46" height="76" rx="15"/><path d="M25 31h46M25 66h46M48 32v33"/><circle cx="48" cy="49" r="6"/>',
+      tone:'<path d="M21 17v62m27-62v62m27-62v62"/><rect x="14" y="32" width="14" height="10" rx="3"/><rect x="41" y="52" width="14" height="10" rx="3"/><rect x="68" y="43" width="14" height="10" rx="3"/>',
+      shield:'<path d="M48 13 74 25v23c0 15-9 27-26 37-17-10-26-22-26-37V25zM48 34v18m0 12v1"/>',
+      device:'<rect x="26" y="13" width="44" height="70" rx="9"/><path d="M43 22h10m-7 53h4"/>'
+    };
+    var selected = items[0];
+    var nav = '<button type="button" class="sound-back" data-local="settings-back">‹ 설정</button>';
+    items.forEach(function (item) {
+      if (item[0] === soundSection) selected = item;
+      nav += '<button type="button" data-sound-section="' + item[0] + '" aria-pressed="' +
+        (item[0] === soundSection) + '">' + item[1] + '</button>';
+    });
+    var content = '<h2>' + selected[1] + '</h2>';
+    if (selected[0] === 'volume') {
+      content += '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
+        '<output id="theme-volume"></output><input id="theme-volume-range" aria-label="미디어 음량" type="range" min="0" value="0">' +
+        '<button type="button" class="theme-control sound-step" data-host="volume-down" aria-label="음량 줄이기">−</button>' +
+        '<button type="button" class="theme-control sound-step" data-host="volume-up" aria-label="음량 높이기">+</button>' +
+        '<button type="button" id="theme-mute" class="theme-control" data-host="volume-mute">음소거</button></section>';
+    } else {
+      content += '<p class="sound-help">이 항목의 순정 제어 경로를 확인 중입니다.</p>';
+      selected[2].forEach(function (label) {
+        content += '<div class="sound-info-row">' + label + '<span>순정 연동 대기</span>' +
+          (selected[0] === 'tone' ? '<i class="sound-unavailable-track" aria-hidden="true"></i>' : '') + '</div>';
+      });
+    }
+    content += '<button type="button" class="theme-control" data-host="settings-sound">기기 사운드 설정 열기</button>';
+    pane.innerHTML = '<div class="sound-layout"><nav class="sound-nav" aria-label="사운드 설정 메뉴">' + nav +
+      '</nav><section class="sound-content">' + content + '</section><aside class="sound-illustration" aria-hidden="true">' +
+      '<svg viewBox="0 0 96 96">' + art[selected[3]] + '</svg><span>' + selected[1] + '</span></aside></div>';
+    var slider = pane.querySelector('input');
+    if (slider) {
+      slider.oninput = function () {
+        document.getElementById('theme-volume').textContent = slider.value + ' / ' + controls.maxVolume;
+      };
+      slider.onchange = function () {
+        if (inVehicle) window.K8Host.setMediaVolume(Number(slider.value));
+      };
+    }
+    updateControlLabels();
+  }
+
+  function updateControlLabels() {
+    var volume = document.getElementById('theme-volume');
+    var brightness = document.getElementById('theme-brightness');
+    var bluetooth = document.getElementById('theme-bluetooth');
+    if (volume) volume.textContent = controls.volume === null ? '연결 대기' : controls.volume + ' / ' + controls.maxVolume;
+    var slider = document.getElementById('theme-volume-range');
+    if (slider) {
+      slider.disabled = controls.volume === null || controls.maxVolume <= 0;
+      slider.max = Math.max(1, controls.maxVolume);
+      slider.value = controls.volume === null ? 0 : controls.volume;
+      document.getElementById('theme-mute').textContent = controls.volume === 0 ? '음소거 해제' : '음소거';
+    }
+    if (brightness) brightness.textContent = controls.brightness < 0 ? '기기 설정' : controls.brightness + '%';
+    var brightnessMode = document.getElementById('theme-brightness-mode');
+    if (brightnessMode) brightnessMode.textContent = controls.brightness < 0 ? '켜짐' : '꺼짐';
+    var brightnessRange = document.getElementById('theme-brightness-range');
+    if (brightnessRange && brightnessRange !== document.activeElement) brightnessRange.value = controls.brightness < 0 ? 75 : controls.brightness;
+    if (bluetooth) bluetooth.textContent = controls.bluetooth === null ? '블루투스 상태 대기' :
+      controls.bluetooth ? '블루투스 켜짐' : '블루투스 꺼짐';
+    var devices = document.getElementById('theme-paired-devices');
+    if (devices) {
+      devices.innerHTML = '';
+      if (pairedDevices && pairedDevices.length) pairedDevices.forEach(function (name, i) {
+        var row = document.createElement('li');
+        row.className = 'detail-settings-row';
+        row.textContent = (i + 1) + '　' + name;
+        devices.appendChild(row);
+      });
+      else if (controls.bluetooth === true) devices.textContent = pairedDevices ? '등록된 기기 없음' : '등록 기기 정보 확인 불가';
+    }
   }
 
   /* Render Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
@@ -1967,23 +2635,22 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
     if (state.slTab === 'frame') {
       panel.innerHTML =
-        '<p class="sl-desc">대기 화면과 분할 화면에 휴대폰 앱에서 업로드한 이미지가 표시됩니다.</p>' +
-        '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span>›</span></button>' +
-        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span>›</span></button>';
-      panel.querySelectorAll('[data-frame-act]').forEach(function (b) {
+        '<p class="sl-desc">테마의 대기 화면과 분할 화면에 표시할 사진을 선택합니다.</p>' +
+        '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span>' + (photo.standby ? '변경' : '선택') + '</span></button>' +
+        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span>' + (photo.split ? '변경' : '선택') + '</span></button>';
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-frame-act]'), function (b) {
         b.addEventListener('click', function () {
-          state.bgMode = state.bgMode === 'blue' ? 'dark' : 'blue';
-          shell.setAttribute('data-bg', state.bgMode);
-          updateAllStatuses();
-          showNotice('배경 이미지 모드가 전환되었습니다 (' + (state.bgMode === 'blue' ? '5W 파란 배경' : 'ccNC 순정 다크') + ')');
+          frameTarget = b.getAttribute('data-frame-act');
+          drawScreenLayoutPreview();
+          host('photo-' + frameTarget);
         });
       });
     } else if (state.slTab === 'cluster') {
       panel.innerHTML =
-        '<p class="sl-desc">선택된 테마로 표시합니다.</p>' +
+        '<p class="sl-desc">게이지 스타일은 앱 미리보기에, 그래픽 스타일은 테마 화면에 적용됩니다.</p>' +
         '<div style="margin-top:8px">' +
           '<strong style="font-size:clamp(15px,1.3vw,22px)">게이지 스타일</strong>' +
-          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">클러스터 게이지의 스타일을 선택합니다.</p>' +
+          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">계기판 미리보기의 스타일을 선택합니다.</p>' +
           '<div class="sl-seg-group">' +
             '<button type="button" class="sl-seg-btn" data-gauge="Classic" aria-pressed="' + (state.gaugeStyle === 'Classic') + '">Classic</button>' +
             '<button type="button" class="sl-seg-btn" data-gauge="Simple" aria-pressed="' + (state.gaugeStyle === 'Simple') + '">Simple</button>' +
@@ -1991,20 +2658,20 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         '</div>' +
         '<div style="margin-top:14px">' +
           '<strong style="font-size:clamp(15px,1.3vw,22px)">그래픽 스타일</strong>' +
-          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">클러스터 및 홈 화면의 그래픽 스타일을 선택합니다.</p>' +
+          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">홈 화면의 그래픽 스타일을 선택합니다.</p>' +
           '<div class="sl-seg-group">' +
             '<button type="button" class="sl-seg-btn" data-gstyle="A" aria-pressed="' + (state.graphicStyle === 'A') + '">Style A</button>' +
             '<button type="button" class="sl-seg-btn" data-gstyle="B" aria-pressed="' + (state.graphicStyle === 'B') + '">Style B</button>' +
             '<button type="button" class="sl-seg-btn" data-gstyle="C" aria-pressed="' + (state.graphicStyle === 'C') + '">Style C</button>' +
           '</div>' +
         '</div>';
-      panel.querySelectorAll('[data-gauge]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-gauge]'), function (b) {
         b.addEventListener('click', function () {
           state.gaugeStyle = b.getAttribute('data-gauge');
           renderScreenLayoutStage();
         });
       });
-      panel.querySelectorAll('[data-gstyle]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-gstyle]'), function (b) {
         b.addEventListener('click', function () {
           state.graphicStyle = b.getAttribute('data-gstyle');
           shell.setAttribute('data-style', state.graphicStyle);
@@ -2021,36 +2688,53 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       var html = '<p class="sl-desc">대기 화면을 선택합니다.</p>';
       opts.forEach(function (o) {
         html +=
-          '<button type="button" class="sl-radio-row" data-sopt="' + o.id + '" aria-checked="' + (state.standbyMode === o.id) + '">' +
-            '<span class="sl-radio-left"><span class="radio-circle"></span><span>' + o.label + '</span></span>' +
-            (o.gear ? '<span style="color:#77818e">⚙</span>' : '') +
-          '</button>';
+          '<div class="standby-option"><button type="button" class="sl-radio-row" data-sopt="' + o.id + '" aria-checked="' +
+            (state.standbyMode === o.id) + '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + o.label + '</span></span></button>' +
+            (o.gear ? '<button type="button" data-standby-options="' + o.id + '" aria-label="' + o.label + ' 설정">⚙</button>' : '') +
+          '</div>';
       });
+      if (standbyClockOptions) html += '<div class="sl-seg-group standby-clock-style" aria-label="대기 시계 종류">' +
+        '<button type="button" class="sl-seg-btn" data-clock-face="digital" aria-pressed="' + (state.standbyClock === 'digital') +
+        '">디지털</button><button type="button" class="sl-seg-btn" data-clock-face="analog" aria-pressed="' +
+        (state.standbyClock === 'analog') + '">아날로그</button></div>';
       panel.innerHTML = html;
-      panel.querySelectorAll('[data-sopt]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-sopt]'), function (b) {
         b.addEventListener('click', function () {
           state.standbyMode = b.getAttribute('data-sopt');
           renderScreenLayoutStage();
-          showNotice('대기 화면 설정: ' + b.textContent.trim());
+          saveDisplay();
         });
+      });
+      panel.querySelector('[data-standby-options="clock"]').onclick = function () {
+        standbyClockOptions = !standbyClockOptions;
+        renderScreenLayoutStage();
+      };
+      panel.querySelector('[data-standby-options="frame"]').onclick = function () { host('photo-standby'); };
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-clock-face]'), function (b) {
+        b.onclick = function () {
+          state.standbyClock = b.getAttribute('data-clock-face');
+          state.standbyMode = 'clock';
+          saveDisplay();
+          renderScreenLayoutStage();
+        };
       });
     } else {
       var shtml = '<p class="sl-desc">분할 화면의 종류를 선택하고 순서를 변경합니다. \'지도\'는 항상 표시됩니다.</p>';
       state.splitWidgets.forEach(function (w, idx) {
         shtml +=
-          '<div class="sl-check-row' + (w.fixed ? ' is-fixed' : '') + '" aria-checked="' + w.enabled + '">' +
+          '<div class="sl-check-row' + (w.fixed ? ' is-fixed' : '') + '" data-widget-card="' + w.id + '" aria-checked="' + w.enabled + '">' +
             '<button type="button" class="sl-check-left" data-split-toggle="' + idx + '" style="flex:1;text-align:left">' +
               '<span class="check-box"><svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="m3 8 3.5 3.5L13 5"/></svg></span><span>' + w.label + '</span>' +
             '</button>' +
             '<div style="display:flex;align-items:center;gap:8px">' +
               '<button type="button" class="split-mini-btn" data-split-up="' + idx + '" title="위로 이동">▲</button>' +
               '<button type="button" class="split-mini-btn" data-split-dn="' + idx + '" title="아래로 이동">▼</button>' +
-              '<span style="color:#88929f;padding:0 6px">≡</span>' +
+              '<button type="button" data-widget-handle aria-label="' + w.label + ' 순서 변경">≡</button>' +
             '</div>' +
           '</div>';
       });
       panel.innerHTML = shtml;
-      panel.querySelectorAll('[data-split-toggle]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-split-toggle]'), function (b) {
         b.addEventListener('click', function () {
           var i = parseInt(b.getAttribute('data-split-toggle'), 10);
           if (state.splitWidgets[i].fixed) {
@@ -2062,7 +2746,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
           renderSplitWidget();
         });
       });
-      panel.querySelectorAll('[data-split-up]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-split-up]'), function (b) {
         b.addEventListener('click', function () {
           var i = parseInt(b.getAttribute('data-split-up'), 10);
           if (i <= 0) return;
@@ -2073,7 +2757,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
           renderSplitWidget();
         });
       });
-      panel.querySelectorAll('[data-split-dn]').forEach(function (b) {
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-split-dn]'), function (b) {
         b.addEventListener('click', function () {
           var i = parseInt(b.getAttribute('data-split-dn'), 10);
           if (i >= state.splitWidgets.length - 1) return;
@@ -2090,7 +2774,18 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   }
 
   function drawScreenLayoutPreview() {
-    var info = setupCanvas(document.getElementById('sl-preview-canvas'));
+    var canvas = document.getElementById('sl-preview-canvas');
+    var frame = document.getElementById('sl-frame-preview');
+    var caption = document.getElementById('sl-frame-caption');
+    var inFrame = state.slTab === 'frame';
+    frame.hidden = !inFrame || !photo[frameTarget];
+    if (!frame.hidden) frame.src = photo[frameTarget];
+    caption.hidden = !inFrame;
+    caption.textContent = (frameTarget === 'standby' ? '대기 화면' : '분할 화면') +
+      (photo[frameTarget] ? ' 사진' : ' · 선택한 사진 없음');
+    canvas.hidden = !frame.hidden;
+    if (canvas.hidden) return;
+    var info = setupCanvas(canvas);
     if (!info) return;
     var ctx = info.ctx, w = info.w, h = info.h;
     ctx.clearRect(0, 0, w, h);
@@ -2106,17 +2801,45 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       ctx.font = '700 28px sans-serif';
       ctx.fillText('↓↑', w * 0.41, h * 0.75);
     } else if (state.slTab === 'cluster') {
-      ctx.strokeRect(w * 0.30, h * 0.16, w * 0.52, h * 0.46);
-      ctx.fillStyle = '#1a1e24';
-      ctx.fillRect(w * 0.18, h * 0.30, w * 0.52, h * 0.48);
-      ctx.strokeRect(w * 0.18, h * 0.30, w * 0.52, h * 0.48);
-      ctx.fillStyle = '#2bb79b';
-      ctx.font = '700 26px sans-serif';
-      ctx.fillText('⇄', w * 0.40, h * 0.60);
+      ctx.fillStyle = '#142230';
+      ctx.fillRect(w * .11, h * .20, w * .78, h * .59);
+      ctx.strokeRect(w * .11, h * .20, w * .78, h * .59);
+      ctx.strokeStyle = '#70a6c6';
+      var r = Math.min(w * .13, h * .16);
+      if (state.gaugeStyle === 'Classic') {
+        [0.32,0.68].forEach(function (center) {
+          ctx.beginPath();
+          ctx.arc(w * center, h * .55, r, Math.PI * .8, Math.PI * 2.2);
+          ctx.stroke();
+        });
+      } else {
+        ctx.strokeRect(w * .25, h * .60, w * .50, h * .04);
+        ctx.fillStyle = '#70a6c6';
+        ctx.fillRect(w * .25, h * .60, w * .19, h * .04);
+      }
+      ctx.fillStyle = '#d6e7f3';
+      ctx.font = '13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(state.gaugeStyle, w * .5, h * .40);
     } else {
       ctx.fillStyle = '#14181d';
       ctx.fillRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
       ctx.strokeRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
+      if (state.slTab === 'standby' && state.standbyMode === 'clock') {
+        ctx.fillStyle = '#dce3ed';
+        if (state.standbyClock === 'analog') {
+          ctx.beginPath();
+          ctx.arc(w * .5, h * .48, h * .19, 0, Math.PI * 2);
+          ctx.moveTo(w * .5, h * .36);
+          ctx.lineTo(w * .5, h * .48);
+          ctx.lineTo(w * .56, h * .50);
+          ctx.stroke();
+        } else {
+          ctx.font = '22px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(document.getElementById('clock').textContent, w * .5, h * .55);
+        }
+      }
     }
   }
 
@@ -2128,7 +2851,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   function renderSplitWidget() {
     var wrap = document.getElementById('split-widget');
     var handle = document.getElementById('split-toggle-btn');
-    wrap.classList.toggle('is-closed', !state.splitOpen);
+    setClass(wrap, 'is-closed', !state.splitOpen);
     handle.textContent = state.splitOpen ? '›' : '‹';
 
     var enabled = getEnabledSplitWidgets();
@@ -2145,6 +2868,26 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     var tr = state.tracks[state.trackIndex];
     var d = DESTINATIONS[state.dest || 'home'];
 
+    if (livePreview) {
+      box.textContent = '';
+      if (state.splitSubPage === 2 && photo.split) {
+        var image = document.createElement('img');
+        image.src = photo.split;
+        image.alt = '분할 화면 사진';
+        image.className = 'frame-preview';
+        box.appendChild(image);
+      } else if (active.id === 'map') {
+        statusCard(box, 'map', '길안내 정보 없음', '순정 내비에서 경로를 확인할 수 있습니다.',
+          '지도 열기', function () { host('navi'); }).classList.add('split-live-state');
+      } else if (active.id === 'media') {
+        statusCard(box, 'media', tr.title, [tr.artist, tr.cur + ' / ' + tr.dur].filter(Boolean).join(' · '),
+          '미디어 화면', function () { navigateTo('media'); }).classList.add('split-live-state');
+      } else {
+        statusCard(box, 'photo', active.label, '차량 데이터 연결 대기',
+          '위젯 설정', function () { state.slTab = 'split'; navigateTo('screenlayout'); }).classList.add('split-live-state');
+      }
+      return;
+    }
     if (active.id === 'map') {
       var mapPages = [
         '<div><strong style="font-size:19px;color:#53d7c0">' + d.title + '</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">' + d.addr + '</p><p style="color:#9aa5b4;font-size:13px;margin-top:8px">남은 거리 ' + d.dist + ' · 도착 ' + d.eta + '</p></div>',
@@ -2181,8 +2924,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     var slot = document.getElementById('bb-center-slot');
     var tr = state.tracks[state.trackIndex];
 
-    document.getElementById('bb-media-title').textContent = state.playing ? tr.title : 'Media Off';
-    document.getElementById('bb-media-sub').textContent = state.playing ? tr.artist : 'Off';
+    document.getElementById('bb-media-title').textContent = livePreview || state.playing ? tr.title : 'Media Off';
+    document.getElementById('bb-media-sub').textContent = livePreview || state.playing ? tr.artist : 'Off';
     document.getElementById('bb-media-topline').style.width = state.playing ? (tr.pct + '%') : '0%';
     drawAlbumArt(document.getElementById('bb-thumb-canvas'));
 
@@ -2213,7 +2956,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         slot.innerHTML =
           '<div class="bb-pill" style="justify-content:flex-start;gap:12px">' +
             '<span style="color:#9aa5b4">▲</span>' +
-            '<span style="font-size:clamp(14px,1.15vw,19px)">서울 서초구 부근</span>' +
+            '<span style="font-size:16px">' + (livePreview ? '길안내 정보 연결 대기' : '서울 서초구 부근') + '</span>' +
           '</div>';
       }
     } else if (state.page === 'media') {
@@ -2227,12 +2970,17 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       ];
       var shtml = '<div class="bb-icon-tabs" role="tablist">';
       sources.forEach(function (s) {
-        shtml += '<button type="button" class="bb-tab-btn" data-msrc="' + s.id + '" data-tidx="' + s.trackIdx + '" aria-selected="' + (state.mediaSource === s.id) + '">' + s.svg + '</button>';
+        var label = {nature:'자연의 소리',bt:'블루투스',fm:'FM',am:'AM',usb:'USB'}[s.id];
+        shtml += '<button type="button" class="bb-tab-btn" data-msrc="' + s.id + '" data-tidx="' + s.trackIdx + '" aria-label="' + label + '" aria-selected="' + (state.mediaSource === s.id) + '">' + s.svg + '<span class="tab-name">' + label + '</span></button>';
       });
       shtml += '</div>';
       slot.innerHTML = shtml;
-      slot.querySelectorAll('[data-msrc]').forEach(function (b) {
+      Array.prototype.forEach.call(slot.querySelectorAll('[data-msrc]'), function (b) {
         b.addEventListener('click', function () {
+          if (livePreview) {
+            host('source-' + b.getAttribute('data-msrc'));
+            return;
+          }
           state.mediaSource = b.getAttribute('data-msrc');
           state.trackIndex = parseInt(b.getAttribute('data-tidx'), 10);
           state.playing = true;
@@ -2250,13 +2998,15 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       ];
       var phtml = '<div class="bb-icon-tabs" role="tablist">';
       ptabs.forEach(function (p) {
-        phtml += '<button type="button" class="bb-tab-btn phone-active" data-ptab="' + p.id + '" aria-selected="' + (state.phoneTab === p.id) + '">' + p.svg + '</button>';
+        var label = {history:'최근 통화',contacts:'연락처',keypad:'키패드',messages:'메시지',privacy:'프라이버시'}[p.id];
+        phtml += '<button type="button" class="bb-tab-btn phone-active" data-ptab="' + p.id + '" aria-label="' + label + '" aria-selected="' + (state.phoneTab === p.id) + '">' + p.svg + '<span class="tab-name">' + label + '</span></button>';
       });
       phtml += '</div>';
       slot.innerHTML = phtml;
-      slot.querySelectorAll('[data-ptab]').forEach(function (b) {
+      Array.prototype.forEach.call(slot.querySelectorAll('[data-ptab]'), function (b) {
         b.addEventListener('click', function () {
           state.phoneTab = b.getAttribute('data-ptab');
+          renderPhoneStage();
           renderBottomBar();
         });
       });
@@ -2276,7 +3026,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       document.getElementById('navi-turn-label').textContent = d.turn;
     } else {
       document.getElementById('home-map-title').textContent = '지도';
-      document.getElementById('home-map-addr').textContent = '서울시 서초구 부근';
+      document.getElementById('home-map-addr').textContent = livePreview ? '지도 미리보기 연결 대기' : '서울시 서초구 부근';
     }
     var destBtns = document.querySelectorAll('[data-dest]');
     for (var i = 0; i < destBtns.length; i++) {
@@ -2287,7 +3037,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     document.getElementById('home-media-sub').textContent = tr.artist + (tr.album ? ' · ' + tr.album : '');
     document.getElementById('home-media-prog').style.width = tr.pct + '%';
     document.getElementById('standby-track').textContent = tr.title;
-    document.getElementById('standby-artist').textContent = tr.artist + ' · ' + tr.album;
+    document.getElementById('standby-artist').textContent = tr.artist + (tr.album ? ' · ' + tr.album : '');
     document.getElementById('home-play-ico').innerHTML = state.playing
       ? '<path d="M9 6v12M15 6v12"/>'
       : '<path d="m8 6 10 6-10 6z"/>';
@@ -2303,13 +3053,13 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     document.getElementById('bg-toggle-btn').setAttribute('aria-pressed', String(state.bgMode === 'blue'));
 
     if (state.page === 'home') {
-      drawMapCanvas(document.getElementById('home-map-canvas'), false);
+      if (!livePreview) drawMapCanvas(document.getElementById('home-map-canvas'), false);
       drawMediaCardCanvas();
       drawPhoneCardCanvas();
     } else if (state.page === 'apps1' || state.page === 'apps2') {
       renderAppTilesPage();
     } else if (state.page === 'navi') {
-      drawMapCanvas(document.getElementById('detail-map-canvas'), true);
+      if (!livePreview) drawMapCanvas(document.getElementById('detail-map-canvas'), true);
     } else if (state.page === 'media') {
       renderMediaStage();
     } else if (state.page === 'phone') {
@@ -2328,14 +3078,34 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   }
 
   function isDetailPage(p) {
-    return p === 'navi' || p === 'media' || p === 'phone' || p === 'settings' || p === 'screenlayout';
+    return p === 'navi' || p === 'media' || p === 'phone' || p === 'settings' || p === 'screenlayout' || p === 'search' || p === 'memo';
   }
 
   function showPage(next) {
+    clearPageSlide();
+    if (state.page === 'memo' && next !== 'memo' && inVehicle) host('memo-stop');
+    if (next !== 'settings') setClass(shell, 'sound-mode', false);
+    if (next !== 'settings') setClass(shell, 'detail-settings', false);
+    if (next !== 'phone') setClass(shell, 'phone-keypad-mode', false);
+    if (next !== state.page) state.reordering = false;
+    if (next !== 'settings' && next !== 'search') settingsSection = '';
     state.page = next;
+    if (next === 'home') layoutHomeCards();
     var detail = isDetailPage(next);
-    shell.classList.toggle('in-detail', detail);
-    shell.classList.toggle('in-navi', next === 'navi');
+    setClass(shell, 'in-detail', detail);
+    setClass(shell, 'in-navi', next === 'navi');
+    setClass(shell, 'aux-mode', next === 'search' || next === 'memo');
+    var standby = document.getElementById('view-standby');
+    standby.style.backgroundImage = state.standbyMode === 'frame' && photo.standby ? 'url("' + photo.standby + '")' : '';
+    standby.style.backgroundSize = 'cover';
+    standby.style.backgroundPosition = 'center';
+    document.getElementById('standby-date').hidden = state.standbyMode === 'none';
+    var analog = state.standbyMode === 'clock' && state.standbyClock === 'analog';
+    document.getElementById('standby-clock').hidden = state.standbyMode === 'none' || analog;
+    var dial = document.getElementById('standby-dial');
+    if (analog) dial.removeAttribute('hidden');
+    else dial.setAttribute('hidden', '');
+    document.querySelector('.standby-media').hidden = state.standbyMode !== 'frame';
 
     document.getElementById('view-standby').hidden = next !== 'standby';
     document.getElementById('view-home').hidden = next !== 'home';
@@ -2345,7 +3115,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     document.getElementById('home-pager').hidden = detail;
     document.getElementById('detail-bottom-bar').hidden = !detail;
 
-    var showTopSearch = detail && next !== 'navi';
+    var showTopSearch = detail && next !== 'navi' && next !== 'search';
     document.getElementById('profile-btn').hidden = detail;
     document.getElementById('detail-top-title').hidden = !showTopSearch;
     document.getElementById('media-top-tabs').hidden = next !== 'media';
@@ -2353,10 +3123,11 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     document.getElementById('device-switch-btn').hidden = !(next === 'media' || next === 'phone');
 
     var titles = {
-      media: '블루투스 오디오',
+      media: livePreview && state.mediaSource !== 'bt' ? (state.mediaSource === 'usb' ? 'USB 오디오' : '미디어') : '블루투스 오디오',
       phone: '전화',
       settings: '설정',
-      screenlayout: '화면구성'
+      screenlayout: '화면구성',
+      memo: '음성 메모'
     };
     if (titles[next]) {
       document.getElementById('detail-heading-text').textContent = titles[next];
@@ -2367,6 +3138,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     document.getElementById('stage-phone').hidden = next !== 'phone';
     document.getElementById('stage-settings').hidden = next !== 'settings';
     document.getElementById('stage-screenlayout').hidden = next !== 'screenlayout';
+    document.getElementById('stage-search').hidden = next !== 'search';
+    document.getElementById('stage-memo').hidden = next !== 'memo';
 
     var pbars = document.querySelectorAll('.home-pager [data-page]');
     for (var i = 0; i < pbars.length; i++) {
@@ -2381,6 +3154,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       next === 'apps1' ? '다음 페이지 ›' : next === 'apps2' ? '‹ 홈 화면' : '전체 메뉴 ›';
 
     updateAllStatuses();
+    if (next === 'search') renderSearch();
+    if (next === 'memo' && inVehicle) host('memo-refresh');
   }
 
   function navigateTo(next) {
@@ -2393,7 +3168,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   function syncNativeMapSlot() {
     if (!window.K8Host) return;
     var slot = document.getElementById('map-slot');
-    if (state.page !== 'home' || !slot) {
+    if (state.page !== 'home' || !slot || slide) {
       window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
       return;
     }
@@ -2408,10 +3183,14 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   window.K8Home = {
     back: function () {
       if (!document.getElementById('qc-drawer').hidden) {
+        if (qcDraft) { closeQuickEditor(); return; }
         document.getElementById('qc-drawer').hidden = true;
         return;
       }
-      if (state.history.length) {
+      if (state.page === 'settings' && settingsSection) {
+        settingsSection = '';
+        renderSettingsStage();
+      } else if (state.history.length) {
         showPage(state.history.pop());
       } else if (state.page !== 'home') {
         showPage('home');
@@ -2423,26 +3202,293 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
       var note = document.getElementById('map-note');
       if (note) note.hidden = !attached;
       syncNativeMapSlot();
+    },
+    mediaChanged: function (title, artist, playing, position, duration, source) {
+      if (!livePreview) return;
+      trackKnown = playing !== null;
+      state.playing = playing === true;
+      state.mediaSource = source || '';
+      if (state.page === 'media') document.getElementById('detail-heading-text').textContent =
+        source === 'bt' ? '블루투스 오디오' : source === 'usb' ? 'USB 오디오' : '미디어';
+      var track = state.tracks[0];
+      track.title = title || '미디어 정보 대기';
+      track.artist = artist || '';
+      var format = function (ms) {
+        if (!(ms >= 0)) return '—';
+        var seconds = Math.floor(ms / 1000);
+        return Math.floor(seconds / 60) + ':' + ('0' + seconds % 60).slice(-2);
+      };
+      track.cur = format(position);
+      track.dur = format(duration);
+      track.pct = duration > 0 ? Math.max(0, Math.min(100, 100 * position / duration)) : 0;
+      if (isDetailPage(state.page) && state.page !== 'media') {
+        renderBottomBar(); renderSplitWidget();
+      } else if (state.page !== 'apps1' && state.page !== 'apps2') updateAllStatuses();
+    },
+    controlsChanged: function (volume, maxVolume, brightness, bluetooth) {
+      var changed = controls.bluetooth !== bluetooth;
+      controls = { volume:volume, maxVolume:maxVolume, brightness:brightness, bluetooth:bluetooth };
+      state.devices[0] = bluetooth === null ? '블루투스 상태 대기' : bluetooth ? '블루투스 켜짐' : '블루투스 꺼짐';
+      document.getElementById('qc-device-status').textContent = state.devices[0];
+      document.getElementById('top-bluetooth-label').textContent =
+        bluetooth === null ? 'BT 상태 대기' : bluetooth ? 'BT 켜짐' : 'BT 꺼짐';
+      document.querySelector('[data-qc="connectivity"]').setAttribute('aria-pressed', String(bluetooth === true));
+      document.querySelector('[data-qc="quietMode"]').setAttribute('aria-pressed', String(volume === 0));
+      if (changed && state.page === 'settings' && settingsSection === 'devices') renderSettingsControls();
+      else updateControlLabels();
+      var label = document.getElementById('phone-device-label');
+      if (label) label.textContent = state.devices[0];
+    },
+    pairedDevicesChanged: function (names) {
+      pairedDevices = Array.isArray(names) ? names : null;
+      if (state.page === 'settings' && settingsSection === 'devices') updateControlLabels();
+    },
+    memosChanged: function (mode, active, rows, free) {
+      var recording = mode === 'recording';
+      document.getElementById('memo-record').disabled = recording;
+      document.getElementById('memo-stop').disabled = mode === 'idle';
+      document.getElementById('memo-status').textContent = recording ? '녹음 중' : '남은 저장 공간 ' + free + ' MB';
+      var list = document.getElementById('memo-list');
+      list.innerHTML = '';
+      if (!rows.length) list.textContent = '저장된 음성 메모가 없습니다.';
+      rows.forEach(function (id) {
+        var card = document.createElement('article');
+        card.className = 'memo-card';
+        var play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'memo-entry';
+        play.disabled = recording;
+        play.setAttribute('aria-pressed', String(active === id));
+        var date = new Date(Number(id));
+        play.textContent = active === id ? '■ 재생 정지' : '▶ 음성 메모';
+        var when = document.createElement('small');
+        when.textContent = date.toLocaleString();
+        play.appendChild(when);
+        play.onclick = function () { host(active === id ? 'memo-stop' : 'memo-play:' + id); };
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'memo-delete';
+        remove.textContent = '삭제';
+        remove.disabled = recording;
+        remove.onclick = function () { host('memo-delete:' + id); };
+        var save = document.createElement('button');
+        save.type = 'button';
+        save.textContent = '내보내기';
+        save.disabled = recording;
+        save.onclick = function () { host('memo-export:' + id); };
+        var actions = document.createElement('div');
+        actions.className = 'memo-actions';
+        actions.appendChild(save);
+        actions.appendChild(remove);
+        card.appendChild(play);
+        card.appendChild(actions);
+        list.appendChild(card);
+      });
+    },
+    photoChanged: function (target, value) {
+      if (!Object.prototype.hasOwnProperty.call(photo, target)) return;
+      photo[target] = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
+      if (state.page === 'standby') showPage('standby');
+      if (state.page === 'screenlayout' && state.slTab === 'frame') renderScreenLayoutStage();
+      if (state.page === 'settings' && settingsSection === 'profile') renderSettingsControls();
+      if (isDetailPage(state.page)) renderSplitWidget();
     }
   };
 
   /* ====== Wire Event Listeners ====== */
+  var searchInput = document.getElementById('theme-search');
+  var searchItems = [
+    ['지도', '내비게이션 길안내 경로 목적지', 'feature', function () { navigateTo('navi'); }],
+    ['우리 집', '집 주소 등록 지점', 'feature', function () { host('nav-home'); }],
+    ['회사', '직장 주소 등록 지점', 'feature', function () { host('nav-work'); }],
+    ['미디어', '음악 블루투스 USB FM AM 라디오', 'feature', function () { navigateTo('media'); }],
+    ['전화', '통화 연락처 메시지 키패드', 'feature', function () { navigateTo('phone'); }],
+    ['음성 메모', '녹음 재생', 'feature', function () { navigateTo('memo'); }],
+    ['폰 프로젝션', 'Android Auto Apple CarPlay 안드로이드 오토 카플레이', 'feature', function () { host('projection'); }],
+    ['Kia Connect', '기아 커넥트 계정', 'feature', function () { host('connect'); }],
+    ['차량', '순정 운전자 보조 드라이브 모드', 'setting', function () { openSettingsSection('vehicle'); }],
+    ['일반', '날짜 시간 표기 언어 키보드', 'setting', function () { openSettingsSection('general'); }],
+    ['내비게이션 설정', '지도 표시 안내 경로 옵션', 'setting', function () { openSettingsSection('navi'); }],
+    ['사운드', '음량 음소거 이퀄라이저', 'setting', function () { openSettingsSection('sound'); }],
+    ['기기 연결', '블루투스 페어링 등록 기기', 'setting', openDeviceSettings],
+    ['사용자 프로필', '운전자 이름 사진 게스트', 'setting', function () { openSettingsSection('profile'); }],
+    ['음성인식', '호출어 명령', 'setting', function () { openSettingsSection('voice'); }],
+    ['화면구성', '분할 위젯 클러스터 디지털 액자 대기 화면', 'setting', function () { navigateTo('screenlayout'); }],
+    ['디스플레이', '화면 밝기 조절', 'setting', function () { openSettingsSection('display'); }]
+  ];
+
+  function renderSearch() {
+    var query = searchInput.value.trim();
+    var result = document.getElementById('search-results');
+    result.innerHTML = '';
+    function row(text, onclick) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'detail-settings-row';
+      btn.textContent = text;
+      btn.onclick = onclick;
+      result.appendChild(btn);
+    }
+    if (!query && searchRecent.length) {
+      var recent = document.createElement('h2');
+      recent.textContent = '최근 검색';
+      result.appendChild(recent);
+      searchRecent.forEach(function (term) {
+        row(term, function () { searchInput.value = term; keyBuffer.length = 0; renderSearch(); });
+      });
+      return;
+    }
+    var terms = query.toLowerCase().split(/\s+/);
+    searchItems.forEach(function (item) {
+      if (searchCategory !== 'all' && searchCategory !== item[2]) return;
+      var text = (item[0] + ' ' + item[1]).toLowerCase();
+      if (!terms.every(function (term) { return text.indexOf(term) >= 0; })) return;
+      row(item[0], function () {
+        if (query) {
+          searchRecent = [query].concat(searchRecent.filter(function (old) { return old !== query; })).slice(0, 6);
+          saveDisplay();
+        }
+        item[3]();
+      });
+    });
+    if (!result.childNodes.length) result.textContent = '검색 결과가 없습니다.';
+  }
+
+  var searchKeyboard = document.getElementById('search-keyboard');
+  var keyboardMode = 'ko';
+  var keyboardShift = false;
+  var keyBuffer = [];
+  var keyboardPrefix = '';
+
+  function composeSearch(keys) {
+    var initial = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+    var medial = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+    var trailing = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+    var vowels = {'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ'};
+    var endings = {'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ',
+      'ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ'};
+    var split = {};
+    Object.keys(endings).forEach(function (pair) { split[endings[pair]] = pair; });
+    var output = '', a = '', b = '', c = '';
+    function flush() {
+      output += a && b ? String.fromCharCode(44032 + (initial.indexOf(a) * 21 + medial.indexOf(b)) * 28 + trailing.indexOf(c || ' ')) : a || b;
+      a = b = c = '';
+    }
+    keys.forEach(function (key) {
+      if (medial.indexOf(key) >= 0) {
+        if (c) {
+          var pair = split[c] || c;
+          c = pair.slice(0, -1);
+          flush();
+          a = pair.slice(-1); b = key;
+        } else if (b && vowels[b + key]) b = vowels[b + key];
+        else {
+          if (b) flush();
+          b = key;
+        }
+      } else if (initial.indexOf(key) >= 0) {
+        if (a && b && !c && trailing.indexOf(key) > 0) c = key;
+        else if (c && endings[c + key]) c = endings[c + key];
+        else { flush(); a = key; }
+      } else {
+        flush();
+        output += key;
+      }
+    });
+    flush();
+    return output;
+  }
+
+  function renderSearchKeyboard() {
+    var letters = keyboardMode === 'latin' ? ['qwertyuiop','asdfghjkl','zxcvbnm'] : ['ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔ','ㅁㄴㅇㄹㅎㅗㅓㅏㅣ','ㅋㅌㅊㅍㅠㅜㅡ'];
+    if (keyboardShift) letters = keyboardMode === 'latin' ? letters.map(function (row) { return row.toUpperCase(); }) :
+      ['ㅃㅉㄸㄲㅆㅛㅕㅑㅒㅖ',letters[1],letters[2]];
+    var rows = ['1234567890'].concat(letters).map(function (row) { return row.split(''); });
+    rows[3].push('⌫');
+    rows.push(['⇧','-', '␣', keyboardMode === 'ko' ? 'ABC' : '한글','⚙','확인']);
+    searchKeyboard.innerHTML = '';
+    rows.forEach(function (keys) {
+      var row = document.createElement('div');
+      row.className = 'search-key-row';
+      keys.forEach(function (key) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = key;
+        button.setAttribute('data-key', key);
+        if (key === '␣') { button.className = 'search-space'; button.setAttribute('aria-label', '띄어쓰기'); }
+        if (key === '⌫') button.setAttribute('aria-label', '마지막 글자 지우기');
+        if (key === '⚙') button.setAttribute('aria-label', '기기 키보드 설정');
+        if (key === '⇧') button.setAttribute('aria-pressed', String(keyboardShift));
+        row.appendChild(button);
+      });
+      searchKeyboard.appendChild(row);
+    });
+  }
+
+  searchKeyboard.onclick = function (event) {
+    var key = event.target.getAttribute('data-key');
+    if (!key) return;
+    if (key === '⇧') { keyboardShift = !keyboardShift; renderSearchKeyboard(); return; }
+    if (key === 'ABC' || key === '한글') {
+      keyboardMode = key === 'ABC' ? 'latin' : 'ko';
+      keyboardShift = false;
+      renderSearchKeyboard();
+      return;
+    }
+    if (key === '⚙') { host('settings-keyboard'); return; }
+    if (key === '확인') { searchInput.blur(); renderSearch(); return; }
+    if (!keyBuffer.length) keyboardPrefix = searchInput.value;
+    if (key === '⌫') {
+      if (keyBuffer.length) keyBuffer.pop();
+      else keyboardPrefix = keyboardPrefix.slice(0, -1);
+    } else {
+      keyBuffer.push(key === '␣' ? ' ' : key);
+    }
+    var value = keyboardPrefix + composeSearch(keyBuffer);
+    if (value.length > searchInput.maxLength || keyBuffer.length > 240) { keyBuffer.pop(); return; }
+    searchInput.value = value;
+    if (keyboardShift) { keyboardShift = false; renderSearchKeyboard(); }
+    renderSearch();
+  };
+
+  renderSearchKeyboard();
+  document.getElementById('detail-search-btn').onclick = function () { navigateTo('search'); };
+  searchInput.oninput = function () { keyBuffer.length = 0; renderSearch(); };
+  searchInput.onkeydown = function (e) { if (e.keyCode === 13 && !e.isComposing) this.blur(); };
+  document.getElementById('search-clear').onclick = function () { searchInput.value = ''; keyBuffer.length = 0; renderSearch(); };
+  document.getElementById('search-filter').onclick = function () {
+    var categories = document.getElementById('search-categories');
+    categories.hidden = !categories.hidden;
+    this.setAttribute('aria-expanded', String(!categories.hidden));
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-search-category]'), function (button) {
+    button.onclick = function () {
+      searchCategory = button.getAttribute('data-search-category');
+      Array.prototype.forEach.call(button.parentNode.children, function (child) { child.setAttribute('aria-pressed', String(child === button)); });
+      renderSearch();
+    };
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#stage-search [data-host]'), function (button) {
+    button.onclick = function () { host(button.getAttribute('data-host')); };
+  });
+  document.getElementById('memo-record').onclick = function () { host('memo-record'); };
+  document.getElementById('memo-stop').onclick = function () { host('memo-stop'); };
+
   document.getElementById('profile-btn').addEventListener('click', function () {
-    state.driverIndex = (state.driverIndex + 1) % state.drivers.length;
-    updateAllStatuses();
-    showNotice('사용자 프로필: ' + state.drivers[state.driverIndex]);
+    openProfilePicker();
   });
 
   document.getElementById('device-switch-btn').addEventListener('click', function () {
+    if (livePreview) { openDeviceSettings(); return; }
     state.deviceIndex = (state.deviceIndex + 1) % state.devices.length;
     updateAllStatuses();
     showNotice('연결 기기 전환: ' + state.devices[state.deviceIndex]);
   });
 
-  document.querySelectorAll('[data-media-tab]').forEach(function (tab) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-media-tab]'), function (tab) {
     tab.addEventListener('click', function () {
       state.mediaTab = tab.getAttribute('data-media-tab');
-      document.querySelectorAll('[data-media-tab]').forEach(function (t) {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-media-tab]'), function (t) {
         t.setAttribute('aria-selected', String(t === tab));
       });
       state.mediaView = state.mediaTab === 'playlist' ? 'list' : 'single';
@@ -2451,20 +3497,95 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   });
 
   var qcDrawer = document.getElementById('qc-drawer');
+  var qcGrid = document.getElementById('qc-grid');
+  var qcEditor = document.getElementById('qc-editor');
+  var qcTiles = {};
+  Array.prototype.forEach.call(qcGrid.querySelectorAll('[data-qc]'), function (tile) {
+    qcTiles[tile.getAttribute('data-qc')] = tile;
+  });
+  function layoutQuickControls() {
+    var columns = qcGrid.querySelectorAll('.qc-col');
+    var visible = 0;
+    qcOrder.forEach(function (id) {
+      var tile = qcTiles[id];
+      tile.hidden = qcHidden.indexOf(id) >= 0;
+      columns[Math.min(2, Math.floor(visible * 3 / Math.max(1,qcOrder.length - qcHidden.length)))].appendChild(tile);
+      if (!tile.hidden) visible += 1;
+    });
+  }
+  function showQuickEditor() {
+    qcDraft = { order:qcOrder.slice(), hidden:qcHidden.slice() };
+    qcGrid.hidden = true;
+    qcEditor.hidden = false;
+    document.getElementById('qc-heading').textContent = '퀵 컨트롤 편집';
+    renderQuickEditor();
+  }
+  function closeQuickEditor() {
+    qcDraft = null;
+    qcGrid.hidden = false;
+    qcEditor.hidden = true;
+    document.getElementById('qc-heading').textContent = '퀵 컨트롤';
+  }
+  function renderQuickEditor() {
+    var columns = ['', '', ''];
+    qcDraft.order.forEach(function (id, i) {
+      var column = Math.floor(i * columns.length / qcDraft.order.length);
+      columns[column] += '<div class="qc-edit-row' + (qcTiles[id].classList.contains('slim') ? ' slim' : '') +
+        '"><label><input type="checkbox" data-qc-visible="' + id + '"' +
+        (qcDraft.hidden.indexOf(id) === -1 ? ' checked' : '') + '>' + qcTiles[id].querySelector('strong').textContent +
+        '</label><button type="button" aria-label="앞으로 이동" data-qc-step="' + (i - 1) +
+        '" data-qc-index="' + i + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+        '<button type="button" aria-label="뒤로 이동" data-qc-step="' + (i + 1) +
+        '" data-qc-index="' + i + '"' + (i === qcDraft.order.length - 1 ? ' disabled' : '') + '>↓</button></div>';
+    });
+    qcEditor.innerHTML = '<div class="qc-edit-list"><div class="qc-col">' + columns.join('</div><div class="qc-col">') +
+      '</div></div><div class="qc-edit-actions"><button type="button" data-qc-edit="reset">초기화</button>' +
+      '<button type="button" data-qc-edit="cancel">취소</button>' +
+      '<button type="button" data-qc-edit="save">완료</button></div>';
+  }
+  qcEditor.addEventListener('change', function (ev) {
+    var id = ev.target.getAttribute('data-qc-visible');
+    if (!qcDraft || !id) return;
+    if (ev.target.checked) qcDraft.hidden = qcDraft.hidden.filter(function (item) { return item !== id; });
+    else if (qcDraft.hidden.indexOf(id) < 0) qcDraft.hidden.push(id);
+  });
+  qcEditor.addEventListener('click', function (ev) {
+    if (!qcDraft) return;
+    var target = ev.target;
+    var action = target.getAttribute('data-qc-edit');
+    if (action === 'save') {
+      qcOrder = qcDraft.order; qcHidden = qcDraft.hidden;
+      layoutQuickControls(); saveDisplay(); closeQuickEditor();
+    } else if (action === 'cancel') closeQuickEditor();
+    else if (action === 'reset') {
+      qcDraft = { order:qcDefaults.slice(), hidden:[] };
+      renderQuickEditor();
+    } else if (target.hasAttribute('data-qc-step') && !target.disabled) {
+      var from = Number(target.getAttribute('data-qc-index'));
+      var to = Number(target.getAttribute('data-qc-step'));
+      var moved = qcDraft.order[from];
+      qcDraft.order[from] = qcDraft.order[to];
+      qcDraft.order[to] = moved;
+      renderQuickEditor();
+    }
+  });
+  layoutQuickControls();
   document.getElementById('qc-open-btn').addEventListener('click', function () {
     qcDrawer.hidden = false;
   });
   document.getElementById('qc-close-top').addEventListener('click', function () {
+    closeQuickEditor();
     qcDrawer.hidden = true;
   });
   document.getElementById('qc-close-bottom').addEventListener('click', function () {
+    closeQuickEditor();
     qcDrawer.hidden = true;
   });
   document.getElementById('qc-settings-btn').addEventListener('click', function () {
-    qcDrawer.hidden = true;
-    navigateTo('settings');
+    if (qcDraft) closeQuickEditor();
+    else showQuickEditor();
   });
-  qcDrawer.querySelectorAll('[data-qc]').forEach(function (btn) {
+  Array.prototype.forEach.call(qcDrawer.querySelectorAll('[data-qc]'), function (btn) {
     btn.addEventListener('click', function () {
       var act = btn.getAttribute('data-qc');
       if (act === 'displayOff') {
@@ -2475,10 +3596,21 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         navigateTo('screenlayout');
       } else if (act === 'soundSettings') {
         qcDrawer.hidden = true;
-        navigateTo('media');
+        soundSection = 'volume';
+        settingsSection = 'sound';
+        navigateTo('settings');
+        renderSettingsStage();
+      } else if (act === 'quietMode' && livePreview) {
+        host('volume-mute');
+      } else if (act === 'connectivity') {
+        qcDrawer.hidden = true;
+        openDeviceSettings();
+      } else if (act === 'voiceMemo') {
+        qcDrawer.hidden = true;
+        navigateTo('memo');
       } else if (act === 'driverSwitch') {
-        state.driverIndex = (state.driverIndex + 1) % state.drivers.length;
-        updateAllStatuses();
+        qcDrawer.hidden = true;
+        openProfilePicker();
       } else {
         var cur = btn.getAttribute('aria-pressed') === 'true';
         btn.setAttribute('aria-pressed', String(!cur));
@@ -2486,17 +3618,18 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     });
   });
 
-  document.querySelectorAll('[data-open]').forEach(function (el) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (el) {
     el.addEventListener('click', function () {
       var target = el.getAttribute('data-open');
       navigateTo(target);
     });
   });
 
-  document.querySelectorAll('[data-dest]').forEach(function (btn) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-dest]'), function (btn) {
     btn.addEventListener('click', function (ev) {
       ev.stopPropagation();
       var d = btn.getAttribute('data-dest');
+      if (livePreview) { host(d === 'home' ? 'nav-home' : 'nav-work'); return; }
       state.dest = state.dest === d ? 'arirang' : d;
       updateAllStatuses();
       showNotice(DESTINATIONS[state.dest].title + ' 경로가 설정되었습니다.');
@@ -2505,21 +3638,18 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
 
   document.getElementById('home-play-btn').addEventListener('click', function (ev) {
     ev.stopPropagation();
-    state.playing = !state.playing;
-    updateAllStatuses();
+    togglePlay();
   });
   document.getElementById('home-source-btn').addEventListener('click', function (ev) {
     ev.stopPropagation();
+    if (livePreview) { host('media'); return; }
     state.trackIndex = (state.trackIndex + 1) % state.tracks.length;
     state.playing = true;
     updateAllStatuses();
   });
 
   document.getElementById('navi-search-btn').addEventListener('click', function () {
-    var order = ['arirang', 'home', 'work', null];
-    var idx = (order.indexOf(state.dest) + 1) % order.length;
-    state.dest = order[idx];
-    updateAllStatuses();
+    navigateTo('search');
   });
   document.getElementById('navi-viewmode-btn').addEventListener('click', function () {
     var modes = ['3D', '2D', 'N'];
@@ -2544,7 +3674,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     showNotice('순정 내비게이션 축척 연동');
   });
 
-  document.querySelectorAll('[data-mview]').forEach(function (b) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-mview]'), function (b) {
     b.addEventListener('click', function () {
       state.mediaView = b.getAttribute('data-mview');
       renderMediaStage();
@@ -2555,16 +3685,22 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     renderMediaStage();
   });
   function prevTrack() {
+    if (livePreview) { host('media-prev'); return; }
     state.trackIndex = (state.trackIndex - 1 + state.tracks.length) % state.tracks.length;
     state.playing = true;
     updateAllStatuses();
   }
   function nextTrack() {
+    if (livePreview) { host('media-next'); return; }
     state.trackIndex = (state.trackIndex + 1) % state.tracks.length;
     state.playing = true;
     updateAllStatuses();
   }
   function togglePlay() {
+    if (livePreview) {
+      host(!trackKnown ? 'media-toggle' : state.playing ? 'media-pause' : 'media-play');
+      return;
+    }
     state.playing = !state.playing;
     updateAllStatuses();
   }
@@ -2575,6 +3711,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   document.getElementById('media-play-btn').addEventListener('click', togglePlay);
   document.getElementById('list-play-btn').addEventListener('click', togglePlay);
   document.getElementById('media-scrub-bar').addEventListener('click', function (ev) {
+    if (livePreview) { showNotice('순정 플레이어의 탐색 기능은 연결 대기입니다.'); return; }
     var rect = this.getBoundingClientRect();
     var pct = Math.max(0, Math.min(100, Math.round(((ev.clientX - rect.left) / rect.width) * 100)));
     state.tracks[state.trackIndex].pct = pct;
@@ -2586,7 +3723,7 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     renderSettingsStage();
   });
 
-  document.querySelectorAll('[data-sl-tab]').forEach(function (t) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-sl-tab]'), function (t) {
     t.addEventListener('click', function () {
       state.slTab = t.getAttribute('data-sl-tab');
       renderScreenLayoutStage();
@@ -2622,14 +3759,14 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     state.splitSubPage = (state.splitSubPage + 1) % 3;
     renderSplitWidget();
   });
-  document.querySelectorAll('[data-sdot]').forEach(function (d) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-sdot]'), function (d) {
     d.addEventListener('click', function () {
       state.splitSubPage = parseInt(d.getAttribute('data-sdot'), 10);
       renderSplitWidget();
     });
   });
 
-  document.querySelectorAll('.home-pager [data-page]').forEach(function (b) {
+  Array.prototype.forEach.call(document.querySelectorAll('.home-pager [data-page]'), function (b) {
     b.addEventListener('click', function () {
       showPage(b.getAttribute('data-page'));
     });
@@ -2644,10 +3781,11 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
     else showPage('home');
   });
   document.getElementById('reorder-toggle-btn').addEventListener('click', function () {
-    state.reordering = !state.reordering;
+    if (!state.reordering) { showNotice('카드를 1초간 누른 뒤 옮기세요.'); return; }
+    state.reordering = false;
     this.setAttribute('aria-pressed', String(state.reordering));
     renderAppTilesPage();
-    showNotice(state.reordering ? '타일 화살표 또는 드래그로 아이콘 순서를 변경하세요.' : '아이콘 재배치가 완료되었습니다.');
+    showNotice('아이콘 재배치가 완료되었습니다.');
   });
   document.getElementById('bg-toggle-btn').addEventListener('click', function () {
     state.bgMode = state.bgMode === 'blue' ? 'dark' : 'blue';
@@ -2667,44 +3805,314 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   });
   document.getElementById('bb-media-btn').addEventListener('click', function () {
     if (state.page === 'media') {
-      state.playing = !state.playing;
-      updateAllStatuses();
+      togglePlay();
     } else {
       navigateTo('media');
     }
   });
+  document.getElementById('theme-settings-detail').addEventListener('click', function (event) {
+    var button = event.target;
+    while (button !== event.currentTarget && button.tagName !== 'BUTTON') button = button.parentNode;
+    if (button === event.currentTarget) return;
+    var action = button.getAttribute('data-host');
+    if (action) host(action);
+    else if (button.hasAttribute('data-clock')) {
+      state.clock24 = button.getAttribute('data-clock') === '24';
+      saveDisplay();
+      renderSettingsControls();
+      document.querySelector('[data-clock="' + (state.clock24 ? '24' : '12') + '"]').focus();
+    } else if (button.hasAttribute('data-device-section')) {
+      deviceSection = button.getAttribute('data-device-section');
+      renderSettingsControls();
+      document.querySelector('[data-device-section="' + deviceSection + '"]').focus();
+    } else if (button.hasAttribute('data-display')) {
+      displaySection = button.getAttribute('data-display');
+      renderSettingsControls();
+      document.querySelector('[data-display="' + displaySection + '"]').focus();
+    } else if (button.hasAttribute('data-sound-section')) {
+      soundSection = button.getAttribute('data-sound-section');
+      renderSettingsControls();
+      document.querySelector('[data-sound-section="' + soundSection + '"]').focus();
+    }
+    else if (button.hasAttribute('data-driver')) {
+      profileSelected = Number(button.getAttribute('data-driver'));
+      renderSettingsControls();
+    } else {
+      var local = button.getAttribute('data-local');
+      if (local === 'profile-detail' || local === 'profile-picker') {
+        profileMode = local === 'profile-picker' ? 'picker' : 'detail';
+        profileSelected = state.driverIndex;
+        editingProfileName = false;
+        renderSettingsControls();
+      } else if (local === 'profile-name') {
+        editingProfileName = !editingProfileName;
+        renderSettingsControls();
+        if (editingProfileName) document.getElementById('theme-profile-name').focus();
+      } else if (local === 'profile-confirm') {
+        state.driverIndex = profileSelected;
+        saveDisplay();
+        showPage('home');
+        state.history.length = 0;
+      } else if (local === 'profile-save') {
+        var name = document.getElementById('theme-profile-name').value.trim();
+        if (!name) { showNotice('프로필 이름을 입력하세요.'); return; }
+        state.drivers[state.driverIndex] = name.slice(0,20);
+        editingProfileName = false;
+        saveDisplay();
+        updateAllStatuses();
+      } else if (local === 'toggle-warmth') {
+        state.warmth.enabled = !state.warmth.enabled;
+        saveDisplay();
+        updateClock();
+        renderSettingsControls();
+      } else if (local === 'open-layout') navigateTo('screenlayout');
+      else if (local === 'settings-back') window.K8Home.back();
+    }
+  });
+  document.addEventListener('click', function () { window.setTimeout(saveDisplay, 0); }, true);
 
   /* ====== Touch & Pointer Gestures ====== */
   var gesture = null;
   var homeOrder = ['standby', 'home', 'apps1', 'apps2'];
+  var deck = document.getElementById('deck');
+  var slide = null;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  document.addEventListener('pointerdown', function (ev) {
-    if (!ev.isPrimary || ev.button !== 0) return;
-    var inSplit = document.getElementById('split-card').contains(ev.target);
-    var fromTop = ev.clientY < 48;
+  var suppressClick = false;
+  function cardAt(node) {
+    while (node && node !== deck && node.nodeType === 1) {
+      if (node.hasAttribute('data-idx') || node.hasAttribute('data-card') ||
+          node.hasAttribute('data-qc') || node.hasAttribute('data-widget-card')) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function finishHold(g, ev) {
+    if (g.copy) document.body.removeChild(g.copy);
+    if (g.targetCard) g.targetCard.classList.remove('card-target');
+    if (!g.held) return false;
+    var target = ev && cardAt(document.elementFromPoint(ev.clientX, ev.clientY));
+    g.card.classList.remove('card-held');
+    var quickId = g.card.getAttribute('data-qc');
+    var widgetId = g.card.getAttribute('data-widget-card');
+    if (quickId || widgetId) {
+      var targetId = target && target.getAttribute(quickId ? 'data-qc' : 'data-widget-card');
+      if (targetId && targetId !== (quickId || widgetId)) {
+        if (quickId) {
+          qcOrder.splice(qcOrder.indexOf(targetId), 0, qcOrder.splice(qcOrder.indexOf(quickId), 1)[0]);
+          layoutQuickControls();
+        } else {
+          var widgetIds = state.splitWidgets.map(function (item) { return item.id; });
+          var oldIndex = widgetIds.indexOf(widgetId);
+          var newIndex = widgetIds.indexOf(targetId);
+          state.splitWidgets.splice(newIndex, 0, state.splitWidgets.splice(oldIndex, 1)[0]);
+          renderScreenLayoutStage(); renderSplitWidget();
+        }
+        saveDisplay();
+      }
+      return true;
+    }
+    if (target && target !== g.card && g.card.hasAttribute('data-idx') === target.hasAttribute('data-idx')) {
+      var value = g.card.getAttribute('data-card');
+      var order = value ? state.homeCards : state.appTiles;
+      var from = value ? order.indexOf(value) : Number(g.card.getAttribute('data-idx'));
+      var to = value ? order.indexOf(target.getAttribute('data-card')) : Number(target.getAttribute('data-idx'));
+      if (from >= 0 && to >= 0 && from !== to) {
+        order.splice(to, 0, order.splice(from, 1)[0]);
+        saveDisplay();
+        showPage(state.page);
+        showNotice('카드 위치를 저장했습니다.');
+      }
+    } else if (ev && g.card.hasAttribute('data-idx')) {
+      state.reordering = true;
+      document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', 'true');
+      renderAppTilesPage();
+    }
+    return true;
+  }
+
+  function panelFor(page) {
+    return document.getElementById(page === 'apps1' || page === 'apps2' ? 'view-apps' : 'view-' + page);
+  }
+
+  function clearPageSlide() {
+    if (!slide) return;
+    window.clearTimeout(slide.timer);
+    window.cancelAnimationFrame(slide.frame);
+    slide.current.style.transform = slide.current.style.webkitTransform = '';
+    slide.current.style.transition = slide.current.style.webkitTransition = '';
+    deck.removeChild(slide.preview);
+    deck.classList.remove('is-sliding');
+    slide = null;
+  }
+
+  function offsetPanel(panel, x) {
+    panel.style.webkitTransform = panel.style.transform = 'translate3d(' + x + 'px,0,0)';
+  }
+
+  function drawHeldCard(g, dx, dy) {
+    if (!g.copy) {
+      var rect = g.card.getBoundingClientRect();
+      var art = g.card.querySelector('canvas');
+      g.copy = g.card.cloneNode(true);
+      g.copy.setAttribute('aria-hidden', 'true');
+      g.copy.classList.remove('card-held');
+      g.copy.classList.add('card-drag-copy');
+      Array.prototype.forEach.call(g.copy.querySelectorAll('[id]'), function (el) { el.removeAttribute('id'); });
+      Array.prototype.forEach.call(g.copy.querySelectorAll('button'), function (button) { button.tabIndex = -1; });
+      g.copy.style.left = rect.left + 'px';
+      g.copy.style.top = rect.top + 'px';
+      g.copy.style.width = rect.width + 'px';
+      g.copy.style.height = rect.height + 'px';
+      if (art && art.width && art.height) g.copy.querySelector('canvas').getContext('2d').drawImage(art, 0, 0);
+      document.body.appendChild(g.copy);
+    }
+    g.copy.style.webkitTransform = g.copy.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0)';
+  }
+
+  function createSlide(next, direction) {
+    clearPageSlide();
+    var real = panelFor(next);
+    var preview = real.cloneNode(true);
+    preview.removeAttribute('id');
+    preview.hidden = false;
+    preview.setAttribute('aria-hidden','true');
+    preview.classList.add('pager-preview');
+    Array.prototype.forEach.call(preview.querySelectorAll('[id]'), function (node) { node.removeAttribute('id'); });
+    Array.prototype.forEach.call(preview.querySelectorAll('button'), function (button) { button.tabIndex = -1; });
+    var width = deck.clientWidth;
+    offsetPanel(preview, direction * width);
+    deck.appendChild(preview);
+    deck.classList.add('is-sliding');
+    if (next === 'apps1' || next === 'apps2') renderAppTilesPage(preview, next);
+    else Array.prototype.forEach.call(preview.querySelectorAll('canvas'), function (canvas, i) {
+      var original = real.querySelectorAll('canvas')[i];
+      if (original && original.width && original.height) canvas.getContext('2d').drawImage(original, 0, 0);
+    });
+    slide = { next:next, direction:direction, width:width, current:panelFor(state.page), preview:preview, offset:0 };
+    syncNativeMapSlot();
+  }
+
+  function moveSlide(x) {
+    offsetPanel(slide.current, x);
+    offsetPanel(slide.preview, x + slide.direction * slide.width);
+    slide.offset = x;
+  }
+
+  function settleSlide(commit, velocity) {
+    if (!slide) return;
+    var pending = slide;
+    var end = commit ? -pending.direction * pending.width : 0;
+    var remaining = Math.abs(end - pending.offset);
+    var ms = Math.round(Math.max(130, Math.min(360, remaining / Math.max(.85, Math.abs(velocity)))));
+    if (reducedMotion || !remaining) {
+      if (commit) showPage(pending.next);
+      else { clearPageSlide(); syncNativeMapSlot(); }
+      return;
+    }
+    pending.settling = true;
+    pending.frame = window.requestAnimationFrame(function () {
+      var transition = ms + 'ms cubic-bezier(.2,.75,.3,1)';
+      pending.current.style.transition = pending.preview.style.transition = 'transform ' + transition;
+      pending.current.style.webkitTransition = pending.preview.style.webkitTransition = '-webkit-transform ' + transition;
+      moveSlide(end);
+      pending.timer = window.setTimeout(function () {
+        if (commit) showPage(pending.next);
+        else { clearPageSlide(); syncNativeMapSlot(); }
+      }, ms);
+    });
+  }
+
+  function beginGesture(ev) {
+    if (gesture) window.clearTimeout(gesture.holdTimer);
+    if (slide) clearPageSlide();
+    suppressClick = false;
     gesture = {
-      id: ev.pointerId,
       x: ev.clientX,
       y: ev.clientY,
-      inSplit: inSplit,
-      fromTop: fromTop
+      target: ev.target,
+      inSplit: document.getElementById('split-card').contains(ev.target),
+      fromTop: ev.clientY < 48,
+      deck: deck.contains(ev.target),
+      lastX: ev.clientX,
+      lastAt: Date.now(),
+      speed: 0
     };
-  });
-
-  window.addEventListener('pointerup', function (ev) {
-    if (!gesture || gesture.id !== ev.pointerId) return;
     var g = gesture;
+    var card = cardAt(ev.target);
+    var fromControl = ev.target.closest ? ev.target.closest('.circle-btn, .reorder-btn') : closestMove(ev.target);
+    var stacked = window.innerWidth <= 650 && window.innerHeight > window.innerWidth;
+    var widgetHandle = ev.target.hasAttribute && ev.target.hasAttribute('data-widget-handle');
+    if (card && !fromControl && (!card.hasAttribute('data-widget-card') || widgetHandle) &&
+        (!stacked || !card.hasAttribute('data-card'))) {
+      g.card = card;
+      g.holdTimer = window.setTimeout(function () {
+        if (gesture !== g || !document.documentElement.contains(card)) return;
+        g.held = true;
+        card.classList.add('card-held');
+        showNotice('카드를 원하는 위치로 끌어 놓으세요.');
+      }, 1000);
+    }
+  }
+
+  function moveGesture(ev) {
+    var g = gesture;
+    if (!g) return false;
+    var dx = ev.clientX - g.x;
+    var dy = ev.clientY - g.y;
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) window.clearTimeout(g.holdTimer);
+    if (g.held) {
+      drawHeldCard(g, dx, dy);
+      var target = cardAt(document.elementFromPoint(ev.clientX, ev.clientY));
+      if (g.targetCard) g.targetCard.classList.remove('card-target');
+      g.targetCard = target && target !== g.card ? target : null;
+      if (g.targetCard) g.targetCard.classList.add('card-target');
+      return true;
+    }
+    var idx = homeOrder.indexOf(state.page);
+    if (!g.deck || idx < 0 || state.reordering || !qcDrawer.hidden) return false;
+    if (!g.horizontal && Math.abs(dx) > 12 && Math.abs(dx) > 1.35 * Math.abs(dy)) g.horizontal = true;
+    if (!g.horizontal) return false;
+    var now = Date.now();
+    g.speed = (ev.clientX - g.lastX) / Math.max(8, now - g.lastAt);
+    g.lastAt = now;
+    g.lastX = ev.clientX;
+    var dir = dx < 0 ? 1 : -1;
+    var next = homeOrder[idx + dir];
+    if (!next || !dx) { clearPageSlide(); syncNativeMapSlot(); return true; }
+    if (!slide || slide.next !== next) createSlide(next, dir);
+    moveSlide(Math.max(-slide.width, Math.min(slide.width, dx)));
+    return true;
+  }
+
+  function endGesture(ev) {
+    if (!gesture) return false;
+    var g = gesture;
+    window.clearTimeout(g.holdTimer);
     gesture = null;
     var dx = ev.clientX - g.x;
     var dy = ev.clientY - g.y;
+    if (finishHold(g, ev)) return true;
+    if (g.horizontal) {
+      var velocity = Date.now() - g.lastAt > 110 ? 0 : g.speed;
+      if (slide) {
+        var distance = Math.abs(slide.offset);
+        var commit = distance >= slide.width * .24 ||
+          (distance > 48 && velocity * slide.direction < -.35);
+        settleSlide(commit, velocity);
+      }
+      return true;
+    }
 
     if (g.fromTop && dy > 45 && Math.abs(dy) > Math.abs(dx)) {
       qcDrawer.hidden = false;
-      return;
+      return true;
     }
     if (!qcDrawer.hidden && dy < -45 && Math.abs(dy) > Math.abs(dx)) {
+      closeQuickEditor();
       qcDrawer.hidden = true;
-      return;
+      return true;
     }
     if (g.inSplit && isDetailPage(state.page)) {
       if (Math.abs(dy) > 36 && Math.abs(dy) > Math.abs(dx)) {
@@ -2712,34 +4120,93 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
         state.splitActiveIdx = (state.splitActiveIdx + (dy < 0 ? 1 : en.length - 1)) % en.length;
         state.splitSubPage = 0;
         renderSplitWidget();
-        return;
+        return true;
       }
       if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
         state.splitSubPage = (state.splitSubPage + (dx < 0 ? 1 : 2)) % 3;
         renderSplitWidget();
-        return;
+        return true;
       }
     }
-    var pIdx = homeOrder.indexOf(state.page);
-    if (pIdx !== -1 && !state.reordering && Math.abs(dx) > 48 && Math.abs(dx) > 1.35 * Math.abs(dy)) {
-      var nextIdx = dx < 0 ? Math.min(homeOrder.length - 1, pIdx + 1) : Math.max(0, pIdx - 1);
-      if (nextIdx !== pIdx) showPage(homeOrder[nextIdx]);
-    }
+    return false;
+  }
+  document.addEventListener('mousedown', function (ev) { if (ev.button === 0) beginGesture(ev); });
+  window.addEventListener('mousemove', moveGesture);
+  window.addEventListener('mouseup', function (ev) { suppressClick = endGesture(ev); });
+  document.addEventListener('touchstart', function (ev) {
+    if (ev.touches.length === 1) beginGesture(ev.touches[0]);
+    else cancelGesture();
   });
+  document.addEventListener('touchmove', function (ev) {
+    if (ev.touches.length === 1 && moveGesture(ev.touches[0])) ev.preventDefault();
+  }, { passive:false });
+  document.addEventListener('touchend', function (ev) {
+    var start = gesture;
+    var end = ev.changedTouches[0];
+    if (endGesture(end)) { ev.preventDefault(); return; }
+    if (!start || Math.abs(end.clientX - start.x) >= 12 || Math.abs(end.clientY - start.y) >= 12) return;
+    var target = start.target;
+    while (target && target.nodeType === 1) {
+      if (target.tagName === 'INPUT' || target.tagName === 'SELECT') return;
+      if (target.tagName === 'BUTTON' || target.hasAttribute('data-open')) {
+        if (!target.disabled && target.contains(document.elementFromPoint(end.clientX, end.clientY))) {
+          ev.preventDefault();
+          target.click();
+        }
+        return;
+      }
+      target = target.parentNode;
+    }
+  }, { passive:false });
+  document.addEventListener('contextmenu', function (ev) {
+    if (cardAt(ev.target)) ev.preventDefault();
+  });
+  function cancelGesture() {
+    if (gesture) {
+      window.clearTimeout(gesture.holdTimer);
+      finishHold(gesture, null);
+      gesture = null;
+    }
+    clearPageSlide();
+    syncNativeMapSlot();
+  }
+  document.addEventListener('touchcancel', cancelGesture);
+  window.addEventListener('blur', cancelGesture);
+  document.addEventListener('click', function (ev) {
+    if (!suppressClick || !ev.detail) return;
+    suppressClick = false;
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+  }, true);
 
-  /* ====== Clock (12-hour with AM/PM) ====== */
+  /* ====== Clock ====== */
   function updateClock() {
     var now = new Date();
     var h24 = now.getHours();
     var ampm = h24 >= 12 ? 'PM' : 'AM';
     var h12 = h24 % 12 || 12;
     var min = ('0' + now.getMinutes()).slice(-2);
-    var html = h12 + ':' + min + '<small>' + ampm + '</small>';
+    var time = (state.clock24 ? ('0' + h24).slice(-2) : h12) + ':' + min;
+    var html = time + (state.clock24 ? '' : '<small>' + ampm + '</small>');
     document.getElementById('clock').innerHTML = html;
     document.getElementById('standby-clock').innerHTML = html;
+    document.getElementById('standby-date').textContent = now.toLocaleDateString();
+    document.getElementById('standby-hour').setAttribute('transform', 'rotate(' + (h12 * 30 + now.getMinutes() / 2) + ' 50 50)');
+    document.getElementById('standby-minute').setAttribute('transform', 'rotate(' + now.getMinutes() * 6 + ' 50 50)');
+    var current = ('0' + h24).slice(-2) + ':' + min;
+    var start = state.warmth.start;
+    var end = state.warmth.end;
+    var during = start < end ? current >= start && current < end : start === end || current >= start || current < end;
+    var filter = document.getElementById('theme-warmth');
+    filter.hidden = !state.warmth.enabled || !during;
+    filter.style.background = 'rgba(221,111,36,' + (0.035 * state.warmth.level) + ')';
+    var detail = document.getElementById('theme-date-time');
+    if (detail) detail.textContent = now.toLocaleDateString() + ' · ' + time + (state.clock24 ? '' : ' ' + ampm);
   }
 
   window.addEventListener('resize', function () {
+    cancelGesture();
+    layoutHomeCards();
     drawWallpaper();
     updateAllStatuses();
   });
@@ -2762,6 +4229,8 @@ h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
   };
 
   updateClock();
+  shell.setAttribute('data-bg', state.bgMode);
+  shell.setAttribute('data-style', state.graphicStyle);
   window.setInterval(updateClock, 10000);
   drawWallpaper();
   showPage('home');
