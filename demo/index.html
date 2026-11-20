@@ -2,425 +2,2769 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K8 홈 · 하단바 예시안</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>K8 ccNC 홈</title>
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
-html, body { margin: 0; height: 100%; }
-body { background: #0c121b; color: #f4f8ff; font: 16px/1.4 "Malgun Gothic", Roboto, sans-serif; }
-button { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
-button:focus { outline: 2px solid #b9e5fa; outline-offset: -3px; }
-button:active { opacity: .75; }
-h1, h2, p { margin: 0; }
-.shell { position: relative; min-height: 360px; height: 100%; padding: 0 2.5%; }
-.top, .dock { position: absolute; left: 2.5%; right: 2.5%; height: 12%; }
-.top { top: 0; display: table; width: 95%; }
-.top h1, .top time { display: table-cell; vertical-align: middle; }
-.top h1 { font-size: 24px; font-size: 1.65vw; font-weight: 700; }
-.top h1 b { margin-right: 14px; color: #a9dcf6; }
-.top time { text-align: right; font-size: 20px; font-size: 1.47vw; }
-.deck { position: absolute; top: 12%; right: 2.5%; bottom: 14%; left: 2.5%; }
-.row { position: relative; height: 100%; }
-.card { position: absolute; top: 0; bottom: 0; display: grid; grid-template-rows: 72% 28%; overflow: hidden; border-radius: 12px; background: #182330; }
-.map { left: 0; width: 51%; background: #18324a; }
-.media { left: 52%; width: 27%; background: #263f40; }
-.phone { left: 80%; width: 20%; background: #35394b; }
-.art { position: absolute; top: 0; right: 0; bottom: 28%; left: 0; overflow: hidden; }
-.art > canvas { position: absolute; width: 100%; height: 100%; }
-.art-note { position: absolute; left: 5%; bottom: 8%; color: #e1f3ff; font-size: 18px; font-size: 1.1vw; }
-.caption { grid-row: 2; background: #141d28; }
-.caption button { width: 100%; height: 100%; padding: 0 8%; text-align: left; }
-.caption button::after { content: ""; position: absolute; inset: 0; }
-.caption button:focus { outline: none; }
-.caption button:focus-visible::after { outline: 2px solid #b9e5fa; outline-offset: -3px; border-radius: 12px; }
-.map .caption button { padding: 0 4%; }
-.caption strong, .caption span { display: block; }
-.caption strong { font-size: 22px; font-size: 1.5vw; }
-.caption span { margin-top: 3px; color: #c5d0de; font-size: 15px; font-size: 1vw; }
-.caption .arrow { float: right; font-size: 1.8em; line-height: 1; color: #afd9eb; }
-.apps .card { width: 15.833%; }
-.apps .card:nth-child(1) { left: 0; background: #1e3a50; }
-.apps .card:nth-child(2) { left: 16.833%; background: #274243; }
-.apps .card:nth-child(3) { left: 33.666%; background: #35394b; }
-.apps .card:nth-child(4) { left: 50.499%; background: #443a34; }
-.apps .card:nth-child(5) { left: 67.332%; background: #323f53; }
-.apps .card:nth-child(6) { left: 84.165%; background: #343940; }
-.dock { bottom: 0; display: table; width: 95%; }
-.dock > div { display: table-cell; vertical-align: middle; width: 33.33%; white-space: nowrap; }
-.dock > div:nth-child(2) { text-align: center; }
-.dock > div:last-child { text-align: right; }
-.dock button { min-height: 44px; padding: 0 16px; color: #bfcad8; font-size: 16px; font-size: 1.05vw; border-radius: 6px; }
-.dock button[aria-pressed="true"] { background: #253447; color: #fff; }
-.notice { position: absolute; z-index: 1; left: 2.5%; bottom: 14%; padding: 12px 18px; background: #142635; border: 1px solid #7199b2; border-radius: 6px; font-size: 16px; }
-@media (max-width: 900px) {
-  .top h1, .top time, .caption strong { font-size: 17px; }
-  .caption span, .art-note { font-size: 13px; }
-  .dock button { font-size: 14px; padding: 0 8px; }
+html, body {
+  margin: 0; width: 100%; height: 100%; overflow: hidden;
+  background: #06080c; color: #f4f7fb;
+  font: 500 16px/1.38 "Malgun Gothic", "Apple SD Gothic Neo", Roboto, sans-serif;
+  user-select: none; -webkit-user-select: none;
+}
+button, input { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid #53d7c0; outline-offset: -2px; }
+button:active { opacity: .82; }
+h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
+
+/* Root shell (1920x720 aspect target, responsive) */
+.shell {
+  position: relative; width: 100%; height: 100%; min-height: 340px;
+  overflow: hidden; background: #06080c;
+}
+
+/* 5W mod blue wallpaper & ccNC dark style support */
+.wallpaper {
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  pointer-events: none; z-index: 0; overflow: hidden;
+  transition: opacity .25s ease;
+}
+.wallpaper canvas { width: 100%; height: 100%; display: block; }
+.shell[data-bg="dark"] .wallpaper { opacity: 0.12; }
+.shell[data-bg="blue"] .wallpaper { opacity: 1; }
+/* Detail pages use pure dark ccNC header/background like official manual */
+.shell.in-detail .wallpaper { opacity: 0 !important; }
+
+/* Top Bar */
+.top {
+  position: absolute; z-index: 10; top: 0; left: 2.2%; right: 2.2%; height: 11.5%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.shell.in-detail .top {
+  left: 0; right: 0; padding: 0 2.2%;
+  background: #06080c;
+}
+/* In navigation detail, map fills full top and clock floats top-right (online_navi.jpeg & Map_1.png) */
+.shell.in-navi .top {
+  background: transparent; pointer-events: none;
+}
+.shell.in-navi .top button, .shell.in-navi .top .clock {
+  pointer-events: auto;
+}
+.shell.in-navi .top .clock {
+  background: rgba(18, 23, 30, 0.82);
+  padding: 4px 12px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.top-left, .top-right { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.profile-btn, .top-title-wrap {
+  display: inline-flex; align-items: center; gap: 11px;
+  padding: 6px 10px; border-radius: 6px;
+  font-size: clamp(16px, 1.55vw, 27px); font-weight: 600; color: #f4f8ff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.45);
+}
+.profile-btn:hover { background: rgba(255,255,255,.08); }
+.device-switch-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(30px, 2.5vw, 42px); height: clamp(30px, 2.5vw, 42px);
+  border-radius: 50%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
+}
+.device-switch-btn:hover { background: rgba(255,255,255,.18); }
+
+/* Media top center tabs (재생 목록 | 라이브러리) */
+.top-tabs {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 32px; height: 100%;
+}
+.top-tab {
+  position: relative; height: 100%; padding: 0 10px;
+  display: inline-flex; align-items: center;
+  font-size: clamp(14px, 1.25vw, 22px); color: #7c8592; font-weight: 600;
+}
+.top-tab[aria-selected="true"] { color: #2bb79b; }
+.top-tab[aria-selected="true"]::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px; background: #2bb79b; border-radius: 2px;
+}
+
+/* Top Quick Control pull handle */
+.qc-handle-btn {
+  position: absolute; left: 50%; top: 3px; transform: translateX(-50%);
+  padding: 6px 36px 12px; z-index: 12;
+}
+.qc-handle-bar {
+  display: block; width: clamp(58px, 5.5vw, 96px); height: 4px;
+  border-radius: 3px; background: rgba(255,255,255,.52);
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.qc-handle-btn:hover .qc-handle-bar { background: #53d7c0; }
+
+/* Clock & top status */
+.bt-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: clamp(11px, .85vw, 15px); color: rgba(240,247,255,.78);
+}
+.shell.in-detail .bt-badge { display: none; }
+.clock {
+  font-size: clamp(18px, 1.85vw, 33px); font-weight: 500;
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 4px rgba(0,0,0,.45);
+}
+.clock small {
+  font-size: 0.56em; font-weight: 500; margin-left: 4px; opacity: 0.9;
+}
+.layout-mode-badge {
+  padding: 4px 10px; border-radius: 5px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+  font-size: clamp(11px, .85vw, 15px); color: #e9f2fc;
+}
+
+/* Main deck area */
+.deck {
+  position: absolute; z-index: 5;
+  top: 11.5%; left: 2.2%; right: 2.2%; bottom: 9.5%;
+}
+.shell.in-detail .deck {
+  top: 11.5%; left: 0; right: 0; bottom: 12.5%;
+}
+.shell.in-navi .deck {
+  top: 0; left: 0; right: 0; bottom: 12.5%;
+}
+
+/* Chamfered card common style (ccNC signature cut corners) */
+.chamfer-br {
+  border-radius: 4px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+.chamfer-both {
+  border-radius: 4px;
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+}
+
+/* Standby / Wallpaper screen (5W mod video 1s) */
+.standby-view {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 2% 3.5%;
+  text-shadow: 0 2px 10px rgba(0,0,0,.55);
+}
+.standby-date { font-size: clamp(14px, 1.25vw, 22px); color: rgba(244,248,255,.92); margin-bottom: 2px; }
+.standby-clock {
+  font-size: clamp(42px, 5.2vw, 88px); font-weight: 300; line-height: 1.05;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+}
+.standby-clock small { font-size: 0.34em; font-weight: 500; margin-left: 8px; }
+.standby-weather {
+  margin-top: 14px; display: flex; flex-direction: column; gap: 4px;
+  font-size: clamp(13px, 1.1vw, 19px); color: rgba(240,247,255,.92);
+}
+.standby-temp-row { display: flex; align-items: center; gap: 10px; }
+.standby-temp { font-size: clamp(24px, 2.4vw, 40px); font-weight: 400; }
+.standby-air { color: #7ce89e; font-weight: 600; }
+.standby-media {
+  margin-top: 18px; max-width: 420px; cursor: pointer;
+}
+.standby-media-tag { font-size: clamp(11px, .9vw, 15px); color: rgba(225,237,250,.78); }
+.standby-media-title { font-size: clamp(16px, 1.45vw, 25px); font-weight: 700; margin-top: 2px; }
+.standby-media-sub { font-size: clamp(12px, .95vw, 16px); color: rgba(230,240,252,.82); margin-top: 2px; }
+
+/* Home 3-Card Layout (Systemoverview_home_2.png & 5W Mod 2.5s) */
+.home-view { position: relative; width: 100%; height: 100%; }
+.hcard {
+  position: absolute; top: 0; bottom: 0; overflow: hidden;
+  background: rgba(20, 24, 31, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  display: grid; grid-template-rows: 69% 31%;
+  box-shadow: 0 10px 28px rgba(0,0,0,.42);
+}
+.hcard-map { left: 0; width: 48.8%; }
+.hcard-media { left: 49.9%; width: 31.0%; }
+.hcard-phone { left: 82.0%; width: 18.0%; }
+
+.hcard-art {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  cursor: pointer;
+}
+.hcard-art canvas { width: 100%; height: 100%; display: block; }
+.art-badge {
+  position: absolute; top: 12px; left: 14px; z-index: 2;
+  padding: 3px 10px; border-radius: 10px;
+  background: rgba(15, 22, 28, 0.65); border: 1px solid rgba(255,255,255,.15);
+  font-size: clamp(11px, .85vw, 14px); color: #dce7f3;
+}
+.map-scale-tag {
+  position: absolute; right: 14px; bottom: 10px; z-index: 2;
+  font-size: clamp(11px, .95vw, 16px); font-weight: 600; color: #dce7f5;
+  text-align: center; line-height: 1.15;
+  text-shadow: 0 1px 3px rgba(0,0,0,.85);
+}
+.media-card-progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: rgba(255,255,255,.16); z-index: 2;
+}
+.media-card-progress i {
+  display: block; height: 100%; width: 38%;
+  background: #d79771;
+}
+
+.hcard-caption {
+  position: relative; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(14px, 1.4vw, 24px);
+  background: rgba(24, 27, 33, 0.96);
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.hcard-caption-main {
+  flex: 1; min-width: 0; text-align: left; padding: 8px 0;
+}
+.hcard-caption-main strong {
+  display: block; font-size: clamp(16px, 1.45vw, 25px); font-weight: 700;
+  color: #f5f8fc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hcard-caption-main span {
+  display: flex; align-items: center; gap: 6px; margin-top: 5px;
+  font-size: clamp(12px, 1.0vw, 17px); color: #9aa5b4;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hcard-circles {
+  display: flex; align-items: center; gap: clamp(8px, .8vw, 14px);
+  margin-left: 10px; flex-shrink: 0;
+}
+.circle-btn {
+  width: clamp(38px, 3.3vw, 56px); height: clamp(38px, 3.3vw, 56px);
+  border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(185, 195, 210, 0.35);
+  color: #d8e2ef; transition: background .15s, border-color .15s, transform .1s;
+}
+.circle-btn.warm-ring {
+  border-color: rgba(196, 152, 116, 0.68);
+}
+.circle-btn[aria-pressed="true"], .circle-btn:hover {
+  background: rgba(83, 215, 192, 0.18);
+  border-color: #53d7c0; color: #fff;
+}
+
+/* All Apps 6-Tile Grid (5W mod video 6.2s, 14.2s, 16.5s & Systemoverview_home_5/6.gif) */
+.apps-view {
+  position: relative; width: 100%; height: 100%;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1.15%;
+}
+.app-tile {
+  position: relative; height: 100%; overflow: hidden;
+  display: grid; grid-template-rows: 73% 27%;
+  border: 1px solid rgba(255,255,255,.22);
+  background: var(--tile-bg, #4c6272);
+  box-shadow: 0 8px 22px rgba(0,0,0,.36);
+  transition: transform .15s, filter .15s;
+  cursor: pointer;
+}
+.app-tile:hover { filter: brightness(1.08); }
+.app-tile.dragging { opacity: .65; transform: scale(0.96); outline: 2px dashed #53d7c0; }
+.app-tile.drag-over { outline: 2px solid #53d7c0; }
+.app-tile-art {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+}
+.app-tile-art canvas { width: 100%; height: 100%; display: block; }
+.app-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 12px;
+  background: #4cd080; color: #082313;
+  font-size: clamp(10px, .8vw, 13px); font-weight: 700;
+}
+.app-badge::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%; background: #082313;
+}
+.app-tile-caption {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(12px, 1.2vw, 20px);
+  background: rgba(34, 38, 46, 0.78);
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.app-tile-caption strong {
+  font-size: clamp(14px, 1.3vw, 22px); font-weight: 700; color: #f5f9ff;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.reorder-arrows {
+  display: none; gap: 4px;
+}
+.apps-view.reordering .reorder-arrows { display: inline-flex; }
+.reorder-btn {
+  width: 26px; height: 26px; border-radius: 4px;
+  background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.3);
+  font-size: 13px; display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* Home bottom pager bar (Systemoverview_home_2.png 4 bars + 5W mod video labels) */
+.home-pager {
+  position: absolute; z-index: 9; left: 2.2%; right: 2.2%; bottom: 0; height: 9.5%;
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+}
+.pager-nav-btn {
+  font-size: clamp(11px, .9vw, 15px); color: rgba(235,244,255,.78);
+  padding: 5px 10px; border-radius: 6px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+.pager-nav-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.pager-bars {
+  display: flex; align-items: center; gap: 8px;
+}
+.pager-bar {
+  width: clamp(22px, 2.1vw, 36px); height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,.28); padding: 0;
+  transition: background .2s, width .2s;
+}
+.pager-bar[aria-current="true"] {
+  background: #f0f6ff; width: clamp(28px, 2.6vw, 44px);
+}
+.pager-tools {
+  position: absolute; right: 0; display: flex; align-items: center; gap: 6px; opacity: .78;
+}
+.pager-tools:hover { opacity: 1; }
+.pager-tool-btn {
+  padding: 4px 10px; border-radius: 5px;
+  background: rgba(12, 18, 26, 0.55); border: 1px solid rgba(255,255,255,.16);
+  font-size: clamp(10px, .8vw, 13px); color: #d8e6f5;
+}
+.pager-tool-btn[aria-pressed="true"] {
+  background: rgba(43, 183, 155, 0.25); border-color: #53d7c0; color: #fff;
+}
+
+/* Detail Screen Layout (Main Area + Collapsible Right Split-Screen Widget) */
+.detail-view {
+  position: relative; width: 100%; height: 100%;
+  display: flex; align-items: stretch; overflow: hidden;
+  background: #06080c;
+}
+.detail-primary {
+  position: relative; flex: 1; min-width: 0; height: 100%; overflow: hidden;
+}
+
+/* Right Split-Screen Widget (Systemoverview_widget_1/2/3.gif) */
+.split-widget {
+  position: relative; width: 31%; min-width: 240px; max-width: 480px; height: 100%;
+  padding: 10px 18px 10px 10px;
+  display: flex; align-items: stretch;
+  transition: width .22s ease, min-width .22s ease, padding .22s ease, opacity .2s ease;
+}
+.shell.in-navi .split-widget {
+  padding-top: 48px;
+}
+.split-widget.is-closed {
+  width: 0 !important; min-width: 0 !important; padding: 0 !important; opacity: 0; overflow: hidden;
+}
+.split-toggle-handle {
+  position: absolute; z-index: 15; right: 0; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 70px; border-radius: 8px 0 0 8px;
+  background: rgba(34, 40, 48, 0.92); border: 1px solid rgba(255,255,255,.2); border-right: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #cfd8e3; box-shadow: -3px 0 10px rgba(0,0,0,.45);
+}
+.split-toggle-handle:hover { background: #2c3846; color: #fff; }
+.split-card {
+  position: relative; width: 100%; height: 100%;
+  border-radius: 10px; background: #242120;
+  border: 1px solid rgba(255,255,255,.12);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(14px, 1.4vw, 22px); overflow: hidden;
+}
+.split-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 2;
+}
+.split-header strong { font-size: clamp(15px, 1.25vw, 21px); color: #f3f6fb; }
+.split-vert-btns { display: flex; gap: 4px; }
+.split-mini-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+  display: inline-flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.split-mini-btn:hover { background: rgba(83,215,192,.22); border-color: #53d7c0; }
+.split-body {
+  position: relative; flex: 1; min-height: 0; margin: 10px 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.split-page-arrow {
+  position: absolute; z-index: 3; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 46px; border-radius: 6px;
+  background: rgba(0,0,0,.35); color: #d5dee8;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.split-page-arrow.prev { left: 0; }
+.split-page-arrow.next { right: 0; }
+.split-page-arrow:hover { background: rgba(0,0,0,.6); color: #fff; }
+.split-content-box {
+  width: 100%; height: 100%; padding: 0 32px;
+  display: flex; flex-direction: column; justify-content: center; gap: 8px;
+}
+.split-dots {
+  display: flex; align-items: center; justify-content: center; gap: 7px; z-index: 2;
+}
+.split-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.3); padding: 0;
+}
+.split-dot[aria-current="true"] { background: #fff; transform: scale(1.2); }
+
+/* 1) Navigation Detail View (Map_1.png & online_navi.jpeg) */
+.navi-stage { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.navi-stage canvas { width: 100%; height: 100%; display: block; }
+.navi-left-floating {
+  position: absolute; left: 14px; top: 14px; bottom: 14px; z-index: 4;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
+}
+.navi-tool-btn {
+  width: clamp(46px, 4.1vw, 66px); flex: 1; max-height: 70px;
+  border-radius: 6px; background: rgba(28, 33, 40, 0.84);
+  border: 1px solid rgba(255,255,255,.18);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #e6eef8; font-size: clamp(10px, .82vw, 13px); line-height: 1.15;
+  box-shadow: 0 4px 12px rgba(0,0,0,.38);
+}
+.navi-tool-btn:hover, .navi-tool-btn[aria-pressed="true"] {
+  background: rgba(43, 183, 155, 0.28); border-color: #53d7c0;
+}
+.navi-speed-overlay {
+  position: absolute; left: clamp(72px, 6.2vw, 102px); top: 14px; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.navi-speed-num {
+  font-size: clamp(22px, 2.3vw, 38px); font-weight: 700; color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.8);
+}
+.navi-cam-sign {
+  width: clamp(46px, 4.2vw, 68px); height: clamp(46px, 4.2vw, 68px);
+  border-radius: 50%; background: #fff; border: 5px solid #d9232a;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #111; font-weight: 800; font-size: 11px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.45);
+}
+.navi-cam-dist {
+  padding: 2px 8px; border-radius: 6px; background: rgba(20,25,32,.88);
+  font-size: clamp(12px, 1vw, 17px); font-weight: 700; color: #fff;
+}
+.navi-tbt-stack {
+  position: absolute; right: 18px; top: 48px; z-index: 4;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+  width: clamp(190px, 21vw, 330px);
+}
+.navi-tbt-sub {
+  width: 88%; padding: 7px 14px; border-radius: 8px;
+  background: rgba(42, 49, 60, 0.88); border: 1px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: clamp(14px, 1.25vw, 21px); font-weight: 600;
+}
+.navi-tbt-main {
+  width: 100%; padding: 12px 16px; border-radius: 10px;
+  background: rgba(48, 56, 68, 0.94); border: 1px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.45);
+}
+.navi-tbt-turn-icon {
+  font-size: clamp(28px, 2.8vw, 46px); color: #27c2a4; font-weight: 900; line-height: 1;
+}
+.navi-tbt-dist { font-size: clamp(22px, 2.2vw, 38px); font-weight: 700; line-height: 1.05; }
+.navi-tbt-label { font-size: clamp(12px, 1vw, 17px); color: #cfd8e4; margin-top: 3px; }
+.navi-lane-bar {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 4;
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px; border-radius: 8px;
+  background: rgba(26, 32, 40, 0.92); border: 1px solid rgba(255,255,255,.2);
+  font-size: clamp(13px, 1.1vw, 18px); font-weight: 700;
+}
+.lane-arrow {
+  padding: 2px 8px; border-right: 1px dashed rgba(255,255,255,.25); color: #d5dfe9;
+}
+.lane-arrow.active { color: #27c2a4; }
+
+/* 2) Media (Bluetooth Audio) Detail View (Media_btmusic_3/4/5.png) */
+.media-stage {
+  width: 100%; height: 100%; padding: 10px 2.2%;
+  display: flex; align-items: stretch; gap: 1.8%;
+}
+.media-device-box {
+  position: relative; width: 23%; min-width: 150px;
+  background: #2b231d; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.12);
+  padding: 16px; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.media-device-box::before {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 18px; height: 28px; background: #2bb79b;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.media-device-name {
+  font-size: clamp(15px, 1.35vw, 23px); color: #73a98f; font-weight: 600;
+  margin-left: 6px;
+}
+.media-center-box {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center;
+}
+.media-track-list {
+  width: 100%; height: 100%; background: #2b231d; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.12);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.media-track-row {
+  flex: 1; min-height: 44px; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: clamp(14px, 1.25vw, 21px); color: #d6cec8;
+  text-align: left;
+}
+.media-track-row[aria-current="true"] {
+  color: #6ec49c; font-weight: 700; background: rgba(43,183,155,.08);
+}
+.eq-bars {
+  display: inline-flex; align-items: flex-end; gap: 3px; height: 18px;
+}
+.eq-bars i {
+  width: 3px; background: #6ec49c; display: inline-block;
+}
+.eq-bars i:nth-child(1) { height: 55%; }
+.eq-bars i:nth-child(2) { height: 100%; }
+.eq-bars i:nth-child(3) { height: 40%; }
+.eq-bars i:nth-child(4) { height: 80%; }
+
+.media-single-info {
+  padding: 6px 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.media-single-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.media-single-phone { font-size: clamp(13px, 1.1vw, 19px); color: #b7c0cc; }
+.media-single-title {
+  font-size: clamp(22px, 2.4vw, 42px); font-weight: 700; color: #fff;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.media-single-artist { font-size: clamp(15px, 1.35vw, 23px); color: #cfd6e0; }
+.media-single-album { font-size: clamp(14px, 1.2vw, 20px); color: #67707c; }
+.media-controls-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px;
+}
+.media-transport-btns {
+  display: flex; align-items: center; gap: clamp(18px, 2.4vw, 42px);
+}
+.transport-icon-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: clamp(20px, 1.8vw, 30px); color: #f2f6fb;
+}
+.transport-icon-btn:hover { background: rgba(255,255,255,.12); }
+.media-scrubber {
+  margin-top: 10px; display: flex; flex-direction: column; gap: 6px;
+}
+.media-progress-bar {
+  position: relative; width: 100%; height: 4px; background: rgba(255,255,255,.2);
+  border-radius: 2px; cursor: pointer;
+}
+.media-progress-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 32%;
+  background: #c77b48; border-radius: 2px;
+}
+.media-time-pair {
+  display: flex; justify-content: space-between;
+  font-size: clamp(12px, 1vw, 16px); color: #9aa3b0;
+  font-variant-numeric: tabular-nums;
+}
+.media-right-box {
+  width: 24%; min-width: 155px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+}
+.media-album-art {
+  width: clamp(120px, 15vw, 230px); height: clamp(120px, 15vw, 230px);
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,.5);
+}
+.media-album-art canvas { width: 100%; height: 100%; display: block; }
+.media-view-switcher {
+  display: flex; gap: 6px;
+}
+.view-chip {
+  padding: 4px 10px; border-radius: 5px;
+  background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.18);
+  font-size: 12px; color: #d5e0ec;
+}
+.view-chip[aria-pressed="true"] {
+  background: #2bb79b; border-color: #53d7c0; color: #061b16; font-weight: 700;
+}
+
+/* 3) Phone (Call History) Detail View (Phone_callhistory_3.png) */
+.phone-stage {
+  width: 100%; height: 100%; padding: 10px 2.2%;
+  display: flex; align-items: stretch; gap: 2%;
+}
+.phone-list-box {
+  flex: 1; background: #2b231d; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.phone-row {
+  flex: 1; min-height: 52px; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  text-align: left;
+}
+.phone-row:hover { background: rgba(255,255,255,.06); }
+.phone-row-left { display: flex; align-items: center; gap: 16px; }
+.call-name { font-size: clamp(15px, 1.3vw, 22px); color: #e9e2dc; font-weight: 600; }
+.phone-row-right {
+  display: flex; align-items: center; gap: 20px;
+  color: #9e948c; font-size: clamp(13px, 1.1vw, 18px);
+}
+.phone-device-pane {
+  width: 25%; min-width: 160px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+}
+
+/* 4) Settings Main Grid (5W mod video 22s/26s) & Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
+.settings-stage {
+  width: 100%; height: 100%; padding: 8px 2.2%;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.settings-grid {
+  flex: 1; display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.settings-grid.mode-6x1 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: 1fr;
+}
+.set-card {
+  position: relative; border-radius: 6px;
+  background: rgba(98, 86, 78, 0.72);
+  border: 1px solid rgba(255,255,255,.18);
+  padding: clamp(14px, 1.4vw, 22px);
+  display: flex; flex-direction: column; justify-content: space-between;
+  text-align: left;
+}
+.set-card:hover { background: rgba(118, 104, 94, 0.85); }
+.set-card strong { font-size: clamp(15px, 1.35vw, 23px); color: #f6f9fd; }
+.set-card span { font-size: clamp(11px, .9vw, 15px); color: #d3cdc7; margin-top: 4px; display: block; }
+.set-card-icon { align-self: flex-end; color: #f0f5fa; opacity: .92; }
+
+/* Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
+.screenlayout-stage {
+  width: 100%; height: 100%; padding: 6px 2.2%;
+  display: grid; grid-template-columns: 24% 48% 28%;
+  align-items: stretch;
+}
+.sl-nav {
+  display: flex; flex-direction: column; gap: 4px;
+  padding-right: 16px; border-right: 1px solid rgba(255,255,255,.08);
+}
+.sl-tab {
+  position: relative; padding: 14px 16px 14px 22px;
+  text-align: left; font-size: clamp(16px, 1.5vw, 26px);
+  color: #8b94a0; font-weight: 500; border-radius: 6px;
+}
+.sl-tab[aria-selected="true"] {
+  color: #2bb79b; font-weight: 700;
+}
+.sl-tab[aria-selected="true"]::before {
+  content: ""; position: absolute; left: 4px; top: 50%;
+  width: 6px; height: 24px; background: #2bb79b;
+  transform: translateY(-50%) skewX(-22deg);
+}
+.sl-main {
+  padding: 8px 26px; display: flex; flex-direction: column; gap: 12px;
+  overflow-y: auto;
+}
+.sl-desc {
+  padding-left: 12px; border-left: 2px solid #555e6a;
+  font-size: clamp(13px, 1.05vw, 18px); color: #8c96a3;
+}
+.sl-row-link, .sl-radio-row, .sl-check-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 8px; border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: clamp(15px, 1.3vw, 22px); color: #eef3f9;
+}
+.sl-seg-group {
+  display: inline-flex; border-radius: 22px; overflow: hidden;
+  background: #33383e; border: 1px solid rgba(255,255,255,.12);
+  margin-top: 8px; width: 100%; max-width: 440px;
+}
+.sl-seg-btn {
+  flex: 1; padding: 10px 18px; text-align: center;
+  font-size: clamp(14px, 1.15vw, 19px); color: #9aa3ae;
+  border-radius: 22px;
+}
+.sl-seg-btn[aria-pressed="true"] {
+  background: #279480; color: #fff; font-weight: 700;
+}
+.sl-radio-left, .sl-check-left {
+  display: flex; align-items: center; gap: 14px;
+}
+.radio-circle {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 2px solid #757f8c; display: inline-flex; align-items: center; justify-content: center;
+}
+.sl-radio-row[aria-checked="true"] .radio-circle {
+  border-color: #279480; background: #279480;
+}
+.sl-radio-row[aria-checked="true"] .radio-circle::after {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff;
+}
+.check-box {
+  width: 24px; height: 24px; border-radius: 4px;
+  border: 2px solid #757f8c; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: transparent;
+}
+.sl-check-row[aria-checked="true"] .check-box {
+  border-color: #279480; background: #279480; color: #fff;
+}
+.sl-check-row.is-fixed { opacity: .65; }
+.sl-preview {
+  display: flex; align-items: center; justify-content: center; padding: 12px;
+}
+.sl-preview canvas { width: 100%; max-width: 240px; height: 170px; }
+
+/* Bottom Menu Bar in Detail Screens (Map_1.png, online_navi.jpeg, Media_btmusic_3.png, Phone_callhistory_3.png) */
+.bottom-bar {
+  position: absolute; z-index: 12; left: 0; right: 0; bottom: 0; height: 12.5%;
+  background: #1d1e21; border-top: 1px solid rgba(255,255,255,.1);
+  display: grid; grid-template-columns: 24% 50% 26%;
+  align-items: stretch;
+}
+.bb-nav-keys {
+  display: flex; align-items: stretch; background: #191a1d;
+}
+.bb-key {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  color: #d6dde6;
+}
+.bb-key:hover { background: rgba(255,255,255,.08); color: #fff; }
+.bb-center {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 14px; min-width: 0;
+}
+.bb-pill {
+  width: 100%; height: 84%; border-radius: 999px;
+  background: #141619; border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; gap: 10px; overflow: hidden;
+}
+.bb-route-cancel {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.1); display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.bb-route-info {
+  display: flex; align-items: center; gap: 14px;
+  font-size: clamp(13px, 1.15vw, 20px); color: #eef3f9;
+  overflow: hidden; white-space: nowrap;
+}
+.bb-route-divider { color: rgba(255,255,255,.25); }
+.bb-icon-tabs {
+  width: 100%; height: 84%; border-radius: 999px;
+  background: #131518; padding: 3px 12px;
+  display: flex; align-items: stretch; justify-content: space-around; gap: 8px;
+}
+.bb-tab-btn {
+  flex: 1; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  color: #8e96a2; font-size: clamp(11px, .95vw, 15px); font-weight: 600;
+}
+.bb-tab-btn[aria-selected="true"] {
+  background: #279480; color: #fff;
+}
+.bb-tab-btn.phone-active[aria-selected="true"] {
+  background: #678776; color: #fff;
+}
+.bb-media-box {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; background: #222326;
+  border-left: 1px solid rgba(255,255,255,.08);
+  text-align: left; overflow: hidden;
+}
+.bb-media-box:hover { background: #2b2d31; }
+.bb-media-topline {
+  position: absolute; left: 0; top: 0; height: 2px; width: 65%;
+  background: #d28a5c;
+}
+.bb-media-thumb {
+  width: clamp(32px, 3vw, 48px); height: clamp(32px, 3vw, 48px);
+  border-radius: 4px; overflow: hidden; flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,.22);
+  display: flex; align-items: center; justify-content: center;
+  background: #17191c;
+}
+.bb-media-thumb canvas { width: 100%; height: 100%; display: block; }
+.bb-media-meta { min-width: 0; flex: 1; }
+.bb-media-meta strong {
+  display: block; font-size: clamp(12px, 1.05vw, 18px); color: #eef3f9;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bb-media-meta span {
+  display: block; font-size: clamp(11px, .9vw, 15px); color: #8d96a2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px;
+}
+
+/* Top Quick Control Drawer Overlay (Systemoverview_quickcontrol_2.gif) */
+.qc-drawer {
+  position: absolute; z-index: 30; inset: 0;
+  background: rgba(8, 10, 14, 0.96);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 1.5% 3%;
+  transition: transform .25s ease, opacity .25s ease;
+}
+.qc-drawer[hidden] { display: none !important; }
+.qc-top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.qc-icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #dbe4ef; background: rgba(255,255,255,.07);
+}
+.qc-icon-btn:hover { background: rgba(255,255,255,.16); }
+.qc-grid {
+  flex: 1; margin: 12px 0;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+}
+.qc-col { display: flex; flex-direction: column; gap: 12px; }
+.qc-tile {
+  flex: 1; border-radius: 8px;
+  background: #23201e; border: 1px solid rgba(255,255,255,.12);
+  padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+  text-align: left; font-size: clamp(14px, 1.2vw, 20px); color: #ece6e0;
+}
+.qc-tile.slim { flex: 0.48; }
+.qc-tile[aria-pressed="true"] {
+  background: rgba(43, 183, 155, 0.25); border-color: #53d7c0; color: #fff;
+}
+.qc-tile small { display: block; font-size: 0.78em; color: #9c948d; margin-top: 3px; }
+.qc-bottom-handle {
+  align-self: center; padding: 8px 40px;
+}
+
+/* SVG Glyph helper */
+.ico {
+  width: clamp(18px, 1.5vw, 25px); height: clamp(18px, 1.5vw, 25px);
+  fill: none; stroke: currentColor; stroke-width: 1.85;
+  stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
+}
+
+/* Toast notice */
+.notice {
+  position: absolute; z-index: 40; left: 50%; bottom: 15%;
+  transform: translateX(-50%);
+  padding: 10px 20px; border-radius: 8px;
+  background: rgba(16, 28, 38, 0.95); border: 1px solid #53d7c0;
+  font-size: clamp(13px, 1.05vw, 17px); color: #f0f8ff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.55);
+}
+
+@media (max-width: 820px) {
+  .hcard-circles { gap: 5px; }
+  .circle-btn { width: 34px; height: 34px; }
+  .pager-tools { display: none; }
+  .split-widget { width: 36%; min-width: 180px; }
 }
 @media (max-width: 650px) and (orientation: portrait) {
-  .shell { min-height: 540px; }
-  .top, .dock { left: 4.2%; right: 4.2%; width: 91.6%; height: 9%; }
-  .deck { top: 9%; right: 4.2%; bottom: 10%; left: 4.2%; }
-  .home .map { top: 0; bottom: 40%; width: 100%; }
-  .home .media, .home .phone { top: 62%; bottom: 0; width: 49%; }
-  .home .media { left: 0; }
-  .home .phone { left: 51%; }
-  .home .media, .home .phone { grid-template-rows: 61% 39%; }
-  .home .media .art, .home .phone .art { bottom: 39%; }
-  .apps .card { width: 32%; }
-  .apps .card:nth-child(3n+1) { left: 0; }
-  .apps .card:nth-child(3n+2) { left: 34%; }
-  .apps .card:nth-child(3n) { left: 68%; }
-  .apps .card:nth-child(-n+3) { top: 0; bottom: 51%; }
-  .apps .card:nth-child(n+4) { top: 51%; bottom: 0; }
-  .dock > div { width: auto; }
-}
-</style>
-<style>
-.dock {
-  display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(170px, .48fr);
-  grid-template-rows: 1fr; align-items: stretch; gap: 8px; bottom: 1.5%; height: 10%;
-  padding: 5px; border: 1px solid #415064; border-radius: 10px; background: #182330;
-}
-.dock > .dock-keys { display: flex; width: auto; gap: 3px; }
-.dock button { font-size: clamp(13px, 1vw, 19px); }
-.dock-keys button { display: flex; align-items: center; gap: 7px; padding: 0 clamp(8px, .85vw, 16px); }
-.dock button:disabled { opacity: .42; cursor: default; }
-.dock button:not(:disabled):hover { background: #2e4051; }
-.dock .dock-status {
-  display: flex; align-items: center; gap: 11px; min-width: 0; text-align: left; padding: 0 14px;
-  background: #223444; color: #eff7ff; border-radius: 6px;
-}
-.dock .dock-media { background: #28323d; }
-.dock-status span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dock-status small { margin-left: auto; color: #b8cad9; white-space: nowrap; }
-.glyph { width: 23px; height: 23px; flex: 0 0 23px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-.detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, .48fr); gap: 12px; height: 100%; }
-.detail-main, .side { min-width: 0; background: #1b2938; border-radius: 12px; padding: clamp(18px, 2.4vw, 46px); }
-.detail-main { display: flex; flex-direction: column; justify-content: space-between; }
-.detail-main h2 { font-size: clamp(26px, 3vw, 50px); }
-.detail-main p, .side p { color: #c5d0de; margin-top: 7px; }
-.detail-main .art { position: relative; height: 48%; min-height: 95px; }
-.detail-main .art > canvas { inset: 0; }
-.detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.detail-actions button, .side button { min-height: 44px; padding: 0 14px; border: 1px solid #62798b; border-radius: 6px; }
-.detail-actions button[aria-pressed=true] { background: #d2e9f6; color: #132433; }
-.deck { user-select: none; }
-.deck.is-browsing { touch-action: none; }
-button { touch-action: manipulation; }
-.card-controls { position: absolute; bottom: 0; right: 12px; height: 28%; display: flex; align-items: center; gap: 7px; }
-.card-controls button { position: relative; min-height: 44px; padding: 0 12px; border: 1px solid #62798b; border-radius: 6px; font-size: clamp(13px, 1vw, 18px); }
-.card-controls button:hover, .detail-actions button:hover { background: #314456; }
-.home .map .caption button { padding-right: 172px; }
-.home .media .caption button { padding-right: 110px; }
-.route-status { min-height: 1.4em; }
-.side { background: #232d39; }
-.side h2 { font-size: clamp(18px, 1.65vw, 30px); }
-.side button { margin-top: 14px; }
-@media (max-width: 850px) {
-  .dock-status small, .key-label { display: none; }
-  .dock { grid-template-columns: auto minmax(0, 1fr) minmax(100px, .65fr); }
-  .dock-status .glyph { display: none; }
-  .detail { grid-template-columns: minmax(0, 1fr) minmax(150px, .52fr); }
-  .card-controls { right: 7px; gap: 4px; }
-  .card-controls button { padding: 0 7px; }
-  .home .media .caption button { padding-right: 72px; }
-  .home .media .caption span { display: none; }
-}
-@media (max-width: 650px) and (orientation: portrait) {
-  .dock { grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-rows: 1fr 1fr; height: 17%; bottom: 1%; }
-  .dock > .dock-keys { grid-column: 1 / -1; justify-content: center; }
-  .dock button { min-height: 36px; }
-  .dock-status span { white-space: normal; line-height: 1.1; }
-  .deck { bottom: 19%; }
-  .detail { grid-template-columns: 1fr; grid-template-rows: minmax(0,1fr) auto; }
-  .detail-main .art { min-height: 75px; }
-  .detail-main, .side { padding: 12px; }
-  .side button { margin-top: 8px; }
-  .notice { bottom: 19%; max-width: 92%; }
-  .card-controls { right: 6px; gap: 4px; }
-  .card-controls button { padding: 0 7px; }
-  .home .map .caption button { padding-right: 116px; }
-  .home .media .caption button { padding-left: 8px; padding-right: 75px; }
-  .home .media .caption span { display: none; }
-  .home .media .card-controls { height: 39%; }
+  .hcard-map { top: 0; bottom: 42%; left: 0; width: 100%; }
+  .hcard-media { top: 60%; bottom: 0; left: 0; width: 58%; }
+  .hcard-phone { top: 60%; bottom: 0; left: 60%; width: 40%; }
+  .apps-view { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: 1fr 1fr; }
+  .detail-view { flex-direction: column; }
+  .split-widget { width: 100%; max-width: none; height: 36%; }
+  .screenlayout-stage { grid-template-columns: 34% 66%; }
+  .sl-preview { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="shell">
-  <header class="top"><h1><b>K8</b> <span id="title">홈</span></h1><time id="clock"></time></header>
+<div class="shell" id="shell" data-bg="blue" data-style="A">
+  <!-- 5W Mod Blue Wallpaper Canvas -->
+  <div class="wallpaper" aria-hidden="true"><canvas id="wallpaper-canvas"></canvas></div>
+
+  <!-- Top Header Bar -->
+  <header class="top" id="top-bar">
+    <div class="top-left">
+      <!-- Home / Apps / Standby profile button (Systemoverview_home_2.png & 5W mod 2.5s) -->
+      <button type="button" class="profile-btn" id="profile-btn" aria-label="사용자 프로필 및 메뉴">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <span id="driver-name">운전자 1</span>
+      </button>
+
+      <!-- Detail Screen Title + Search Icon (Media_btmusic_3.png / Phone_callhistory_3.png / Settings_screenlayout) -->
+      <div class="top-title-wrap" id="detail-top-title" hidden>
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <span id="detail-heading-text">블루투스 오디오</span>
+        <button type="button" class="device-switch-btn" id="device-switch-btn" title="기기 전환" aria-label="기기 전환">
+          <svg class="ico" style="width:17px;height:17px" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="12" rx="1.5"/><rect x="13" y="8" width="7" height="12" rx="1.5"/><path d="M13 5h4l-2-2M11 19H7l2 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top Quick Control Handle (Systemoverview_quickcontrol_2.gif & online_navi.jpeg) -->
+    <button type="button" class="qc-handle-btn" id="qc-open-btn" aria-label="상단 퀵 컨트롤 열기" title="상단에서 내려 퀵 컨트롤 열기">
+      <span class="qc-handle-bar"></span>
+    </button>
+
+    <!-- Media Top Tabs (재생 목록 | 라이브러리) -->
+    <div class="top-tabs" id="media-top-tabs" role="tablist" hidden>
+      <button type="button" class="top-tab" role="tab" data-media-tab="playlist" aria-selected="true">재생 목록</button>
+      <button type="button" class="top-tab" role="tab" data-media-tab="library" aria-selected="false">라이브러리</button>
+    </div>
+
+    <div class="top-right">
+      <button type="button" class="layout-mode-badge" id="settings-grid-toggle" hidden>4×2 / 6×1 보기</button>
+      <span class="bt-badge" id="bt-status-badge">
+        <svg class="ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+        <span>Bluetooth</span>
+      </span>
+      <time class="clock" id="clock">11:29<small>PM</small></time>
+    </div>
+  </header>
+
+  <!-- Main Deck -->
   <main class="deck" id="deck">
-    <section id="home" class="row home" aria-label="홈">
-      <article class="card map">
-        <div class="art" id="map-slot"><canvas data-art="navi" aria-hidden="true"></canvas><p id="map-note" class="art-note">지도 미리보기 준비 중</p></div>
-        <h2 class="caption"><button type="button" data-action="navi"><strong>내비게이션</strong><span>내비 화면 예시 열기</span></button></h2>
-        <div class="card-controls" aria-label="지도 바로가기">
-          <button type="button" data-destination="home">우리 집</button>
-          <button type="button" data-destination="work">회사</button>
+    <!-- Page 0: Standby / Wallpaper Screen (5W mod video 1s) -->
+    <section id="view-standby" class="standby-view" aria-label="대기 화면" hidden>
+      <p class="standby-date" id="standby-date">11월 18일 (수)</p>
+      <div class="standby-clock" id="standby-clock">11:29<small>PM</small></div>
+      <div class="standby-weather">
+        <div style="display:flex;align-items:center;gap:6px">
+          <svg class="ico" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>
+          <span>인천시 미추홀구</span>
+        </div>
+        <div class="standby-temp-row">
+          <svg class="ico" style="width:22px;height:22px" viewBox="0 0 24 24"><path d="M17.5 19H9a5 5 0 1 1 1.4-9.8A6 6 0 0 1 22 13a4.5 4.5 0 0 1-4.5 6z"/></svg>
+          <span class="standby-temp">4°c</span>
+          <span>흐림 · 대기질 <b class="standby-air">보통</b></span>
+        </div>
+      </div>
+      <div class="standby-media" data-open="media">
+        <div class="standby-media-tag">미디어</div>
+        <div class="standby-media-title" id="standby-track">Synthetic Sympathy</div>
+        <div class="standby-media-sub" id="standby-artist">Who-ya Extended · 스마트폰 추천 · 무손실</div>
+      </div>
+    </section>
+
+    <!-- Page 1: Home 3-Card Screen (Systemoverview_home_2.png & 5W mod video 2.5s) -->
+    <section id="view-home" class="home-view" aria-label="홈 화면">
+      <!-- 1. Map Card -->
+      <article class="hcard hcard-map chamfer-br">
+        <div class="hcard-art" id="map-slot" data-open="navi">
+          <canvas id="home-map-canvas" aria-hidden="true"></canvas>
+          <span class="map-scale-tag">Auto<br>50 m</span>
+          <p id="map-note" class="art-badge" hidden>실차 지도 연결됨</p>
+        </div>
+        <div class="hcard-caption">
+          <button type="button" class="hcard-caption-main" data-open="navi">
+            <strong id="home-map-title">아리랑리조텔</strong>
+            <span id="home-map-sub">
+              <svg class="ico" style="width:15px;height:15px;fill:#9aa5b4;stroke:none" viewBox="0 0 24 24"><path d="m12 3 8 17-8-4-8 4z"/></svg>
+              <em id="home-map-addr" style="font-style:normal">강원특별자치도 속초시 청봉로6길 · 약 148분</em>
+            </span>
+          </button>
+          <div class="hcard-circles" aria-label="지도 바로가기">
+            <button type="button" class="circle-btn warm-ring" data-dest="home" title="우리 집 길안내" aria-label="우리 집">
+              <svg class="ico" viewBox="0 0 24 24"><path d="m3 11 9-7 9 7v8H5v-8z"/><path d="M18 16v5M15.5 18.5h5"/></svg>
+            </button>
+            <button type="button" class="circle-btn warm-ring" data-dest="work" title="회사 길안내" aria-label="회사">
+              <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="4" width="11" height="16" rx="1"/><path d="M8 8h2M11 8h2M8 12h2M11 12h2M8 16h2M19 15v5M16.5 17.5h5"/></svg>
+            </button>
+          </div>
         </div>
       </article>
-      <article class="card media">
-        <div class="art"><canvas data-art="media" aria-hidden="true"></canvas></div>
-        <h2 class="caption"><button type="button" data-action="media"><strong>미디어</strong><span>미디어 앱 열기</span></button></h2>
-        <div class="card-controls"><button type="button" id="home-media-toggle">재생</button></div>
+
+      <!-- 2. Media Card -->
+      <article class="hcard hcard-media chamfer-br">
+        <div class="hcard-art" data-open="media">
+          <span class="art-badge" id="home-media-badge">미디어</span>
+          <canvas id="home-media-canvas" aria-hidden="true"></canvas>
+          <div class="media-card-progress"><i id="home-media-prog"></i></div>
+        </div>
+        <div class="hcard-caption">
+          <button type="button" class="hcard-caption-main" data-open="media">
+            <strong id="home-media-title">Synthetic Sympathy</strong>
+            <span id="home-media-sub">Who-ya Extended · 스마트폰 추천 · 무손실</span>
+          </button>
+          <div class="hcard-circles" aria-label="미디어 제어">
+            <button type="button" class="circle-btn" id="home-play-btn" title="재생 / 일시정지" aria-label="재생 또는 일시정지">
+              <svg class="ico" id="home-play-ico" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+            </button>
+            <button type="button" class="circle-btn" id="home-source-btn" title="미디어 소스 전환 (블루투스 / 자연의 소리 / FM)" aria-label="미디어 소스 전환">
+              <svg class="ico" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="13" rx="2"/><path d="M7 3h10M10 15a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm5-4v4"/></svg>
+            </button>
+          </div>
+        </div>
       </article>
-      <article class="card phone">
-        <div class="art"><canvas data-art="phone" aria-hidden="true"></canvas></div>
-        <h2 class="caption"><button type="button" data-action="phone"><strong>전화</strong><span>전화 앱 열기</span></button></h2>
+
+      <!-- 3. Phone Card -->
+      <article class="hcard hcard-phone chamfer-both">
+        <div class="hcard-art" data-open="phone">
+          <canvas id="home-phone-canvas" aria-hidden="true"></canvas>
+        </div>
+        <div class="hcard-caption">
+          <button type="button" class="hcard-caption-main" data-open="phone">
+            <strong>전화</strong>
+          </button>
+        </div>
       </article>
     </section>
-    <section id="apps" class="row apps" aria-label="전체 앱" hidden></section>
-    <section id="detail" class="detail" aria-labelledby="detail-title" hidden>
-      <article class="detail-main">
-        <div><h2 id="detail-title"></h2><p id="detail-description"></p></div>
-        <div class="art"><canvas data-art="navi" aria-hidden="true"></canvas></div>
-        <div class="detail-actions" id="media-actions" hidden>
-          <button type="button" id="media-toggle">재생</button>
-        </div>
-        <div id="route-actions" hidden>
-          <div class="detail-actions" aria-label="지도 바로가기">
-            <button type="button" data-destination="home" aria-pressed="false">우리 집</button>
-            <button type="button" data-destination="work" aria-pressed="false">회사</button>
+
+    <!-- Page 2 & 3: All Apps 6-Tile Grid (5W mod video 6.2s, 14.2s, 16.5s) -->
+    <section id="view-apps" class="apps-view" aria-label="전체 기능 앱 타일" hidden></section>
+
+    <!-- Detail Views (Map / Media / Phone / Settings / ScreenLayout) + Right Split-Screen Widget -->
+    <section id="view-detail" class="detail-view" aria-label="기능 화면" hidden>
+      <div class="detail-primary">
+        <!-- A. Navigation Detail Stage (Map_1.png & online_navi.jpeg) -->
+        <div id="stage-navi" class="navi-stage" hidden>
+          <canvas id="detail-map-canvas"></canvas>
+          <div class="navi-left-floating" aria-label="지도 도구 모음">
+            <button type="button" class="navi-tool-btn" id="navi-search-btn" title="경로/목적지 변경">
+              <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m15.5 15.5 4.5 4.5"/></svg>
+            </button>
+            <button type="button" class="navi-tool-btn" id="navi-viewmode-btn" title="지도 뷰 모드 전환">
+              <span id="navi-compass-label" style="font-weight:700">3D</span>
+              <svg class="ico" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="m12 3 5 16-5-3.5L7 19z"/></svg>
+            </button>
+            <button type="button" class="navi-tool-btn" id="navi-mute-btn" title="내비 음성 안내">
+              <span>Nav</span>
+              <svg class="ico" style="width:17px;height:17px" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+            </button>
+            <button type="button" class="navi-tool-btn" id="navi-scale-btn" title="축척 전환">
+              <span>Auto</span>
+              <strong id="navi-scale-text">50 m</strong>
+            </button>
+            <button type="button" class="navi-tool-btn" id="navi-zoom-btn" title="축척 바">
+              <span>Scale</span>
+              <span style="font-size:10px;letter-spacing:-1px">┣━━━┫</span>
+            </button>
           </div>
-          <p class="route-status" id="route-status" role="status"></p>
+
+          <div class="navi-speed-overlay" id="navi-speed-box">
+            <div class="navi-speed-num">100</div>
+            <div class="navi-cam-sign">
+              <span style="color:#d9232a;font-size:10px">● ● ●</span>
+              <span>CAM</span>
+            </div>
+            <div class="navi-cam-dist">300 m</div>
+          </div>
+
+          <div class="navi-tbt-stack" id="navi-tbt-box">
+            <div class="navi-tbt-sub">
+              <span>↰</span>
+              <span>600 m</span>
+            </div>
+            <div class="navi-tbt-main">
+              <span class="navi-tbt-turn-icon">↱</span>
+              <div>
+                <div class="navi-tbt-dist">300 m</div>
+                <div class="navi-tbt-label" id="navi-turn-label">우회전 · 양재 IC 방면</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="navi-lane-bar" id="navi-lane-box">
+            <span>개포고</span>
+            <span class="lane-arrow">↰</span>
+            <span class="lane-arrow">↑</span>
+            <span class="lane-arrow active">↑</span>
+            <span>60 m</span>
+          </div>
         </div>
-      </article>
-      <aside class="side" aria-label="분할 화면 예시">
-        <h2 id="side-title">분할 화면</h2>
-        <p id="side-text"></p>
-        <button type="button" id="side-toggle">위젯 바꾸기</button>
+
+        <!-- B. Media (Bluetooth Audio) Detail Stage (Media_btmusic_3/4/5.png) -->
+        <div id="stage-media" class="media-stage" hidden>
+          <aside class="media-device-box" id="media-device-pane">
+            <div>
+              <div class="media-device-name" id="media-phone-name">Phone Name</div>
+              <p style="font-size:12px;color:#9b9088;margin-top:6px" id="media-source-desc">Galaxy S24 Ultra · 블루투스 오디오</p>
+            </div>
+            <div class="media-view-switcher" aria-label="플레이어 레이아웃 전환">
+              <button type="button" class="view-chip" data-mview="list" aria-pressed="true">목록</button>
+              <button type="button" class="view-chip" data-mview="single" aria-pressed="false">한 곡</button>
+              <button type="button" class="view-chip" data-mview="full" aria-pressed="false">플레이어</button>
+            </div>
+          </aside>
+
+          <div class="media-center-box">
+            <!-- Mode 1: Multi-track list (Media_btmusic_3.png) -->
+            <div class="media-track-list" id="media-list-pane"></div>
+
+            <!-- Mode 2 & 3: Single / Full Player (Media_btmusic_4.png & 5.png) -->
+            <div class="media-single-info" id="media-single-pane" hidden>
+              <div class="media-single-header">
+                <div>
+                  <div class="media-single-phone" id="single-phone-label">Phone Name</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;color:#8e97a4">
+                  <span id="single-track-index">♪ 1/4</span>
+                  <button type="button" class="view-chip" id="back-to-list-btn" title="목록 보기">☰ 목록</button>
+                </div>
+              </div>
+              <div class="media-single-title" id="single-title">Synthetic Sympathy</div>
+              <div class="media-single-artist" id="single-artist">Who-ya Extended</div>
+              <div class="media-single-album" id="single-album">스마트폰 추천 · 무손실</div>
+              <div class="media-controls-row">
+                <div class="media-transport-btns">
+                  <button type="button" class="transport-icon-btn" id="media-prev-btn" aria-label="이전 곡">
+                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                  </button>
+                  <button type="button" class="transport-icon-btn" id="media-play-btn" aria-label="재생/일시정지">⏸</button>
+                  <button type="button" class="transport-icon-btn" id="media-next-btn" aria-label="다음 곡">
+                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="media-scrubber">
+                <div class="media-progress-bar" id="media-scrub-bar">
+                  <div class="media-progress-fill" id="media-scrub-fill"></div>
+                </div>
+                <div class="media-time-pair">
+                  <span id="media-cur-time">0:35</span>
+                  <span id="media-dur-time">3:44</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="media-right-box">
+            <div class="media-album-art"><canvas id="detail-album-canvas"></canvas></div>
+            <div class="media-transport-btns" id="list-mini-transport">
+              <button type="button" class="transport-icon-btn" id="list-prev-btn" style="width:38px;height:38px" aria-label="이전 곡">
+                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+              </button>
+              <button type="button" class="transport-icon-btn" id="list-play-btn" style="width:38px;height:38px" aria-label="재생/일시정지">⏸</button>
+              <button type="button" class="transport-icon-btn" id="list-next-btn" style="width:38px;height:38px" aria-label="다음 곡">
+                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- C. Phone (Call History) Detail Stage (Phone_callhistory_3.png) -->
+        <div id="stage-phone" class="phone-stage" hidden>
+          <div class="phone-list-box" id="phone-call-list"></div>
+          <aside class="phone-device-pane">
+            <svg viewBox="0 0 120 180" style="width:95px;height:140px;fill:none;stroke:#8b94a0;stroke-width:2">
+              <g transform="rotate(18 60 90)">
+                <rect x="28" y="14" width="64" height="152" rx="12"/>
+                <line x1="50" y1="24" x2="70" y2="24"/>
+              </g>
+            </svg>
+            <strong style="font-size:clamp(15px,1.35vw,23px);color:#e4ebf3" id="phone-device-label">Phone Name</strong>
+          </aside>
+        </div>
+
+        <!-- D. Settings Main Grid (5W mod video 22s) -->
+        <div id="stage-settings" class="settings-stage" hidden>
+          <div class="settings-grid" id="settings-cards-grid"></div>
+        </div>
+
+        <!-- E. Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) -->
+        <div id="stage-screenlayout" class="screenlayout-stage" hidden>
+          <nav class="sl-nav" role="tablist" aria-label="화면구성 항목">
+            <button type="button" class="sl-tab" role="tab" data-sl-tab="frame" aria-selected="false">디지털 액자</button>
+            <button type="button" class="sl-tab" role="tab" data-sl-tab="cluster" aria-selected="false">클러스터 테마 선택</button>
+            <button type="button" class="sl-tab" role="tab" data-sl-tab="standby" aria-selected="false">대기 화면</button>
+            <button type="button" class="sl-tab" role="tab" data-sl-tab="split" aria-selected="true">분할 화면</button>
+          </nav>
+          <div class="sl-main" id="sl-panel-content"></div>
+          <div class="sl-preview"><canvas id="sl-preview-canvas"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Collapsible Right Split-Screen Widget (Systemoverview_widget_1/2/3.gif) -->
+      <aside class="split-widget" id="split-widget" aria-label="오른쪽 분할 화면">
+        <div class="split-card" id="split-card">
+          <div class="split-header">
+            <strong id="split-widget-title">미디어</strong>
+            <div class="split-vert-btns" title="위아래로 밀어 위젯 바꾸기">
+              <button type="button" class="split-mini-btn" id="split-prev-widget" aria-label="이전 위젯">▲</button>
+              <button type="button" class="split-mini-btn" id="split-next-widget" aria-label="다음 위젯">▼</button>
+              <button type="button" class="split-mini-btn" id="split-config-btn" title="분할 화면 순서 설정" aria-label="분할 화면 설정">⚙</button>
+            </div>
+          </div>
+          <div class="split-body">
+            <button type="button" class="split-page-arrow prev" id="split-page-prev" aria-label="이전 페이지">‹</button>
+            <div class="split-content-box" id="split-content-box"></div>
+            <button type="button" class="split-page-arrow next" id="split-page-next" aria-label="다음 페이지">›</button>
+          </div>
+          <div class="split-dots" id="split-dots">
+            <button type="button" class="split-dot" data-sdot="0" aria-current="true"></button>
+            <button type="button" class="split-dot" data-sdot="1" aria-current="false"></button>
+            <button type="button" class="split-dot" data-sdot="2" aria-current="false"></button>
+          </div>
+        </div>
       </aside>
+      <button type="button" class="split-toggle-handle" id="split-toggle-btn" title="오른쪽 분할 화면 열기/닫기" aria-label="분할 화면 열기 또는 닫기">‹</button>
     </section>
   </main>
-  <footer class="dock" aria-label="하단 메뉴">
-    <div class="dock-keys">
-      <button type="button" id="back-button" aria-label="뒤로"><svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg><span class="key-label">뒤로</span></button>
-      <button type="button" id="home-button" aria-pressed="true" aria-label="홈"><svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-7 9 7v8H3z M10 19v-5h4v5"/></svg><span class="key-label">홈</span></button>
-      <button type="button" id="apps-button" aria-pressed="false" aria-label="전체 앱"><svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span class="key-label">전체 앱</span></button>
+
+  <!-- Home / Apps Bottom Pager Bar (Systemoverview_home_2.png & 5W mod video 2.5s) -->
+  <footer class="home-pager" id="home-pager">
+    <button type="button" class="pager-nav-btn" id="pager-left-btn">‹ 배경화면</button>
+    <div class="pager-bars" role="tablist" aria-label="홈 페이지 전환">
+      <button type="button" class="pager-bar" data-page="standby" aria-label="대기 화면" aria-current="false"></button>
+      <button type="button" class="pager-bar" data-page="home" aria-label="홈 화면" aria-current="true"></button>
+      <button type="button" class="pager-bar" data-page="apps1" aria-label="전체 기능 1페이지" aria-current="false"></button>
+      <button type="button" class="pager-bar" data-page="apps2" aria-label="전체 기능 2페이지" aria-current="false"></button>
     </div>
-    <button type="button" class="dock-status" data-action="navi"><svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7.5 16-7.5-4-7.5 4z"/></svg><span>지도 연결 대기</span><small>내비게이션</small></button>
-    <button type="button" class="dock-status dock-media" data-action="media" aria-label="미디어"><svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l9 6-9 6z"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg><span id="dock-media">미디어 꺼짐</span></button>
+    <button type="button" class="pager-nav-btn" id="pager-right-btn">전체 메뉴 ›</button>
+
+    <div class="pager-tools">
+      <button type="button" class="pager-tool-btn" id="reorder-toggle-btn" hidden>아이콘 재배치</button>
+      <button type="button" class="pager-tool-btn" id="bg-toggle-btn">5W 파란배경</button>
+      <button type="button" class="pager-tool-btn" data-open="screenlayout">화면구성</button>
+    </div>
   </footer>
+
+  <!-- Detail Screens Official Bottom Bar (Map_1.png, online_navi.jpeg, Media_btmusic_3.png, Phone_callhistory_3.png) -->
+  <footer class="bottom-bar" id="detail-bottom-bar" hidden>
+    <div class="bb-nav-keys">
+      <button type="button" class="bb-key" id="bb-back-btn" aria-label="뒤로">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+      <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m4 11 8-6.5L20 11v8H4z"/></svg>
+      </button>
+      <button type="button" class="bb-key" id="bb-menu-btn" aria-label="전체 메뉴">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
+      </button>
+    </div>
+
+    <div class="bb-center" id="bb-center-slot">
+      <!-- Context content populated by JS depending on active detail screen -->
+    </div>
+
+    <button type="button" class="bb-media-box" id="bb-media-btn" aria-label="현재 미디어 상태">
+      <span class="bb-media-topline" id="bb-media-topline"></span>
+      <div class="bb-media-thumb"><canvas id="bb-thumb-canvas" width="48" height="48"></canvas></div>
+      <div class="bb-media-meta">
+        <strong id="bb-media-title">Synthetic Sympathy</strong>
+        <span id="bb-media-sub">Who-ya Extended</span>
+      </div>
+    </button>
+  </footer>
+
+  <!-- Top Quick Control Overlay Drawer (Systemoverview_quickcontrol_2.gif) -->
+  <section class="qc-drawer" id="qc-drawer" aria-label="퀵 컨트롤" hidden>
+    <div class="qc-top-bar">
+      <button type="button" class="qc-icon-btn" id="qc-close-top" aria-label="퀵 컨트롤 닫기">
+        <svg class="ico" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg>
+      </button>
+      <strong style="font-size:clamp(15px,1.25vw,21px);color:#cfd8e3">퀵 컨트롤</strong>
+      <button type="button" class="qc-icon-btn" id="qc-settings-btn" aria-label="설정 열기">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+      </button>
+    </div>
+    <div class="qc-grid">
+      <div class="qc-col">
+        <button type="button" class="qc-tile slim" data-qc="displayOff" aria-pressed="false">
+          <div><strong>화면 끄기</strong><small>시계/대기 화면 전환</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button type="button" class="qc-tile slim" data-qc="quietMode" aria-pressed="false">
+          <div><strong>조용한 모드</strong><small>뒷좌석 취침 배려</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5zM22 9l-6 6M16 9l6 6"/></svg>
+        </button>
+        <button type="button" class="qc-tile" data-qc="voiceMemo">
+          <div><strong>음성 메모</strong><small>주행 중 음성 녹음</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+        </button>
+      </div>
+      <div class="qc-col">
+        <button type="button" class="qc-tile" data-qc="soundSettings">
+          <div><strong>사운드 설정</strong><small>이퀄라이저 · 음장 효과</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+        </button>
+        <button type="button" class="qc-tile" data-qc="screenLayout">
+          <div><strong>화면 구성 설정</strong><small>분할 화면 · 클러스터 테마 · 대기 화면</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M14 4v14"/></svg>
+        </button>
+      </div>
+      <div class="qc-col">
+        <button type="button" class="qc-tile" data-qc="connectivity" aria-pressed="true">
+          <div><strong>기기 연결 (Bluetooth · AA)</strong><small>Galaxy S24 Ultra · Android Auto 연결됨</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+        </button>
+        <button type="button" class="qc-tile slim" data-qc="driverSwitch">
+          <div><strong>프로필 전환</strong><small id="qc-driver-label">현재: 운전자 1</small></div>
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 14.5-4 16 0"/></svg>
+        </button>
+      </div>
+    </div>
+    <button type="button" class="qc-bottom-handle" id="qc-close-bottom" aria-label="위로 밀어 닫기">
+      <span class="qc-handle-bar"></span>
+    </button>
+  </section>
+
   <div id="notice" class="notice" role="status" hidden></div>
 </div>
+
 <script>
 (function () {
   'use strict';
-  var labels = { navi:'내비게이션',media:'미디어',phone:'전화',radio:'라디오',projection:'폰 프로젝션',settings:'설정' };
-  var page = 'home';
-  var home = document.getElementById('home');
-  var apps = document.getElementById('apps');
-  var detail = document.getElementById('detail');
-  var history = [];
-  var playing = false;
-  var mediaStarted = false;
-  var sideMedia = true;
+
+  /* ====== Application State ====== */
+  var state = {
+    page: 'home',          // 'standby' | 'home' | 'apps1' | 'apps2' | 'navi' | 'media' | 'phone' | 'settings' | 'screenlayout'
+    history: [],
+    bgMode: 'blue',        // 'blue' (5W mod wallpaper) | 'dark' (ccNC pure dark)
+    graphicStyle: 'A',     // 'A' | 'B' | 'C' (Settings_screenlayout_3.png)
+    gaugeStyle: 'Classic', // 'Classic' | 'Simple'
+    standbyMode: 'frame',  // 'frame' (디지털 액자) | 'clock' (시계) | 'none' (표시 없음)
+    reordering: false,
+    dragIndex: null,
+    driverIndex: 0,
+    drivers: ['운전자 1', '운전자 2', '게스트'],
+    devices: ['Phone Name (Galaxy S24)', 'iPhone 16 Pro'],
+    deviceIndex: 0,
+
+    // Navigation state
+    dest: 'arirang',       // null | 'home' | 'work' | 'arirang'
+    naviViewMode: '3D',    // '3D' | '2D' | 'N'
+    naviScale: '50 m',
+    naviMuted: false,
+
+    // Media state
+    playing: true,
+    mediaSource: 'bt',     // 'nature' | 'bt' | 'fm' | 'am' | 'usb'
+    mediaView: 'list',     // 'list' (Media_btmusic_3) | 'single' (Media_btmusic_4) | 'full' (Media_btmusic_5)
+    mediaTab: 'playlist',  // 'playlist' | 'library'
+    trackIndex: 0,
+    tracks: [
+      { title: 'Synthetic Sympathy', artist: 'Who-ya Extended', album: '스마트폰 추천 · 무손실', cur: '0:35', dur: '3:44', pct: 34, palette: ['#2f5a52', '#c87d4b', '#1b3538'] },
+      { title: '자연의 소리', artist: '생기 넘치는 숲', album: '기아 사운드 스케이프', cur: '1:12', dur: '5:00', pct: 24, palette: ['#2c5236', '#72ab68', '#15291c'] },
+      { title: 'Night Drive in Seoul', artist: 'K8 Sound Lab', album: 'Meridian Horizon', cur: '2:04', dur: '4:15', pct: 48, palette: ['#293e5c', '#5b90c2', '#172235'] },
+      { title: 'FM 93.9', artist: '한동준의 FM POPS', album: 'CBS 음악FM', cur: 'LIVE', dur: '93.9 MHz', pct: 65, palette: ['#4e3629', '#d28a55', '#271b15'] }
+    ],
+
+    // Phone state
+    phoneTab: 'history',   // 'history' | 'contacts' | 'keypad' | 'messages' | 'privacy'
+    calls: [
+      { name: '김민수 (회사)', type: 'office', time: '11:29 PM', dir: 'out' },
+      { name: '현대차·기아 본사', type: 'work', time: '09:15 PM', dir: 'out' },
+      { name: '이지은 (휴대폰)', type: 'mobile', time: '06:40 PM', dir: 'in' },
+      { name: '우리 집', type: 'home', time: '02:18 PM', dir: 'in' }
+    ],
+
+    // All Apps 12 tiles across 2 pages (5W mod video 6.2s, 14.2s, 16.5s)
+    appTiles: [
+      { id: 'aa', label: 'Android Auto', color: '#3d7865', badge: '연결됨', action: 'projection' },
+      { id: 'navi', label: '지도', color: '#5c5b71', action: 'navi' },
+      { id: 'search', label: '검색/경로', color: '#786752', action: 'navi' },
+      { id: 'phone', label: '전화', color: '#53676c', action: 'phone' },
+      { id: 'projection', label: '폰 프로젝션', color: '#5d5c6f', action: 'projection' },
+      { id: 'voicememo', label: '음성 메모', color: '#6e5e4d', action: 'voicememo' },
+      { id: 'settings', label: '설정', color: '#556777', action: 'settings' },
+      { id: 'media', label: '미디어', color: '#5b5a70', action: 'media' },
+      { id: 'connect', label: 'Kia Connect', color: '#766652', action: 'connect' },
+      { id: 'alerts', label: '알림', color: '#53686d', action: 'alerts' },
+      { id: 'hmgapi', label: 'HMG API', color: '#5c5b6e', action: 'configure' },
+      { id: 'mods', label: '모드', color: '#6e5e4d', action: 'screenlayout' }
+    ],
+
+    // Settings & Split-screen Widget state (Settings_screenlayout_7.png)
+    settingsGrid6x1: false,
+    slTab: 'split',        // 'frame' | 'cluster' | 'standby' | 'split'
+    splitOpen: true,
+    splitActiveIdx: 0,
+    splitSubPage: 0,
+    splitWidgets: [
+      { id: 'map', label: '지도', enabled: true, fixed: true },
+      { id: 'media', label: '동영상', enabled: true, fixed: false },
+      { id: 'weather', label: '날씨', enabled: true, fixed: false },
+      { id: 'sports', label: '스포츠', enabled: true, fixed: false }
+    ]
+  };
+
+  var DESTINATIONS = {
+    arirang: { title: '아리랑리조텔', addr: '강원특별자치도 속초시 청봉로6길 · 약 148분', dist: '164.2 km', eta: '1:57 AM', turn: '우회전 · 속초 IC 방면' },
+    home:    { title: '우리집', addr: '서울시 서초구 헌릉로 · 약 32분', dist: '24.8 km', eta: '3:01 PM', turn: '우회전 · 양재 IC 방면' },
+    work:    { title: '현대차·기아 본사', addr: '서울시 서초구 헌릉로 12 · 약 18분', dist: '11.4 km', eta: '11:47 PM', turn: '직진 · 염곡사거리 방면' }
+  };
+
+  var shell = document.getElementById('shell');
   var notice = document.getElementById('notice');
-  var timer;
-  var gesture;
-  var swiped = false;
-  var swipeTimer;
-  var touchButton;
-  var destination;
+  var noticeTimer;
 
-  Object.keys(labels).forEach(function (key) {
-    var tile = document.createElement('article');
-    tile.className = 'card';
-    tile.innerHTML = '<div class="art"><canvas data-art="' + key + '" aria-hidden="true"></canvas></div>' +
-      '<h2 class="caption"><button type="button" data-action="' + key + '"><strong>' + labels[key] + '</strong></button></h2>';
-    apps.appendChild(tile);
-  });
+  function showNotice(msg) {
+    notice.textContent = msg;
+    notice.hidden = false;
+    window.clearTimeout(noticeTimer);
+    noticeTimer = window.setTimeout(function () { notice.hidden = true; }, 2400);
+  }
 
-  function drawIcon(ctx, name) {
-    ctx.beginPath();
-    if (name === 'navi') {
-      ctx.moveTo(35,10); ctx.lineTo(55,58); ctx.lineTo(35,47); ctx.lineTo(15,58); ctx.closePath();
-    } else if (name === 'media') {
-      ctx.moveTo(47,12); ctx.lineTo(47,50); ctx.arc(38,50,9,0,Math.PI*2);
-      ctx.moveTo(47,13); ctx.lineTo(59,22);
-      ctx.moveTo(18,25); ctx.lineTo(35,25); ctx.moveTo(18,35); ctx.lineTo(31,35);
-    } else if (name === 'phone') {
-      ctx.moveTo(19,12); ctx.lineTo(29,25); ctx.lineTo(23,32); ctx.quadraticCurveTo(29,44,40,49);
-      ctx.lineTo(47,43); ctx.lineTo(60,53); ctx.quadraticCurveTo(58,63,50,63);
-      ctx.quadraticCurveTo(18,58,10,23); ctx.quadraticCurveTo(12,15,19,12); ctx.closePath();
-    } else if (name === 'radio') {
-      ctx.rect(9,24,52,31); ctx.moveTo(14,24); ctx.lineTo(50,12);
-      ctx.moveTo(19,35); ctx.lineTo(42,35); ctx.moveTo(19,44); ctx.lineTo(36,44);
-      ctx.moveTo(54,41); ctx.arc(49,41,5,0,Math.PI*2);
-    } else if (name === 'projection') {
-      ctx.rect(7,15,56,41); ctx.moveTo(25,35); ctx.lineTo(45,35);
-      ctx.moveTo(37,27); ctx.lineTo(45,35); ctx.lineTo(37,43);
+  /* ====== Canvas Drawing Helpers ====== */
+  function setupCanvas(canvas) {
+    if (!canvas) return null;
+    var w = canvas.clientWidth || canvas.width || 300;
+    var h = canvas.clientHeight || canvas.height || 180;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  /* Draw 5W Mod Blue Wallpaper (1s / 2.5s / 14.2s) */
+  function drawWallpaper() {
+    var info = setupCanvas(document.getElementById('wallpaper-canvas'));
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+    var grad = ctx.createLinearGradient(0, 0, w, h);
+    if (state.graphicStyle === 'B') {
+      grad.addColorStop(0, '#1e3c4c'); grad.addColorStop(0.5, '#2b5f72'); grad.addColorStop(1, '#102430');
+    } else if (state.graphicStyle === 'C') {
+      grad.addColorStop(0, '#2a243e'); grad.addColorStop(0.5, '#483f68'); grad.addColorStop(1, '#171426');
     } else {
-      ctx.moveTo(12,20); ctx.lineTo(58,20); ctx.moveTo(12,35); ctx.lineTo(58,35);
-      ctx.moveTo(12,50); ctx.lineTo(58,50);
-      ctx.moveTo(26,13); ctx.lineTo(26,27); ctx.moveTo(44,28); ctx.lineTo(44,42);
-      ctx.moveTo(21,43); ctx.lineTo(21,57);
+      grad.addColorStop(0, '#4a77a8'); grad.addColorStop(0.48, '#7eb0da'); grad.addColorStop(1, '#2b4c73');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(215, 238, 255, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.15, 0); ctx.lineTo(w * 0.68, 0);
+    ctx.lineTo(w * 0.42, h); ctx.lineTo(0, h * 0.75);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = 'rgba(130, 195, 245, 0.25)';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.52, 0); ctx.lineTo(w, 0);
+    ctx.lineTo(w, h * 0.85); ctx.lineTo(w * 0.32, h * 0.45);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = 'rgba(18, 36, 58, 0.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.55); ctx.lineTo(w * 0.48, h);
+    ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+  }
+
+  /* Draw realistic ccNC Dark Map (Systemoverview_home_2.png & online_navi.jpeg) */
+  function drawMapCanvas(canvas, isDetail) {
+    var info = setupCanvas(canvas);
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+
+    ctx.fillStyle = '#0d131c';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#161f2c';
+    var blocks = [
+      [0.06, 0.08, 0.25, 0.34], [0.36, 0.06, 0.28, 0.26], [0.70, 0.10, 0.24, 0.32],
+      [0.08, 0.52, 0.26, 0.38], [0.58, 0.50, 0.32, 0.38]
+    ];
+    for (var i = 0; i < blocks.length; i++) {
+      var b = blocks[i];
+      ctx.fillRect(w * b[0], h * b[1], w * b[2], h * b[3]);
+    }
+
+    if (isDetail && state.naviViewMode === '3D') {
+      ctx.fillStyle = 'rgba(46, 56, 70, 0.72)';
+      var bld = [
+        [0.22, 0.16, 0.08, 0.24], [0.32, 0.10, 0.10, 0.28], [0.58, 0.20, 0.09, 0.30],
+        [0.69, 0.26, 0.11, 0.26], [0.24, 0.48, 0.12, 0.22]
+      ];
+      for (var j = 0; j < bld.length; j++) {
+        var d = bld[j];
+        ctx.fillRect(w * d[0], h * d[1], w * d[2], h * d[3]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.strokeRect(w * d[0], h * d[1], w * d[2], h * d[3]);
+      }
+    }
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#243244';
+    ctx.lineWidth = isDetail ? 18 : 13;
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.32); ctx.lineTo(w, h * 0.72);
+    ctx.moveTo(w * 0.18, h); ctx.lineTo(w * 0.78, 0);
+    ctx.moveTo(w * 0.48, h); ctx.lineTo(w * 0.48, 0);
+    ctx.stroke();
+
+    if (state.dest) {
+      ctx.strokeStyle = isDetail ? '#1db992' : '#e04f8a';
+      ctx.lineWidth = isDetail ? 12 : 9;
+      ctx.beginPath();
+      if (isDetail) {
+        ctx.moveTo(w * 0.48, h * 0.85);
+        ctx.lineTo(w * 0.48, h * 0.34);
+        ctx.lineTo(w * 0.76, h * 0.34);
+      } else {
+        ctx.moveTo(w * 0.47, h * 0.72);
+        ctx.lineTo(w * 0.47, h * 0.24);
+        ctx.lineTo(w * 0.92, h * 0.34);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      var pts = isDetail ? [[0.48, 0.62], [0.48, 0.46]] : [[0.47, 0.48], [0.68, 0.29]];
+      for (var k = 0; k < pts.length; k++) {
+        ctx.beginPath();
+        ctx.arc(w * pts[k][0], h * pts[k][1], 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.fillStyle = '#8b9bb0';
+    ctx.font = (isDetail ? '600 13px' : '600 11px') + ' "Malgun Gothic", sans-serif';
+    ctx.fillText('현대차·기아', w * 0.28, h * 0.36);
+    ctx.fillText('한국연구재단', w * 0.66, h * 0.46);
+    ctx.fillText('이디야', w * 0.53, h * 0.86);
+
+    var cx = w * 0.48, cy = isDetail ? h * 0.74 : h * 0.64;
+    var r = isDetail ? 20 : 17;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#259b84';
+    ctx.stroke();
+
+    ctx.fillStyle = '#228e78';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r * 0.58);
+    ctx.lineTo(cx + r * 0.46, cy + r * 0.46);
+    ctx.lineTo(cx, cy + r * 0.20);
+    ctx.lineTo(cx - r * 0.46, cy + r * 0.46);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /* Draw Home Media Card Art (5W mod video 2.5s & Systemoverview_home_2.png) */
+  function drawMediaCardCanvas() {
+    var info = setupCanvas(document.getElementById('home-media-canvas'));
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+    var tr = state.tracks[state.trackIndex];
+
+    var g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, '#3e4a3d');
+    g.addColorStop(1, '#2b352c');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.48, 0); ctx.lineTo(w, 0);
+    ctx.lineTo(w, h * 0.35); ctx.lineTo(w * 0.14, h);
+    ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+
+    if (state.trackIndex === 1) {
+      // Systemoverview_home_2.png Nature Sounds forest square thumbnail on left
+      var box = Math.min(h * 0.78, w * 0.48);
+      var bx = 18, by = (h - box) / 2;
+      var fg = ctx.createLinearGradient(bx, by, bx, by + box);
+      fg.addColorStop(0, '#4f7a4e');
+      fg.addColorStop(1, '#1e3522');
+      ctx.fillStyle = fg;
+      ctx.fillRect(bx, by, box, box);
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.strokeRect(bx, by, box, box);
+    } else {
+      // 5W mod video 2.5s centered double music note icon
+      ctx.strokeStyle = '#e7f0ea';
+      ctx.lineWidth = 2.8;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      var nx = w * 0.50, ny = h * 0.52;
+      ctx.beginPath();
+      ctx.arc(nx - 12, ny + 11, 6.5, 0, Math.PI * 2);
+      ctx.moveTo(nx - 5.5, ny + 11); ctx.lineTo(nx - 5.5, ny - 16);
+      ctx.lineTo(nx + 15, ny - 20); ctx.lineTo(nx + 15, ny + 7);
+      ctx.moveTo(nx - 5.5, ny - 8); ctx.lineTo(nx + 15, ny - 12);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(nx + 8.5, ny + 7, 6.5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  function drawAlbumArt(canvas) {
+    var info = setupCanvas(canvas);
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+    var tr = state.tracks[state.trackIndex];
+    var g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, tr.palette[1]);
+    g.addColorStop(1, tr.palette[2]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(43, 183, 155, 0.38)';
+    ctx.beginPath(); ctx.arc(w * 0.85, h * 0.85, w * 0.65, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(220, 145, 88, 0.45)';
+    ctx.beginPath(); ctx.arc(w * 0.25, h * 0.72, w * 0.55, 0, Math.PI * 2); ctx.fill();
+  }
+
+  /* Draw Home Phone Card Art */
+  function drawPhoneCardCanvas() {
+    var info = setupCanvas(document.getElementById('home-phone-canvas'));
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+    ctx.fillStyle = '#1b222d';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(200, 175, 140, 0.14)';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.24, 0); ctx.lineTo(w, 0);
+    ctx.lineTo(w, h * 0.42); ctx.lineTo(w * 0.24, h * 0.68);
+    ctx.closePath(); ctx.fill();
+
+    var cx = w * 0.5, cy = h * 0.5;
+    ctx.save();
+    ctx.translate(cx - 24, cy - 24);
+    ctx.strokeStyle = '#e4ebf5';
+    ctx.lineWidth = 2.8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(11, 6); ctx.lineTo(19, 16); ctx.lineTo(14, 22);
+    ctx.quadraticCurveTo(20, 32, 29, 36);
+    ctx.lineTo(35, 31); ctx.lineTo(45, 39);
+    ctx.quadraticCurveTo(43, 47, 36, 47);
+    ctx.quadraticCurveTo(11, 43, 5, 15);
+    ctx.quadraticCurveTo(6, 8, 11, 6);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  /* Draw App Tile Facet + Icon (5W mod video 6.2s, 14.2s, 16.5s) */
+  function drawTileIcon(ctx, id) {
+    ctx.beginPath();
+    if (id === 'aa') {
+      ctx.moveTo(35, 11); ctx.lineTo(54, 54); ctx.lineTo(46, 54);
+      ctx.lineTo(35, 28); ctx.lineTo(24, 54); ctx.lineTo(16, 54); ctx.closePath();
+      ctx.moveTo(35, 21); ctx.lineTo(45, 46); ctx.lineTo(25, 46); ctx.closePath();
+    } else if (id === 'navi') {
+      ctx.moveTo(35, 11); ctx.lineTo(53, 55); ctx.lineTo(35, 45); ctx.lineTo(17, 55); ctx.closePath();
+    } else if (id === 'search') {
+      ctx.arc(35, 35, 20, 0, Math.PI * 2);
+      ctx.moveTo(43, 27); ctx.lineTo(38, 38); ctx.lineTo(27, 43); ctx.lineTo(32, 32); ctx.closePath();
+    } else if (id === 'phone') {
+      ctx.moveTo(19, 13); ctx.lineTo(28, 24); ctx.lineTo(23, 30);
+      ctx.quadraticCurveTo(29, 41, 39, 46);
+      ctx.lineTo(45, 41); ctx.lineTo(57, 50);
+      ctx.quadraticCurveTo(55, 58, 48, 58);
+      ctx.quadraticCurveTo(19, 53, 12, 22);
+      ctx.quadraticCurveTo(13, 15, 19, 13); ctx.closePath();
+    } else if (id === 'projection') {
+      ctx.rect(12, 20, 28, 22);
+      ctx.rect(34, 16, 22, 36);
+      ctx.moveTo(42, 46); ctx.lineTo(48, 46);
+    } else if (id === 'voicememo') {
+      ctx.rect(28, 13, 14, 24);
+      ctx.moveTo(21, 31); ctx.quadraticCurveTo(21, 47, 35, 47);
+      ctx.quadraticCurveTo(49, 47, 49, 31);
+      ctx.moveTo(35, 47); ctx.lineTo(35, 57);
+      ctx.moveTo(26, 57); ctx.lineTo(44, 57);
+    } else if (id === 'settings') {
+      ctx.arc(35, 35, 9, 0, Math.PI * 2);
+      for (var a = 0; a < 8; a++) {
+        var rad = a * Math.PI / 4;
+        ctx.moveTo(35 + Math.cos(rad) * 13, 35 + Math.sin(rad) * 13);
+        ctx.lineTo(35 + Math.cos(rad) * 21, 35 + Math.sin(rad) * 21);
+      }
+    } else if (id === 'media') {
+      ctx.rect(14, 20, 42, 32);
+      ctx.moveTo(20, 14); ctx.lineTo(50, 14);
+      ctx.moveTo(39, 27); ctx.lineTo(39, 44);
+      ctx.arc(34, 44, 4, 0, Math.PI * 2);
+    } else if (id === 'connect') {
+      ctx.moveTo(16, 28); ctx.quadraticCurveTo(35, 14, 54, 28);
+      ctx.moveTo(22, 36); ctx.quadraticCurveTo(35, 25, 48, 36);
+      ctx.moveTo(29, 44); ctx.quadraticCurveTo(35, 38, 41, 44);
+      ctx.arc(35, 51, 2, 0, Math.PI * 2);
+    } else if (id === 'alerts') {
+      ctx.moveTo(35, 14); ctx.quadraticCurveTo(49, 14, 49, 32);
+      ctx.lineTo(53, 45); ctx.lineTo(17, 45); ctx.lineTo(21, 32);
+      ctx.quadraticCurveTo(21, 14, 35, 14);
+      ctx.moveTo(31, 51); ctx.quadraticCurveTo(35, 56, 39, 51);
+    } else if (id === 'hmgapi') {
+      ctx.rect(13, 18, 44, 34);
+      ctx.moveTo(27, 29); ctx.lineTo(20, 35); ctx.lineTo(27, 41);
+      ctx.moveTo(43, 29); ctx.lineTo(50, 35); ctx.lineTo(43, 41);
+      ctx.moveTo(37, 27); ctx.lineTo(33, 43);
+    } else {
+      ctx.moveTo(35, 13); ctx.lineTo(53, 24); ctx.lineTo(53, 46);
+      ctx.lineTo(35, 57); ctx.lineTo(17, 46); ctx.lineTo(17, 24); ctx.closePath();
+      ctx.moveTo(25, 38); ctx.lineTo(35, 28); ctx.lineTo(45, 38);
     }
     ctx.stroke();
   }
 
-  function paint() {
-    var canvases = (page === 'home' ? home : page === 'apps' ? apps : detail).querySelectorAll('canvas');
+  function paintAppTiles() {
+    var canvases = document.querySelectorAll('#view-apps canvas');
     for (var i = 0; i < canvases.length; i++) {
-      var canvas = canvases[i];
-      var width = canvas.clientWidth;
-      var height = canvas.clientHeight;
-      var scale = Math.min(window.devicePixelRatio || 1, 2);
-      if (!width || !height) continue;
-      canvas.width = Math.round(width * scale);
-      canvas.height = Math.round(height * scale);
-      var ctx = canvas.getContext('2d');
-      ctx.scale(scale, scale);
-      ctx.fillStyle = 'rgba(201,230,246,.10)';
-      ctx.beginPath(); ctx.moveTo(width * .52,0); ctx.lineTo(width,0);
-      ctx.lineTo(width,height * .28); ctx.lineTo(width * .28,height); ctx.lineTo(0,height); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = 'rgba(8,16,27,.18)';
-      ctx.beginPath(); ctx.moveTo(width, height * .36); ctx.lineTo(width,height);
-      ctx.lineTo(width * .36,height); ctx.closePath(); ctx.fill();
-      var size = Math.min(height * .45, width * .45, 110) / 70;
-      ctx.translate((width - size * 70) / 2, (height - size * 70) / 2);
+      var c = canvases[i];
+      var info = setupCanvas(c);
+      if (!info) continue;
+      var ctx = info.ctx, w = info.w, h = info.h;
+      var color = c.getAttribute('data-color') || '#4f6577';
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.13)';
+      ctx.beginPath();
+      ctx.moveTo(w * 0.55, 0); ctx.lineTo(w, 0);
+      ctx.lineTo(w, h * 0.34); ctx.lineTo(0, h * 0.80);
+      ctx.lineTo(0, h * 0.42); ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = 'rgba(0,0,0,0.16)';
+      ctx.beginPath();
+      ctx.moveTo(w, h * 0.45); ctx.lineTo(w, h);
+      ctx.lineTo(w * 0.2, h); ctx.closePath(); ctx.fill();
+
+      var size = Math.min(w * 0.44, h * 0.40, 76) / 70;
+      ctx.save();
+      ctx.translate((w - size * 70) / 2, (h - size * 70) / 2);
       ctx.scale(size, size);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.1;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.strokeStyle = '#d9edf5';
-      drawIcon(ctx, canvas.getAttribute('data-art'));
+      ctx.strokeStyle = '#f3f8ff';
+      drawTileIcon(ctx, c.getAttribute('data-tile-id'));
+      ctx.restore();
     }
   }
 
-  function updateStatus() {
-    var mediaState = playing ? '미디어 재생 중 · 예시' : mediaStarted ? '미디어 일시정지 · 예시' : '미디어 꺼짐';
-    document.getElementById('dock-media').textContent = mediaState;
-    var mediaAction = playing ? '일시정지' : '재생';
-    document.getElementById('media-toggle').textContent = mediaAction;
-    document.getElementById('home-media-toggle').textContent = mediaAction;
-    document.getElementById('side-title').textContent = sideMedia ? '미디어 위젯' : '내비 위젯';
-    document.getElementById('side-text').textContent = sideMedia ? mediaState : '지도 연결 대기';
-    var routeButtons = document.querySelectorAll('#route-actions [data-destination]');
-    for (var i = 0; i < routeButtons.length; i++) {
-      routeButtons[i].setAttribute('aria-pressed', String(routeButtons[i].getAttribute('data-destination') === destination));
-    }
-    document.getElementById('route-status').textContent = destination ?
-      (destination === 'home' ? '우리 집' : '회사') + ' 선택됨 · 길 안내 예시' : '';
+  /* ====== Build & Render Views ====== */
+  function renderAppTilesPage() {
+    var container = document.getElementById('view-apps');
+    container.innerHTML = '';
+    container.classList.toggle('reordering', state.reordering);
+    var startIdx = state.page === 'apps2' ? 6 : 0;
+    var slice = state.appTiles.slice(startIdx, startIdx + 6);
+
+    slice.forEach(function (tile, localIdx) {
+      var globalIdx = startIdx + localIdx;
+      var el = document.createElement('article');
+      el.className = 'app-tile chamfer-both';
+      el.style.setProperty('--tile-bg', tile.color);
+      el.setAttribute('draggable', 'true');
+      el.setAttribute('data-idx', String(globalIdx));
+
+      var badgeHtml = tile.badge ? '<span class="app-badge">' + tile.badge + '</span>' : '';
+      el.innerHTML =
+        '<div class="app-tile-art">' + badgeHtml +
+          '<canvas data-tile-id="' + tile.id + '" data-color="' + tile.color + '"></canvas>' +
+        '</div>' +
+        '<div class="app-tile-caption">' +
+          '<strong>' + tile.label + '</strong>' +
+          '<div class="reorder-arrows">' +
+            '<button type="button" class="reorder-btn" data-move="-1" title="앞으로 이동">‹</button>' +
+            '<button type="button" class="reorder-btn" data-move="1" title="뒤로 이동">›</button>' +
+          '</div>' +
+        '</div>';
+
+      el.addEventListener('click', function (ev) {
+        var moveBtn = ev.target.closest('[data-move]');
+        if (moveBtn) {
+          ev.stopPropagation();
+          var dir = parseInt(moveBtn.getAttribute('data-move'), 10);
+          var targetIdx = (globalIdx + dir + state.appTiles.length) % state.appTiles.length;
+          var tmp = state.appTiles[globalIdx];
+          state.appTiles[globalIdx] = state.appTiles[targetIdx];
+          state.appTiles[targetIdx] = tmp;
+          renderAppTilesPage();
+          paintAppTiles();
+          return;
+        }
+        if (state.reordering) return;
+        handleTileAction(tile);
+      });
+
+      el.addEventListener('dragstart', function () {
+        state.dragIndex = globalIdx;
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', function () {
+        el.classList.remove('dragging');
+      });
+      el.addEventListener('dragover', function (ev) {
+        ev.preventDefault();
+        el.classList.add('drag-over');
+      });
+      el.addEventListener('dragleave', function () {
+        el.classList.remove('drag-over');
+      });
+      el.addEventListener('drop', function (ev) {
+        ev.preventDefault();
+        el.classList.remove('drag-over');
+        if (state.dragIndex === null || state.dragIndex === globalIdx) return;
+        var moved = state.appTiles.splice(state.dragIndex, 1)[0];
+        state.appTiles.splice(globalIdx, 0, moved);
+        state.dragIndex = null;
+        renderAppTilesPage();
+        paintAppTiles();
+        showNotice('아이콘 위치가 변경되었습니다.');
+      });
+
+      container.appendChild(el);
+    });
+    paintAppTiles();
   }
 
-  function show(next) {
-    page = next;
-    document.getElementById('deck').classList.toggle('is-browsing', next === 'home' || next === 'apps');
-    home.hidden = next !== 'home';
-    apps.hidden = next !== 'apps';
-    detail.hidden = next === 'home' || next === 'apps';
-    var title = next === 'home' ? '홈' : next === 'apps' ? '전체 앱' : labels[next];
-    document.getElementById('title').textContent = title;
-    if (!detail.hidden) {
-      document.getElementById('detail-title').textContent = title;
-      document.getElementById('detail-description').textContent = {
-        navi:'순정 지도 연결을 기다리고 있습니다.',
-        media:'예시 재생 상태가 홈과 하단 미디어에 함께 표시됩니다.',
-        phone:'차량 연결과 최근 통화 정보를 표시할 자리입니다.'
-      }[next];
-      detail.querySelector('canvas').setAttribute('data-art', next);
-      document.getElementById('media-actions').hidden = next !== 'media';
-      document.getElementById('route-actions').hidden = next !== 'navi';
-      sideMedia = next !== 'media';
+  function handleTileAction(tile) {
+    if (tile.action === 'navi' || tile.action === 'media' || tile.action === 'phone' ||
+        tile.action === 'settings' || tile.action === 'screenlayout') {
+      navigateTo(tile.action);
+      return;
     }
-    notice.hidden = true;
-    document.getElementById('back-button').disabled = !history.length;
-    document.getElementById('home-button').setAttribute('aria-pressed', next === 'home' ? 'true' : 'false');
-    document.getElementById('apps-button').setAttribute('aria-pressed', next === 'apps' ? 'true' : 'false');
-    updateStatus();
-    paint();
+    if (window.K8Host && (tile.action === 'projection' || tile.action === 'configure' || tile.action === 'radio')) {
+      window.K8Host.performAction(tile.action);
+      return;
+    }
+    showNotice(tile.label + ' 실행 · 차량 연동 준비 완료');
   }
 
-  function open(next) {
-    if (page === next) return;
-    history.push(page);
-    show(next);
+  /* Render Media Detail Screen (Media_btmusic_3/4/5.png) */
+  function renderMediaStage() {
+    var listPane = document.getElementById('media-list-pane');
+    var singlePane = document.getElementById('media-single-pane');
+    var devicePane = document.getElementById('media-device-pane');
+    var miniTrans = document.getElementById('list-mini-transport');
+    var curTrack = state.tracks[state.trackIndex];
+    var devName = state.devices[state.deviceIndex];
+
+    document.getElementById('media-phone-name').textContent = devName;
+    document.getElementById('single-phone-label').textContent = devName;
+    document.getElementById('single-track-index').textContent = '♪ ' + (state.trackIndex + 1) + '/' + state.tracks.length;
+    document.getElementById('single-title').textContent = curTrack.title;
+    document.getElementById('single-artist').textContent = curTrack.artist;
+    document.getElementById('single-album').textContent = curTrack.album;
+    document.getElementById('media-cur-time').textContent = curTrack.cur;
+    document.getElementById('media-dur-time').textContent = curTrack.dur;
+    document.getElementById('media-scrub-fill').style.width = curTrack.pct + '%';
+
+    var playSvg = state.playing
+      ? '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14"/><rect x="13.5" y="5" width="3.5" height="14"/></svg>'
+      : '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg>';
+    document.getElementById('media-play-btn').innerHTML = playSvg;
+    document.getElementById('list-play-btn').innerHTML = playSvg;
+
+    devicePane.hidden = state.mediaView === 'full';
+    listPane.hidden = state.mediaView !== 'list';
+    singlePane.hidden = state.mediaView === 'list';
+    miniTrans.hidden = state.mediaView !== 'list';
+
+    var chips = document.querySelectorAll('[data-mview]');
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].setAttribute('aria-pressed', String(chips[i].getAttribute('data-mview') === state.mediaView));
+    }
+
+    listPane.innerHTML = '';
+    state.tracks.forEach(function (t, idx) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'media-track-row';
+      var active = idx === state.trackIndex;
+      btn.setAttribute('aria-current', String(active));
+      btn.innerHTML =
+        '<span>' + (idx + 1) + ' &nbsp; ' + t.title + ' <small style="opacity:.7;margin-left:8px">' + t.artist + '</small></span>' +
+        (active && state.playing ? '<span class="eq-bars" aria-label="재생 중"><i></i><i></i><i></i><i></i></span>' : '<span>' + t.dur + '</span>');
+      btn.addEventListener('click', function () {
+        state.trackIndex = idx;
+        state.playing = true;
+        updateAllStatuses();
+      });
+      listPane.appendChild(btn);
+    });
+
+    drawAlbumArt(document.getElementById('detail-album-canvas'));
   }
-  function goHome() {
-    history.length = 0;
-    show('home');
+
+  /* Render Phone Call History Stage (Phone_callhistory_3.png monochrome vector icons) */
+  function renderPhoneStage() {
+    var list = document.getElementById('phone-call-list');
+    document.getElementById('phone-device-label').textContent = state.devices[state.deviceIndex];
+    list.innerHTML = '';
+    var typeSvgs = {
+      office: '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg>',
+      work:   '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="1"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 16h4v4h-4z"/></svg>',
+      mobile: '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>',
+      home:   '<svg class="ico" style="width:20px;height:20px;color:#9e948c" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v8H6v-8z"/></svg>'
+    };
+    state.calls.forEach(function (c) {
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'phone-row';
+      row.innerHTML =
+        '<div class="phone-row-left">' +
+          '<svg class="ico" style="width:22px;height:22px;color:#9e948c" viewBox="0 0 24 24">' +
+            '<path d="M6.5 4.5 10 8l-2 2.5a11 11 0 0 0 5.5 5.5L16 14l3.5 3.5c-.5 2-2 3-4 3C8.5 19.5 4.5 15.5 3.5 8.5c0-2 1-3.5 3-4z"/>' +
+            '<path stroke="#5bb974" stroke-width="2.2" d="M14 6h6m-2.5-2.5L20 6l-2.5 2.5"/>' +
+          '</svg>' +
+          '<span class="call-name">' + c.name + '</span>' +
+        '</div>' +
+        '<div class="phone-row-right">' +
+          (typeSvgs[c.type] || typeSvgs.mobile) +
+          '<span>' + c.time + '</span>' +
+        '</div>';
+      row.addEventListener('click', function () {
+        if (window.K8Host) {
+          window.K8Host.performAction('phone');
+          return;
+        }
+        showNotice(c.name + ' 통화 발신 연결 예시');
+      });
+      list.appendChild(row);
+    });
   }
-  document.getElementById('home-button').onclick = goHome;
-  document.getElementById('apps-button').onclick = function () { open('apps'); };
-  document.getElementById('back-button').onclick = function () {
-    if (history.length) show(history.pop());
+
+  /* Render Settings Main Grid (5W mod video 22s/26s vector icons) */
+  function renderSettingsStage() {
+    var grid = document.getElementById('settings-cards-grid');
+    grid.classList.toggle('mode-6x1', state.settingsGrid6x1);
+    var items = [
+      { id: 'vehicle', title: '차량', sub: '운전자 보조 · 드라이브 모드 · 클러스터 · 공조 · 시트', svg: '<path d="M5 14l2-5h10l2 5v5H5v-5z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>' },
+      { id: 'general', title: '일반', sub: '시스템 정보 · 날짜/시간 · 언어 · 키보드', svg: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>' },
+      { id: 'navi', title: '내비게이션', sub: '표시 · 안내 · 경로 옵션', svg: '<path d="m12 3 7 17-7-4-7 4z"/>' },
+      { id: 'sound', title: '사운드', sub: '음량 · 이퀄라이저 · 주행 사운드', svg: '<path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7"/>' },
+      { id: 'devices', title: '기기 연결', sub: '블루투스 · 폰 프로젝션 (Android Auto)', svg: '<rect x="4" y="6" width="10" height="12" rx="1"/><rect x="12" y="4" width="8" height="16" rx="1"/>' },
+      { id: 'profile', title: '사용자 프로필', sub: '운전자 1 · 프로필 이미지 및 연동', svg: '<circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/>' },
+      { id: 'voice', title: '음성인식', sub: '호출어 · 안내음 간략화', svg: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>' },
+      { id: 'display', title: '디스플레이', sub: '화면구성 · 분할 화면 · 클러스터 테마 · 대기 화면', svg: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>' }
+    ];
+    if (state.settingsGrid6x1) items = items.slice(0, 6);
+    grid.innerHTML = '';
+    items.forEach(function (it) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'set-card chamfer-both';
+      btn.innerHTML =
+        '<div><strong>' + it.title + '</strong><span>' + it.sub + '</span></div>' +
+        '<span class="set-card-icon"><svg class="ico" style="width:26px;height:26px" viewBox="0 0 24 24">' + it.svg + '</svg></span>';
+      btn.addEventListener('click', function () {
+        if (it.id === 'display') {
+          navigateTo('screenlayout');
+        } else if (it.id === 'navi') {
+          navigateTo('navi');
+        } else if (it.id === 'devices' && window.K8Host) {
+          window.K8Host.performAction('configure');
+        } else {
+          showNotice(it.title + ' 설정: ' + it.sub);
+        }
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  /* Render Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
+  function renderScreenLayoutStage() {
+    var tabs = document.querySelectorAll('[data-sl-tab]');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].setAttribute('aria-selected', String(tabs[i].getAttribute('data-sl-tab') === state.slTab));
+    }
+    var panel = document.getElementById('sl-panel-content');
+    panel.innerHTML = '';
+
+    if (state.slTab === 'frame') {
+      panel.innerHTML =
+        '<p class="sl-desc">대기 화면과 분할 화면에 휴대폰 앱에서 업로드한 이미지가 표시됩니다.</p>' +
+        '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span>›</span></button>' +
+        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span>›</span></button>';
+      panel.querySelectorAll('[data-frame-act]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.bgMode = state.bgMode === 'blue' ? 'dark' : 'blue';
+          shell.setAttribute('data-bg', state.bgMode);
+          updateAllStatuses();
+          showNotice('배경 이미지 모드가 전환되었습니다 (' + (state.bgMode === 'blue' ? '5W 파란 배경' : 'ccNC 순정 다크') + ')');
+        });
+      });
+    } else if (state.slTab === 'cluster') {
+      panel.innerHTML =
+        '<p class="sl-desc">선택된 테마로 표시합니다.</p>' +
+        '<div style="margin-top:8px">' +
+          '<strong style="font-size:clamp(15px,1.3vw,22px)">게이지 스타일</strong>' +
+          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">클러스터 게이지의 스타일을 선택합니다.</p>' +
+          '<div class="sl-seg-group">' +
+            '<button type="button" class="sl-seg-btn" data-gauge="Classic" aria-pressed="' + (state.gaugeStyle === 'Classic') + '">Classic</button>' +
+            '<button type="button" class="sl-seg-btn" data-gauge="Simple" aria-pressed="' + (state.gaugeStyle === 'Simple') + '">Simple</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:14px">' +
+          '<strong style="font-size:clamp(15px,1.3vw,22px)">그래픽 스타일</strong>' +
+          '<p style="color:#8b94a0;font-size:14px;margin-top:3px">클러스터 및 홈 화면의 그래픽 스타일을 선택합니다.</p>' +
+          '<div class="sl-seg-group">' +
+            '<button type="button" class="sl-seg-btn" data-gstyle="A" aria-pressed="' + (state.graphicStyle === 'A') + '">Style A</button>' +
+            '<button type="button" class="sl-seg-btn" data-gstyle="B" aria-pressed="' + (state.graphicStyle === 'B') + '">Style B</button>' +
+            '<button type="button" class="sl-seg-btn" data-gstyle="C" aria-pressed="' + (state.graphicStyle === 'C') + '">Style C</button>' +
+          '</div>' +
+        '</div>';
+      panel.querySelectorAll('[data-gauge]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.gaugeStyle = b.getAttribute('data-gauge');
+          renderScreenLayoutStage();
+        });
+      });
+      panel.querySelectorAll('[data-gstyle]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.graphicStyle = b.getAttribute('data-gstyle');
+          shell.setAttribute('data-style', state.graphicStyle);
+          drawWallpaper();
+          renderScreenLayoutStage();
+        });
+      });
+    } else if (state.slTab === 'standby') {
+      var opts = [
+        { id: 'frame', label: '디지털 액자', gear: true },
+        { id: 'clock', label: '시계', gear: true },
+        { id: 'none', label: '표시 없음', gear: false }
+      ];
+      var html = '<p class="sl-desc">대기 화면을 선택합니다.</p>';
+      opts.forEach(function (o) {
+        html +=
+          '<button type="button" class="sl-radio-row" data-sopt="' + o.id + '" aria-checked="' + (state.standbyMode === o.id) + '">' +
+            '<span class="sl-radio-left"><span class="radio-circle"></span><span>' + o.label + '</span></span>' +
+            (o.gear ? '<span style="color:#77818e">⚙</span>' : '') +
+          '</button>';
+      });
+      panel.innerHTML = html;
+      panel.querySelectorAll('[data-sopt]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.standbyMode = b.getAttribute('data-sopt');
+          renderScreenLayoutStage();
+          showNotice('대기 화면 설정: ' + b.textContent.trim());
+        });
+      });
+    } else {
+      var shtml = '<p class="sl-desc">분할 화면의 종류를 선택하고 순서를 변경합니다. \'지도\'는 항상 표시됩니다.</p>';
+      state.splitWidgets.forEach(function (w, idx) {
+        shtml +=
+          '<div class="sl-check-row' + (w.fixed ? ' is-fixed' : '') + '" aria-checked="' + w.enabled + '">' +
+            '<button type="button" class="sl-check-left" data-split-toggle="' + idx + '" style="flex:1;text-align:left">' +
+              '<span class="check-box"><svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="m3 8 3.5 3.5L13 5"/></svg></span><span>' + w.label + '</span>' +
+            '</button>' +
+            '<div style="display:flex;align-items:center;gap:8px">' +
+              '<button type="button" class="split-mini-btn" data-split-up="' + idx + '" title="위로 이동">▲</button>' +
+              '<button type="button" class="split-mini-btn" data-split-dn="' + idx + '" title="아래로 이동">▼</button>' +
+              '<span style="color:#88929f;padding:0 6px">≡</span>' +
+            '</div>' +
+          '</div>';
+      });
+      panel.innerHTML = shtml;
+      panel.querySelectorAll('[data-split-toggle]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var i = parseInt(b.getAttribute('data-split-toggle'), 10);
+          if (state.splitWidgets[i].fixed) {
+            showNotice('\'지도\'는 항상 표시됩니다.');
+            return;
+          }
+          state.splitWidgets[i].enabled = !state.splitWidgets[i].enabled;
+          renderScreenLayoutStage();
+          renderSplitWidget();
+        });
+      });
+      panel.querySelectorAll('[data-split-up]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var i = parseInt(b.getAttribute('data-split-up'), 10);
+          if (i <= 0) return;
+          var tmp = state.splitWidgets[i - 1];
+          state.splitWidgets[i - 1] = state.splitWidgets[i];
+          state.splitWidgets[i] = tmp;
+          renderScreenLayoutStage();
+          renderSplitWidget();
+        });
+      });
+      panel.querySelectorAll('[data-split-dn]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var i = parseInt(b.getAttribute('data-split-dn'), 10);
+          if (i >= state.splitWidgets.length - 1) return;
+          var tmp = state.splitWidgets[i + 1];
+          state.splitWidgets[i + 1] = state.splitWidgets[i];
+          state.splitWidgets[i] = tmp;
+          renderScreenLayoutStage();
+          renderSplitWidget();
+        });
+      });
+    }
+
+    drawScreenLayoutPreview();
+  }
+
+  function drawScreenLayoutPreview() {
+    var info = setupCanvas(document.getElementById('sl-preview-canvas'));
+    if (!info) return;
+    var ctx = info.ctx, w = info.w, h = info.h;
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = '#75808d';
+    ctx.lineWidth = 2;
+
+    if (state.slTab === 'split') {
+      ctx.fillStyle = '#181b1f';
+      ctx.strokeRect(w * 0.24, h * 0.08, w * 0.52, h * 0.60);
+      ctx.fillRect(w * 0.24, h * 0.08, w * 0.52, h * 0.60);
+      ctx.strokeRect(w * 0.28, h * 0.72, w * 0.44, h * 0.22);
+      ctx.fillStyle = '#2bb79b';
+      ctx.font = '700 28px sans-serif';
+      ctx.fillText('↓↑', w * 0.41, h * 0.75);
+    } else if (state.slTab === 'cluster') {
+      ctx.strokeRect(w * 0.30, h * 0.16, w * 0.52, h * 0.46);
+      ctx.fillStyle = '#1a1e24';
+      ctx.fillRect(w * 0.18, h * 0.30, w * 0.52, h * 0.48);
+      ctx.strokeRect(w * 0.18, h * 0.30, w * 0.52, h * 0.48);
+      ctx.fillStyle = '#2bb79b';
+      ctx.font = '700 26px sans-serif';
+      ctx.fillText('⇄', w * 0.40, h * 0.60);
+    } else {
+      ctx.fillStyle = '#14181d';
+      ctx.fillRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
+      ctx.strokeRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
+    }
+  }
+
+  /* Render Right Split-Screen Widget (Systemoverview_widget_1/2/3.gif) */
+  function getEnabledSplitWidgets() {
+    return state.splitWidgets.filter(function (w) { return w.enabled; });
+  }
+
+  function renderSplitWidget() {
+    var wrap = document.getElementById('split-widget');
+    var handle = document.getElementById('split-toggle-btn');
+    wrap.classList.toggle('is-closed', !state.splitOpen);
+    handle.textContent = state.splitOpen ? '›' : '‹';
+
+    var enabled = getEnabledSplitWidgets();
+    if (!enabled.length) enabled = [state.splitWidgets[0]];
+    var active = enabled[state.splitActiveIdx % enabled.length];
+    document.getElementById('split-widget-title').textContent = active.label;
+
+    var dots = document.querySelectorAll('[data-sdot]');
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].setAttribute('aria-current', String(i === state.splitSubPage));
+    }
+
+    var box = document.getElementById('split-content-box');
+    var tr = state.tracks[state.trackIndex];
+    var d = DESTINATIONS[state.dest || 'home'];
+
+    if (active.id === 'map') {
+      var mapPages = [
+        '<div><strong style="font-size:19px;color:#53d7c0">' + d.title + '</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">' + d.addr + '</p><p style="color:#9aa5b4;font-size:13px;margin-top:8px">남은 거리 ' + d.dist + ' · 도착 ' + d.eta + '</p></div>',
+        '<div><strong style="font-size:18px">다음 안내: 300 m 앞</strong><p style="color:#53d7c0;font-size:15px;margin-top:4px">↱ ' + d.turn + '</p><p style="color:#9aa5b4;font-size:12px;margin-top:6px">제한속도 100 km/h 구간</p></div>',
+        '<div><strong style="font-size:18px">나침반 · 주행 방향</strong><p style="color:#cfd8e3;font-size:14px;margin-top:4px">방위: SE (남동) · 고도 42 m</p><p style="color:#9aa5b4;font-size:12px;margin-top:6px">GPS 수신 양호</p></div>'
+      ];
+      box.innerHTML = mapPages[state.splitSubPage];
+    } else if (active.id === 'media') {
+      var mediaPages = [
+        '<div><strong style="font-size:18px">' + tr.title + '</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">' + tr.artist + '</p><p style="color:#d28a5c;font-size:12px;margin-top:8px">' + (state.playing ? '▶ 재생 중 · ' : '⏸ 일시정지 · ') + tr.cur + ' / ' + tr.dur + '</p></div>',
+        '<div><strong style="font-size:17px">재생 목록 (' + (state.trackIndex + 1) + '/' + state.tracks.length + ')</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">다음 곡: ' + state.tracks[(state.trackIndex + 1) % state.tracks.length].title + '</p></div>',
+        '<div><strong style="font-size:17px">사운드 출력</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">Meridian Surround · 무손실 스트리밍</p></div>'
+      ];
+      box.innerHTML = mediaPages[state.splitSubPage];
+    } else if (active.id === 'weather') {
+      var weatherPages = [
+        '<div><strong style="font-size:22px">4°C 흐림</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">인천시 미추홀구 · 대기질 <b style="color:#7ce89e">보통</b></p></div>',
+        '<div><strong style="font-size:17px">시간대별 예보</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">자정 3°C · 새벽 2°C · 내일 낮 11°C</p></div>',
+        '<div><strong style="font-size:17px">주간 날씨</strong><p style="color:#cfd8e3;font-size:13px;margin-top:4px">목 맑음 · 금 구름조금 · 토 맑음</p></div>'
+      ];
+      box.innerHTML = weatherPages[state.splitSubPage];
+    } else {
+      var sportsPages = [
+        '<div><strong style="font-size:17px">KBO 리그</strong><p style="color:#53d7c0;font-size:15px;margin-top:4px">KIA 타이거즈 5 : 2 승리</p><p style="color:#9aa5b4;font-size:12px;margin-top:4px">경기 종료 · 광주-기아 챔피언스 필드</p></div>',
+        '<div><strong style="font-size:17px">프리미어리그</strong><p style="color:#cfd8e3;font-size:14px;margin-top:4px">토트넘 2 : 1 맨체스터 시티</p></div>',
+        '<div><strong style="font-size:17px">프로농구</strong><p style="color:#cfd8e3;font-size:14px;margin-top:4px">서울 SK 84 : 79 울산 현대모비스</p></div>'
+      ];
+      box.innerHTML = sportsPages[state.splitSubPage];
+    }
+  }
+
+  /* Render Bottom Bar Context in Detail Screens (Map_1.png, online_navi.jpeg, Media_btmusic_3.png, Phone_callhistory_3.png) */
+  function renderBottomBar() {
+    var slot = document.getElementById('bb-center-slot');
+    var tr = state.tracks[state.trackIndex];
+
+    document.getElementById('bb-media-title').textContent = state.playing ? tr.title : 'Media Off';
+    document.getElementById('bb-media-sub').textContent = state.playing ? tr.artist : 'Off';
+    document.getElementById('bb-media-topline').style.width = state.playing ? (tr.pct + '%') : '0%';
+    drawAlbumArt(document.getElementById('bb-thumb-canvas'));
+
+    if (state.page === 'navi') {
+      if (state.dest) {
+        var d = DESTINATIONS[state.dest];
+        slot.innerHTML =
+          '<div class="bb-pill">' +
+            '<button type="button" class="bb-route-cancel" id="bb-cancel-route" title="경로 취소">✕</button>' +
+            '<div class="bb-route-info">' +
+              '<strong>' + d.dist + '</strong>' +
+              '<span>' + d.eta + '</span>' +
+              '<span class="bb-route-divider">|</span>' +
+              '<svg class="ico" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M5 4v16M5 4h11l-2 4 2 4H5"/></svg>' +
+              '<span>' + d.title + '</span>' +
+            '</div>' +
+            '<span></span>' +
+          '</div>';
+        var cancelBtn = document.getElementById('bb-cancel-route');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function () {
+            state.dest = null;
+            updateAllStatuses();
+            showNotice('경로 안내가 취소되었습니다.');
+          });
+        }
+      } else {
+        slot.innerHTML =
+          '<div class="bb-pill" style="justify-content:flex-start;gap:12px">' +
+            '<span style="color:#9aa5b4">▲</span>' +
+            '<span style="font-size:clamp(14px,1.15vw,19px)">서울 서초구 부근</span>' +
+          '</div>';
+      }
+    } else if (state.page === 'media') {
+      // Media_btmusic_3.png 5 monochrome SVG media source tabs
+      var sources = [
+        { id: 'nature', trackIdx: 1, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M7 4h10M11 15a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm3-4v4"/></svg>' },
+        { id: 'bt',     trackIdx: 0, svg: '<svg class="ico" viewBox="0 0 24 24"><path d="m7 7 8 8-4 4V5l4 4-8 8"/><path d="M17 12v5a1.5 1.5 0 1 1-1.5-1.5"/></svg>' },
+        { id: 'fm',     trackIdx: 3, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="m7 8 9-4"/><text x="7" y="16" fill="currentColor" stroke="none" font-size="7" font-weight="bold">FM</text></svg>' },
+        { id: 'am',     trackIdx: 3, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="m7 8 9-4"/><text x="6.5" y="16" fill="currentColor" stroke="none" font-size="7" font-weight="bold">AM</text></svg>' },
+        { id: 'usb',    trackIdx: 2, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="6" y="8" width="12" height="13" rx="2"/><path d="M9 4h6v4H9zM12 13v4"/></svg>' }
+      ];
+      var shtml = '<div class="bb-icon-tabs" role="tablist">';
+      sources.forEach(function (s) {
+        shtml += '<button type="button" class="bb-tab-btn" data-msrc="' + s.id + '" data-tidx="' + s.trackIdx + '" aria-selected="' + (state.mediaSource === s.id) + '">' + s.svg + '</button>';
+      });
+      shtml += '</div>';
+      slot.innerHTML = shtml;
+      slot.querySelectorAll('[data-msrc]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.mediaSource = b.getAttribute('data-msrc');
+          state.trackIndex = parseInt(b.getAttribute('data-tidx'), 10);
+          state.playing = true;
+          updateAllStatuses();
+        });
+      });
+    } else if (state.page === 'phone') {
+      // Phone_callhistory_3.png 5 monochrome SVG phone tabs
+      var ptabs = [
+        { id: 'history',  svg: '<svg class="ico" viewBox="0 0 24 24"><path d="M6.5 5 10 8.5 8 11a10 10 0 0 0 5 5l2.5-2L19 17.5c-.5 2-2 3-3.8 3C8.5 19.5 4.5 15.5 3.5 8.8 3.5 7 4.5 5.5 6.5 5z"/><path d="M14 5h5m-5 4h5"/></svg>' },
+        { id: 'contacts', svg: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M5 19c1.5-3.6 12.5-3.6 14 0"/></svg>' },
+        { id: 'keypad',   svg: '<svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="16" cy="6" r="1.2"/><circle cx="8" cy="11" r="1.2"/><circle cx="12" cy="11" r="1.2"/><circle cx="16" cy="11" r="1.2"/><circle cx="8" cy="16" r="1.2"/><circle cx="12" cy="16" r="1.2"/><circle cx="16" cy="16" r="1.2"/></svg>' },
+        { id: 'messages', svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="m4 8 8 5 8-5"/></svg>' },
+        { id: 'privacy',  svg: '<svg class="ico" viewBox="0 0 24 24"><path d="M9 9a3 3 0 0 1 6 0v3H9V9z"/><rect x="7" y="12" width="10" height="7" rx="2"/><path d="M4 8a9 9 0 0 0 0 8M20 8a9 9 0 0 1 0 8"/></svg>' }
+      ];
+      var phtml = '<div class="bb-icon-tabs" role="tablist">';
+      ptabs.forEach(function (p) {
+        phtml += '<button type="button" class="bb-tab-btn phone-active" data-ptab="' + p.id + '" aria-selected="' + (state.phoneTab === p.id) + '">' + p.svg + '</button>';
+      });
+      phtml += '</div>';
+      slot.innerHTML = phtml;
+      slot.querySelectorAll('[data-ptab]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.phoneTab = b.getAttribute('data-ptab');
+          renderBottomBar();
+        });
+      });
+    } else {
+      slot.innerHTML = '';
+    }
+  }
+
+  /* Synchronize Home cards, Top bar, Detail stages & Native bridge */
+  function updateAllStatuses() {
+    var tr = state.tracks[state.trackIndex];
+
+    if (state.dest && DESTINATIONS[state.dest]) {
+      var d = DESTINATIONS[state.dest];
+      document.getElementById('home-map-title').textContent = d.title;
+      document.getElementById('home-map-addr').textContent = d.addr;
+      document.getElementById('navi-turn-label').textContent = d.turn;
+    } else {
+      document.getElementById('home-map-title').textContent = '지도';
+      document.getElementById('home-map-addr').textContent = '서울시 서초구 부근';
+    }
+    var destBtns = document.querySelectorAll('[data-dest]');
+    for (var i = 0; i < destBtns.length; i++) {
+      destBtns[i].setAttribute('aria-pressed', String(destBtns[i].getAttribute('data-dest') === state.dest));
+    }
+
+    document.getElementById('home-media-title').textContent = tr.title;
+    document.getElementById('home-media-sub').textContent = tr.artist + (tr.album ? ' · ' + tr.album : '');
+    document.getElementById('home-media-prog').style.width = tr.pct + '%';
+    document.getElementById('standby-track').textContent = tr.title;
+    document.getElementById('standby-artist').textContent = tr.artist + ' · ' + tr.album;
+    document.getElementById('home-play-ico').innerHTML = state.playing
+      ? '<path d="M9 6v12M15 6v12"/>'
+      : '<path d="m8 6 10 6-10 6z"/>';
+
+    document.getElementById('navi-compass-label').textContent = state.naviViewMode;
+    document.getElementById('navi-scale-text').textContent = state.naviScale;
+    document.getElementById('navi-tbt-box').hidden = !state.dest;
+    document.getElementById('navi-lane-box').hidden = !state.dest;
+
+    document.getElementById('driver-name').textContent = state.drivers[state.driverIndex];
+    document.getElementById('qc-driver-label').textContent = '현재: ' + state.drivers[state.driverIndex];
+    document.getElementById('bg-toggle-btn').textContent = state.bgMode === 'blue' ? '5W 파란배경' : 'ccNC 다크배경';
+    document.getElementById('bg-toggle-btn').setAttribute('aria-pressed', String(state.bgMode === 'blue'));
+
+    if (state.page === 'home') {
+      drawMapCanvas(document.getElementById('home-map-canvas'), false);
+      drawMediaCardCanvas();
+      drawPhoneCardCanvas();
+    } else if (state.page === 'apps1' || state.page === 'apps2') {
+      renderAppTilesPage();
+    } else if (state.page === 'navi') {
+      drawMapCanvas(document.getElementById('detail-map-canvas'), true);
+    } else if (state.page === 'media') {
+      renderMediaStage();
+    } else if (state.page === 'phone') {
+      renderPhoneStage();
+    } else if (state.page === 'settings') {
+      renderSettingsStage();
+    } else if (state.page === 'screenlayout') {
+      renderScreenLayoutStage();
+    }
+
+    if (isDetailPage(state.page)) {
+      renderSplitWidget();
+      renderBottomBar();
+    }
+    syncNativeMapSlot();
+  }
+
+  function isDetailPage(p) {
+    return p === 'navi' || p === 'media' || p === 'phone' || p === 'settings' || p === 'screenlayout';
+  }
+
+  function showPage(next) {
+    state.page = next;
+    var detail = isDetailPage(next);
+    shell.classList.toggle('in-detail', detail);
+    shell.classList.toggle('in-navi', next === 'navi');
+
+    document.getElementById('view-standby').hidden = next !== 'standby';
+    document.getElementById('view-home').hidden = next !== 'home';
+    document.getElementById('view-apps').hidden = !(next === 'apps1' || next === 'apps2');
+    document.getElementById('view-detail').hidden = !detail;
+
+    document.getElementById('home-pager').hidden = detail;
+    document.getElementById('detail-bottom-bar').hidden = !detail;
+
+    var showTopSearch = detail && next !== 'navi';
+    document.getElementById('profile-btn').hidden = detail;
+    document.getElementById('detail-top-title').hidden = !showTopSearch;
+    document.getElementById('media-top-tabs').hidden = next !== 'media';
+    document.getElementById('settings-grid-toggle').hidden = next !== 'settings';
+    document.getElementById('device-switch-btn').hidden = !(next === 'media' || next === 'phone');
+
+    var titles = {
+      media: '블루투스 오디오',
+      phone: '전화',
+      settings: '설정',
+      screenlayout: '화면구성'
+    };
+    if (titles[next]) {
+      document.getElementById('detail-heading-text').textContent = titles[next];
+    }
+
+    document.getElementById('stage-navi').hidden = next !== 'navi';
+    document.getElementById('stage-media').hidden = next !== 'media';
+    document.getElementById('stage-phone').hidden = next !== 'phone';
+    document.getElementById('stage-settings').hidden = next !== 'settings';
+    document.getElementById('stage-screenlayout').hidden = next !== 'screenlayout';
+
+    var pbars = document.querySelectorAll('.home-pager [data-page]');
+    for (var i = 0; i < pbars.length; i++) {
+      pbars[i].setAttribute('aria-current', String(pbars[i].getAttribute('data-page') === next));
+    }
+    var reorderBtn = document.getElementById('reorder-toggle-btn');
+    reorderBtn.hidden = !(next === 'apps1' || next === 'apps2');
+    reorderBtn.setAttribute('aria-pressed', String(state.reordering));
+
+    document.getElementById('pager-left-btn').textContent = next === 'standby' ? '홈 화면 ›' : '‹ 배경화면';
+    document.getElementById('pager-right-btn').textContent =
+      next === 'apps1' ? '다음 페이지 ›' : next === 'apps2' ? '‹ 홈 화면' : '전체 메뉴 ›';
+
+    updateAllStatuses();
+  }
+
+  function navigateTo(next) {
+    if (state.page === next) return;
+    state.history.push(state.page);
+    showPage(next);
+  }
+
+  /* Native Android WebView Bridge (HomeActivity.java compatibility) */
+  function syncNativeMapSlot() {
+    if (!window.K8Host) return;
+    var slot = document.getElementById('map-slot');
+    if (state.page !== 'home' || !slot) {
+      window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
+      return;
+    }
+    var rect = slot.getBoundingClientRect();
+    window.K8Host.updateBounds(
+      document.documentElement.clientWidth,
+      Math.round(rect.left), Math.round(rect.top),
+      Math.round(rect.right - rect.left), Math.round(rect.bottom - rect.top)
+    );
+  }
+
+  window.K8Home = {
+    back: function () {
+      if (!document.getElementById('qc-drawer').hidden) {
+        document.getElementById('qc-drawer').hidden = true;
+        return;
+      }
+      if (state.history.length) {
+        showPage(state.history.pop());
+      } else if (state.page !== 'home') {
+        showPage('home');
+      } else if (window.K8Host) {
+        window.K8Host.performAction('exit');
+      }
+    },
+    mapAttached: function (attached) {
+      var note = document.getElementById('map-note');
+      if (note) note.hidden = !attached;
+      syncNativeMapSlot();
+    }
   };
-  function toggleMedia() { mediaStarted = true; playing = !playing; updateStatus(); }
-  document.getElementById('media-toggle').onclick = toggleMedia;
-  document.getElementById('home-media-toggle').onclick = toggleMedia;
-  Array.prototype.forEach.call(document.querySelectorAll('[data-destination]'), function (button) {
-    button.onclick = function () {
-      destination = button.getAttribute('data-destination');
-      open('navi');
-      updateStatus();
+
+  /* ====== Wire Event Listeners ====== */
+  document.getElementById('profile-btn').addEventListener('click', function () {
+    state.driverIndex = (state.driverIndex + 1) % state.drivers.length;
+    updateAllStatuses();
+    showNotice('사용자 프로필: ' + state.drivers[state.driverIndex]);
+  });
+
+  document.getElementById('device-switch-btn').addEventListener('click', function () {
+    state.deviceIndex = (state.deviceIndex + 1) % state.devices.length;
+    updateAllStatuses();
+    showNotice('연결 기기 전환: ' + state.devices[state.deviceIndex]);
+  });
+
+  document.querySelectorAll('[data-media-tab]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      state.mediaTab = tab.getAttribute('data-media-tab');
+      document.querySelectorAll('[data-media-tab]').forEach(function (t) {
+        t.setAttribute('aria-selected', String(t === tab));
+      });
+      state.mediaView = state.mediaTab === 'playlist' ? 'list' : 'single';
+      renderMediaStage();
+    });
+  });
+
+  var qcDrawer = document.getElementById('qc-drawer');
+  document.getElementById('qc-open-btn').addEventListener('click', function () {
+    qcDrawer.hidden = false;
+  });
+  document.getElementById('qc-close-top').addEventListener('click', function () {
+    qcDrawer.hidden = true;
+  });
+  document.getElementById('qc-close-bottom').addEventListener('click', function () {
+    qcDrawer.hidden = true;
+  });
+  document.getElementById('qc-settings-btn').addEventListener('click', function () {
+    qcDrawer.hidden = true;
+    navigateTo('settings');
+  });
+  qcDrawer.querySelectorAll('[data-qc]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var act = btn.getAttribute('data-qc');
+      if (act === 'displayOff') {
+        qcDrawer.hidden = true;
+        navigateTo('standby');
+      } else if (act === 'screenLayout') {
+        qcDrawer.hidden = true;
+        navigateTo('screenlayout');
+      } else if (act === 'soundSettings') {
+        qcDrawer.hidden = true;
+        navigateTo('media');
+      } else if (act === 'driverSwitch') {
+        state.driverIndex = (state.driverIndex + 1) % state.drivers.length;
+        updateAllStatuses();
+      } else {
+        var cur = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!cur));
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-open]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var target = el.getAttribute('data-open');
+      navigateTo(target);
+    });
+  });
+
+  document.querySelectorAll('[data-dest]').forEach(function (btn) {
+    btn.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      var d = btn.getAttribute('data-dest');
+      state.dest = state.dest === d ? 'arirang' : d;
+      updateAllStatuses();
+      showNotice(DESTINATIONS[state.dest].title + ' 경로가 설정되었습니다.');
+    });
+  });
+
+  document.getElementById('home-play-btn').addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    state.playing = !state.playing;
+    updateAllStatuses();
+  });
+  document.getElementById('home-source-btn').addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    state.trackIndex = (state.trackIndex + 1) % state.tracks.length;
+    state.playing = true;
+    updateAllStatuses();
+  });
+
+  document.getElementById('navi-search-btn').addEventListener('click', function () {
+    var order = ['arirang', 'home', 'work', null];
+    var idx = (order.indexOf(state.dest) + 1) % order.length;
+    state.dest = order[idx];
+    updateAllStatuses();
+  });
+  document.getElementById('navi-viewmode-btn').addEventListener('click', function () {
+    var modes = ['3D', '2D', 'N'];
+    state.naviViewMode = modes[(modes.indexOf(state.naviViewMode) + 1) % modes.length];
+    updateAllStatuses();
+  });
+  document.getElementById('navi-mute-btn').addEventListener('click', function () {
+    state.naviMuted = !state.naviMuted;
+    this.setAttribute('aria-pressed', String(state.naviMuted));
+    showNotice(state.naviMuted ? '내비게이션 안내 음소거' : '내비게이션 음성 안내 켜짐');
+  });
+  document.getElementById('navi-scale-btn').addEventListener('click', function () {
+    var scales = ['50 m', '100 m', '200 m'];
+    state.naviScale = scales[(scales.indexOf(state.naviScale) + 1) % scales.length];
+    updateAllStatuses();
+  });
+  document.getElementById('navi-zoom-btn').addEventListener('click', function () {
+    if (window.K8Host) {
+      window.K8Host.performAction('navi');
+      return;
+    }
+    showNotice('순정 내비게이션 축척 연동');
+  });
+
+  document.querySelectorAll('[data-mview]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.mediaView = b.getAttribute('data-mview');
+      renderMediaStage();
+    });
+  });
+  document.getElementById('back-to-list-btn').addEventListener('click', function () {
+    state.mediaView = 'list';
+    renderMediaStage();
+  });
+  function prevTrack() {
+    state.trackIndex = (state.trackIndex - 1 + state.tracks.length) % state.tracks.length;
+    state.playing = true;
+    updateAllStatuses();
+  }
+  function nextTrack() {
+    state.trackIndex = (state.trackIndex + 1) % state.tracks.length;
+    state.playing = true;
+    updateAllStatuses();
+  }
+  function togglePlay() {
+    state.playing = !state.playing;
+    updateAllStatuses();
+  }
+  document.getElementById('media-prev-btn').addEventListener('click', prevTrack);
+  document.getElementById('list-prev-btn').addEventListener('click', prevTrack);
+  document.getElementById('media-next-btn').addEventListener('click', nextTrack);
+  document.getElementById('list-next-btn').addEventListener('click', nextTrack);
+  document.getElementById('media-play-btn').addEventListener('click', togglePlay);
+  document.getElementById('list-play-btn').addEventListener('click', togglePlay);
+  document.getElementById('media-scrub-bar').addEventListener('click', function (ev) {
+    var rect = this.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(100, Math.round(((ev.clientX - rect.left) / rect.width) * 100)));
+    state.tracks[state.trackIndex].pct = pct;
+    updateAllStatuses();
+  });
+
+  document.getElementById('settings-grid-toggle').addEventListener('click', function () {
+    state.settingsGrid6x1 = !state.settingsGrid6x1;
+    renderSettingsStage();
+  });
+
+  document.querySelectorAll('[data-sl-tab]').forEach(function (t) {
+    t.addEventListener('click', function () {
+      state.slTab = t.getAttribute('data-sl-tab');
+      renderScreenLayoutStage();
+    });
+  });
+
+  document.getElementById('split-toggle-btn').addEventListener('click', function () {
+    state.splitOpen = !state.splitOpen;
+    renderSplitWidget();
+    window.setTimeout(function () { updateAllStatuses(); }, 230);
+  });
+  document.getElementById('split-prev-widget').addEventListener('click', function () {
+    var en = getEnabledSplitWidgets();
+    state.splitActiveIdx = (state.splitActiveIdx - 1 + en.length) % en.length;
+    state.splitSubPage = 0;
+    renderSplitWidget();
+  });
+  document.getElementById('split-next-widget').addEventListener('click', function () {
+    var en = getEnabledSplitWidgets();
+    state.splitActiveIdx = (state.splitActiveIdx + 1) % en.length;
+    state.splitSubPage = 0;
+    renderSplitWidget();
+  });
+  document.getElementById('split-config-btn').addEventListener('click', function () {
+    state.slTab = 'split';
+    navigateTo('screenlayout');
+  });
+  document.getElementById('split-page-prev').addEventListener('click', function () {
+    state.splitSubPage = (state.splitSubPage + 2) % 3;
+    renderSplitWidget();
+  });
+  document.getElementById('split-page-next').addEventListener('click', function () {
+    state.splitSubPage = (state.splitSubPage + 1) % 3;
+    renderSplitWidget();
+  });
+  document.querySelectorAll('[data-sdot]').forEach(function (d) {
+    d.addEventListener('click', function () {
+      state.splitSubPage = parseInt(d.getAttribute('data-sdot'), 10);
+      renderSplitWidget();
+    });
+  });
+
+  document.querySelectorAll('.home-pager [data-page]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      showPage(b.getAttribute('data-page'));
+    });
+  });
+  document.getElementById('pager-left-btn').addEventListener('click', function () {
+    if (state.page === 'standby') showPage('home');
+    else showPage('standby');
+  });
+  document.getElementById('pager-right-btn').addEventListener('click', function () {
+    if (state.page === 'home' || state.page === 'standby') showPage('apps1');
+    else if (state.page === 'apps1') showPage('apps2');
+    else showPage('home');
+  });
+  document.getElementById('reorder-toggle-btn').addEventListener('click', function () {
+    state.reordering = !state.reordering;
+    this.setAttribute('aria-pressed', String(state.reordering));
+    renderAppTilesPage();
+    showNotice(state.reordering ? '타일 화살표 또는 드래그로 아이콘 순서를 변경하세요.' : '아이콘 재배치가 완료되었습니다.');
+  });
+  document.getElementById('bg-toggle-btn').addEventListener('click', function () {
+    state.bgMode = state.bgMode === 'blue' ? 'dark' : 'blue';
+    shell.setAttribute('data-bg', state.bgMode);
+    updateAllStatuses();
+  });
+
+  document.getElementById('bb-back-btn').addEventListener('click', function () {
+    window.K8Home.back();
+  });
+  document.getElementById('bb-home-btn').addEventListener('click', function () {
+    state.history.length = 0;
+    showPage('home');
+  });
+  document.getElementById('bb-menu-btn').addEventListener('click', function () {
+    navigateTo('apps1');
+  });
+  document.getElementById('bb-media-btn').addEventListener('click', function () {
+    if (state.page === 'media') {
+      state.playing = !state.playing;
+      updateAllStatuses();
+    } else {
+      navigateTo('media');
+    }
+  });
+
+  /* ====== Touch & Pointer Gestures ====== */
+  var gesture = null;
+  var homeOrder = ['standby', 'home', 'apps1', 'apps2'];
+
+  document.addEventListener('pointerdown', function (ev) {
+    if (!ev.isPrimary || ev.button !== 0) return;
+    var inSplit = document.getElementById('split-card').contains(ev.target);
+    var fromTop = ev.clientY < 48;
+    gesture = {
+      id: ev.pointerId,
+      x: ev.clientX,
+      y: ev.clientY,
+      inSplit: inSplit,
+      fromTop: fromTop
     };
   });
-  document.getElementById('side-toggle').onclick = function () { sideMedia = !sideMedia; updateStatus(); };
-  document.addEventListener('click', function (event) {
-    var action = event.target;
-    while (action && !action.hasAttribute('data-action')) action = action.parentElement;
-    if (!action) return;
-    var name = action.getAttribute('data-action');
-    if (name === 'navi' || name === 'media' || name === 'phone') {
-      open(name);
+
+  window.addEventListener('pointerup', function (ev) {
+    if (!gesture || gesture.id !== ev.pointerId) return;
+    var g = gesture;
+    gesture = null;
+    var dx = ev.clientX - g.x;
+    var dy = ev.clientY - g.y;
+
+    if (g.fromTop && dy > 45 && Math.abs(dy) > Math.abs(dx)) {
+      qcDrawer.hidden = false;
       return;
     }
-    notice.textContent = labels[name] + ' 바로가기 · 차량에서 연결할 항목';
-    notice.hidden = false;
-    window.clearTimeout(timer);
-    timer = window.setTimeout(function () { notice.hidden = true; }, 2400);
+    if (!qcDrawer.hidden && dy < -45 && Math.abs(dy) > Math.abs(dx)) {
+      qcDrawer.hidden = true;
+      return;
+    }
+    if (g.inSplit && isDetailPage(state.page)) {
+      if (Math.abs(dy) > 36 && Math.abs(dy) > Math.abs(dx)) {
+        var en = getEnabledSplitWidgets();
+        state.splitActiveIdx = (state.splitActiveIdx + (dy < 0 ? 1 : en.length - 1)) % en.length;
+        state.splitSubPage = 0;
+        renderSplitWidget();
+        return;
+      }
+      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
+        state.splitSubPage = (state.splitSubPage + (dx < 0 ? 1 : 2)) % 3;
+        renderSplitWidget();
+        return;
+      }
+    }
+    var pIdx = homeOrder.indexOf(state.page);
+    if (pIdx !== -1 && !state.reordering && Math.abs(dx) > 48 && Math.abs(dx) > 1.35 * Math.abs(dy)) {
+      var nextIdx = dx < 0 ? Math.min(homeOrder.length - 1, pIdx + 1) : Math.max(0, pIdx - 1);
+      if (nextIdx !== pIdx) showPage(homeOrder[nextIdx]);
+    }
   });
 
-  var deck = document.getElementById('deck');
-  document.addEventListener('pointerdown', function (event) {
-    window.clearTimeout(swipeTimer);
-    swiped = false;
-    touchButton = null;
-    if (!event.isPrimary || event.button !== 0) return;
-    var inDeck = deck.contains(event.target);
-    var button = event.target.closest('button');
-    var canSwipe = inDeck && (page === 'home' || page === 'apps');
-    if (!canSwipe && (!button || event.pointerType !== 'touch')) return;
-    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, button: button, canSwipe: canSwipe };
-  });
-  window.addEventListener('pointerup', function (event) {
-    if (!gesture || gesture.id !== event.pointerId) return;
-    var start = gesture;
-    gesture = null;
-    var dx = event.clientX - start.x;
-    var dy = event.clientY - start.y;
-    if (event.pointerType === 'touch' && start.button && Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-      var hit = document.elementFromPoint(event.clientX, event.clientY);
-      if (hit && hit.closest('button') === start.button && !start.button.disabled) {
-        touchButton = start.button;
-        start.button.click();
-      }
-      return;
-    }
-    if (!start.canSwipe || Math.abs(dx) < 45 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
-    swiped = true;
-    if (dx < 0) open('apps');
-    else goHome();
-    swipeTimer = window.setTimeout(function () { swiped = false; }, 350);
-  });
-  window.addEventListener('pointercancel', function () { gesture = null; });
-  document.addEventListener('click', function (event) {
-    var repeatedTouch = touchButton && event.isTrusted && event.detail > 0 && event.target.closest('button') === touchButton;
-    if (!repeatedTouch && !(swiped && deck.contains(event.target))) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  }, true);
-  window.addEventListener('resize', paint);
-  function tick() {
+  /* ====== Clock (12-hour with AM/PM) ====== */
+  function updateClock() {
     var now = new Date();
-    document.getElementById('clock').textContent = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+    var h24 = now.getHours();
+    var ampm = h24 >= 12 ? 'PM' : 'AM';
+    var h12 = h24 % 12 || 12;
+    var min = ('0' + now.getMinutes()).slice(-2);
+    var html = h12 + ':' + min + '<small>' + ampm + '</small>';
+    document.getElementById('clock').innerHTML = html;
+    document.getElementById('standby-clock').innerHTML = html;
   }
-  tick();
-  window.setInterval(tick, 1000);
-  show('home');
+
+  window.addEventListener('resize', function () {
+    drawWallpaper();
+    updateAllStatuses();
+  });
+
+  window.__ccncShow = function (pageName, opts) {
+    if (opts) {
+      for (var k in opts) {
+        if (Object.prototype.hasOwnProperty.call(opts, k)) state[k] = opts[k];
+      }
+    }
+    shell.setAttribute('data-bg', state.bgMode);
+    shell.setAttribute('data-style', state.graphicStyle);
+    drawWallpaper();
+    showPage(pageName);
+    if (opts && opts.qcOpen) {
+      document.getElementById('qc-drawer').hidden = false;
+    } else {
+      document.getElementById('qc-drawer').hidden = true;
+    }
+  };
+
+  updateClock();
+  window.setInterval(updateClock, 10000);
+  drawWallpaper();
+  showPage('home');
 }());
 </script>
 </body>
