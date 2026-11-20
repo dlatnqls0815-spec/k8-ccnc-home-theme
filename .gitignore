@@ -1,0 +1,10 @@
+/.build/
+__pycache__/
+*.py[cod]
+*.apk
+*.aab
+*.p12
+*.jks
+*.keystore
+.DS_Store
+Thumbs.db

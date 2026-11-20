@@ -1,0 +1,784 @@
+﻿notice_entry,component,version_as_listed,source_urls,license_as_listed
+1,ThreadPool,N/A,http://github.com/progschj/ThreadPool/,zlib License
+2,astrobee,0.12.0,https://github.com/nasa/astrobee/,Apache License 2.0
+3,astrobee,0.12.0,https://github.com/nasa/astrobee/,Apache License 2.0
+4,Android - platform - hardware - ril,N/A,https://android.googlesource.com/platform/hardware/ril.git,Apache License 2.0
+5,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+6,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+7,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+8,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+9,fdk-aac,N/A,https://github.com/mstorsjo/fdk-aac,Fraunhofer FDK AAC Codec Library
+10,c-ringbuf,Unspecified,https://github.com/dhess/c-ringbuf,Creative Commons Zero v1.0 Universal
+11,checksec.sh,32397c82b9b27c11ccbb21edabb90ff399edc93d,https://github.com/dobin/checksec.sh/,"BSD 3-Clause ""New"" or ""Revised"" License"
+12,cJSON,Unspecified,http://cjson.sourceforge.net/,MIT License
+13,Apache Portable Runtime Utilities (APR-util),N/A,http://apr.apache.org/docs/apr-util/1.2/index.html,Apache License 2.0
+14,appcompat-v7,25.2.0,https://mvnrepository.com/artifact/com.android.support/appcompat-v7/25.2.0,Apache License 2.0
+15,constraint-layout,1.0.2,https://mvnrepository.com/artifact/com.android.support.constraint/constraint-layout/1.0.2,Apache License 2.0
+16,httpcore,4.4.1,https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore,Apache License 2.0
+17,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+18,checksec.sh,32397c82b9b27c11ccbb21edabb90ff399edc93d,https://github.com/dobin/checksec.sh/,"BSD 3-Clause ""New"" or ""Revised"" License"
+19,Android - platform - system - core,N/A,https://github.com/aosp-mirror/platform_frameworks_base,Apache License 2.0
+20,libphonenumber,N/A,http://code.google.com/p/libphonenumber/demo/,Apache License 2.0
+21,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+22,Android - platform - frameworks - av,N/A,http://developer.android.com/index.html,Apache License 2.0
+23,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+24,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+25,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+26,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+27,Apache Portable Runtime Utilities (APR-util),N/A,http://apr.apache.org/docs/apr-util/1.2/index.html,Apache License 2.0
+28,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+29,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+30,JSON-CPP,N/A,http://tracker.debian.org/pkg/libjsoncpp,MIT License
+31,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+32,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+33,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+34,QR-Code-generator,v1.4.0,https://github.com/nayuki/QR-Code-generator,MIT License
+35,HowardHinnant/date,Unspecified,https://github.com/HowardHinnant/date,MIT License
+36,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+37,nlohmann-json,3.7.3,https://github.com/nlohmann/json/tree/v3.7.3,MIT License
+38,json-c,N/A,http://tracker.debian.org/pkg/json-c,MIT License
+39,JSON-CPP,N/A,http://tracker.debian.org/pkg/libjsoncpp,MIT License
+40,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+41,json-c,N/A,http://tracker.debian.org/pkg/json-c,MIT License
+42,Minizip,N/A,http://www.winimage.com/zLibDll/minizip.html,zlib License
+43,TinyXML2,N/A,http://github.com/leethomason/tinyxml2/,zlib License
+44,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+45,JSON-CPP,N/A,http://tracker.debian.org/pkg/libjsoncpp,MIT License
+46,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+47,libopusenc,Unspecified,https://github.com/xiph/libopusenc,"BSD 3-Clause ""New"" or ""Revised"" License"
+48,nlohmann-json,3.7.3,https://github.com/nlohmann/json/tree/v3.7.3,MIT License
+49,valijson,Unspecified,https://github.com/tristanpenman/valijson/,"BSD 2-Clause ""Simplified"" License"
+50,xiph/opus,Unspecified,https://github.com/xiph/opus,"BSD 3-Clause ""New"" or ""Revised"" License"
+51,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+52,Boost C++ Libraries - boost,N/A,http://sourceforge.net/projects/boost/,Boost Software License 1.0
+53,GENIVI/vsomeip,3.1.7,https://github.com/COVESA/vsomeip/tree/3.1.7.1,Mozilla Public License 2.0
+54,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+55,xiph/opus,N/A,https://github.com/xiph/opus,"BSD 3-Clause ""New"" or ""Revised"" License"
+56,API.AI Android SDK,Unspecified,https://github.com/dialogflow/dialogflow-android-client,Apache License 2.0
+57,ConnMan,N/A,https://github.com/aldebaran/connman,GNU General Public License v2.0 or later
+58,Linux Kernel,N/A,http://www.kernel.org/,GPL-2.0-with-Linux-syscall-note
+59,Linux Kernel,N/A,http://www.kernel.org/,GPL-2.0-with-Linux-syscall-note
+60,Linux Kernel,N/A,http://www.kernel.org/,GPL-2.0-with-Linux-syscall-note
+61,Activity Compose,1.7.2,https://developer.android.com/jetpack/androidx/releases/activity,Apache License 2.0
+62,Android - platform - external - openssl,android-2.3.2_r1,http://developer.android.com/index.html,(SSLeay License - standalone AND The Open SSL License)
+63,Android AppCompat Library,1.6.1,https://developer.android.com/jetpack/androidx/releases/appcompat,Apache License 2.0
+64,Android ConstraintLayout,2.1.4,https://developer.android.com/jetpack/androidx/releases/constraintlayout,Apache License 2.0
+65,Android KTX Core,1.13.1,https://mvnrepository.com/artifact/androidx.core/core-ktx/1.13.1,Apache License 2.0
+66,Android Lifecycle Runtime,2.6.1,https://developer.android.com/jetpack/androidx/releases/lifecycle,Apache License 2.0
+67,Android Support CardView v7,1.0.0,https://developer.android.com/jetpack/androidx/releases/cardview,Apache License 2.0
+68,Android Support RecyclerView v7,1.1.0,https://developer.android.com/jetpack/androidx/releases/recyclerview,Apache License 2.0
+69,Android Transition Support Library,1.2.0,https://developer.android.com/jetpack/androidx/releases/transition,Apache License 2.0
+70,AndroidX Widget ViewPager2,1.0.0,https://developer.android.com/jetpack/androidx/releases/viewpager2,Apache License 2.0
+71,clipper2,Clipper2_1.4.0,https://github.com/AngusJohnson/Clipper2,Boost Software License 1.0
+72,Compose Runtime,1.6.8,https://developer.android.com/jetpack/androidx/releases/compose-runtime,Apache License 2.0
+73,curl,8.15.0,https://curl.se/,curl License
+74,Flask,3.0.0,https://flask.palletsprojects.com/,"BSD 3-Clause ""New"" or ""Revised"" License"
+75,flask-cors,4.0.0,https://github.com/corydolphin/flask-cors,MIT License
+76,Flask-SocketIO,5.3.5,https://flask-socketio.readthedocs.io/,MIT License
+77,glm,0.9.9.2,http://glm.g-truc.net,MIT License
+78,google-snappy,1.2.1,http://google.github.io/snappy/,"BSD 3-Clause ""New"" or ""Revised"" License"
+79,google/draco,1.5.7,https://google.github.io/draco/,Apache License 2.0
+80,googlegson,2.11.0,https://github.com/google/gson,Apache License 2.0
+81,HarfBuzz,7.2.0,http://harfbuzz.org/,MIT License
+82,javax.inject:javax.inject,1,https://github.com/javax-inject/javax-inject,Apache License 2.0
+83,JSON for Modern Cpp,v3.6.1,https://github.com/nlohmann/json,MIT License
+84,JsonCpp,1.9.5,https://github.com/open-source-parsers/jsoncpp,MIT License
+85,kotlinx-coroutines-android,1.6.4,https://github.com/Kotlin/kotlinx.coroutines,Apache License 2.0
+86,libjpeg,9e,http://www.ijg.org,Independent JPEG Group License
+87,libjpeg-turbo,3.1.2,http://libjpeg-turbo.virtualgl.org/,"(zlib License OR Independent JPEG Group License OR BSD 3-clause ""New"" or ""Revised"" License)"
+88,libpng,1.6.56,http://www.libpng.org/pub/png/libpng.html,PNG Reference Library version 2
+89,libwebp,1.3.2,https://developers.google.com/speed/webp/,"BSD 3-Clause ""New"" or ""Revised"" License"
+90,LodePNG,1.0.0,http://www.nuget.org/packages/LodePNG,zlib License
+91,OpenSSL,3.3.7,https://www.openssl.org,Apache License 2.0
+92,platform-hardware-interfaces,android-13.0.0_r1,https://android.googlesource.com/platform/hardware/interfaces,Apache License 2.0
+93,Protobuf/CPP,3.21.12,https://code.google.com/p/protobuf/,"BSD 3-Clause ""New"" or ""Revised"" License"
+94,psutil,5.9.0,https://github.com/giampaolo/psutil,"BSD 3-Clause ""New"" or ""Revised"" License"
+95,rapidjson,0.1.0,http://rapidjson.org/,MIT License
+96,SLF4J API Module,2.0.4,http://www.slf4j.org,MIT License
+97,Source-Code-Pro,1.050r.it,https://github.com/adobe-fonts/source-code-pro,SIL Open Font License 1.1
+98,SQLite,3.50.2,http://sqlite.org/,Public Domain
+99,TinyXML2,9.0.0,https://sourceforge.net/projects/tinyxml/,zlib License
+100,zlib,v1.3.2,http://www.zlib.net/,zlib License
+101,Linux Kernel,N/A,http://www.kernel.org/,GPL-2.0-with-Linux-syscall-note
+102,Linux Kernel,N/A,http://www.kernel.org/,GPL-2.0-with-Linux-syscall-note
+103,Alsa Libraries,Unspecified,https://github.com/alsa-project/alsa-lib,GNU Lesser General Public License v2.1 or later
+104,Android - platform - external - avb,N/A,http://developer.android.com/index.html,MIT License
+105,Android - platform - external - boringssl,N/A,http://developer.android.com/index.html,ISC License
+106,Android - platform - external - zlib,N/A,https://android.googlesource.com/platform/external/zlib,zlib License
+107,Android - platform - system - core,N/A,https://github.com/aosp-mirror/platform_frameworks_base,Apache License 2.0
+108,cryptsetup,N/A,http://code.google.com/p/cryptsetup/,PublicDomain
+109,devmem2,N/A,https://github.com/radii/devmem2,GNU General Public License v2.0 or later
+110,DTC - libfdt,N/A,http://git.jdl.com/gitweb/?p=dtc.git,"BSD 2-Clause ""Simplified"" License"
+111,GLib,Unspecified,https://github.com/GNOME/glib,GNU Lesser General Public License v2.1 only
+112,golang.org/x/crypto,v0.0.0-20200622213623-75b288015ac9,https://github.com/golang/crypto,"BSD 3-Clause ""New"" or ""Revised"" License"
+113,GStreamer,1.0,https://gitlab.freedesktop.org/gstreamer/gstreamer/-/tree/1.0?ref_type=heads,GNU Lesser General Public License v2.1 only
+114,jsonschema,4.26.0,https://github.com/python-jsonschema/jsonschema,MIT License
+115,libffi,Unspecified,https://github.com/libffi/libffi,MIT License
+116,liblzma,Unspecified,https://github.com/ShiftMediaProject/liblzma,PublicDomain
+117,libX11,Unspecified,https://github.com/mirror/libX11,MIT License
+118,libxext,Unspecified,https://gitlab.freedesktop.org/xorg/lib/libxext,MIT License
+119,libxml2,Unspecified,https://github.com/GNOME/libxml2,MIT License
+120,lk,N/A,http://github.com/travisg/lk/,MIT License
+121,matplotlib,3.11.1,https://github.com/matplotlib/matplotlib,Python License 2.0
+122,numpy,2.4.6,https://github.com/numpy/numpy,"BSD 3-Clause ""New"" or ""Revised"" License"
+123,OpenSSL,1.1.1u,https://github.com/openssl/openssl/tree/OpenSSL_1_1_1u,OpenSSL License
+124,PCRE - Perl Compatible Regular Expressions,Unspecified,http://www.pcre.org/,"BSD 3-Clause ""New"" or ""Revised"" License"
+125,Speex,N/A,http://www.speex.org/,"BSD 3-Clause ""New"" or ""Revised"" License"
+126,Wayland,N/A,http://tracker.debian.org/pkg/wayland,MIT License
+127,wayland-ivi-extension,N/A,https://github.com/GENIVI/wayland-ivi-extension,Apache License 2.0
+128,X.org - xtrans,N/A,http://xorg.freedesktop.org,MIT License
+129,chromium,64.0.3282.186,https://github.com/chromium/chromium,"BSD 3-Clause ""New"" or ""Revised"" License"
+130,glm,v0.9.8.3,https://github.com/g-truc/glm,MIT License
+131,jansson,v2.13.1,https://github.com/akheron/jansson,MIT License
+132,leveldb,v1.20,https://github.com/google/leveldb,"BSD 3-Clause ""New"" or ""Revised"" License"
+133,libc++,1,http://libcxx.llvm.org/,MIT License
+134,libtess,v0.1.0,https://github.com/sakamura/libtess3,SGI Free Software License B v2.0
+135,libxkbcommon,0.8.0,https://github.com/xkbcommon/libxkbcommon,MIT License
+136,nanovg,1,https://github.com/memononen/nanovg,zlib License
+137,openssl,1.1.1d,https://github.com/openssl/openssl,Apache License 2.0
+138,paho.mqtt.c,1.3.2,https://github.com/eclipse/paho.mqtt.c,Eclipse Public License 2.0
+139,protobuf,2.5.0,https://github.com/protocolbuffers/protobuf,"BSD 3-Clause ""New"" or ""Revised"" License"
+140,silk,1.0.9,https://github.com/ploverlake/silk,"BSD 2-Clause ""Simplified"" License"
+141,stbturetype,V2.26,https://github.com/nothings/stb,MIT License
+142,wxMD5,2.10.0,https://github.com/youngjuning/wxMD5,MIT License
+143,zlib,v1.2.1,http://www.zlib.net/,zlib License
+144,udisks,2.1.8,https://github.com/storaged-project/udisks/tree/master,GNU General Public License v2.0 or later
+145,angle,d564abe2dada76c70347d06171f9abbb15f71693,https://github.com/google/angle/tree/d564abe2dada76c70347d06171f9abbb15f71693,"BSD 3-Clause ""New"" or ""Revised"" License"
+146,angle/smhasher,0,https://github.com/google/angle/tree/d564abe2dada76c70347d06171f9abbb15f71693/src/common/third_party/smhasher,MIT License
+147,blink,92.0.4515.131,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/blink/,"GNU Lesser General Public License v2.1 only OR BSD 3-Clause ""New"" or ""Revised"" License ORGNU Lesser General Public License v2.0 only or BSD 2-clause ""Simplified"" License"
+148,boringssl,ddecaabdc8c950d1417ed69785ac17c3400bae4c,https://boringssl.googlesource.com/boringssl.git/+/ddecaabdc8c950d1417ed69785ac17c3400bae4c,"BSD 3-Clause ""New"" or ""Revised"" License OR ISC License OR MIT License OR OpenSSL License OR SSLeay License"
+149,breakpad,c484031f1f199ee53567241426efffee49008f82,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/breakpad/,"Apache License 2.0 OR BSD 3-Clause ""New"" or ""Revised"" License or Apple Public Source License 2.0"
+150,brotli,e61745a6b7add50d380cfd7d3883dd6c62fc2c71,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/brotli/,MIT License
+151,bsdiff,v1.0.4,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/courgette/third_party/bsdiff/,BSD Protection License
+152,catapult,7da48e9f874a0eec2d81aed2426c9da0af0d25ff,https://chromium.googlesource.com/catapult.git/+/7da48e9f874a0eec2d81aed2426c9da0af0d25ff,"BSD 3-Clause ""New"" or ""Revised"" License"
+153,chromium,92.0.4515.131,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/,"BSD 3-Clause ""New"" or ""Revised"" License"
+154,cityhash,1.0.3,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/cityhash_v103/,MIT License
+155,cityhash,1.1.1,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/cityhash/,MIT License
+156,cld3,06f695f1c8ee530104416aab5dcf2d6a1414a56a,https://chromium.googlesource.com/external/github.com/google/cld_3.git/+/06f695f1c8ee530104416aab5dcf2d6a1414a56a,Apache License 2.0
+157,compact_enc_det,2f40a850bcc5d6f7c1bfa02dbf42ad19d8220dc0,https://chromium.googlesource.com/external/github.com/google/compact_enc_det.git/+/ba412eaaacd3186085babcd901679a48863c7dd5,Apache License 2.0
+158,compiler,0,https://github.com/google/angle/tree/d564abe2dada76c70347d06171f9abbb15f71693/src/third_party/compiler,"BSD 2-Clause ""Simplified"" License"
+159,coveragepy,4.0.3,https://chromium.googlesource.com/catapult.git/+/7da48e9f874a0eec2d81aed2426c9da0af0d25ff/third_party/coverage/,Apache License 2.0
+160,crashpad,a6494f9df645b360b13b76fa2df32e38f0c6f8ac,https://chromium.googlesource.com/crashpad/crashpad/+/a6494f9df645b360b13b76fa2df32e38f0c6f8ac,Apache License 2.0
+161,crazy_linker,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/android_crazy_linker/,Apache License 2.0
+162,crc32c,1.0.7,https://github.com/google/crc32c/tree/1.0.7,"BSD 3-Clause ""New"" or ""Revised"" License"
+163,cros_system_api,0.24.53,https://chromium.googlesource.com/chromiumos/platform/system_api,"BSD 3-Clause ""New"" or ""Revised"" License"
+164,dav1d,8636b4f2bb79ec7c2f711218ff6bcdd02a2f3f1a,https://chromium.googlesource.com/external/github.com/videolan/dav1d.git/+/8636b4f2bb79ec7c2f711218ff6bcdd02a2f3f1a,"BSD 2-Clause ""Simplified"" License"
+165,dawn-ray-tracing,871b45896f643254d68bb0563482adaac94ee7ac,https://dawn.googlesource.com/dawn.git/+/871b45896f643254d68bb0563482adaac94ee7ac,Apache License 2.0
+166,double-conversion,9df6272fefd846401afbf839cbe7d0f9e319fe08,https://github.com/google/double-conversion/tree/9df6272fefd846401afbf839cbe7d0f9e319fe08,"BSD 3-Clause ""New"" or ""Revised"" License"
+167,eigen,011e0db31d1bed8b7f73662be6d57d9f30fa457a,https://chromium.googlesource.com/external/gitlab.com/libeigen/eigen.git/+/011e0db31d1bed8b7f73662be6d57d9f30fa457a,Mozilla Public License 2.0
+168,emoji-segmenter,0.1.0,https://github.com/google/emoji-segmenter/tree/242460e9cbee7453880725be5b9bf352d1882a9f,Apache License 2.0
+169,farmhash,1.1,https://github.com/google/farmhash/tree/816a4ae622e964763ca0862d9dbd19324a1eaf45,MIT License
+170,fdlibm,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/fdlibm/,fdlibm license
+171,fft,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/fft2d/,Custom License
+172,fiat-crypto,0884b6d374a9d937c44bf024fe3a647ffae2c540,https://github.com/mit-plv/fiat-crypto/tree/0884b6d374a9d937c44bf024fe3a647ffae2c540,MIT License
+173,flac,1.3.1,https://chromium.googlesource.com/chromium/deps/flac.git/+/af862024c8c8fa0ae07ced05e89013d881b00596,"BSD 3-Clause ""New"" or ""Revised"" License"
+174,flatbuffers,6df40a2471737b27271bdd9b900ab5f3aec746c7,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/flatbuffers/,Apache License 2.0
+175,gemmlowp,fda83bdc38b118cc6b56753bd540caa49e570745,https://github.com/google/gemmlowp/tree/fda83bdc38b118cc6b56753bd540caa49e570745,Apache License 2.0
+176,glog,0.4.0,https://github.com/google/glog/tree/v0.4.0,"BSD 3-Clause ""New"" or ""Revised"" License"
+177,google-api-cpp-client,d0bbe169d81a50936ec5fcea4e6dbcfb97303f13,https://github.com/google/google-api-cpp-client/tree/d0bbe169d81a50936ec5fcea4e6dbcfb97303f13,Apache License 2.0
+178,google-protobuf,3.13.0,https://github.com/protocolbuffers/protobuf/tree/3cff48db79bd903b2382492e166079fe708be6b1,"BSD 3-Clause ""New"" or ""Revised"" License"
+179,googletest,23ef29555ef4789f555f1ba8c51b4c52975f0907,https://chromium.googlesource.com/external/github.com/google/googletest.git/+/23ef29555ef4789f555f1ba8c51b4c52975f0907,"BSD 3-Clause ""New"" or ""Revised"" License"
+180,harfbuzz,2.8.1,https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git/+/b37f03f16b39d397a626f097858e9ae550234ca0,MIT License
+181,hunspell,1.6.0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/hunspell/,Mozilla Public License 1.1
+182,iccjpeg,32.0.1700.102,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/iccjpeg/,Independent JPEG Group License
+183,icu(src/base/thirdparty),60,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/icu/,Unicode License Agreement - Data Files and Software (2016)
+184,icu(src/thirdparty),69-1,https://chromium.googlesource.com/chromium/deps/icu.git/+/f022e298b4f4a782486bb6d5ce6589c998b51fe2,MIT License
+185,inspector protocol,35e8d2d89cb017d72cf905362672de77c978e1e6,https://chromium.googlesource.com/deps/inspector_protocol/+/35e8d2d89cb017d72cf905362672de77c978e1e6,"BSD 3-Clause ""New"" or ""Revised"" License"
+186,jdk,11.0.4,https://github.com/openjdk/jdk/tree/jdk-11+0,GNU General Public License v2.0 only
+187,jsoncpp,1.9.4,https://github.com/open-source-parsers/jsoncpp/tree/1.9.4,MIT License
+188,khronos,master_2013-03-22,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/khronos/,MIT License OR SGI B v2.0
+189,leveldb,1.23,https://github.com/google/leveldb/tree/1.23,"BSD 3-Clause ""New"" or ""Revised"" License"
+190,lib-absl,aad2c8a3966424bbaa2f26027d104d17f9c1c1ae,https://github.com/abseil/abseil-cpp/tree/aad2c8a3966424bbaa2f26027d104d17f9c1c1ae,Apache License 2.0
+191,libaddressinput,81e7ead903f5b71a326e0584f4325f106c804df1,https://github.com/google/libaddressinput/tree/81e7ead903f5b71a326e0584f4325f106c804df1,Apache License 2.0
+192,libaom-av1,3.1.0,https://aomedia.googlesource.com/aom/+/4d1ace0ad32403cc204005f930ccb516150459e3,"BSD 2-Clause ""Simplified"" License"
+193,libavif,master,https://github.com/AOMediaCodec/libavif,"BSD 2-Clause ""Simplified"" License"
+194,libdivsufsort,2.0.1,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/courgette/third_party/divsufsort/,MIT License
+195,libevent,1.4.15,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/libevent/,"BSD 3-Clause ""New"" or ""Revised"" License"
+196,libgav1,0.17.0,https://chromium.googlesource.com/codecs/libgav1/+archive/1c4e344cb1c15aff1c94cb542b98260244a3da4b.tar.gz,Apache License 2.0
+197,libjpeg-turbo,2.1.0,https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git/+/b7bef8c05b7cdb1a038ae271a2c2b6647af4c879,"BSD 3-Clause ""New"" or ""Revised"" License OR IJG"
+198,libjxl,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libjxl/README.chromium,Apache License 2.0
+199,libphonenumber,8.10.17,https://github.com/google/libphonenumber/tree/68eba9d6ee8b11fb58ece36b6c46d07965d7f7ff,"Apache License 2.0 OR BSD 3-Clause ""New"" or ""Revised"" License"
+200,libpng,1.6.37,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libpng/,PNG Reference Library version 2
+201,libprotobuf-mutator,0,"https://github.com/google/libprotobuf-mutator
+https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libprotobuf-mutator/",Apache License 2.0
+202,libsrtp,2.4.0,https://github.com/cisco/libsrtp/tree/94ac00d5ac6409e3f6409e4a5edfcdbdaa7fdabe,"BSD 3-Clause ""New"" or ""Revised"" License"
+203,libsync,f4f4387b6bf2387efbcfd1453af4892e8982faf6,https://chromium.googlesource.com/aosp/platform/system/core/libsync/+/f4f4387b6bf2387efbcfd1453af4892e8982faf6,Apache License 2.0
+204,libutf,ee5074db68f498a5c802dc9f1645f396c219938a,https://github.com/cls/libutf/tree/ee5074db68f498a5c802dc9f1645f396c219938a,MIT License
+205,libvpx,1.8.2,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libvpx/,"BSD 3-Clause ""New"" or ""Revised"" License"
+206,libwebm,1.0.0.27,"https://chromium.googlesource.com/webm/libwebm.git/+/51ca718c3adf0ddedacd7df25fe45f67dc5a9ce1
+https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libwebm/","BSD 3-Clause ""New"" or ""Revised"" License"
+207,libwebp,1.2.0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libwebp/,"BSD 3-Clause ""New"" or ""Revised"" License"
+208,libxml2,2.9.9,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libxml/,MIT License
+209,libxslt,1.1.34,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/libxslt/,MIT License
+210,libyuv,49ebc996aa8c4bdf89c1b5ea461eb677234c61cc,https://chromium.googlesource.com/libyuv/libyuv.git/+/49ebc996aa8c4bdf89c1b5ea461eb677234c61cc,"BSD 3-Clause ""New"" or ""Revised"" License"
+211,libzip,1.7.3,https://github.com/nih-at/libzip/tree/66e496489bdae81bfda8b0088172871d8fda0032,"BSD 3-Clause ""New"" or ""Revised"" License"
+212,linux-syscall-support,92a65a8f5d705d1928874420c8d0d15bde8c89e5,https://chromium.googlesource.com/linux-syscall-support.git/+/92a65a8f5d705d1928874420c8d0d15bde8c89e5,"BSD 3-Clause ""New"" or ""Revised"" License"
+213,lunasvg,v2.3.8,https://github.com/sammycage/lunasvg,MIT License
+214,mesa,9.0.3,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/mesa_headers/,MIT License
+215,modp_b64,master_2014-10-06,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/modp_b64/,"BSD 3-Clause ""New"" or ""Revised"" License"
+216,mozilla_security_manager,36838:a59a5f030021,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/chrome/third_party/mozilla_security_manager/,Mozilla Public License 1.1
+217,nasm,nasm-2.15.03rc6,https://github.com/netwide-assembler/nasm/tree/nasm-2.15.03rc6,"BSD 2-Clause ""Simplified"" License"
+218,node,12.14.1,https://github.com/nodejs/node/tree/v12.14.1,MIT License
+219,nspr,master_2014-06-04,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/nspr/,Mozilla Public License 1.1
+220,nss,3.23,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/net/third_party/nss/,Mozilla Public License 2.0
+221,opencv,4.3.0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/opencv/,"BSD 3-Clause ""New"" or ""Revised"" License"
+222,openh264,2.1.1,https://chromium.googlesource.com/external/github.com/cisco/openh264/+/3dd5b80bc4f172dd82925bb259cb7c82348409c5,"BSD 2-Clause ""Simplified"" License"
+223,openscreen,9499a256bc609e9efdf15a268fd047127870af41,https://chromium.googlesource.com/openscreen,"BSD 3-Clause ""New"" or ""Revised"" License"
+224,OpenSiv3D,v0.6.5,https://github.com/Siv3D/OpenSiv3D/tree/v0.6.5,MIT License
+225,opus,1.4,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/opus/,"BSD 3-Clause ""New"" or ""Revised"" License"
+226,ots,8.1.3,https://github.com/khaledhosny/ots/tree/ee537ac096667eed6559124164c3e8482646fd77,"BSD 3-Clause ""New"" or ""Revised"" License"
+227,pdfium,dab1161c861cc239e48a17e1a5d729aa12785a53,https://pdfium.googlesource.com/pdfium.git/+/dab1161c861cc239e48a17e1a5d729aa12785a53,"Apache License 2.0 OR BSD 3-Clause ""New"" or ""Revised"" License"
+228,perfetto,15.0,https://android.googlesource.com/platform/external/perfetto/+/84f640ce02217b5292f3facc4c52d02cefaa7a38,Apache License 2.0
+229,pffft,483453d8f766,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/pffft/,"BSD 3-Clause ""New"" or ""Revised"" License"
+230,polymer,1.9.1,http://www.polymer-project.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+231,private-join-and-compute,375be83109e10b32441483dbd0f1ac493488d197,https://github.com/google/private-join-and-compute/tree/375be83109e10b32441483dbd0f1ac493488d197,Apache License 2.0
+232,ProxyAutoConfig,6aa3b57955fed5e137d0306478e1a4b424a6d392,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/services/proxy_resolver/,Mozilla Public License 1.1
+233,QR-Code-generator,N/A,http://github.com/nayuki/QR-Code-generator/,MIT License
+234,quiche,38ba3e4c8ebdd7f7605e9f6f3d7e3c41e2c593c4,https://quiche.googlesource.com/quiche/+/38ba3e4c8ebdd7f7605e9f6f3d7e3c41e2c593c4,"BSD 3-Clause ""New"" or ""Revised"" License"
+235,rcssmin,ab12219ba56a47200385673446b5d371548c25db,https://github.com/ndparker/rcssmin/tree/1.0.5,Apache License 2.0
+236,re2,ab12219ba56a47200385673446b5d371548c25db,"https://github.com/google/re2/tree/ab12219ba56a47200385673446b5d371548c25db
+https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/re2/","BSD 3-Clause ""New"" or ""Revised"" License"
+237,rjsmin,1.0.12,https://github.com/ndparker/rjsmin/tree/1.0.12,Apache License 2.0
+238,rnnoise,91ef401,https://github.com/xiph/rnnoise/tree/91ef401,"BSD 3-Clause ""New"" or ""Revised"" License"
+239,ruy,34ea9f4993955fa1ff4eb58e504421806b7f2e8f,https://github.com/google/ruy/tree/34ea9f4993955fa1ff4eb58e504421806b7f2e8f,Apache License 2.0
+240,s2cellid,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/s2cellid/src/s2,Apache License 2.0
+241,SevenZip-LZMA,15.14,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/lzma_sdk/,Public Domain
+242,shell-encryption,f94f58852e9b3edaf2766e348a69a70f596bb9dd,https://github.com/google/shell-encryption/tree/f94f58852e9b3edaf2766e348a69a70f596bb9dd,Apache License 2.0
+243,skia,8e69798f33b4a4b777476dcdb7aa2c75177d07ac,https://skia.googlesource.com/skia.git/+/8e69798f33b4a4b777476dcdb7aa2c75177d07ac,"BSD 3-Clause ""New"" or ""Revised"" License"
+244,smhasher,e87738e57558e0ec472b2fc3a643b838e5b6e88f,https://chromium.googlesource.com/external/smhasher.git/+/e87738e57558e0ec472b2fc3a643b838e5b6e88f,MIT License OR Public Domain
+245,snappy,1.1.7,https://chromium.googlesource.com/external/github.com/google/snappy.git/+/refs/tags/1.1.7,"BSD 3-Clause ""New"" or ""Revised"" License"
+246,SPIRV-Headers,bcf55210f13a4fa3c3d0963b509ff1070e434c79,https://github.com/KhronosGroup/SPIRV-Headers/tree/bcf55210f13a4fa3c3d0963b509ff1070e434c79,MIT License
+247,SPIRV-Tools,f0d110e3058bba9a31f9bd0a8727bdd0a559af82,https://github.com/KhronosGroup/SPIRV-Tools/tree/f0d110e3058bba9a31f9bd0a8727bdd0a559af82,Apache License 2.0
+248,sqlite,3.35.5,https://chromium.googlesource.com/chromium/deps/sqlite.git/+/09b4d6e90623cea239af64d3ba4dd9327ce99f23,Public Domain
+249,superfasthash,0,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/base/third_party/superfasthash/,"BSD 3-Clause ""New"" or ""Revised"" License"
+250,tensorflow,08fef6195f0de0742953553fad4443b9d88a4764,https://github.com/tensorflow/tensorflow/tree/08fef6195f0de0742953553fad4443b9d88a4764,Apache License 2.0
+251,text,2.4.3,https://github.com/tensorflow/text/tree/v2.4.3,Apache License 2.0
+252,tflite-support,cd6760941473a976a78aa33fa199c2058f1441fd,https://github.com/tensorflow/tflite-support/tree/cd6760941473a976a78aa33fa199c2058f1441fd,Apache License 2.0
+253,tinycbor,fc42a049853b802e45f49588f8148fc29d7b4d9c,https://chromium.googlesource.com/external/github.com/intel/tinycbor.git/+/fc42a049853b802e45f49588f8148fc29d7b4d9c,MIT License
+254,ukey2,0275885d8e6038c39b8a8ca55e75d1d4d1727f47,https://github.com/google/ukey2/tree/0275885d8e6038c39b8a8ca55e75d1d4d1727f47,Apache License 2.0
+255,unrar,5.7.3,https://github.com/aawc/unrar/tree/5bf3568f8865dc4d335def904f80c875dc45c4d1,UnRar License
+256,url_parser,57144ca610b6723422b55e0ead1325750fee101e,https://chromium.googlesource.com/openscreen/+/57144ca610b6723422b55e0ead1325750fee101e/third_party/mozilla/,"BSD 3-Clause ""New"" or ""Revised"" License OR Mozilla Public License 1.1"
+257,usrsctp,acfce46e428cc084b4bd0164e1b019261a8dbeda,https://github.com/sctplab/usrsctp/tree/acfce46e428cc084b4bd0164e1b019261a8dbeda,"BSD 3-Clause ""New"" or ""Revised"" License"
+258,v8,9.2.230.24,https://chromium.googlesource.com/v8/v8.git/+/9ba0a37cc1db941ccf0e26ac17df5a33889f4eed,"BSD 3-Clause ""New"" or ""Revised"" License"
+259,Vulkan-Headers,1.2.140,https://github.com/KhronosGroup/Vulkan-Headers/tree/9250d5ae8f50202005233dc0512a1d460c8b4833,Apache License 2.0
+260,wasm-c-api,6db391ee7121a0695602945d11001ea3e00b0afb,https://github.com/WebAssembly/wasm-c-api/tree/6db391ee7121a0695602945d11001ea3e00b0afb,Apache License 2.0
+261,wayland,1.18.0,https://chromium.googlesource.com/external/anongit.freedesktop.org/git/wayland/wayland.git/+/eb1339edd398b9f5328816931e585db4229aa132,MIT License
+262,webrtc,2d3ba08513c21dc7aeeee7dc7220800eb4f0f46d,https://webrtc.googlesource.com/src.git/+/2d3ba08513c21dc7aeeee7dc7220800eb4f0f46d,"BSD 3-Clause ""New"" or ""Revised"" License"
+263,woff2,a0d0ed7da27b708c0a4e96ad7a998bddc933c06e,https://github.com/google/woff2/tree/a0d0ed7da27b708c0a4e96ad7a998bddc933c06e,MIT License
+264,wuffs,0.3.0-alpha.15,https://github.com/google/wuffs/tree/aa46859ea40c72516deffa1b146121952d6dfd3b,Apache License 2.0
+265,xorg-proto-x11proto,0657164905c607e1b2b1dbac2707b06460a9e2f4,https://gitlab.freedesktop.org/xorg/proto/xproto/tree/0657164905c607e1b2b1dbac2707b06460a9e2f4,MIT License
+266,xxHash,r39,https://github.com/google/angle/tree/d564abe2dada76c70347d06171f9abbb15f71693/src/common/third_party/xxhash,"BSD 2-Clause ""Simplified"" License"
+267,zlib,1.2.11,https://chromium.googlesource.com/chromium/src/+/refs/tags/92.0.4515.131/third_party/zlib/,zlib License
+268,zxcvbn,cf092c952cd2325ce390b2691231a8f1cb195d59,https://github.com/rianhunter/zxcvbn-cpp/tree/cf092c952cd2325ce390b2691231a8f1cb195d59,MIT License
+269,alsa-lib,1.2.1.2,https://www.alsa-project.org/files/pub/lib/alsa-lib-1.2.6.tar.bz2,GNU Lesser General Public License v2.1 or later
+270,alsa-plugins,1.2.1,https://github.com/alsa-project/alsa-plugins,GNU Lesser General Public License v2.1 or later
+271,alsa-state,0.2.0,https://layers.openembedded.org/layerindex/recipe/766,MIT License
+272,alsa-ucm-conf,1.2.1.2,https://www.alsa-project.org/files/pub/lib,"BSD 3-Clause ""New"" or ""Revised"" License"
+273,alsa-utils,1.2.1,http://www.alsa-project.org,GNU General Public License v2.0 only
+274,Anjali fonts,0.740,https://sites.google.com/site/cibu/anjalioldlipi-font,SIL Open Font License 1.1
+275,aomedia-aom,3.8.1,https://aomedia.googlesource.com/aom,"BSD 2-Clause ""Simplified"" License"
+276,attr,2.4.48,http://savannah.nongnu.org/projects/attr,GNU Lesser General Public License v2.1 or later
+277,avahi,0.7,http://avahi.org,GNU Lesser General Public License v2.1 or later
+278,base-files,3.0.14,https://github.com/openembedded/openembedded-core/tree/master/meta/recipes-core/base-files,GNU General Public License v2.0 only
+279,base-passwd,3.5.29,https://launchpad.net/base-passwd,GNU General Public License v2.0 or later
+280,Boost,1.72.0,http://www.boost.org,Boost Software License 1.0
+281,brotli,1.0.7,https://github.com/google/brotli,MIT License
+282,BusyBox,1.31.1,https://www.busybox.net,GNU General Public License v2.0 only
+283,bzip2,1.0.8,http://www.bzip.org,bzip2 and libbzip2 License v1.0.6
+284,c-ares,1.19.1,http://c-ares.haxx.se,MIT-like License (c-ares)
+285,ca-certificates,20211016,https://packages.debian.org/sid/ca-certificates,"GPL-2.0-or-later,MPL-2.0"
+286,cairo,1.16.0,https://www.cairographics.org,Mozilla Public License 1.1
+287,capstone,3.0.5,http://www.capstone-engine.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+288,Chromium,120.0.6099.269,https://www.chromium.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+289,connman,1.37,https://01.org/connman,GNU General Public License v2.0 only
+290,CRIU,1.7.2,https://github.com/xemul/criu,"GPL-2.0-only,LGPL-2.1-only"
+291,curl,7.69.1,http://curl.haxx.se,curl License
+292,dav1d,0.8.2,https://code.videolan.org/videolan/dav1d,"BSD 2-Clause ""Simplified"" License"
+293,dbus,1.12.24,https://www.freedesktop.org,Academic Free License v2.1
+294,dlt-daemon,2.18.7,https://github.com/COVESA/dlt-daemon,Mozilla Public License 2.0
+295,dosfstools,2.11,https://github.com/dosfstools/dosfstools,GNU General Public License v2.0 or later
+296,DroidFonts,-,https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-4.4_r1.0.1/data/fonts,Apache License 2.0
+297,e2fsprogs,1.45.7,http://e2fsprogs.sourceforge.net,GNU General Public License v2.0 or later
+298,ecryptfs-utils,111,http://ecryptfs.org,GNU General Public License v2.0 or later
+299,entities,1.1.1,https://github.com/fb55/entities,"BSD 2-Clause ""Simplified"" License"
+300,exfat-tools,1.1.2,https://github.com/hclee/exfat-tools,GNU General Public License v2.0 or later
+301,expat,2.6.3,http://expat.sourceforge.net,MIT License
+302,ffmpeg,4.2.2,https://www.ffmpeg.org,GNU Lesser General Public License v2.1 or later
+303,file-uri-to-path,1.0.0,https://github.com/TooTallNate/file-uri-to-path,MIT License
+304,flac,1.3.3,https://xiph.org/flac/index.html,"GPL-2.0-or-later,LGPL-2.1-or-later,BSD-3-Clause"
+305,fontconfig,2.13.1,http://www.fontconfig.org,MIT-like License (fontconfig)
+306,freetype,2.10.1,https://www.freetype.org,Freetype Project License
+307,fribidi,1.0.9,http://fribidi.org,GNU Lesser General Public License v2.1 or later
+308,GLib,2.58.0,https://github.com/GNOME/glib,GNU Lesser General Public License v2.1 or later
+309,GLib,2.62.6,https://github.com/GNOME/glib,GNU Lesser General Public License v2.1 or later
+310,glib-networking,2.62.4,http://git.gnome.org/browse/glib-networking,GNU Lesser General Public License v2.1 or later
+311,glibc,2.31,https://www.gnu.org/software/libc,GNU Lesser General Public License v2.1 or later
+312,glibmm,2.62.0,http://www.gtkmm.org,GNU Lesser General Public License v2.1 or later
+313,gmp,4.2.1,https://gmplib.org,"GPL-2.0-or-later,LGPL-2.1-or-later"
+314,gmp,6.2.0,https://gmplib.org,GNU General Public License v2.0 or later
+315,GnuTLS,3.7.4,http://www.gnutls.org,GNU Lesser General Public License v2.1 or later
+316,Google Noto Fonts,-,https://www.google.com/get/noto,"OFL-1.1,Apache-2.0"
+317,google-snappy,1.1.8,http://google.github.io/snappy,"BSD 3-Clause ""New"" or ""Revised"" License"
+318,gphoto,2.5.23,http://www.gphoto.org,GNU General Public License v2.0 or later
+319,gphotofs,0.5,http://www.gphoto.org,GNU General Public License v2.0 or later
+320,gptfdisk,1.0.9,http://sourceforge.net/projects/gptfdisk,GNU General Public License v2.0 or later
+321,gst-libav,1.18.5,https://gstreamer.freedesktop.org/modules/gst-libav.html,GNU Library General Public License v2 only
+322,gst-plugins-bad,1.18.5,https://gstreamer.freedesktop.org/modules/gst-plugins-bad.html,GNU Lesser General Public License v2.1 or later
+323,gst-plugins-base,1.18.5,https://gstreamer.freedesktop.org/modules/gst-plugins-base.html,GNU Lesser General Public License v2.1 or later
+324,gst-plugins-cool,1.18.5,https://github.com/justinjoy/gst-plugins-cool,GNU Lesser General Public License v2.1 or later
+325,gst-plugins-good,1.18.5,https://gstreamer.freedesktop.org/modules/gst-plugins-good.html,GNU Lesser General Public License v2.1 or later
+326,gst-plugins-ugly,1.18.5,https://gstreamer.freedesktop.org/modules/gst-plugins-ugly.html,GNU Lesser General Public License v2.1 or later
+327,Gstreamer,1.18.5,http://gstreamer.freedesktop.org,GNU Lesser General Public License v2.1 or later
+328,gzip,1.3.12,http://www.gzip.org,GNU General Public License v2.0 or later
+329,HarfBuzz,2.6.4,http://www.freedesktop.org/wiki/Software/HarfBuzz,MIT License Modern Variant
+330,hdparm,9.58,http://sourceforge.net/projects/hdparm,BSD-like License (hdparm)
+331,hunspell,1.7.0,https://github.com/hunspell/hunspell,GNU Lesser General Public License v2.1 or later
+332,icu,66.1,http://site.icu-project.org,Unicode License Agreement - Data Files and Software (2016)
+333,icu,73.2,http://site.icu-project.org,Unicode License Agreement - Data Files and Software (2016)
+334,iftop,1.0pre4,http://www.ex-parrot.com/pdw/iftop,GNU General Public License v2.0 or later
+335,iLib,14.14.0,https://www.npmjs.com/package/ilib,Apache License 2.0
+336,iotop,0.6,http://guichaz.free.fr/iotop,GNU General Public License v2.0 or later
+337,iproute2,5.5.0,https://wiki.linuxfoundation.org/networking/iproute2,GNU General Public License v2.0 only
+338,iptables,1.8.4,http://git.netfilter.org/iptables,GNU General Public License v2.0 or later
+339,iputils,s20190709,https://wiki.linuxfoundation.org/networking/iputils,GNU General Public License v2.0 or later
+340,iw,5.4,https://git.kernel.org/cgit/linux/kernel/git/jberg/iw.git/tree,ISC License
+341,Jansson,2.13.1,http://www.digip.org/jansson,MIT License
+342,json-c,0.15,http://oss.metaparadigm.com/json-c,MIT License
+343,kbd,2.2.0,http://elinux.org/KDB,GNU General Public License v2.0 or later
+344,keyutils,1.5.9,https://people.redhat.com/dhowells/keyutils,"GPL-2.0-or-later,LGPL-2.1-or-later"
+345,kmod,26,http://git.kernel.org/?p=utils/kernel/kmod/kmod.git;a=summary,GNU Lesser General Public License v2.1 or later
+346,leveldb,1.22,http://code.google.com/p/leveldb,"BSD 3-Clause ""New"" or ""Revised"" License"
+347,libaio,0.3.111,http://lse.sourceforge.net/io/aio.html,GNU Lesser General Public License v2.1 or later
+348,libarchive,3.4.2,http://www.libarchive.org,"BSD 2-Clause ""Simplified"" License"
+349,libbson,0.98.0,https://github.com/mongodb/libbson,Apache License 2.0
+350,libcap,2.32,http://www.linuxfromscratch.org/blfs/view/svn/postlfs/libcap.html,"BSD 3-Clause ""New"" or ""Revised"" License"
+351,libcap-ng,0.7.10,http://people.redhat.com/sgrubb/libcap-ng,"GPL-2.0-or-later,LGPL-2.1-or-later"
+352,libconfig,1.7.2,http://www.hyperrealm.com/libconfig,GNU Lesser General Public License v2.1 or later
+353,libexif,0.6.22,https://libexif.github.io,GNU Lesser General Public License v2.1 or later
+354,libffi,3.3,https://sourceware.org/libffi,MIT License
+355,libfuse,2.9.9,https://github.com/libfuse/libfuse,"GPL-2.0-or-later,LGPL-2.1-or-later"
+356,libgcrypt,1.8.5,https://www.gnu.org/software/libgcrypt,"GPL-2.0-or-later,LGPL-2.1-or-later"
+357,libgpg-error,1.37,http://www.gnupg.org/related_software/libgpg-error,GNU Lesser General Public License v2.1 or later
+358,libgphoto2,2.5.25,https://github.com/gphoto/libgphoto2,GNU Lesser General Public License v2.1 or later
+359,libhangul,0.1.0,https://github.com/choehwanjin/libhangul,GNU Lesser General Public License v2.1 or later
+360,libidn2,2.3.0,http://ftp.gnu.org/gnu/libidn,GNU General Public License v2.0 or later
+361,libjpeg-turbo,2.0.4,https://github.com/libjpeg-turbo/libjpeg-turbo,"Zlib,IJG,BSD-3-Clause"
+362,libmikmod,3.3.11.1,http://mikmod.sourceforge.net,GNU Lesser General Public License v2.1 or later
+363,libmnl,1.0.4,https://www.netfilter.org/projects/libmnl,GNU Lesser General Public License v2.1 or later
+364,libnetfilter-conntrack,1.0.8,http://www.netfilter.org/projects/libnetfilter_conntrack/index.html,GNU General Public License v2.0 or later
+365,libnetfilter_log,1.0.1,https://netfilter.org/projects/libnetfilter_log/index.html,GNU General Public License v2.0 or later
+366,libnfnetlink,1.0.1,https://www.netfilter.org/projects/libnfnetlink/index.html,GNU General Public License v2.0 or later
+367,libnl,3.5.0,https://www.infradead.org/~tgr/libnl,GNU Lesser General Public License v2.1 or later
+368,libnsbmp,0.1.0,http://www.netsurf-browser.org/projects/libnsbmp,MIT License
+369,libogg,1.3.4,http://www.xiph.org/ogg,"BSD 3-Clause ""New"" or ""Revised"" License"
+370,libpcap,1.9.1,https://www.tcpdump.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+371,libpng,1.6.37,http://www.libpng.org/pub/png/libpng.html,PNG Reference Library version 2
+372,libpsl,0.21.0,https://github.com/rockdaboot/libpsl,MIT License
+373,libsamplerate,0.1.9,http://www.mega-nerd.com/SRC/license.html,"BSD 2-Clause ""Simplified"" License"
+374,libsigc++,2.10.3,http://libsigc.sourceforge.net,GNU Lesser General Public License v2.1 or later
+375,libsndfile,1.0.28,http://www.mega-nerd.com/libsndfile,GNU Lesser General Public License v2.1 or later
+376,libsolv,0.7.10,https://github.com/openSUSE/libsolv,"BSD 3-Clause ""New"" or ""Revised"" License"
+377,libsoup,2.68.4,http://live.gnome.org/LibSoup,GNU Lesser General Public License v2.1 or later
+378,libtasn1,4.19.0,https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.20.0.tar.gz,GNU Lesser General Public License v2.1 or later
+379,libtirpc,1.2.6,http://sourceforge.net/projects/libtirpc,"BSD 3-Clause ""New"" or ""Revised"" License"
+380,libtool,2.4.6,https://www.gnu.org/software/libtool,"GPL-2.0-or-later,LGPL-2.1-or-later"
+381,libts-tslib,1.21,https://github.com/kergoth/tslib,GNU Lesser General Public License v2.1 or later
+382,libunistring,0.9.10,http://www.gnu.org/software/libunistring,GNU General Public License v2.0 or later
+383,libunwind,1.7.1,http://www.nongnu.org/libunwind,MIT License
+384,libusb,1.0.22,https://libusb.info,GNU Lesser General Public License v2.1 or later
+385,libuv,1.36.0,https://github.com/libuv/libuv,MIT License
+386,libvorbis,1.3.6,https://xiph.org/vorbis,"BSD 3-Clause ""New"" or ""Revised"" License"
+387,libwebp,1.1.0,https://github.com/webmproject/libwebp,"BSD 3-Clause ""New"" or ""Revised"" License"
+388,libX11,1.6.8,http://www.x.org,MIT-like License (libX11)
+389,libxcrypt,4.4.15,https://github.com/besser82/libxcrypt,GNU Lesser General Public License v2.1 or later
+390,libxkbcommon,0.10.0,https://xkbcommon.org,MIT-like License (libxkbcommon)
+391,libxml++,2.40.1,http://libxmlplusplus.sourceforge.net/docs/manual/html,GNU Lesser General Public License v2.1 or later
+392,libxml2,2.9.14,https://github.com/GNOME/libxml2,MIT License
+393,lighttpd,1.4.55,https://github.com/lighttpd/lighttpd1.4,"BSD 3-Clause ""New"" or ""Revised"" License"
+394,linux-libc-headers,4.9,http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-kernel/linux-libc-headers?h=morty,GNU General Public License v2.0 only
+395,Linux-PAM,1.3.1,http://www.linux-pam.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+396,logrotate,3.15.1,https://github.com/logrotate/logrotate,GNU General Public License v2.0 or later
+397,Lohit Font,2.5.0,https://fedoraproject.org/wiki/Lohit_fonts,SIL Open Font License 1.1
+398,lsb,1.4,https://sourceforge.net/projects/lsb,GNU General Public License v2.0 or later
+399,Lua,5.3.1,http://www.lua.org,MIT License
+400,lvm2,2.03.06,https://sourceware.org/lvm2,"GPL-2.0-only,LGPL-2.1-only"
+401,makedevs-native,1.0.1,https://iotdk.intel.com/repos/3.5/sources/edison/x86_64-linux/makedevs-native-1.0.1-r0/makedevs-native-1.0.1-r0-patched.tar.gz,GNU General Public License v2.0 only
+402,maliit-framework-webos,0.99.0,https://github.com/webosose/maliit-framework-webos,GNU Lesser General Public License v2.1 only
+403,mpg123,1.25.13,http://mpg123.org,GNU Lesser General Public License v2.1 only
+404,ms.js,2.1.3,https://www.npmjs.com/package/ms,MIT License
+405,NAN,2.28.0,https://github.com/nodejs/nan,MIT License
+406,NAN,2.8.0,https://github.com/nodejs/nan,MIT License
+407,NanumGothic,2.030,https://hangeul.naver.com/fonts/search?f=nanum,SIL Open Font License 1.1
+408,ncurses,6.4,https://www.gnu.org/software/ncurses,X11 License Distribution Modification Variant
+409,Ne10,1.2.1,https://projectne10.github.io/Ne10,"BSD 3-Clause ""New"" or ""Revised"" License"
+410,netbase,6.1,https://packages.debian.org/search?keywords=netbase,GNU General Public License v2.0 only
+411,nettle,3.7.3,https://www.lysator.liu.se/~nisse/nettle,GNU General Public License v2.0 or later
+412,nghttp2,1.59.0,https://nghttp2.org,MIT License
+413,node-bindings,1.5.0,https://github.com/TooTallNate/node-bindings,MIT License
+414,node-uuid,1.4.0,https://github.com/broofa/node-uuid,MIT License
+415,nodejs,20.12.2,https://nodejs.org/en,MIT License
+416,nspr,4.25,https://layers.openembedded.org/layerindex/recipe/301665,Mozilla Public License 2.0
+417,nss,3.51.1,https://github.com/nss-dev/nss,Mozilla Public License 2.0
+418,OE4T-linux-tegra-4.9,4.9.337,https://github.com/OE4T/linux-tegra-4.9,GNU General Public License v2.0 or later
+419,openssl,0.9.8,https://github.com/openssl/openssl,OpenSSL License
+420,openssl,1.0.2k,https://github.com/openssl/openssl,OpenSSL License
+421,openssl,1.1.1w,https://github.com/openssl/openssl,OpenSSL License
+422,opkg,0.4.2,https://git.yoctoproject.org/opkg,GNU General Public License v2.0 or later
+423,opkg-utils,0.4.2,https://git.yoctoproject.org/opkg-utils,GNU General Public License v2.0 or later
+424,Opus,1.1,https://www.opus-codec.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+425,Opus,1.3.1,https://www.opus-codec.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+426,os-release,1.0,https://github.com/openembedded/openembedded-core,MIT License
+427,pcre,8.42,http://www.pcre.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+428,pcre,8.44,http://www.pcre.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+429,perl,5.30.1,http://perldoc.perl.org/perlartistic.html,Artistic License 1.0 (Perl)
+430,Pixman,0.38.4,http://www.pixman.org,MIT License
+431,pointercal,0.0,https://layers.openembedded.org/layerindex/recipe/53079,MIT License
+432,popt,1.16,http://rpm5.org/files/popt,X11 License
+433,procps,3.3.17,http://procps.sourceforge.net,"GPL-2.0-or-later,LGPL-2.1-or-later"
+434,protobuf-c,1.3.3,https://github.com/protobuf-c/protobuf-c,"BSD 2-Clause ""Simplified"" License"
+435,psmisc,23.3,http://psmisc.sourceforge.net,GNU General Public License v2.0 or later
+436,ptmalloc3,1.0,http://www.malloc.de/en,GNU Lesser General Public License v2.1 or later
+437,pulseaudio,15.0,http://www.pulseaudio.org,"GPL-2.0-or-later,LGPL-2.1-or-later"
+438,python,3.8.18,http://www.python.org,Python License 2.0
+439,pyzy,0.1.0,https://github.com/pyzy/pyzy,GNU Lesser General Public License v2.1 or later
+440,readline,5.2,https://layers.openembedded.org/layerindex/recipe/125422,GNU General Public License v2.0 or later
+441,run-postinsts,1.0,http://recipes.yoctoproject.org/rrs/recipedetail/313,MIT License
+442,sbc,1.4,http://www.bluez.org/sbc-12,"GPL-2.0-or-later,LGPL-2.1-or-later"
+443,SDL,2.0.14,http://www.libsdl.org,zlib
+444,SDL_image,2.0.1,http://sdl.beuc.net/sdl.wiki/SDL_image,zlib
+445,SDL_mixer,2.0.1,https://www.libsdl.org/projects/SDL_mixer,zlib
+446,SDL_net,2.0.1,https://www.libsdl.org/projects/SDL_net,zlib
+447,SDL_ttf,2.0.14,https://www.libsdl.org/projects/SDL_ttf,zlib
+448,sdparm,1.11,http://sg.danny.cz/sg/sdparm.html,"BSD 3-Clause ""New"" or ""Revised"" License"
+449,sg3-utils,1.45,https://github.com/hreinecke/sg3_utils,"BSD 2-Clause ""Simplified"" License"
+450,shadow,4.8.1,https://github.com/shadow-maint/shadow,"GPL-2.0-or-later,BSD-3-Clause,BSD-2-Clause,Artistic-1.0"
+451,shared-mime-info,1.15,http://freedesktop.org/Software/shared-mime-info,GNU General Public License v2.0 or later
+452,smartmontools,7.1,https://www.smartmontools.org,GNU General Public License v2.0 or later
+453,smpeg,0.4.5,http://icculus.org/smpeg,GNU Library General Public License v2 only
+454,speex,1.2rc2,http://www.speex.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+455,SpeexDSP,1.2.0,http://www.speex.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+456,SQLite,3.31.1,https://sqlite.org,SQLite Blessing
+457,sunpinyin,2.99,https://github.com/sunpinyin/sunpinyin,GNU Lesser General Public License v2.1 only
+458,systemd-stable,249.3,https://github.com/systemd/systemd-stable,"GPL-2.0-or-later,LGPL-2.1-or-later"
+459,taglib,1.11.1,http://taglib.org/api,Mozilla Public License 1.1
+460,tcp-wrappers,7.6,https://launchpad.net/ubuntu/+source/tcp-wrappers,BSD-like License (tcp-wrappers)
+461,tiff,4.6.0,http://simplesystems.org/libtiff,libtiff License
+462,Tinos Font,1.21,https://fonts.google.com/specimen/Tinos,Apache License 2.0
+463,tremor,20150107,https://www.xiph.org,"BSD 3-Clause ""New"" or ""Revised"" License"
+464,tzdata,2024a,https://data.iana.org/time-zones,"Public Domain,BSD-3-Clause"
+465,uchardet,0.0.1,https://wiki.gnome.org/Projects/uchardet,Mozilla Public License 1.1
+466,ulogd,2.0.7,https://netfilter.org/projects/ulogd,GNU General Public License v2.0 only
+467,uriparser,0.9.4,http://uriparser.sourceforge.net,"BSD 3-Clause ""New"" or ""Revised"" License"
+468,usocket,0.0.4,https://github.com/jhs67/usocket,ISC License
+469,usocket,0.2.1,https://github.com/jhs67/usocket,ISC License
+470,util-linux,2.35.1,https://github.com/util-linux/util-linux,GNU General Public License v2.0 or later
+471,v4l-utils,1.14.2,https://git.linuxtv.org/v4l-utils.git,"GPL-2.0-or-later,LGPL-2.1-or-later"
+472,visionmedia-debug,3.2.6,https://github.com/visionmedia/debug,MIT License
+473,Wayland,1.18.0,https://wayland.freedesktop.org,MIT License
+474,webOSOSE-webos-connman-adapter,-,https://github.com/openwebos/webos-connman-adapter,"LGPL-2.1-or-later,Apache-2.0"
+475,xinetd,2.3.15,https://github.com/xinetd-org/xinetd,xinetd License
+476,xkeyboard-config,2.11,https://www.freedesktop.org/wiki/Software/XKeyboardConfig,MIT-like License (xkeyboard-config)
+477,XZ Utils,5.2.4,http://tukaani.org/xz,"GPL-2.0-or-later,LGPL-2.1-or-later,Public Domain"
+478,yajl,2.1.0,https://lloyd.github.io/yajl,ISC License
+479,zlib,1.2.11,http://www.zlib.net,zlib
+480,zstd,1.4.5,http://facebook.github.io/zstd,"BSD 3-Clause ""New"" or ""Revised"" License"
+481,ACL,2.2.53,https://savannah.nongnu.org/projects/acl,GNU Lesser General Public License v2.1 only
+482,Alsa Libraries,1.2.1.2,https://github.com/alsa-project/alsa-lib/tree/v1.2.1.2,GNU Lesser General Public License v2.1 or later
+483,Alsa Utils,1.2.1,https://github.com/alsa-project/alsa-utils,GNU General Public License v2.0 or later
+484,alsa-plugins,1.2.1,https://github.com/alsa-project/alsa-plugins/,GNU Lesser General Public License v2.1 or later
+485,Alsa-State,0.2.0,https://github.com/openembedded/openembedded-core/blob/master/meta/recipes-bsp/alsa-state/alsa-state/alsa-state-init,GNU General Public License v2.0 or later
+486,android-tools,5.1.1,https://layers.openembedded.org/layerindex/recipe/52988/,Apache License 2.0
+487,apparmor,2.13.6,https://gitlab.com/apparmor/apparmor,GNU General Public License v2.0 only
+488,apr,1.7.2,https://github.com/apache/apr/tree/1.7.2,Apache License 2.0
+489,apt,1.2.31,https://github.com/Debian/apt/,GNU General Public License v2.0 or later
+490,asio,asio-1-18-2,https://github.com/chriskohlhoff/asio/,Boost Software License 1.0
+491,Attr,2.4.48,http://savannah.nongnu.org/projects/attr,GNU General Public License v2.0 or later
+492,base-passwd,3.5.29,https://salsa.debian.org/debian/base-passwd,GNU General Public License v2.0 only
+493,bash-completion,2.10,https://github.com/scop/bash-completion/,GNU General Public License v2.0 or later
+494,bind,9.11.37,https://gitlab.isc.org/isc-projects/bind9,Mozilla Public License 2.0
+495,boost,boost-1.72.0,https://github.com/boostorg/boost,Boost Software License 1.0
+496,bridge-utils,1.6,https://www.linuxfromscratch.org/blfs/view/8.0/basicnet/bridge-utils.html,GNU General Public License v2.0 or later
+497,BusyBox,1.35.0,https://github.com/mirror/busybox,GNU General Public License v2.0 or later
+498,bzip2,1.0.8,https://gitlab.com/federicomenaquintero/bzip2,bzip2 and libbzip2 License v1.0.6
+499,Cairo,1.16.0,https://github.com/vishnubob/cairo,GNU Lesser General Public License v2.1 or later
+500,can-utils,2020.02.04,https://github.com/linux-can/can-utils,"BSD 3-Clause ""New"" or ""Revised"" License"
+501,cJSON,1.7.13,https://github.com/DaveGamble/cJSON/,MIT License
+502,coreutils,6.9,https://github.com/coreutils/coreutils/tree/v6.9,GNU General Public License v2.0 or later
+503,cracklib,2.9.5,https://github.com/cracklib/cracklib/,GNU Lesser General Public License v2.1 or later
+504,cryptsetup,2.3.2,https://gitlab.com/cryptsetup/cryptsetup,GNU General Public License v2.0 or later
+505,cups,2.3.1,https://github.com/apple/cups/tree/v2.3.1,Apache License 2.0
+506,curl,8.4.0,https://github.com/curl/curl,curl License
+507,dbus,1.12.20,https://gitlab.freedesktop.org/dbus/dbus/-/tree/dbus-1.12.20?ref_type=tags,Academic Free License v2.1
+508,dbus-glib,0.110,http://www.freedesktop.org/wiki/Software/dbus,Academic Free License v2.1
+509,debianutils,4.9.1,https://tracker.debian.org/pkg/debianutils,GNU General Public License v2.0 or later
+510,desktop-file-utils,0.24,https://www.linuxfromscratch.org/blfs/view/9.1-systemd/general/desktop-file-utils.html,GNU General Public License v2.0 or later
+511,devmem2,Unspecified,https://github.com/radii/devmem2,GNU General Public License v2.0 or later
+512,dhcp,4.4.2,https://github.com/isc-projects/dhcp/,Mozilla Public License 2.0
+513,dosfstools,2.11,https://github.com/dosfstools/dosfstools/,GNU General Public License v2.0 only
+514,dpkg,1.19.7,https://wiki.debian.org/Teams/Dpkg,GNU General Public License v2.0 or later
+515,elfutils,0.178,https://sourceware.org/elfutils/,GNU General Public License v2.0 or later
+516,ethtool,5.4,https://www.kernel.org/pub/software/network/ethtool/,GNU General Public License v2.0 or later
+517,Ext2 Filesystems Utilities,1.45.4,https://github.com/tytso/e2fsprogs/tree/v1.45.4,GNU General Public License v2.0 only
+518,fdk-aac,2.0.1,https://github.com/mstorsjo/fdk-aac,Fraunhofer FDK AAC Codec Library
+519,FFmpeg,4.2.2,https://github.com/FFmpeg/FFmpeg/tree/n4.2.2,GNU General Public License v2.0 or later
+520,findutils,4.2.31,https://www.gnu.org/software/findutils/,GNU General Public License v2.0 or later
+521,flac,1.3.3,https://github.com/xiph/flac/,GNU General Public License v2.0 or later
+522,fmt,6.2.0,https://github.com/fmtlib/fmt/tree/6.2.0,MIT License
+523,Font Awesome font,Unspecified,https://github.com/FortAwesome/Font-Awesome,SIL Open Font License 1.1
+524,fontconfig,2.13.1,https://gitlab.freedesktop.org/fontconfig/fontconfig/-/tree/2.13.1?ref_type=tags,Historical Permission Notice and Disclaimer - sell variant
+525,freetype,2.10.1,https://github.com/freetype/freetype/tree/VER-2-10-1,Freetype Project License
+526,fribidi,1.0.9,https://github.com/fribidi/fribidi/tree/v1.0.9,GNU Lesser General Public License v2.1 or later
+527,GENIVI IPC CommonAPI C++ DBus Runtime,3.1.12.11,https://github.com/COVESA/capicxx-dbus-runtime/tree/3.1.12.11,Mozilla Public License 2.0
+528,GENIVI/capicxx-core-runtime,3.1.12.6,https://github.com/COVESA/capicxx-core-runtime,Mozilla Public License 2.0
+529,GENIVI/capicxx-someip-runtime,3.1.12.17,https://github.com/COVESA/capicxx-someip-runtime/tree/3.1.12.17,Mozilla Public License 2.0
+530,GENIVI/dlt-daemon,2.18.5,https://github.com/COVESA/dlt-daemon/tree/v2.18.5,Mozilla Public License 2.0
+531,googletest,1.7.0,https://github.com/google/googletest/tree/release-1.7.0,"BSD 3-Clause ""New"" or ""Revised"" License"
+532,libfuse,fuse-3.9.2,https://github.com/libfuse/libfuse/,GNU Lesser General Public License v2.1 only
+533,Linux Kernel,No Label,https://github.com/torvalds/linux,GPL-2.0-with-Linux-syscall-note
+534,MaterialIcons,Unspecified,https://github.com/google/material-design-icons?tab=readme-ov-file,Apache License 2.0
+535,Gawk,3.1.5,https://ftp.gnu.org/gnu/gawk/,GNU General Public License v2.0 or later
+536,GDBM,1.8.3,https://www.gnu.org.ua/software/gdbm/,GNU General Public License v2.0 or later
+537,GDK-Pixbuf,2.40.0,https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/tree/2.40.0?ref_type=tags,GNU Lesser General Public License v2.1 or later
+538,glib,2.62.6,https://github.com/GNOME/glib/tree/2.62.6,GNU Lesser General Public License v2.1 only
+539,glib-networking,2.62.4,https://gitlab.gnome.org/GNOME/glib-networking/-/tree/2.62.4?ref_type=tags,GNU Lesser General Public License v2.1 or later
+540,glibmm,2.62.0,https://github.com/GNOME/glib/tree/2.62.0,GNU Lesser General Public License v2.1 or later
+541,GMP - GNU Multiple Precision Arithmetic Library,6.2.0,https://gmplib.org/,GNU General Public License v2.0 or later
+542,GNU C Library - glibc,2.31,https://github.com/bminor/glibc/tree/glibc-2.31,GNU Lesser General Public License v2.1 or later
+543,GNU gettext,0.16.1,https://www.gnu.org/software/gettext/,GNU General Public License v2.0 or later
+544,GnuTLS,3.6.14,https://gitlab.com/gnutls/gnutls/,GNU General Public License v2.0 or later
+545,GnuWin32 - grep,2.5.1a,https://ftp.kaist.ac.kr/gnu/grep/,GNU General Public License v2.0 or later
+546,gobject-introspection,1.62.0,https://gitlab.gnome.org/GNOME/gobject-introspection,GNU Library General Public License v2 only
+547,guider,No Label,https://github.com/iipeace/guider,GNU General Public License v2.0 or later
+548,hamcpp,1.0,https://github.com/igor-krechetov/hsmcpp/,MIT License
+549,HarfBuzz,2.6.4,https://github.com/harfbuzz/harfbuzz,MIT License Modern Variant
+550,hostapd - IEEE 802.11 AP & IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator,2.9,https://github.com/michael-dev/hostapd/,"BSD 3-Clause ""New"" or ""Revised"" License"
+551,i2c-tools,4.1,https://archive.kernel.org/oldwiki/i2c.wiki.kernel.org/index.php/I2C_Tools.html,GNU General Public License v2.0 only
+552,icu,66.1,https://github.com/unicode-org/icu/tree/release-66-1,Unicode Terms of Use
+553,inotify-tools,3.20.22,https://github.com/inotify-tools/inotify-tools/,GNU General Public License v2.0 only
+554,intltool,0.51.0,https://launchpad.net/intltool,GNU General Public License v2.0 only
+555,iproute2 - Linux Foundation,5.11.0,https://github.com/iproute2/iproute2,GNU General Public License v2.0 or later
+556,IPTables,1.8.4,https://github.com/shadowsocks/iptables/,GNU General Public License v2.0 or later
+557,iputils,s20190709,https://github.com/iputils/iputils/,GNU General Public License v2.0 or later
+558,iso-codes,4.4,https://salsa.debian.org/iso-codes-team/iso-codes,GNU Lesser General Public License v2.1 or later
+559,iw,5.4,https://wireless.wiki.kernel.org/en/users/documentation/iw,ISC License
+560,json-c,0.13.1,https://github.com/json-c/json-c/tree/json-c-0.13.1-20180305,MIT License
+561,jsoncpp,1.9.2,https://github.com/open-source-parsers/jsoncpp/tree/1.9.2,PublicDomain
+562,KBD - Linux keyboard tools,2.2.0,https://github.com/legionus/kbd,GNU General Public License v2.0 or later
+563,kmod - Linux kernel module handling,26,https://github.com/kmod-project/kmod,GNU Lesser General Public License v2.1 or later
+564,a52dec,0.7.4,https://sourceforge.net/projects/vlc/postdownload,GNU General Public License v2.0 or later
+565,cereal,1.3.0,https://github.com/USCiLab/cereal/,BSD 3-Clause Clear License
+566,check,0.14.0,https://github.com/libcheck/check/,GNU Lesser General Public License v2.1 or later
+567,dbus-c++,0.9.0,https://github.com/Pelagicore/dbus-cplusplus/,GNU Lesser General Public License v2.1 or later
+568,GNU Libtool,2.4.6,https://www.gnu.org/software/libtool/,GNU General Public License v2.0 only
+569,jitterentropy-library,2.2.0,https://github.com/smuellerDD/jitterentropy-library/,"BSD 3-Clause ""New"" or ""Revised"" License"
+570,lame,3.100,https://github.com/lifeiteng/lame/,GNU Library General Public License v2 or later
+571,less,551,https://github.com/rivy/less/,"BSD 2-Clause ""Simplified"" License"
+572,libaio,0.3.111,https://github.com/linux-xhyang/libaio/,GNU Lesser General Public License v2.1 or later
+573,libarchive,3.4.2,https://github.com/libarchive/libarchive,PublicDomain
+574,libatasmart,0.19,https://github.com/Rupan/libatasmart,GNU Lesser General Public License v2.1 or later
+575,libatomic_ops,7.6.10,https://github.com/ivmai/libatomic_ops/,GNU General Public License v2.0 or later
+576,libbsd,0.10.0,https://github.com/freedesktop/libbsd/tree/0.10.0,"BSD 4-Clause ""Original"" or ""Old"" License"
+577,libcap,2.32,https://github.com/Distrotech/libcap,"BSD 3-Clause ""New"" or ""Revised"" License"
+578,libcap-ng,0.7.10,https://github.com/stevegrubb/libcap-ng/tree/v0.7.10,GNU General Public License v2.0 or later
+579,libcgroup,0.41,https://github.com/libcgroup/libcgroup/tree/v0.41,GNU Lesser General Public License v2.1 only
+580,libcroco,0.6.13,https://directory.fsf.org/wiki/Libcroco,GNU Lesser General Public License v2.1 only
+581,Liberation fonts - TTF Version,N/A,https://github.com/liberationfonts/liberation-fonts,SIL Open Font License 1.1
+582,libevdev,1.8.0,https://gitlab.freedesktop.org/libevdev/libevdev,MIT License
+583,libffi,3.3-rc0,https://github.com/libffi/libffi/tree/v3.3-rc0,MIT License
+584,libgcrypt,1.8.5,http://www.gnupg.org,GNU Lesser General Public License v2.1 or later
+585,Libgpg-error Lib,1.37,http://www.gnupg.org/,GNU General Public License v2.0 or later
+586,libgudev,233,https://github.com/GNOME/libgudev/tree/233,GNU Lesser General Public License v2.1 only
+587,libidn,1.35,https://gitlab.com/libidn/libidn,GNU General Public License v2.0 or later
+588,libidn2,2.3.0,https://github.com/libidn/libidn2,GNU General Public License v2.0 or later
+589,libinput,1.15.2,https://gitlab.freedesktop.org/libinput/libinput,MIT License
+590,libjpeg-turbo,2.0.4,https://github.com/libjpeg-turbo/libjpeg-turbo,"BSD 3-Clause ""New"" or ""Revised"" License"
+591,libmnl,1.0.4,https://github.com/justmirror/libmnl/tree/libmnl-1.0.4,GNU Lesser General Public License v2.1 only
+592,libnl,3.5.0,https://github.com/thom311/libnl/,GNU Lesser General Public License v2.1 only
+593,libnsl,1.2.0,https://github.com/thkukuk/libnsl,GNU Lesser General Public License v2.1 or later
+594,libogg,1.3.4,https://github.com/xiph/ogg/tree/v1.3.4,"BSD 3-Clause ""New"" or ""Revised"" License"
+595,libpcap,1.9.1,https://github.com/the-tcpdump-group/libpcap,"BSD 3-Clause ""New"" or ""Revised"" License"
+596,libphonenumber,8.11.1,https://github.com/google/libphonenumber/,Apache License 2.0
+597,libpng,1.6.37,https://github.com/glennrp/libpng,PNG Reference Library version 2
+598,libpsl,0.21.0,https://github.com/rockdaboot/libpsl,MIT License
+599,librsvg,2.40.21,https://gitlab.gnome.org/GNOME/librsvg,GNU General Public License v2.0 or later
+600,libsamplerate,0.1.9,https://github.com/libsndfile/libsamplerate,"BSD 2-Clause ""Simplified"" License"
+601,libsigc++,2.10.3,https://github.com/libsigcplusplus/libsigcplusplus,GNU Lesser General Public License v2.1 or later
+602,libsndfile,1.0.28,https://github.com/libsndfile/libsndfile,GNU Lesser General Public License v2.1 only
+603,libsocketcan,0.0.11,https://git.pengutronix.de/cgit/tools/libsocketcan,GNU Lesser General Public License v2.1 or later
+604,libsoup,2.68.4,https://github.com/GNOME/libsoup,GNU Library General Public License v2 only
+605,libssh2,1.9.0,https://github.com/libssh2/libssh2,"BSD 3-Clause ""New"" or ""Revised"" License"
+606,libtheora,1.1.1,https://github.com/xiph/theora,"BSD 3-Clause ""New"" or ""Revised"" License"
+607,libtirpc,1.2.6,https://github.com/alisw/libtirpc/tree/libtirpc-1-2-6,"BSD 3-Clause ""New"" or ""Revised"" License"
+608,libunistring,0.9.10,https://github.com/gnosis/libunistring,GNU General Public License v2.0 only
+609,libunwind,1.5.0,https://github.com/libunwind/libunwind/,MIT License
+610,libusb,1.0.22,https://github.com/libusb/libusb/tree/v1.0.22,GNU Lesser General Public License v2.1 or later
+611,libuv,1.36.0,https://github.com/libuv/libuv/,MIT License
+612,libwebp,1.3.2,https://chromium.googlesource.com/webm/libwebp,"BSD 3-Clause ""New"" or ""Revised"" License"
+613,libwebsockets,4.0.1,https://github.com/woodsts/libwebsockets/,MIT License
+614,libX11,1.6.8,https://github.com/mirror/libX11/tree/libX11-1.6.8,MIT License
+615,libxcrypt,4.4.15,https://github.com/besser82/libxcrypt/tree/v4.4.15,GNU Lesser General Public License v2.1 only
+616,libxkbcommon,0.10.0,https://github.com/xkbcommon/libxkbcommon/tree/xkbcommon-0.10.0,MIT License
+617,libxml-parser-perl,2.46,https://github.com/cpan-authors/XML-Parser,GNU General Public License v1.0 or later
+618,libxml2,2.9.10,https://github.com/GNOME/libxml2,MIT License
+619,linux-pam,1.3.1,https://github.com/linux-pam/linux-pam/tree/v1.3.1,"BSD 3-Clause ""New"" or ""Revised"" License"
+620,linuxptp,2.0,https://sourceforge.net/projects/linuxptp/,GNU General Public License v2.0 or later
+621,lrzsz,0.12.20,https://ohse.de/uwe/software/lrzsz.html,GNU General Public License v2.0 or later
+622,lvm2,2_03_06,https://github.com/lvmteam/lvm2/,GNU Lesser General Public License v2.1 only
+623,lxc,4.0.6,https://github.com/lxc/lxc,GNU General Public License v2.0 only
+624,LZO real-time data compression library,2.10,http://www.oberhumer.com/opensource/lzo/,GNU General Public License v2.0 or later
+625,opus,1.3.1,https://github.com/xiph/opus,"BSD 3-Clause ""New"" or ""Revised"" License"
+626,PCRE - Perl Compatible Regular Expressions,8.44,http://www.pcre.org/,"BSD 3-Clause ""New"" or ""Revised"" License"
+627,pcre2,10.34,https://github.com/PCRE2Project/pcre2/tree/pcre2-10.34,"BSD 3-Clause ""New"" or ""Revised"" License"
+628,vorbis,1.3.7,https://github.com/xiph/vorbis/tree/v1.3.7,"BSD 3-Clause ""New"" or ""Revised"" License"
+629,Android - platform - external - ppp,N/A,http://developer.android.com/index.html,Carnegie Mellon University License
+630,cycler,0.10.0,https://github.com/matplotlib/cycler/tree/v0.10.0,"BSD 3-Clause ""New"" or ""Revised"" License"
+631,dateutil,2.8.1,https://github.com/dateutil/dateutil/tree/2.8.1,Apache License 2.0
+632,dbus-python,1.2.16,https://gitlab.freedesktop.org/dbus/dbus-python/-/tree/master,MIT License
+633,dejavu-fonts,No Label,https://github.com/dejavu-fonts/dejavu-fonts,DejaVu Font License
+634,GNU Readline Library,5.2,https://tiswww.case.edu/php/chet/readline/rltop.html,GNU General Public License v2.0 or later
+635,kiwisolver,1.1.0,https://github.com/nucleic/kiwi/tree/1.1.0,"BSD 3-Clause ""New"" or ""Revised"" License"
+636,matplotlib,3.2.1,https://github.com/matplotlib/matplotlib/tree/v3.2.1,Python Software Foundation License 2.0
+637,ncurses,6.4,https://invisible-island.net/ncurses/announce.html,MIT License
+638,Ne10,1.2.1,https://github.com/projectNe10/Ne10,"BSD 3-Clause ""New"" or ""Revised"" License"
+639,net-tools,1.60,https://github.com/ecki/net-tools,GNU General Public License v2.0 or later
+640,nettle,3.5.1,https://github.com/gnutls/nettle,GNU General Public License v2.0 or later
+641,nginx,1.24.0,https://github.com/nginx/nginx,"BSD 2-Clause ""Simplified"" License"
+642,nose,1.3.7,https://github.com/nose-devs/nose/tree/release_1.3.7,GNU Lesser General Public License v2.1 or later
+643,nspr,4.25,https://hg.mozilla.org/projects/nspr,Mozilla Public License 2.0
+644,nss,3.74,https://github.com/nss-dev/nss,Mozilla Public License 2.0
+645,numpy,1.17.4,https://github.com/numpy/numpy/tree/v1.17.4,"BSD 3-Clause ""New"" or ""Revised"" License"
+646,oFono,1.19,http://ofono.org/,GNU General Public License v2.0 or later
+647,OpenSSH,9.5p1,https://github.com/openssh/openssh-portable,"BSD 3-Clause ""New"" or ""Revised"" License"
+648,OpenSSL,1.1.1u,https://github.com/openssl/openssl/tree/OpenSSL_1_1_1u,OpenSSL License
+649,opkg-utils,0.4.2,https://git.yoctoproject.org/opkg-utils/,GNU General Public License v2.0 or later
+650,orc,0.4.31,https://github.com/GStreamer/orc/,"BSD 2-Clause ""Simplified"" License"
+651,Pango,1.44.7,https://gitlab.gnome.org/GNOME/pango/-/tree/1.44.7?ref_type=tags,GNU Library General Public License v2 or later
+652,pciutils,3.6.4,https://github.com/pciutils/pciutils,GNU General Public License v2.0 only
+653,perl,5.30.1,https://github.com/Perl/Perl5,GNU General Public License v1.0 or later
+654,persistence-client-library,1.1.0,https://github.com/GENIVI/persistence-client-library/tree/v1.1.0,Mozilla Public License 2.0
+655,persistence-common-object,1.0.3,https://github.com/GENIVI/persistence-common-object/tree/1.0.3,Mozilla Public License 2.0
+656,pip,20.0.2,https://github.com/pypa/pip/,MIT License
+657,pixman,0.38.4,https://cgit.freedesktop.org/pixman/,MIT License
+658,Popt,1.16,http://ftp.rpm.org/popt/,MIT License
+659,ppp,ppp-2.4.7,https://github.com/ppp-project/ppp/,Paul-Mackerras-Binary-License
+660,Procps-ng,3.3.16,https://gitlab.com/procps-ng/procps/-/tree/v3.3.16?ref_type=tags,GNU General Public License v2.0 or later
+661,protobuf,3.21.12,https://github.com/protocolbuffers/protobuf,"BSD 3-Clause ""New"" or ""Revised"" License"
+662,psmisc,23.3,https://gitlab.com/psmisc/psmisc,GNU General Public License v2.0 or later
+663,pyparsing,2.4.6,https://github.com/pyparsing/pyparsing/tree/pyparsing_2.4.6,MIT License
+664,pytz,2019.3,https://github.com/stub42/pytz/tree/release_2019.3,MIT License
+665,rng-tools,6.9,https://github.com/nhorman/rng-tools/tree/v6.9,GNU General Public License v2.0 or later
+666,rt-tests,1.1,https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git,GNU General Public License v2.0 or later
+667,RxCpp,4.1.1,https://github.com/ReactiveX/RxCpp/tree/v4.1.1,Apache License 2.0
+668,sbc,1.4,https://git.kernel.org/pub/scm/bluetooth/sbc.git,GNU General Public License v2.0 or later
+669,Sed,4.1.2,https://www.gnu.org/software/sed/sed.html,GNU General Public License v2.0 or later
+670,setuptools,45.2.0,https://github.com/pypa/setuptools/tree/v45.2.0,MIT License
+671,shadow,4.8.1,https://github.com/shadow-maint/shadow/tree/4.8.1,Artistic License 1.0 (Perl)
+672,shared-mime-info,1.10,http://www.freedesktop.org/wiki/Software/shared-mime-info,GNU General Public License v2.0 or later
+673,six,1.14.0,https://github.com/benjaminp/six/tree/1.14.0,MIT License
+674,smem,1.5,https://www.selenic.com/smem/,GNU General Public License v2.0 or later
+675,source-code-pro,2.030R-ro/1.050R-it,https://github.com/adobe-fonts/source-code-pro,SIL Open Font License 1.1
+676,Speex,1.2.0,https://gitlab.xiph.org/xiph/speex/-/tree/Speex-1.2.0?ref_type=tags,"BSD 3-Clause ""New"" or ""Revised"" License"
+677,speexdsp,SpeexDSP-1.2.0,https://github.com/xiph/speexdsp/,BSD 3-Clause Clear License
+678,sqlcipher,4.5.1,https://github.com/sqlcipher/sqlcipher/,"BSD 3-Clause ""New"" or ""Revised"" License"
+679,SQLite,3.44.2,https://github.com/sqlite/sqlite,PublicDomain
+680,SQLite,Unspecified,https://github.com/sqlite/sqlite,PublicDomain
+681,sshfs-fuse,3.7.0,https://github.com/libfuse/sshfs,GNU General Public License v2.0 or later
+682,stix-fonts,No Label,https://github.com/stipub/stixfonts,SIL Open Font License 1.1
+683,strace,5.5,https://github.com/strace/strace/tree/v5.5,GNU Lesser General Public License v2.1 or later
+684,sysfsutils,2.1.0,https://github.com/linux-ras/sysfsutils,GNU General Public License v2.0 or later
+685,systemd,244.5,https://github.com/systemd/systemd,GNU General Public License v2.0 only
+686,systemd-bootchart,233,https://github.com/systemd/systemd-bootchart,GNU Lesser General Public License v2.1 or later
+687,TagLib,1.11.1,https://github.com/taglib/taglib,GNU Lesser General Public License v2.1 only
+688,tcpdump,4.9.3,https://github.com/the-tcpdump-group/tcpdump/tree/tcpdump-4.9.3,"BSD 3-Clause ""New"" or ""Revised"" License"
+689,toybox,0.7.5,https://github.com/landley/toybox,BSD Zero Clause License
+690,tslib,1.21,https://github.com/libts/tslib,GNU Library General Public License v2 or later
+691,tzdata,2021a,https://github.com/eggert/tz/tree/2021a,PublicDomain
+692,udisks,2.1.8,https://github.com/storaged-project/udisks/tree/master,GNU General Public License v2.0 or later
+693,unzip,6.0,https://github.com/LuaDist/unzip/,Info-ZIP License
+694,usbutils,012,https://github.com/gregkh/usbutils/,GNU General Public License v2.0 or later
+695,util-linux,2.35.1,https://github.com/util-linux/util-linux/tree/v2.35.1,GNU General Public License v2.0 only
+696,vo-aacenc,0.1.3,http://github.com/mstorsjo/vo-aacenc/,Apache License 2.0
+697,Vulkan-Headers,1.1.126,https://github.com/KhronosGroup/Vulkan-Headers/,MIT License
+698,Vulkan-Loader,sdk-1.1.126.0,https://github.com/KhronosGroup/Vulkan-Loader/,Apache License 2.0
+699,wayland-ivi-extension,2.2.0,https://github.com/COVESA/wayland-ivi-extension/tree/2.2.0,Apache License 2.0
+700,wayland-ivi-extension,N/A,https://github.com/GENIVI/wayland-ivi-extension,Apache License 2.0
+701,weston,8.0.0,https://gitlab.freedesktop.org/wayland/weston/-/tree/8.0.0?ref_type=tags,MIT License
+702,xkeyboard-config,2.28,https://www.freedesktop.org/wiki/Software/XKeyboardConfig/,MIT License
+703,XZ Utils,5.2.4,https://github.com/PCSX2/xz/tree/v5.2.4,GNU General Public License v2.0 or later
+704,yaml-cpp,0.6.2,https://github.com/jbeder/yaml-cpp/tree/yaml-cpp-0.6.2,MIT License
+705,zip,3.0,https://github.com/LuaDist/zip/,Info-Zip License 2007-03
+706,zlib,1.2.11,https://github.com/winlibs/zlib/tree/zlib-1.2.11,zlib License
+707,zstd,1.4.5,https://github.com/facebook/zstd/tree/v1.4.5,"BSD 3-Clause ""New"" or ""Revised"" License"
+708,Catch2,2.13.5,https://github.com/catchorg/Catch2/,Boost Software License 1.0
+709,libmpeg2,0.5.1,https://libmpeg2.sourceforge.io/downloads.html,GNU General Public License v2.0 or later
+710,magic_enum,0.9.1,https://github.com/Neargye/magic_enum/,MIT License
+711,minicom,2.7.1,https://github.com/Distrotech/minicom/,GNU General Public License v2.0 only
+712,mm-common,1.0.1,https://github.com/GNOME/mm-common/tree/1.0.1,GNU General Public License v2.0 only
+713,mosquitto,2.0.17,https://github.com/eclipse/mosquitto/,Eclipse Public License 2.0
+714,mpg123,1.25.13,https://github.com/vectrixdevelops/mpg123-mirror,GNU Lesser General Public License v2.1 only
+715,mtd-utils,2.1.1,https://git.infradead.org/mtd-utils.git,GNU General Public License v2.0 only
+716,mtdev,1.1.6,http://bitmath.org/code/mtdev/,MIT License
+717,Abseil,20260107.1,https://abseil.io/,Apache License 2.0
+718,adamyaxley/Obfuscate,20240710-snapshot-a46cd5d8,https://github.com/adamyaxley/Obfuscate,The Unlicense
+719,doxygen-awesome-css,2.3.1,http://archive.ubuntu.com/ubuntu/ubuntu/pool/universe/d/doxygen-awesome-css,MIT License
+720,duckie/difflib,Unspecified,https://github.com/duckie/difflib,MIT License
+721,flashlight/wav2letter,v0.2,https://github.com/flashlight/wav2letter,"BSD 3-Clause ""New"" or ""Revised"" License"
+722,google/sentencepiece,v0.2.1pre2,https://github.com/google/sentencepiece,Apache License 2.0
+723,jbeder/yaml-cpp,0.8.0,https://github.com/jbeder/yaml-cpp,MIT License
+724,JsonCpp,1.9.2,https://github.com/open-source-parsers/jsoncpp,MIT License
+725,kenlm,-,http://kheafield.com/code/kenlm/,GNU Lesser General Public License v2.1 or later
+726,libexpat,R_2_8_3,http://www.libexpat.org/,MIT License
+727,Neargye/magic_enum,v0.9.3,https://github.com/Neargye/magic_enum/releases/tag/v0.9.3,MIT License
+728,nemtrif/utfcpp,4.0.6,https://github.com/nemtrif/utfcpp,Boost Software License 1.0
+729,okdshin/PicoSHA2,v1.0.0,https://github.com/okdshin/PicoSHA2,MIT License
+730,onnxruntime,1.16.3,https://www.onnxruntime.ai,MIT License
+731,OpenFst,1.6.2,http://www.openfst.org/twiki/bin/view/FST/FstDownload,Apache License 2.0
+732,p-ranav/argparse,v2.9,https://github.com/p-ranav/argparse,MIT License
+733,pinam45/dynamic_bitset,v1.0.0,https://github.com/pinam45/dynamic_bitset,MIT License
+734,plog-cpp,1.1.5,https://github.com/SergiusTheBest/plog,Mozilla Public License 2.0
+735,rapidfuzz-cpp,2.2.3,https://bodhi.fedoraproject.org/updates/rapidfuzz-cpp-2.2.3-2.fc40,MIT License
+736,spdlog,1.17.0,https://github.com/gabime/spdlog,MIT License
+737,ww898/utf-cpp,v2.2.1,https://github.com/ww898/utf-cpp,MIT License
+738,ynaga/cedar,2014-06-24,http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/cedar/,"BSD 2-Clause ""Simplified"" License"
+739,alexa-auto-sdk,4.3.0,https://github.com/alexa/alexa-auto-sdk,Apache License 2.0
+740,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+741,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+742,GStreamer/gst-plugins-bad,1.16.3,https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/tree/1.16.3?ref_type=tags,GNU Lesser General Public License v2.1 or later
+743,opus,Unspecified,https://github.com/xiph/opus,"BSD 3-Clause ""New"" or ""Revised"" License"
+744,gdbus-codegen,2.62.6,https://gitlab.gnome.org/GNOME/glib/,GNU Lesser General Public License v2.1 or later
+745,node-health-monitor,1.3.7,https://github.com/GENIVI/node-health-monitor/tree/1.3.7,Mozilla Public License 2.0
+746,gdbus-codegen,2.62.6,https://gitlab.gnome.org/GNOME/glib/,GNU Lesser General Public License v2.1 or later
+747,node-state-manager,2.0.0,https://github.com/guozhaohui/node-state-manager/,Mozilla Public License 2.0
+748,QR-Code-generator,Unspecified,https://github.com/nayuki/QR-Code-generator/,MIT License
+749,gdbus-codegen-glibmm,2.42.0,https://github.com/Pelagicore/gdbus-codegen-glibmm/,GNU Lesser General Public License v2.1 only
+750,CMSIS_5,Unspecified,https://github.com/ARM-software/CMSIS_5,Apache License 2.0
+751,ThreadPool,N/A,http://github.com/progschj/ThreadPool/,zlib License
+752,Brotli,1.1.0,https://github.com/google/brotli,MIT License
+753,Ffmpeg,4.4.1,https://github.com/FFmpeg/Ffmpeg,GNU Lesser General Public License v2.1 or later
+754,libcurl,8.15.0,https://github.com/curl/curl,curl License
+755,nghttp2,1.66.0,https://github.com/nghttp2/nghttp2,MIT License
+756,OpenSSL,3.4.0,https://www.openssl.org/,Apache License 2.0
+757,SDL2,2.30.8,https://github.com/libsdl-org/SDL,zlib License
+758,Yajl,2.1.1,https://github.com/lloyd/yajl,ISC License
+759,Zlib,1.3.1,https://github.com/madler/zlib,zlib License
+760,c-ares,1.16.0,https://github.com/c-ares/c-ares,MIT License
+761,ca-certificates,20241223,https://launchpad.net/ubuntu/+source/ca-certificates/20241223,GNU General Public License v2.0 or later
+762,CUnit,2.1-3,http://sourceforge.net/projects/cunit,GNU Library General Public License v2 or later
+763,duktape,2.7.0,https://github.com/svaarala/duktape/,MIT License
+764,expat,2.7.3,https://github.com/libexpat/libexpat,MIT License
+765,Font Awesome font,Unspecified,https://github.com/FortAwesome/Font-Awesome,SIL Open Font License 1.1
+766,http-parser,Unspecified,https://github.com/nodejs/http-parser,MIT License
+767,iperf,3.20,https://github.com/esnet/iperf,Lawrence Berkeley National Labs BSD variant license
+768,jansson,2.13.1,https://github.com/akheron/jansson,MIT License
+769,libev,4.33,https://github.com/libev-cn/libev,"BSD 2-Clause ""Simplified"" License"
+770,libevent,release-2.1.11-stable,https://github.com/libevent/libevent,MIT License
+771,llhttp,release/v1.1.3,https://github.com/nodejs/llhttp,MIT License
+772,mruby,2.0.1,https://github.com/mruby/mruby,MIT License
+773,neverbleed,Unspecified,https://github.com/h2o/neverbleed,MIT License
+774,nghttp2,1.40.0,https://github.com/nghttp2/nghttp2,MIT License
+775,polkit,0.119,https://github.com/polkit-org/polkit,GNU Library General Public License v2 or later
+776,Python,3.8.20,https://github.com/python/cpython/tree/v3.8.20,Python Software Foundation License 2.0
+777,sudo,1.9.17p1,https://github.com/sudo-project/sudo,ISC License
+778,vim,9.0.2190,https://github.com/vim/vim/,Vim License
+779,capicxx-someip-runtime,Unspecified,https://github.com/COVESA/capicxx-someip-runtime/,Mozilla Public License 2.0
+780,GENIVI/capicxx-core-runtime,Unspecified,https://github.com/GENIVI/capicxx-core-runtime.git,Mozilla Public License 2.0

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K8 홈</title>
+<style>
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; }
+body { background: #0c121b; color: #f4f8ff; font: 16px/1.4 "Malgun Gothic", Roboto, sans-serif; }
+button { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
+button:focus { outline: 2px solid #b9e5fa; outline-offset: -3px; }
+button:active { opacity: .75; }
+h1, h2, p { margin: 0; }
+.shell { position: relative; min-height: 360px; height: 100%; padding: 0 2.5%; }
+.top, .dock { position: absolute; left: 2.5%; right: 2.5%; height: 12%; }
+.top { top: 0; display: table; width: 95%; }
+.top h1, .top time { display: table-cell; vertical-align: middle; }
+.top h1 { font-size: 24px; font-size: 1.65vw; font-weight: 700; }
+.top h1 b { margin-right: 14px; color: #a9dcf6; }
+.top time { text-align: right; font-size: 20px; font-size: 1.47vw; }
+.deck { position: absolute; top: 12%; right: 2.5%; bottom: 14%; left: 2.5%; }
+.row { position: relative; height: 100%; }
+.card { position: absolute; top: 0; bottom: 0; overflow: hidden; border-radius: 12px; background: #182330; }
+.map { left: 0; width: 51%; background: #18324a; }
+.media { left: 52%; width: 27%; background: #263f40; }
+.phone { left: 80%; width: 20%; background: #35394b; }
+.art { position: absolute; top: 0; right: 0; bottom: 28%; left: 0; overflow: hidden; }
+.art > canvas { position: absolute; width: 100%; height: 100%; }
+.art-note { position: absolute; left: 5%; bottom: 8%; color: #e1f3ff; font-size: 18px; font-size: 1.1vw; }
+.caption { position: absolute; right: 0; bottom: 0; left: 0; height: 28%; background: #141d28; }
+.caption button { width: 100%; height: 100%; padding: 0 8%; text-align: left; }
+.map .caption button { padding: 0 4%; }
+.caption strong, .caption span { display: block; }
+.caption strong { font-size: 22px; font-size: 1.5vw; }
+.caption span { margin-top: 3px; color: #c5d0de; font-size: 15px; font-size: 1vw; }
+.caption .arrow { float: right; font-size: 1.8em; line-height: 1; color: #afd9eb; }
+.apps .card { width: 15.833%; }
+.apps .card:nth-child(1) { left: 0; background: #1e3a50; }
+.apps .card:nth-child(2) { left: 16.833%; background: #274243; }
+.apps .card:nth-child(3) { left: 33.666%; background: #35394b; }
+.apps .card:nth-child(4) { left: 50.499%; background: #443a34; }
+.apps .card:nth-child(5) { left: 67.332%; background: #323f53; }
+.apps .card:nth-child(6) { left: 84.165%; background: #343940; }
+.dock { bottom: 0; display: table; width: 95%; }
+.dock > div { display: table-cell; vertical-align: middle; width: 33.33%; white-space: nowrap; }
+.dock > div:nth-child(2) { text-align: center; }
+.dock > div:last-child { text-align: right; }
+.dock button { min-height: 44px; padding: 0 16px; color: #bfcad8; font-size: 16px; font-size: 1.05vw; border-radius: 6px; }
+.dock button[aria-pressed="true"] { background: #253447; color: #fff; }
+.notice { position: absolute; z-index: 1; left: 2.5%; bottom: 14%; padding: 12px 18px; background: #142635; border: 1px solid #7199b2; border-radius: 6px; font-size: 16px; }
+@media (max-width: 900px) {
+  .top h1, .top time, .caption strong { font-size: 17px; }
+  .caption span, .art-note { font-size: 13px; }
+  .dock button { font-size: 14px; padding: 0 8px; }
+}
+@media (max-width: 650px) and (orientation: portrait) {
+  .shell { min-height: 540px; }
+  .top, .dock { left: 4.2%; right: 4.2%; width: 91.6%; height: 9%; }
+  .deck { top: 9%; right: 4.2%; bottom: 10%; left: 4.2%; }
+  .home .map { top: 0; bottom: 40%; width: 100%; }
+  .home .media, .home .phone { top: 62%; bottom: 0; width: 49%; }
+  .home .media { left: 0; }
+  .home .phone { left: 51%; }
+  .home .media .caption, .home .phone .caption { height: 39%; }
+  .home .media .art, .home .phone .art { bottom: 39%; }
+  .apps .card { width: 32%; }
+  .apps .card:nth-child(3n+1) { left: 0; }
+  .apps .card:nth-child(3n+2) { left: 34%; }
+  .apps .card:nth-child(3n) { left: 68%; }
+  .apps .card:nth-child(-n+3) { top: 0; bottom: 51%; }
+  .apps .card:nth-child(n+4) { top: 51%; bottom: 0; }
+  .dock > div { width: auto; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top"><h1><b>K8</b> <span id="title">홈</span></h1><time id="clock"></time></header>
+  <main class="deck" id="deck">
+    <section id="home" class="row home" aria-label="홈">
+      <article class="card map">
+        <div class="art" id="map-slot"><canvas data-art="navi" aria-hidden="true"></canvas><p id="map-note" class="art-note">지도 미리보기 준비 중</p></div>
+        <h2 class="caption"><button type="button" data-action="navi"><i class="arrow" aria-hidden="true">›</i><strong>내비게이션</strong><span>순정 지도 열기</span></button></h2>
+      </article>
+      <article class="card media">
+        <div class="art"><canvas data-art="media" aria-hidden="true"></canvas></div>
+        <h2 class="caption"><button type="button" data-action="media"><strong>미디어</strong><span>미디어 앱 열기</span></button></h2>
+      </article>
+      <article class="card phone">
+        <div class="art"><canvas data-art="phone" aria-hidden="true"></canvas></div>
+        <h2 class="caption"><button type="button" data-action="phone"><strong>전화</strong><span>전화 앱 열기</span></button></h2>
+      </article>
+    </section>
+    <section id="apps" class="row apps" aria-label="전체 앱" hidden></section>
+  </main>
+  <footer class="dock">
+    <div><button type="button" data-action="exit">나가기</button></div>
+    <div><button type="button" id="home-button" aria-pressed="true">홈</button><button type="button" id="apps-button" aria-pressed="false">전체 앱</button></div>
+    <div><button type="button" data-action="configure">바로가기 설정</button></div>
+  </footer>
+  <div id="notice" class="notice" role="status" hidden></div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var labels = { navi:'내비게이션',media:'미디어',phone:'전화',radio:'라디오',projection:'폰 프로젝션',settings:'설정' };
+  var page = 'home';
+  var home = document.getElementById('home');
+  var apps = document.getElementById('apps');
+  var slot = document.getElementById('map-slot');
+  var note = document.getElementById('map-note');
+  var notice = document.getElementById('notice');
+  var timer;
+  var touch;
+  var swiped = false;
+
+  Object.keys(labels).forEach(function (key) {
+    var tile = document.createElement('article');
+    tile.className = 'card';
+    tile.innerHTML = '<div class="art"><canvas data-art="' + key + '" aria-hidden="true"></canvas></div>' +
+      '<h2 class="caption"><button type="button" data-action="' + key + '"><strong>' + labels[key] + '</strong></button></h2>';
+    apps.appendChild(tile);
+  });
+
+  function drawIcon(ctx, name) {
+    ctx.beginPath();
+    if (name === 'navi') {
+      ctx.moveTo(35,10); ctx.lineTo(55,58); ctx.lineTo(35,47); ctx.lineTo(15,58); ctx.closePath();
+    } else if (name === 'media') {
+      ctx.moveTo(47,12); ctx.lineTo(47,50); ctx.arc(38,50,9,0,Math.PI*2);
+      ctx.moveTo(47,13); ctx.lineTo(59,22);
+      ctx.moveTo(18,25); ctx.lineTo(35,25); ctx.moveTo(18,35); ctx.lineTo(31,35);
+    } else if (name === 'phone') {
+      ctx.moveTo(19,12); ctx.lineTo(29,25); ctx.lineTo(23,32); ctx.quadraticCurveTo(29,44,40,49);
+      ctx.lineTo(47,43); ctx.lineTo(60,53); ctx.quadraticCurveTo(58,63,50,63);
+      ctx.quadraticCurveTo(18,58,10,23); ctx.quadraticCurveTo(12,15,19,12); ctx.closePath();
+    } else if (name === 'radio') {
+      ctx.rect(9,24,52,31); ctx.moveTo(14,24); ctx.lineTo(50,12);
+      ctx.moveTo(19,35); ctx.lineTo(42,35); ctx.moveTo(19,44); ctx.lineTo(36,44);
+      ctx.moveTo(54,41); ctx.arc(49,41,5,0,Math.PI*2);
+    } else if (name === 'projection') {
+      ctx.rect(7,15,56,41); ctx.moveTo(25,35); ctx.lineTo(45,35);
+      ctx.moveTo(37,27); ctx.lineTo(45,35); ctx.lineTo(37,43);
+    } else {
+      ctx.moveTo(12,20); ctx.lineTo(58,20); ctx.moveTo(12,35); ctx.lineTo(58,35);
+      ctx.moveTo(12,50); ctx.lineTo(58,50);
+      ctx.moveTo(26,13); ctx.lineTo(26,27); ctx.moveTo(44,28); ctx.lineTo(44,42);
+      ctx.moveTo(21,43); ctx.lineTo(21,57);
+    }
+    ctx.stroke();
+  }
+
+  function paint() {
+    var canvases = (page === 'home' ? home : apps).querySelectorAll('canvas');
+    for (var i = 0; i < canvases.length; i++) {
+      var canvas = canvases[i];
+      var width = canvas.clientWidth;
+      var height = canvas.clientHeight;
+      var scale = Math.min(window.devicePixelRatio || 1, 2);
+      if (!width || !height) continue;
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      var ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.fillStyle = 'rgba(201,230,246,.10)';
+      ctx.beginPath(); ctx.moveTo(width * .52,0); ctx.lineTo(width,0);
+      ctx.lineTo(width,height * .28); ctx.lineTo(width * .28,height); ctx.lineTo(0,height); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(8,16,27,.18)';
+      ctx.beginPath(); ctx.moveTo(width, height * .36); ctx.lineTo(width,height);
+      ctx.lineTo(width * .36,height); ctx.closePath(); ctx.fill();
+      var size = Math.min(height * .45, width * .45, 110) / 70;
+      ctx.translate((width - size * 70) / 2, (height - size * 70) / 2);
+      ctx.scale(size, size);
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#d9edf5';
+      drawIcon(ctx, canvas.getAttribute('data-art'));
+    }
+  }
+
+  function syncMap() {
+    if (!window.K8Host) return;
+    var rect = slot.getBoundingClientRect();
+    window.K8Host.updateBounds(document.documentElement.clientWidth,
+      Math.round(rect.left), Math.round(rect.top), Math.round(rect.right - rect.left),
+      Math.round(rect.bottom - rect.top));
+  }
+
+  function show(next) {
+    page = next;
+    home.hidden = next !== 'home';
+    apps.hidden = next !== 'apps';
+    document.getElementById('title').textContent = next === 'home' ? '홈' : '전체 앱';
+    document.getElementById('home-button').setAttribute('aria-pressed', next === 'home' ? 'true' : 'false');
+    document.getElementById('apps-button').setAttribute('aria-pressed', next === 'apps' ? 'true' : 'false');
+    paint();
+    syncMap();
+  }
+
+  window.K8Home = {
+    back: function () {
+      if (page !== 'home') show('home');
+      else if (window.K8Host) window.K8Host.performAction('exit');
+    },
+    mapAttached: function (attached) { note.hidden = attached; syncMap(); }
+  };
+  document.getElementById('home-button').onclick = function () { show('home'); };
+  document.getElementById('apps-button').onclick = function () { show('apps'); };
+  document.addEventListener('click', function (event) {
+    var action = event.target;
+    while (action && !action.hasAttribute('data-action')) action = action.parentElement;
+    if (!action || swiped) return;
+    var name = action.getAttribute('data-action');
+    if (window.K8Host) {
+      window.K8Host.performAction(name);
+      return;
+    }
+    notice.textContent = '차량용 APK에서 사용할 수 있습니다.';
+    notice.hidden = false;
+    window.clearTimeout(timer);
+    timer = window.setTimeout(function () { notice.hidden = true; }, 2400);
+  });
+
+  var deck = document.getElementById('deck');
+  deck.addEventListener('touchstart', function (event) {
+    swiped = false;
+    touch = event.touches.length === 1 ? event.touches[0] : null;
+  });
+  deck.addEventListener('touchend', function (event) {
+    if (!touch) return;
+    var end = event.changedTouches[0];
+    var dx = end.clientX - touch.clientX;
+    var dy = end.clientY - touch.clientY;
+    touch = null;
+    if (Math.abs(dx) < 45 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
+    swiped = true;
+    event.preventDefault();
+    show(dx < 0 ? 'apps' : 'home');
+    window.setTimeout(function () { swiped = false; }, 350);
+  });
+  deck.addEventListener('touchcancel', function () { touch = null; });
+  window.addEventListener('resize', function () { paint(); syncMap(); });
+  function tick() {
+    var now = new Date();
+    document.getElementById('clock').textContent = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+  }
+  tick();
+  window.setInterval(tick, 1000);
+  show('home');
+}());
+</script>
+</body>
+</html>
