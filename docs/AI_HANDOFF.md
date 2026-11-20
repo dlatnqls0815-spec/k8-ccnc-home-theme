@@ -31,7 +31,7 @@ GitHub `e8b80a0`의 Android 코드, K8 5W 순정 APK와 기존 네메시스 실�
 - 순정 차량 사양 및 권한이 필요한 운전자 보조, 공조·시트, 주차 영상, 빌트인 캠, 차량 진단, 모뎀·OTA·결제·디지털 키 등은 5W 순정 데이터/설정 경로 확인 전이다. 시동 실행, 물리 HOME, 순정 앱 위 공통 하단바에도 실차 근거가 더 필요하다. 순정 전환이나 근거 있는 바로가기가 있는 항목은 해당 앱을 안내하거나 연다.
 - 배포 파일은 `deliverables/K8-5W-홈-0.4.6.apk`다. Android 4.4/API 19, 0.4.5와 동일 서명 및 HTML·DEX 패키징을 확인했다. 음성 메모용 `RECORD_AUDIO` 권한이 추가됐다. SHA-256 `914e06cec61a025f561b0487ee16f7fc88e92155e96eb1ada6e1a323fa0537fc`, REA 인벤토리 `ev_efb5a60528175f363424cbe4438caa48cd7fb260429d73c43af5877c10413b7a`.
 - 1920×720 마우스/1280×480 터치 브라우저에서 화면과 저장, 검색 키보드의 한글 받침 분리, 검색 결과 전환, 키패드, 밝기·녹음 브리지 요청과 위젯 재배치를 검증했다. `deliverables/K8-5W-0.4.6-화면.png`는 모의 데이터가 포함된 렌더링이다. 실차 연결은 없었다.
-- GitHub의 Android 빌드 입력은 `AndroidManifest.xml`, `assets/index.html`, `res/`, `src/`다. Pages에서 열리는 초기 웹 데모의 진입점은 루트 `index.html`이다. 서명된 APK는 로컬 작업 공간의 `deliverables/`에서 관리한다.
+- GitHub의 Android 빌드 입력은 `AndroidManifest.xml`, `assets/index.html`, `res/`, `src/`다. Pages의 루트와 `demo/` 체험 링크는 `assets/index.html`의 브라우저 모드를 연다. 앱과 웹이 화면 소스를 공유하며 브라우저에서 지도·미디어·통화 기록은 예시 데이터로 동작한다. 서명된 APK는 로컬 작업 공간의 `deliverables/`에서 관리한다.
 
 ## 차량용 APK 0.4.5 화면 배치 수정
 
