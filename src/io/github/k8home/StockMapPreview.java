@@ -29,6 +29,9 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
     private static final int HOME_WIDGET_FORMAT = 0x3201;
     private static final int SPLIT_CREATED = 0x16;
     private static final int SPLIT_DESTROYED = 0x10;
+    /** The navigation draws the home widget at most this many pixels wide, left-aligned (measured on the
+     *  K8 5W: 836 px drawn in a 911 px slot, 2026-11-22). Wider slots are filled by an even zoom. */
+    private static final int HOME_DRAW_MAX_WIDTH = 836;
 
     private final Listener listener;
     private final boolean split;
@@ -87,12 +90,25 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
         setFrameReady(false);
     }
 
+    private void fitHomeDrawing(int width, int height) {
+        if (split || width <= HOME_DRAW_MAX_WIDTH || height <= 0) {
+            setTransform(null);
+            return;
+        }
+        float zoom = width / (float) HOME_DRAW_MAX_WIDTH;
+        android.graphics.Matrix matrix = new android.graphics.Matrix();
+        matrix.setScale(zoom, zoom, 0, height / 2f);
+        setTransform(matrix);
+    }
+
     @Override public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+        fitHomeDrawing(width, height);
         surface = new Surface(texture);
         connectSurface();
     }
 
     @Override public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+        fitHomeDrawing(width, height);
         if (!attached) return;
         if (split) {
             detachSurface();

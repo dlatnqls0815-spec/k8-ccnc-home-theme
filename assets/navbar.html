@@ -98,6 +98,8 @@ img { -webkit-user-drag: none; user-select: none; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .bb-media-off { color: #f2f0ed; }
+/* Chrome 30 (car WebView) ignores flex inside <button>: centre the key icons with margins too. */
+.bb-key .bb-icon { margin: 0 auto; }
 </style>
 </head>
 <body>

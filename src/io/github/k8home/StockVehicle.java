@@ -225,6 +225,7 @@ final class StockVehicle {
                     manager = constructor.newInstance(app);
                 } catch (Throwable refused) {
                     missing.add(className);
+                    Log.w(TAG, className + " constructor failed", refused);
                     Log.w(TAG, className + " refused: " + refused.getClass().getSimpleName());
                     return null;
                 }
@@ -250,6 +251,7 @@ final class StockVehicle {
             return null;
         } catch (ClassNotFoundException | NoSuchMethodException failure) {
             if (failure instanceof ClassNotFoundException) missing.add(className);
+            if (warned.add(className + getter)) Log.w(TAG, className + "." + getter + " missing: " + failure.getClass().getSimpleName());
             return null;
         } catch (Throwable failure) {
             if (warned.add(className + getter)) {

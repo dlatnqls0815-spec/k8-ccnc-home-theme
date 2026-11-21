@@ -1194,23 +1194,22 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
    Every detail page puts its left column edge on the key block's right edge (24.4vw) and its right column
    on the media box's left edge (75.2vw), inside the 2.2vw page gutter. Percent values come first for
    WebViews without vw/calc. */
-:root { --k8-left: 22.2vw; --k8-right: 22.6vw; --k8-gap: 1.2vw; }
-.sound-nav { width: 22%; width: var(--k8-left); max-width: none; padding-right: 12px; }
-.sound-illustration { width: 23%; width: var(--k8-right); max-width: none; }
-.sound-content { padding-left: var(--k8-gap); padding-right: var(--k8-gap); }
-.detail-settings-layout .sl-nav { width: 22%; width: var(--k8-left); padding: 0 16px 0 1.6vw; }
-.detail-settings-art { width: 23%; width: var(--k8-right); }
-.detail-settings-main { padding: 0 var(--k8-gap); }
+.sound-nav { width: 22%; width: 22.2vw; max-width: none; padding-right: 12px; }
+.sound-illustration { width: 23%; width: 22.6vw; max-width: none; }
+.sound-content { padding-left: 1.2vw; padding-right: 1.2vw; }
+.detail-settings-layout .sl-nav { width: 22%; width: 22.2vw; padding: 0 16px 0 1.6vw; }
+.detail-settings-art { width: 23%; width: 22.6vw; }
+.detail-settings-main { padding: 0 1.2vw; }
 .media-stage, .phone-stage { gap: 0; }
-.media-device-box { width: 22%; width: var(--k8-left); min-width: 0; flex-shrink: 0; }
-.media-right-box { width: 23%; width: var(--k8-right); min-width: 0; flex-shrink: 0; }
-.media-center-box { padding: 0 var(--k8-gap) 0 calc(var(--k8-gap) + 1vw); }
-.phone-list-box { margin-right: var(--k8-gap); }
-.phone-device-pane { width: 23%; width: var(--k8-right); min-width: 0; flex-shrink: 0; }
-.memo-side { width: 22%; width: var(--k8-left); max-width: none; flex-shrink: 0; }
-.search-side { flex: 1; padding-right: var(--k8-gap); }
-.search-results { flex: none; width: 23%; width: var(--k8-right); }
-.settings-grid { grid-template-columns: calc(var(--k8-left) - 5px) minmax(0, 1fr) minmax(0, 1fr) calc(var(--k8-right) - 5px); }
+.media-device-box { width: 22%; width: 22.2vw; min-width: 0; flex-shrink: 0; }
+.media-right-box { width: 23%; width: 22.6vw; min-width: 0; flex-shrink: 0; }
+.media-center-box { padding: 0 1.2vw 0 2.2vw; }
+.phone-list-box { margin-right: 1.2vw; }
+.phone-device-pane { width: 23%; width: 22.6vw; min-width: 0; flex-shrink: 0; }
+.memo-side { width: 22%; width: 22.2vw; max-width: none; flex-shrink: 0; }
+.search-side { flex: 1; padding-right: 1.2vw; }
+.search-results { flex: none; width: 23%; width: 22.6vw; }
+.settings-grid { grid-template-columns: calc(22.2vw - 5px) minmax(0, 1fr) minmax(0, 1fr) calc(22.6vw - 5px); }
 .settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .media-stage, .phone-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
 .settings-stage, .aux-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
@@ -1485,6 +1484,70 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 /* ccNC action buttons are flat dark grey (D-phone_message_list.png 듣기/회신, D-voicememo_main.png). */
 .theme-control { background: #2a2b2e; border-color: #3a3c40; color: #f0f0f0; }
 .theme-control:hover { background: #36383c; }
+
+/* ---- Car WebView (Android 4.4, .legacy): no flex gap, no grid, no flex layout inside <button>. ----
+   Gaps become margins, button contents are placed with inline/absolute layout, grid screens use
+   explicit sizes. Measured on the car capture 2026-11-22 (titles wrapping, keys left in their cells,
+   squeezed home buttons, caption text overlapping). */
+.legacy button { text-align: center; }
+.legacy button > svg { display: inline-block; vertical-align: middle; margin-left: auto; margin-right: auto; }
+.legacy .bb-key > svg, .legacy .bb-tab-btn > svg { display: block; }
+#detail-heading-text, #driver-name { white-space: nowrap; }
+.legacy .top-title-wrap, .legacy .profile-btn { flex-shrink: 0; }
+.legacy .profile-btn > * + *, .legacy .top-title-wrap > * + * { margin-left: 1.25vw; }
+.legacy .top-right > * + * { margin-left: 12px; }
+.legacy .top-status > * + * { margin-left: 10px; }
+.legacy .top-tabs > * + * { margin-left: 32px; }
+/* Home cards: art 65% / caption 35%, title at the top, subtitle and round keys at the bottom. */
+.legacy .hcard-art { height: 65%; }
+.legacy .hcard-caption { height: 35%; }
+.legacy .hcard-caption-main { position: relative; display: block; text-align: left; height: 100%; padding: 0; }
+.legacy .hcard-caption-main strong { position: absolute; top: 1.4vw; left: 0; right: 0; }
+.legacy .hcard-caption-main span { position: absolute; bottom: 1.8vw; left: 0; right: 0; display: block; }
+.legacy .hcard-caption-main span .ico { display: inline-block; vertical-align: middle; margin-right: .4vw; }
+.legacy .hcard-circles { flex-shrink: 0; }
+.legacy .hcard-circles > * { flex: none; }
+.legacy .hcard-circles > * + * { margin-left: 1.45vw; }
+.legacy .circle-btn { display: inline-block; }
+/* Settings home 6x2 (D-settings_main.png): absolute cards, 17px gaps. */
+.legacy .settings-grid .set-card { width: calc((100% - 85px) / 6); height: calc((100% - 17px) / 2); text-align: left; }
+.legacy .settings-grid .set-card:nth-child(6n + 1) { left: 0; }
+.legacy .settings-grid .set-card:nth-child(6n + 2) { left: calc((100% - 85px) / 6 + 17px); }
+.legacy .settings-grid .set-card:nth-child(6n + 3) { left: calc((100% - 85px) / 3 + 34px); }
+.legacy .settings-grid .set-card:nth-child(6n + 4) { left: calc((100% - 85px) / 2 + 51px); }
+.legacy .settings-grid .set-card:nth-child(6n + 5) { left: calc((100% - 85px) * 2 / 3 + 68px); }
+.legacy .settings-grid .set-card:nth-child(6n + 6) { left: calc((100% - 85px) * 5 / 6 + 85px); }
+.legacy .settings-grid .set-card:nth-child(n + 5) { top: 0; }
+.legacy .settings-grid .set-card:nth-child(n + 7) { top: calc((100% - 17px) / 2 + 17px); }
+.legacy .set-card > div { position: absolute; top: 1.5vw; left: 1.3vw; right: 1.3vw; }
+.legacy .set-card-icon { position: absolute; right: 1.3vw; bottom: 1.3vw; }
+/* Rows and lists that relied on gaps or flex inside buttons. */
+.legacy .sl-check-left > * + *, .legacy .sl-radio-left > * + * { margin-left: 2vw; }
+.legacy .phone-row-left > * + * { margin-left: 1.4vw; }
+.legacy .phone-row-right > * + * { margin-left: 2.4vw; }
+.legacy .media-transport-btns > * + * { margin-left: 3.3vw; }
+.legacy .media-single-info > * + * { margin-top: .35vw; }
+.legacy .bb-pill > * + * { margin-left: 10px; }
+.legacy button.detail-settings-row { display: block; text-align: left; }
+.legacy button.detail-settings-row > output { float: right; }
+.legacy button.detail-settings-row.switch-row::before { display: inline-block; vertical-align: middle; }
+.legacy button.detail-settings-row.switch-row > span { vertical-align: middle; }
+.legacy .sl-tab, .legacy .sound-nav button { text-align: left; }
+/* Car (KitKat) home caption: fixed corners instead of flex, measured on the 0.4.47 car screenshot where the
+   round keys were pushed past the card edge. */
+.legacy .hcard-caption { position: relative; display: block; padding: 0; }
+.legacy .hcard-caption-main { position: absolute; left: 1.55vw; right: 14.5vw; top: 0; bottom: 0; height: auto; }
+.legacy .hcard-phone .hcard-caption-main { right: 1.55vw; }
+.legacy .hcard-circles { position: absolute; right: 1.55vw; bottom: .95vw; margin: 0; display: block; white-space: nowrap; }
+.legacy .circle-btn { width: 5.2vw; height: 5.2vw; vertical-align: top; }
+.legacy .hcard-caption-main strong, .legacy .hcard-caption-main span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Car WebView is 1280 CSS px wide at 1.5x (measured over DevTools 2026-11-22): the round-key box needs an
+   explicit width or its second key wraps past the card edge. */
+.legacy .hcard-circles { width: 11.85vw; font-size: 0; text-align: right; }
+.legacy .hcard-circles > * { margin-left: 0; }
+.legacy .hcard-circles > * + * { margin-left: 1.45vw; }
+.legacy .circle-btn { min-width: 0; max-width: none; padding: 0; box-sizing: border-box; }
+.bb-key .bb-icon { margin-left: auto; margin-right: auto; }
 </style>
 </head>
 <body>
@@ -4170,6 +4233,17 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
       Math.round(rect.right - rect.left), Math.round(rect.bottom - rect.top));
   }
 
+  // Re-send the map slot whenever its box moves or resizes (fonts, legacy layout, pager settle), so the
+  // navigation surface never keeps stale bounds.
+  var lastSlotKey = '';
+  window.setInterval(function () {
+    var slot = document.getElementById('map-slot');
+    if (!slot || !window.K8Host) return;
+    var r = slot.getBoundingClientRect();
+    var key = [state.page, Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join(',');
+    if (key !== lastSlotKey) { lastSlotKey = key; syncNativeMapSlot(); }
+  }, 700);
+
   function syncNativeMapSlot() {
     syncNativeSplitMap();
     if (!window.K8Host) return;
@@ -4867,7 +4941,9 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   }
   function togglePlay() {
     if (livePreview) {
-      host(!trackKnown ? 'media-toggle' : state.playing ? 'media-pause' : 'media-play');
+      // Play/pause toggle: the cached playing flag can lag behind the phone, and a PLAY sent while
+      // playing did nothing on the car.
+      host('media-toggle');
       return;
     }
     state.playing = !state.playing;

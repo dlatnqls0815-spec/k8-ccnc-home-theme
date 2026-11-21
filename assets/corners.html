@@ -39,6 +39,12 @@ button:active { background-color: #262626; }
 .meta strong, .meta span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
 .meta strong { font-size: 28vh; }
 .meta span { font-size: 23vh; color: #8d96a2; margin-top: 1px; }
+/* Chrome 30 (car WebView) ignores flex inside <button>: keys centre their icon with margins, the media box
+   floats its cover and lets the text take the rest. */
+.key .icon { display: block; margin: 0 auto; }
+.box .thumb { float: left; }
+.box .meta { display: block; overflow: hidden; padding-top: 22vh; }
+.thumb .off-icon { display: block; margin: 17vh auto 0; }
 </style>
 </head>
 <body>

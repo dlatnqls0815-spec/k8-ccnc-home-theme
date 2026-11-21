@@ -42,6 +42,8 @@ final class StockRoute {
         String road = "", dayNight = "", mute = "", appVersion = "", mapVersion = "";
         /** Destination coordinates from DestinationInfo as sent (navi units), and its registpoint code. */
         String destLat = "", destLon = "", registPoint = "";
+        /** Last navi GPS fix in decimal degrees, "" when none. */
+        String curLat = "", curLon = "";
 
         Snapshot(boolean known, boolean active, String destination, String address, String distance,
                 String remaining, String arrival) {
@@ -292,6 +294,10 @@ final class StockRoute {
         snapshot.destLat = active ? destLat : "";
         snapshot.destLon = active ? destLon : "";
         snapshot.registPoint = active ? registPoint : "";
+        if (!Double.isNaN(gpsLat) && !Double.isNaN(gpsLon)) {
+            snapshot.curLat = String.valueOf(gpsLat);
+            snapshot.curLon = String.valueOf(gpsLon);
+        }
         return snapshot;
     }
 

@@ -942,13 +942,26 @@ public final class HomeActivity extends Activity {
                 });
         } else {
             dialog.setMessage(canSave ? "지금 안내 중인 목적지(" + nowName + ")를 " + label + "(으)로 저장할 수 있습니다."
-                : "아직 저장된 " + label + "이(가) 없습니다. 순정 내비에서 " + label
-                    + "으로 길안내를 한 번 시작한 뒤 이 버튼을 다시 누르면 저장할 수 있습니다.")
+                : "아직 저장된 " + label + "이(가) 없습니다. " + label + "에 있을 때 '지금 위치 저장'을 누르거나, 순정 내비에서 "
+                    + label + "으로 길안내를 시작한 뒤 다시 누르면 저장할 수 있습니다.")
                 .setPositiveButton("순정 검색 열기", new DialogInterface.OnClickListener() {
                     @Override public void onClick(DialogInterface d, int index) {
                         openNavigationCommand(StockNavigation.SEARCH);
                     }
                 });
+        }
+        // Without a destination with coordinates, the current navi GPS position can be saved instead
+        // (press the key while parked at home / work).
+        final String hereLat = data == null ? "" : data.curLat;
+        final String hereLon = data == null ? "" : data.curLon;
+        if (!canSave && !hereLat.isEmpty() && !hereLon.isEmpty()) {
+            dialog.setNeutralButton(saved ? "지금 위치로 바꾸기" : "지금 위치 저장", new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface d, int index) {
+                    shortcuts.edit().putString("place-" + key + "-lat", hereLat).putString("place-" + key + "-lon", hereLon)
+                        .putString("place-" + key + "-name", label).apply();
+                    toast(label + " 위치를 지금 위치로 저장했습니다.");
+                }
+            });
         }
         if (canSave) {
             dialog.setNeutralButton(saved ? "현재 목적지로 바꾸기" : "현재 목적지 저장", new DialogInterface.OnClickListener() {
