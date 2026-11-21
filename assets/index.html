@@ -1804,6 +1804,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   var vehicleInfo = {};
   // Stock vehicle status (StockVehicle.java). Open/lock/heat values are 0 off/closed, other = on/open
   // unless the car shows otherwise; units follow the stock unit settings.
+  // Vehicle settings Dic$MODE names sent with DRIVE_MODE_CHANGED.
+  var DRIVE_MODE_NAMES = { SMART: '스마트', ECO: '에코', ECO_PLUS: '에코 플러스', COMFORT: '컴포트', SPORT: '스포츠',
+    SPORT_PLUS: '스포츠 플러스', INDIVIDUAL: '마이 드라이브', CUSTOM_2: '마이 드라이브 2', NMODE: 'N 모드',
+    SNOW: '스노우', SNOW_DRIVEMODE: '스노우', DEEP_SNOW: '딥 스노우', DEEP_SNOW_DRIVEMODE: '딥 스노우',
+    MUD: '머드', MUD_DRIVEMODE: '머드', SAND: '샌드', SAND_DRIVEMODE: '샌드', TERRAIN_AUTO: '험로 자동' };
   function vehicleLabels(v) {
     var n = function (x) { return typeof x === 'number'; };
     var open = function (x) { return n(x) ? (x === 0 ? '닫힘' : '열림') : ''; };
@@ -1834,7 +1839,10 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       carFuelWarn: v.fuelLow === true ? '연료 부족' : v.fuelLow === false ? '정상' : '',
       carValet: typeof v.valet === 'boolean' ? (v.valet ? '사용 중' : '꺼짐') : '',
       carCoasting: n(v.ecoCoasting) ? (v.ecoCoasting === 0 ? '꺼짐' : '켜짐') : '',
-      carWpc: n(v.wpc) && v.wpc !== 7 ? (v.wpc === 0 ? '알림 없음' : '알림 ' + v.wpc) : ''
+      carWpc: n(v.wpc) && v.wpc !== 7 ? (v.wpc === 0 ? '알림 없음' : '알림 ' + v.wpc) : '',
+      carDriveMode: typeof v.driveMode === 'string' ? (DRIVE_MODE_NAMES[v.driveMode] || v.driveMode) : '',
+      carPhoneSignal: n(v.phoneSignal) ? v.phoneSignal + ' / 5' : '',
+      carPhoneBattery: n(v.phoneBattery) ? v.phoneBattery + ' / 5' : ''
     };
   }
   /* Stock 5W split-screen energy flow table (RightScreenHome z/a UD, 12 system modes x 7 columns).
@@ -2831,7 +2839,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           ['carSunroof','선루프'],['carWindows','창문'],['carEpb','주차 브레이크'],['carDriverSeat','운전석 열선'],
           ['carPassengerSeat','조수석 열선'],['carWheelHeat','핸들 열선'],['carEngine','엔진'],['carRpm','엔진 회전수'],
           ['carGear','기어'],['carDriving','주행 상태'],['carLamp','미등·전조등'],['carDimmer','실내 조명 밝기'],['carFuelWarn','연료 경고'],
-          ['carValet','발레 모드'],['carCoasting','에코 관성 주행'],['carWpc','무선 충전기']]
+          ['carValet','발레 모드'],['carCoasting','에코 관성 주행'],['carWpc','무선 충전기'],['carDriveMode','주행 모드'],
+          ['carPhoneSignal','휴대폰 신호'],['carPhoneBattery','휴대폰 배터리']]
           .map(function (row) {
             return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
               '</span><output data-system-value="' + row[0] + '"></output></div>';
@@ -3346,7 +3355,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       } else if (active.id === 'energy') {
         var hasMode = typeof hybridInfo.mode === 'number';
         var energyCard = statusCard(box, 'energy', hasMode ? (HYBRID_MODE_NAMES[hybridInfo.mode] || '상태 ' + hybridInfo.mode) : '에너지 흐름 대기',
-          hasMode ? '' : '순정 하이브리드 정보를 받으면 표시합니다.', '차량 정보', function () { openSettingsSection('vehicle'); });
+          hasMode ? vehicleLabels(vehicleInfo).carDriveMode && '주행 모드 ' + vehicleLabels(vehicleInfo).carDriveMode || '' : '순정 하이브리드 정보를 받으면 표시합니다.', '차량 정보', function () { openSettingsSection('vehicle'); });
         energyCard.classList.add('split-live-state');
         var flow = document.createElement('div');
         flow.className = 'hybrid-flow-wrap';
@@ -3359,7 +3368,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         var warn = [c.carDoor === '열림' ? '문 열림' : '', c.carTrunk === '열림' ? '트렁크 열림' : '',
           c.carHood === '열림' ? '후드 열림' : '', c.carWindows && c.carWindows !== '모두 닫힘' ? '창문 ' + c.carWindows : ''].filter(Boolean);
         var range = typeof hybridInfo.totalRange === 'number' && hybridInfo.totalRange > 0 ? hybridInfo.totalRange + ' km' : '';
-        var lines = [c.carFuel && '연료 ' + c.carFuel, range && '주행 가능 ' + range, c.carTrip && '구간 ' + c.carTrip,
+        var lines = [c.carDriveMode && c.carDriveMode + ' 모드', c.carFuel && '연료 ' + c.carFuel, range && '주행 가능 ' + range, c.carTrip && '구간 ' + c.carTrip,
           c.carEconomy && '평균 ' + c.carEconomy].filter(Boolean);
         statusCard(box, 'car', warn.length ? warn.join(' · ') : lines.length ? (c.carFuel ? '연료 ' + c.carFuel : lines[0]) : '차량 정보 대기',
           lines.join(' · ') || '순정 차량 서비스에서 값을 받으면 표시합니다.', '차량 정보',
@@ -3688,6 +3697,20 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var box = document.getElementById('top-status');
     if (!box || !livePreview) return;
     var icons = [];
+    var sig = vehicleInfo.phoneSignal, bat = vehicleInfo.phoneBattery;
+    if (typeof sig === 'number') {
+      var bars = '';
+      for (var si = 0; si < 4; si++) {
+        var h = 5 + si * 4, on = sig >= Math.ceil((si + 1) * 5 / 4);
+        bars += '<rect x="' + (3 + si * 5) + '" y="' + (20 - h) + '" width="3" height="' + h + '" rx=".6" style="fill:currentColor;stroke:none;opacity:' + (on ? 1 : .3) + '"/>';
+      }
+      icons.push('<svg viewBox="0 0 24 24" aria-label="휴대폰 신호 ' + sig + '">' + bars + '</svg>');
+    }
+    if (typeof bat === 'number') {
+      var w = Math.max(0, Math.min(5, bat)) / 5 * 13;
+      icons.push('<svg' + (bat <= 1 ? ' class="is-warn"' : '') + ' viewBox="0 0 24 24" aria-label="휴대폰 배터리 ' + bat + '"><rect x="3" y="7.5" width="17" height="9" rx="2"/><path d="M21.5 10.5v3"/>' +
+        '<rect x="5" y="9.5" width="' + w.toFixed(1) + '" height="5" rx=".8" style="fill:currentColor;stroke:none"/></svg>');
+    }
     var calling = !!(phoneData && phoneData.state);
     if (calling) icons.push('<svg class="is-call" viewBox="0 0 24 24" aria-label="통화 중"><path d="M6.5 4 10 7.5 8 10a10 10 0 0 0 6 6l2.5-2 3.5 3.5-2.2 2.2C10 19.7 4.3 14 3.8 6.2z"/></svg>');
     else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>');

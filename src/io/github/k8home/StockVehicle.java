@@ -87,6 +87,12 @@ final class StockVehicle {
         {"com.hkmc.intent.action.VALET_OFF", "valet", "false"},
     };
     private static final String WPC_CHANGED = "com.mobis.intent.action.WPC_STATUS_CHANGED";
+    // Vehicle settings DriveModeHandleService: extra "DriveMode" = Dic$MODE name (ECO, SPORT, SMART...).
+    private static final String DRIVE_MODE = "com.hkmc.intent.action.DRIVE_MODE_CHANGED";
+    // Broadcom hands-free status the stock split screen shows: STRENGTH / LEVEL ints (-1 unknown).
+    private static final String PHONE_SIGNAL = "com.broadcom.bt.hfdevice.profile.action.MOBIS_BT_SIGNAL_STRENGTH";
+    private static final String PHONE_BATTERY = "com.broadcom.bt.hfdevice.profile.action.MOBIS_BT_BATTERY_LEVEL";
+    private static final String PHONE_BATTERY_REQUEST = "com.mobis.intent.action.GetBatteryLevel";
     private static final String WPC_EXTRA = "com.mobis.intent.extra.WPC_STATUS";
 
     private final Context app;
@@ -106,6 +112,13 @@ final class StockVehicle {
             String action = intent.getAction();
             if (WPC_CHANGED.equals(action)) {
                 if (intent.hasExtra(WPC_EXTRA)) events.put("wpc", (long) intent.getIntExtra(WPC_EXTRA, 0));
+            } else if (DRIVE_MODE.equals(action)) {
+                Object mode = intent.getExtras() == null ? null : intent.getExtras().get("DriveMode");
+                if (mode != null && mode.toString().length() <= 24) events.put("driveMode", mode.toString());
+            } else if (PHONE_SIGNAL.equals(action)) {
+                level("phoneSignal", intent.getIntExtra("STRENGTH", -1));
+            } else if (PHONE_BATTERY.equals(action)) {
+                level("phoneBattery", intent.getIntExtra("LEVEL", -1));
             } else {
                 for (String[] event : EVENTS) {
                     if (event[0].equals(action)) events.put(event[1], Boolean.valueOf(event[2]));
@@ -123,6 +136,11 @@ final class StockVehicle {
     StockVehicle(Context context, Runnable changed) {
         this.app = context.getApplicationContext();
         this.changed = changed;
+    }
+
+    private void level(String key, int value) {
+        if (value >= 0) events.put(key, (long) value);
+        else events.remove(key);
     }
 
     private final Runnable poll = new Runnable() {
@@ -156,10 +174,15 @@ final class StockVehicle {
         worker = new Handler(thread.getLooper());
         worker.post(poll);
         android.content.IntentFilter filter = new android.content.IntentFilter(WPC_CHANGED);
+        filter.addAction(DRIVE_MODE);
+        filter.addAction(PHONE_SIGNAL);
+        filter.addAction(PHONE_BATTERY);
         for (String[] event : EVENTS) filter.addAction(event[0]);
         try {
             app.registerReceiver(receiver, filter);
             listening = true;
+            // Same request the stock split screen sends so the phone battery level is resent.
+            app.sendBroadcast(new android.content.Intent(PHONE_BATTERY_REQUEST));
         } catch (RuntimeException failure) {
             Log.w(TAG, "state broadcasts unavailable", failure);
         }

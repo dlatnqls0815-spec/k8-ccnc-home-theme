@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.4.37 휴대폰 신호·배터리, 주행 모드 (2026-11-22, Claude)
+
+- 순정 분할 화면(`SplitScreenHome`, 수신기 `c`, `f/f`)이 쓰는 Broadcom 핸즈프리 방송을 받는다: `MOBIS_BT_SIGNAL_STRENGTH`(`STRENGTH`), `MOBIS_BT_BATTERY_LEVEL`(`LEVEL`), 값 0~5로 보고 -1은 지운다. 시작할 때 순정 분할 화면처럼 `com.mobis.intent.action.GetBatteryLevel`을 보내 배터리 값을 다시 받는다(조회 요청, 차량 명령 아님). 통신사 이름(`CARRIER`)은 쓰지 않는다.
+- 차량 설정 `DriveModeHandleService`의 `DRIVE_MODE_CHANGED`(`DriveMode` = `Dic$MODE` 이름: SMART, ECO, COMFORT, SPORT, INDIVIDUAL, SNOW…)를 받아 한글 이름으로 보여 준다. 처음 값은 바뀔 때까지 없다.
+- 화면: 시계 옆에 ccNC 상태 줄처럼 휴대폰 신호 막대 4칸과 배터리(1 이하면 주황). 설정 → 차량에 주행 모드·휴대폰 신호·배터리 줄. 분할 화면 차량 위젯과 에너지 흐름 위젯에 주행 모드.
+- 확인: `verify-0437.cjs`, 기존 검사 통과. 차에서 볼 것: 신호·배터리 값 범위가 0~5인지, 주행 모드 버튼을 눌렀을 때 `K8StockVehicle event …DRIVE_MODE_CHANGED`가 찍히는지.
+
 ## 0.4.36 차량 상태 방송, 연료 부족 알림, 주변 주유소·주차장 (2026-11-22, Claude)
 
 - `StockVehicle`이 순정 상태 방송을 받는다(읽기만): `SYSTEM_STATE_ILLUMINATE_ON/OFF`(미등·전조등), `SYSTEM_STATE_DRIVE_ON/OFF`(주행), `SYSTEM_STATE_FUELWANING_ON/OFF`(연료 경고, 순정 철자 그대로), `VALET_ON/OFF`(발레 모드), `com.mobis.intent.action.WPC_STATUS_CHANGED`(`WPC_STATUS`, 무선 충전기 경고). 이름은 `ModeManager`·`PgsConstants`·`VehicleInfoManager` 상수에서 가져왔다.
