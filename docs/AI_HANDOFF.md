@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.4.50 내비 위 하단바 위치, X로 경로 취소, 순정 메뉴에서 모서리 숨김 (2026-11-22, Claude)
+
+- 실차 사진(0.4.48): 뒤로 키가 칸 왼쪽 끝, X·거리·시간이 오른쪽으로 밀림. Chrome 30이 버튼의 `flex: 0 0 152px`를 무시하고 세 키를 고르게 늘린 탓. `navbar.html`을 1920×88 기준 절대 좌표로 바꿈(키 중심 81/233/385, X 556, 거리 652, 시간 774 — `D-map_guidance.png`과 일치). 거리·시간·목적지 줄은 flex 없이 인라인. 뒤로 화살표를 ccNC 크기(20px 높이)로 키움(`corners.html`도).
+- X: 내비는 `CANCEL_ROUTE_SHORTCUT`에 `com.hkmc.mode.EXTRA_SHORTCUT_REASON`이 3(운전대 사용자 키)·18·19일 때만 경로를 끈다(`NaviETCReceiver`). 지금까지 이 값 없이 보내 무시됐음 → `StockNavigation.cancelRoute`가 3을 붙여 보냄(실차 확인 전).
+- X 길게 누르기(안내 일시정지): 이 내비에는 안내 일시정지용 방송이 없음(`SoundPause.on/off`는 시험용 설정 스위치) → 넣지 않음.
+- 순정 5W 메뉴(`com.android.launcher3/.view.AppsMenu`)에서는 모서리 조각을 숨김(HOME이 테마로 옮겨지면 launcher3가 런처 목록에서 빠져 조각이 떴을 수 있음).
+
 ## 0.4.47~0.4.49 실차 확인 결과와 차량 브라우저 대응 (2026-11-22, Claude)
 
 - 실차: 무선 ADB(`private/k8-addr`, 커밋 안 함)로 `adb install -r`이 된다(0.4.46~0.4.48 설치 성공). 0.4.49는 빌드만 하고 차가 꺼져 미설치.

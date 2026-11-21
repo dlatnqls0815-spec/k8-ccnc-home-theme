@@ -100,13 +100,45 @@ img { -webkit-user-drag: none; user-select: none; }
 .bb-media-off { color: #f2f0ed; }
 /* Chrome 30 (car WebView) ignores flex inside <button>: centre the key icons with margins too. */
 .bb-key .bb-icon { margin: 0 auto; }
+/* 실차 Chrome 30은 버튼 크기(flex-basis)를 무시하고 키를 고르게 늘려 X와 거리·시간까지 밀렸다.
+   1920×88 기준 좌표를 그대로 박아 넣는다 (설명서 D-map_guidance.png: 키 중심 80/232/380,
+   X 중심 556, 거리 650, 시간 774). */
+.bottom-bar { display: block; }
+.bb-nav-keys, .bb-center, .bb-media-zone { position: absolute; top: 0; height: 88px; display: block; padding: 0; }
+.bb-nav-keys { left: 0; width: 526px; }
+.bb-key { position: absolute; top: 0; width: 152px; height: 88px; display: block; }
+#bb-back-btn { left: 5px; }
+#bb-home-btn { left: 157px; }
+#bb-menu-btn { left: 309px; }
+.bb-center { left: 526px; width: 902px; }
+.bb-pill { position: absolute; left: 0; top: 10px; }
+.bb-route-cancel { display: block; }
+.bb-route-cancel .bb-icon { margin: 0 auto; }
+.bb-route-info { position: absolute; left: 126px; right: 36px; top: 10px; height: 48px; }
+button.bb-idle { display: block; text-align: left; line-height: 68px; }
+.bb-idle .bb-icon { display: inline-block; vertical-align: middle; }
+.bb-idle span { vertical-align: middle; }
+/* 거리·시간·목적지는 flex 없이 한 줄 인라인으로 (Chrome 30에서 버튼이 늘어나지 않게). */
+.bb-route-info { display: block; white-space: nowrap; font-size: 0; line-height: 48px; }
+.bb-route-info > * { display: inline-block; vertical-align: middle; font-size: 26px; }
+.bb-route-info > [hidden] { display: none; }
+.bb-route-info .bb-metric { display: inline-block; height: 48px; }
+.bb-route-info .bb-metric > span { display: inline-block; vertical-align: baseline; }
+.bb-time { width: auto; line-height: 48px; }
+.bb-dest { line-height: 48px; max-width: 380px; }
+.bb-media-zone { left: 1428px; width: 492px; }
+.bb-media-play { position: absolute; left: 0; top: 0; display: block; }
+.bb-media-play .bb-media-off-icon, .bb-media-play img.bb-media-state { display: block; margin: 0 auto; }
+.bb-media-play .bb-media-off-icon[hidden], .bb-media-play img[hidden] { display: none; }
+.bb-media-body { position: absolute; left: 88px; right: 0; top: 0; height: 88px; display: block; }
+.bb-media-meta, .bb-media-off { display: block; }
 </style>
 </head>
 <body>
 <footer class="bottom-bar" id="detail-bottom-bar">
   <div class="bb-nav-keys">
     <button type="button" class="bb-key" id="bb-back-btn" aria-label="순정 하단줄 표시">
-      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M20 9l-7 7 7 7"/></svg>
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M19 6l-9 10 9 10"/></svg>
     </button>
     <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
       <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 14L16 3l13 11v12H3z"/></svg>

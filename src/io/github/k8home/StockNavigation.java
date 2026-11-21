@@ -78,6 +78,22 @@ final class StockNavigation {
         }
     }
 
+    /**
+     * Ends the current route. The navi only honours CANCEL_ROUTE_SHORTCUT when the reason extra is
+     * 3 (steering wheel custom key), 18 or 19; without it the broadcast is silently dropped.
+     */
+    static boolean cancelRoute(Context context) {
+        try {
+            context.sendBroadcast(new Intent(CANCEL_ROUTE).setPackage(PACKAGE)
+                .putExtra("com.hkmc.mode.EXTRA_SHORTCUT_REASON", 3));
+            Log.i("K8StockNavigation", "route cancel sent");
+            return true;
+        } catch (RuntimeException failure) {
+            Log.w("K8StockNavigation", "Route cancel rejected", failure);
+            return false;
+        }
+    }
+
     static void requestWhenMapOpens(Context context, final String action) {
         final Context app = context.getApplicationContext();
         final Handler handler = new Handler(Looper.getMainLooper());

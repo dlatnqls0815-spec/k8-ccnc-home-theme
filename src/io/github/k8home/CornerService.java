@@ -42,7 +42,8 @@ public final class CornerService extends Service {
     private static final float KEYS_WIDTH = 0.244f;
     private static final float MEDIA_WIDTH = 0.248f;
     private static final String[] HIDDEN_PARTS = {
-        "phoneprojection", "carplay", "androidauto", "camera", "rvm", "avm", "pdw"
+        "phoneprojection", "carplay", "androidauto", "camera", "rvm", "avm", "pdw",
+        "com.android.launcher3/" // stock 5W menu (AppsMenu) has its own row; HOME may be moved to the theme
     };
 
     private final Handler handler = new Handler();

@@ -208,7 +208,7 @@ public final class NavBarService extends Service {
             detach();
             StockNavigation.request(this, StockNavigation.SEARCH);
         } else if ("cancel".equals(action) && !cancelPending && route.snapshot().active) {
-            if (StockNavigation.request(this, StockNavigation.CANCEL_ROUTE)) {
+            if (StockNavigation.cancelRoute(this)) {
                 cancelPending = true;
                 handler.postDelayed(cancelFallback, 2200);
             } else {
