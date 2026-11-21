@@ -84,6 +84,8 @@ public final class HomeActivity extends Activity {
     private StockTransport transport;
     private StockClimate climate;
     private StockHybrid hybrid;
+    private StockWeather weather;
+    private StockVehicle vehicle;
     private JSONObject vehicleSettings = new JSONObject();
     private boolean readingVehicleSettings;
 
@@ -121,6 +123,12 @@ public final class HomeActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         transport = new StockTransport(this);
+        vehicle = new StockVehicle(this, new Runnable() {
+            @Override public void run() { syncVehicle(); }
+        });
+        weather = new StockWeather(this, new Runnable() {
+            @Override public void run() { syncWeather(); }
+        });
         hybrid = new StockHybrid(this, new Runnable() {
             @Override public void run() { syncHybrid(); }
         });
@@ -180,6 +188,8 @@ public final class HomeActivity extends Activity {
                     syncSystemSettings();
                     syncClimate();
                     syncHybrid();
+                    syncWeather();
+                    syncVehicle();
                     syncFlags();
                     syncPhoto("standby");
                     syncPhoto("split");
@@ -228,6 +238,8 @@ public final class HomeActivity extends Activity {
         phone.start();
         climate.start();
         hybrid.start();
+        weather.start();
+        vehicle.start();
         sendBroadcast(new Intent(StockMedia.REQUEST));
         syncControls();
         stopService(new Intent(this, NavBarService.class));
@@ -282,6 +294,8 @@ public final class HomeActivity extends Activity {
         phone.stop();
         climate.stop();
         hybrid.stop();
+        weather.stop();
+        vehicle.stop();
         transport.close();
         syncPhone();
         media = StockMedia.EMPTY;
@@ -309,6 +323,32 @@ public final class HomeActivity extends Activity {
             + javascriptString(data.distance) + "," + javascriptString(data.remaining) + ","
             + javascriptString(data.arrival) + "," + javascriptString(data.road) + ","
             + javascriptString(naviStatus(data)) + ")", null);
+    }
+
+    private void syncVehicle() {
+        if (vehicle == null) return;
+        // Before any media widget broadcast arrives, start from the stock current audio mode.
+        if (media.source.isEmpty()) {
+            int mode = vehicle.snapshot().optInt("audioMode", -1);
+            if (mode > 0) {
+                android.os.Bundle extras = new android.os.Bundle();
+                extras.putInt("com.hkmc.mode.EXTRA_MODE_TYPE", mode);
+                StockMedia next = media.update("com.hkmc.intent.action.MODE_CHANGED", extras);
+                if (next != media) {
+                    media = next;
+                    syncMedia();
+                }
+            }
+        }
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.vehicleChanged && window.K8Home.vehicleChanged("
+            + javascriptString(vehicle.snapshot().toString()) + ")", null);
+    }
+
+    private void syncWeather() {
+        if (!pageReady || weather == null) return;
+        web.evaluateJavascript("window.K8Home.weatherChanged && window.K8Home.weatherChanged("
+            + javascriptString(weather.snapshot().toString()) + ")", null);
     }
 
     private void syncHybrid() {
@@ -691,16 +731,7 @@ public final class HomeActivity extends Activity {
         } else if ("media-player".equals(action)) {
             if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {
-            String destination = "nav-home".equals(action) ? "우리 집" : "회사";
-            new AlertDialog.Builder(this).setTitle(destination)
-                .setMessage("순정 통합 검색 왼쪽에서 저장된 " + destination
-                    + "을 선택하세요. 검색이 열리지 않으면 순정 하단의 돋보기를 누르세요.")
-                .setPositiveButton("순정 검색 열기", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface dialog, int index) {
-                        openNavigationCommand(StockNavigation.SEARCH);
-                    }
-                })
-                .setNegativeButton("취소", null).show();
+            savedPlace("nav-home".equals(action) ? "home" : "work");
         } else if ("media-prev".equals(action)) {
             sendMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
         } else if ("media-next".equals(action)) {
@@ -868,6 +899,53 @@ public final class HomeActivity extends Activity {
             }
         }
         return true;
+    }
+
+    /**
+     * Home / work buttons. The navi keeps its own saved points in a provider other apps cannot read,
+     * so the theme saves a point from the current destination (DestinationInfo LAT/LON) when asked,
+     * then starts guidance with the navi's route-search intent.
+     */
+    private void savedPlace(final String key) {
+        final String label = "home".equals(key) ? "우리 집" : "회사";
+        final String latitude = shortcuts.getString("place-" + key + "-lat", "");
+        final String longitude = shortcuts.getString("place-" + key + "-lon", "");
+        final String name = shortcuts.getString("place-" + key + "-name", label);
+        StockRoute.Snapshot data = route == null ? null : route.snapshot();
+        final String nowLat = data == null ? "" : StockNavigation.degrees(data.destLat);
+        final String nowLon = data == null ? "" : StockNavigation.degrees(data.destLon);
+        final String nowName = data == null ? "" : data.destination;
+        boolean saved = !latitude.isEmpty() && !longitude.isEmpty();
+        boolean canSave = !nowLat.isEmpty() && !nowLon.isEmpty();
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle(label);
+        if (saved) {
+            dialog.setMessage(name + "(으)로 길안내를 시작합니다.")
+                .setPositiveButton("안내 시작", new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface d, int index) {
+                        if (StockNavigation.routeTo(HomeActivity.this, name, latitude, longitude)) openNavigation(false);
+                        else toast("순정 내비가 경로 요청을 받지 않았습니다.");
+                    }
+                });
+        } else {
+            dialog.setMessage(canSave ? "지금 안내 중인 목적지(" + nowName + ")를 " + label + "(으)로 저장할 수 있습니다."
+                : "아직 저장된 " + label + "이(가) 없습니다. 순정 내비에서 " + label
+                    + "으로 길안내를 한 번 시작한 뒤 이 버튼을 다시 누르면 저장할 수 있습니다.")
+                .setPositiveButton("순정 검색 열기", new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface d, int index) {
+                        openNavigationCommand(StockNavigation.SEARCH);
+                    }
+                });
+        }
+        if (canSave) {
+            dialog.setNeutralButton(saved ? "현재 목적지로 바꾸기" : "현재 목적지 저장", new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface d, int index) {
+                    shortcuts.edit().putString("place-" + key + "-lat", nowLat).putString("place-" + key + "-lon", nowLon)
+                        .putString("place-" + key + "-name", nowName.isEmpty() ? label : nowName).apply();
+                    toast(label + " 위치를 저장했습니다.");
+                }
+            });
+        }
+        dialog.setNegativeButton("취소", null).show();
     }
 
     private void openNavigationCommand(String action) {

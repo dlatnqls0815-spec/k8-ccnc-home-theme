@@ -1,5 +1,53 @@
 # K8 Gen5W 홈
 
+## 0.4.33 차량 상태 전체, 운전자, 시작 오디오 모드 (2026-11-22, Claude)
+
+- `StockVehicle.java`: 자동차 라이브러리 관리자(`TMUManager`, `BCMManager`, `USMManager`, `ModeManager`, `UserProfileManager`)를 반사로 만들어 값이 있는 무인자 getter만 3초마다 백그라운드 스레드에서 읽는다(서비스 거부·클래스 없음이면 그 값만 빠짐, 같은 경고는 한 번만 기록). 개인 식별 정보 getter는 목록에 없음.
+- 화면: 설정 → 차량에 속도·연료량·누적/구간 주행거리·평균 연비·이번 주행 시간·앞문·문 잠금·트렁크·후드·선루프·창문·주차 브레이크·운전석/조수석/핸들 열선·엔진·엔진 회전수 줄. 분할 화면 `차량 정보` 위젯(열림 경고 우선, 연료·주행 가능 거리·구간·평균 연비). 홈 왼쪽 위 운전자 이름을 순정 프로필(게스트 / 사용자 종류 1·2)에 맞춤. 미디어 위젯 방송 전에는 `ModeManager.getCurrentMode`로 시작 소스.
+- 가정(차에서 확인): 열림·잠김·열선은 0이 닫힘/꺼짐, `getDriveTime`은 초, `getFuelTankRatio`는 %, 사용자 종류 1/2가 운전자 1/2. `logcat -s K8StockVehicle`의 `connected …`와 `status {...}`.
+- 전체 연결 현황과 일부러 뺀 것: [펌웨어 분석 4번](펌웨어-분석-2026-11-22.md).
+- 배포 `deliverables/K8-5W-홈-0.4.33.apk`, `K8-ccNC-Home-NEMESIS-0.4.33-USB.zip`(SHA-256 `cad81199991e3cf2fc946cdeee45f925bee53758fd7cb83e5f38dbc9416a2e8c`). 이전 검사 전부와 차량 상태 시험 통과.
+
+## 0.4.32 오디오 모드 전환 즉시 반영, 주행 가능 거리 (2026-11-22, Claude)
+
+- 근거: `automotive.odex` `ModeManager.ACTION_MODE_CHANGED` = `com.hkmc.intent.action.MODE_CHANGED`, `EXTRA_MODE_TYPE` = `com.hkmc.mode.EXTRA_MODE_TYPE`, 값은 `ModeConstants$ModeType`(FM1 0x2, FM2 0x3, AM 0x4, USB 0x21, USB_AUDIO 0x31, BLUETOOTH 0x36, DIPO 0x73, NATURE_SOUND 0x81, NAVI 0x60, CLIMATE 0x76 …).
+- 구현: `StockMedia`가 이 방송을 받아 오디오 소스가 바뀌면 곧바로 새 소스(FM/AM/블루투스 오디오/USB 음악/자연의 소리/CarPlay)로 바꾼다. 곡명 등은 이어서 오는 위젯 방송이 채운다. 오디오가 아닌 모드(내비·공조 등)는 무시. 홈·하단바·모서리 미디어 상자 모두 같은 클래스라 함께 적용.
+- 설정 → 차량에 `주행 가능 거리`(TOTAL_DTE), `연료 주행 가능 거리`(GAS_DTE) 줄(0.4.27부터 읽던 값, 단위 km 가정).
+- 차에서 볼 것: 소스를 바꿀 때 미디어 상자가 바로 바뀌는지, `EXTRA_MODE_TYPE`이 정수로 오는지, 주행 가능 거리 숫자가 계기판과 같은지.
+- 배포 `deliverables/K8-5W-홈-0.4.32.apk`, `K8-ccNC-Home-NEMESIS-0.4.32-USB.zip`(SHA-256 `dc5b676780fe5c37e0e04497bf5fa35067bd352493e06a6a5ba7a636f3eab30e`).
+
+## 0.4.31 현재 위치를 ccNC처럼 "○○시 ○○구 부근" (2026-11-22, Claude)
+
+- 근거(내비 odex): `com.mnsoft.navi.action.Request.NaviAddressInfo`(`NaviETCReceiver`, extras `com.mnsoft.navi.action.extra.lat`/`lon`/`addressdisp` 모두 `getDoubleExtra`) → 답 `com.mnsoft.navi.action.Response.NaviAddressInfo`(`NativeCall.sendNaviInsideData`): `admincode`, `lat`, `lon`, `countrycode`, `language`, `address.step1`~`step4`.
+- 구현(`StockRoute`): `NAVI_GPS_CHANGED`의 `LAT`/`LON` 원값을 한국 범위에 들어오는 배율(1, 360000, 1e6, 1e7, 1e5)로 도 단위로 바꾸고, 1분마다 주소 요청. 답의 step1+step2 + " 부근"을 현재 위치로 쓰고(5분 지나면 버림), 없으면 기존 도로명. 홈 지도 카드·분할 지도·순정 내비 하단바가 모두 이 값을 쓴다. 배율 변환은 JVM 단위 시험(소수, ×1e6, ×1e7, ×360000, 문자열, 0) 통과.
+- 같은 분배기(`sendNaviInsideData`)에서 본 다른 방송: `NaviCameraAlertState`(`CamAlertState`·`Time_ms`, sticky, 값 뜻 미상 → 안 씀), `com.mnsoft.navi.intent.action.road.roadClassification`(도로 등급), `Navi_View_Status`(분할 화면 표시 상태), `navi_ev3_dte_status`.
+- 차에서 볼 것: `logcat -s K8StockRoute`의 `area reply ok keys=[...]`. 답이 안 오면 GPS 배율이 틀렸거나 답이 내비 안에서만 쓰이는 것.
+- 배포 `deliverables/K8-5W-홈-0.4.31.apk`, `K8-ccNC-Home-NEMESIS-0.4.31-USB.zip`(SHA-256 `f04b5b89f619e0269fb15dcff9eefff64fe6e19bedbe3319b085cc6118dd8b10`).
+
+## 0.4.30 순정 날씨 (2026-11-22, Claude)
+
+- 근거(내비 odex): 내비가 `com.hkmc.intent.action.request_weather_from_navi`를 방송하면(`NativeCall` "VIT_REQ_WEATHER_INFO(5303) req weather info to system(weather app)") 순정 날씨(기아 커넥트) 쪽이 `com.hkmc.intent.action.response_weather_to_navi`로 답한다(`NaviETCReceiver`). 값: `com.hkmc.extras.weather.navi_result`(참/거짓), `navi_temp`(실수), `navi_weathertype`, `navi_sunrise`/`navi_sunset`(글자), `navi_precipitation`(정수).
+- 구현: `StockWeather.java`가 같은 요청을 20분마다 보내고 답을 받는다. 분할 화면 `날씨` 위젯은 순정 기온 → 없으면 공조 바깥 기온 순. 대기 화면 날씨 칸(차에서는 숨겨져 있던 것)에 기온·현재 도로·일출·일몰.
+- 확인 못 한 것: 답 방송이 내비 패키지로만 보내지는지(그러면 테마가 못 받음), 날씨 종류 번호의 뜻, 강수 값이 %인지. 차에서 `logcat -s K8StockWeather`의 `weather {...} keys=[...]`.
+- 배포 `deliverables/K8-5W-홈-0.4.30.apk`, `K8-ccNC-Home-NEMESIS-0.4.30-USB.zip`(SHA-256 `64c01ce76629d7e060b173ab016560c4a8a8ee92c4aee14aed155b787fac3d39`). 이전 검사 전부와 순정 날씨 시험 통과.
+
+## 0.4.29 후방 카메라 위에는 아무것도 띄우지 않음 (2026-11-22, Claude)
+
+- 근거: `automotive.odex` `com.hkmc.mode.ModeManager`의 `ACTION_SYSTEM_STATE_REARVIEW_ON/OFF` = `com.hkmc.intent.action.SYSTEM_STATE_REARVIEW_ON` / `_OFF`.
+- `CornerService`는 켜짐 방송을 받으면 두 조각을 바로 떼고 꺼짐 방송까지 다시 붙이지 않는다(이름 기반 숨김 목록은 그대로 둠). `NavBarService`는 켜짐 방송에서 세션을 끝내 순정 하단줄로 돌아간다.
+- 전화 상태는 기존 `com.hkmc.phone.widgetupdate` 등으로 이미 연결돼 있어 손대지 않음.
+- 차에서 볼 것: 후진 기어에서 방송이 오는지와 두 조각·하단바가 사라지는지, 후진을 풀면 두 조각이 돌아오는지.
+- 배포 `deliverables/K8-5W-홈-0.4.29.apk`, `K8-ccNC-Home-NEMESIS-0.4.29-USB.zip`(SHA-256 `f8fd05d8a606ea816e4a56045919c7459dcef9010234e776a481ad01fee44060`).
+
+## 0.4.28 우리 집·회사 바로 안내 (2026-11-22, Claude)
+
+- 다른 세션이 만든 펌웨어 복호화 도구·자료(`fw_decrypt.py`, `fw_key_pull.sh`, `FIRMWARE_DECRYPT.md`, `CCNC_5W_KNOWLEDGE.md`, `ccnc-5w-data/` 102MB)는 사용자 요청으로 `private/firmware/`로 옮김(제조사 키 포함이라 공개 저장소 금지).
+- 내비 저장 지점은 `content://com.mnsoft.navi/RegistPnt_*`에 있지만 내비 targetSdk 19라 제공자가 비공개 → 다른 앱이 못 읽음.
+- 대신 `DestinationInfo` 방송의 `LAT`/`LON`/`registpoint`를 `StockRoute`가 기억(경로 종료 시 지움). 홈 지도 카드의 우리 집·회사 버튼: 저장된 곳이 없으면 "지금 목적지 저장", 있으면 내비 공개 API `com.hkmc.intent.action.ACTION_ROUTE_SEARCH`(`com.hkmc.navi.EXTRA_LATITUDE`/`EXTRA_LONGITUDE`는 도 단위 문자열 — 내비가 `Double.valueOf` 후 ×360000, `EXTRA_KEYWORD` 이름)로 바로 경로 검색 후 내비 열기.
+- 차에서 볼 것: `logcat -s K8StockRoute`의 `destination info lat=set type=… registpoint=…`(좌표가 오는지, 우리 집/회사일 때 registpoint 값), `K8StockNavigation`의 `route search sent`, 내비가 경로 화면을 띄우는지. 좌표가 내비 내부 단위(×360000)로 오면 `StockNavigation.degrees`가 자동 변환.
+- 내비 `IInterfaceService` 메서드 목록은 [펌웨어 분석](펌웨어-분석-2026-11-22.md) 1번에 정리됨(지식 문서의 "모르는 것 3번" 해결).
+- 배포 `deliverables/K8-5W-홈-0.4.28.apk`, `K8-ccNC-Home-NEMESIS-0.4.28-USB.zip`(SHA-256 `312ca1c9c46010b8e3b342d3fb8fe448594c33459ac4a85383ad4d89fad60e54`). 이전 검사 전부 통과.
+
 ## ccNC / 5W 지식 문서 (다른 AI에 넘길 정리)
 
 **화면 구성·차량 API·내비 데이터 구조·펌웨어 상태를 한 장에 모은 문서가 [CCNC_5W_KNOWLEDGE.md](CCNC_5W_KNOWLEDGE.md)다.**

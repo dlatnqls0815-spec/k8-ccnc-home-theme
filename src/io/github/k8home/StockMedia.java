@@ -14,6 +14,10 @@ final class StockMedia {
     private static final String NATURE = "com.hkmc.nature_sound.widgetupdate";
     private static final String CARPLAY = "com.hkmc.dipoaudio.widgetupdate";
 
+    /** ModeManager.ACTION_MODE_CHANGED with ModeConstants$ModeType in EXTRA_MODE_TYPE (automotive.odex). */
+    private static final String MODE_CHANGED = "com.hkmc.intent.action.MODE_CHANGED";
+    private static final String MODE_TYPE = "com.hkmc.mode.EXTRA_MODE_TYPE";
+
     static final StockMedia EMPTY = new StockMedia("", "", "", "", null, -1, -1, -1, -1);
 
     final String source, title, artist, settings;
@@ -40,11 +44,33 @@ final class StockMedia {
         filter.addAction(RADIO);
         filter.addAction(NATURE);
         filter.addAction(CARPLAY);
+        filter.addAction(MODE_CHANGED);
+    }
+
+    /** Stock audio mode number to the theme's source id and an initial label, or null when not audio. */
+    static String[] modeSource(int mode) {
+        switch (mode) {
+            case 0x2: case 0x3: return new String[] {"fm", "FM"};
+            case 0x4: return new String[] {"am", "AM"};
+            case 0x36: return new String[] {"bt", "블루투스 오디오"};
+            case 0x21: case 0x31: return new String[] {"usb", "USB 음악"};
+            case 0x81: return new String[] {"nature", "자연의 소리"};
+            case 0x73: return new String[] {"carplay", "CarPlay"};
+            default: return null;
+        }
     }
 
     StockMedia update(String action, Bundle data) {
         if (data == null) return this;
         String nextSource;
+        if (MODE_CHANGED.equals(action)) {
+            Object raw = data.get(MODE_TYPE);
+            if (!(raw instanceof Number)) return this;
+            String[] next = modeSource(((Number) raw).intValue());
+            // Keep the current details when the source did not change; widget broadcasts fill the rest.
+            if (next == null || next[0].equals(source)) return this;
+            return new StockMedia(next[0], next[1], "", "", null, -1, -1, -1, -1);
+        }
         if (RADIO.equals(action)) return radio(data);
         if (BT.equals(action)) nextSource = "bt";
         else if (USB.equals(action)) nextSource = "usb";

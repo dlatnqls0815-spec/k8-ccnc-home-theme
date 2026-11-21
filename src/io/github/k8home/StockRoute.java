@@ -21,6 +21,12 @@ final class StockRoute {
     private static final String DESTINATION_INFO = "com.mnsoft.navi.action.DestinationInfo";
     private static final String DEST = "com.mnsoft.navi.action.extra.";
     private static final String GPS_CHANGED = "com.hkmc.telematics.gis.action.NAVI_GPS_CHANGED";
+    // Navi address lookup (NaviETCReceiver / NativeCall): request takes lat/lon/addressdisp doubles,
+    // the reply carries address.step1..4 (시·도, 시·군·구, 읍·면·동, 리) like the ccNC "서울시 서초구 부근".
+    private static final String ADDRESS_REQUEST = "com.mnsoft.navi.action.Request.NaviAddressInfo";
+    private static final String ADDRESS_RESPONSE = "com.mnsoft.navi.action.Response.NaviAddressInfo";
+    private static final String ADDRESS = "com.mnsoft.navi.action.extra.";
+    private static final long AREA_MS = 60000;
     private static final String GIS = "com.hkmc.telematics.gis.extra.";
     private static final String TAG = "K8StockRoute";
     private static final long REFRESH_MS = 20000;
@@ -34,6 +40,8 @@ final class StockRoute {
         final boolean known, active;
         final String destination, address, distance, remaining, arrival;
         String road = "", dayNight = "", mute = "", appVersion = "", mapVersion = "";
+        /** Destination coordinates from DestinationInfo as sent (navi units), and its registpoint code. */
+        String destLat = "", destLon = "", registPoint = "";
 
         Snapshot(boolean known, boolean active, String destination, String address, String distance,
                 String remaining, String arrival) {
@@ -61,6 +69,10 @@ final class StockRoute {
     private long validatedAt, detailsAt, lastRequest, endedAt;
     private String name = "", address = "", distance = "", duration = "", eta = "";
     private String road = "", dayNight = "", mute = "", appVersion = "", mapVersion = "";
+    private String destLat = "", destLon = "", registPoint = "";
+    private double gpsLat = Double.NaN, gpsLon = Double.NaN;
+    private String area = "";
+    private long areaRequest, areaAt;
     private long roadAt, lastLocationRequest;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -68,6 +80,26 @@ final class StockRoute {
             Bundle data = intent.getExtras();
             if (data == null) return;
             String action = intent.getAction();
+            if (GPS_CHANGED.equals(action)) {
+                double lat = koreanDegrees(data.get(GIS + "LAT"), 32, 39.5);
+                double lon = koreanDegrees(data.get(GIS + "LON"), 123, 132.5);
+                if (!Double.isNaN(lat) && !Double.isNaN(lon)) {
+                    gpsLat = lat;
+                    gpsLon = lon;
+                    requestArea();
+                }
+            } else if (ADDRESS_RESPONSE.equals(action)) {
+                String next = joinArea(text(data.get(ADDRESS + "address.step1")), text(data.get(ADDRESS + "address.step2")));
+                Log.i(TAG, "area reply " + (next.isEmpty() ? "empty" : "ok") + " keys=" + data.keySet());
+                if (!next.isEmpty()) {
+                    areaAt = SystemClock.elapsedRealtime();
+                    if (!next.equals(area)) {
+                        area = next;
+                        notifyListeners(false);
+                    }
+                }
+                return;
+            }
             if (StockNavigation.CURRENT_LOCATION_RESPONSE.equals(action)) {
                 String place = text(data.get("address"));
                 Object onRoad = data.get("on_road");
@@ -120,6 +152,16 @@ final class StockRoute {
                             text(data.get("remain_dist")), arrival, arrival)) notifyListeners(false);
                 }
             } else if (active) {
+                if (DESTINATION_INFO.equals(action)) {
+                    String lat = text(data.get(DEST + "LAT")), lon = text(data.get(DEST + "LON"));
+                    if (!lat.isEmpty() && !lon.isEmpty()) {
+                        destLat = lat;
+                        destLon = lon;
+                    }
+                    if (data.containsKey(DEST + "registpoint")) registPoint = text(data.get(DEST + "registpoint"));
+                    Log.i(TAG, "destination info lat=" + (lat.isEmpty() ? "-" : "set") + " type="
+                        + text(data.get(DEST + "TYPE")) + " registpoint=" + registPoint);
+                }
                 boolean changed = DESTINATION_INFO.equals(action)
                     ? update(text(data.get(DEST + "PoiName")), text(data.get(DEST + "Address")),
                         text(data.get(DEST + "DestDistance")), text(data.get(DEST + "DestRemainTime")), "")
@@ -143,6 +185,11 @@ final class StockRoute {
                 roadAt = 0;
                 notifyListeners(false);
             }
+            if (areaAt != 0 && SystemClock.elapsedRealtime() - areaAt >= 5 * AREA_MS) {
+                area = "";
+                areaAt = 0;
+                notifyListeners(false);
+            }
             requestLocation();
             if (active || !known) refresh();
             if (active || !known) notifyListeners(false);
@@ -162,6 +209,7 @@ final class StockRoute {
             filter.addAction(StockNavigation.DESTINATION_RESPONSE);
             filter.addAction(GPS_CHANGED);
             filter.addAction(StockNavigation.CURRENT_LOCATION_RESPONSE);
+            filter.addAction(ADDRESS_RESPONSE);
             filter.addAction(StockNavigation.DAY_NIGHT);
             filter.addAction(StockNavigation.MUTE_STATE);
             filter.addAction(StockNavigation.BOOT_END);
@@ -177,8 +225,43 @@ final class StockRoute {
         handler.removeCallbacks(poll);
         known = active = false;
         endedAt = validatedAt = lastRequest = lastLocationRequest = roadAt = 0;
-        road = "";
+        road = area = "";
+        areaRequest = areaAt = 0;
         clearDetails();
+    }
+
+    /** GIS coordinates arrive as raw numbers; pick the scale that lands inside Korea. */
+    static double koreanDegrees(Object value, double min, double max) {
+        if (!(value instanceof Number) && !(value instanceof CharSequence)) return Double.NaN;
+        double raw;
+        try {
+            raw = Double.parseDouble(value.toString().trim());
+        } catch (NumberFormatException failure) {
+            return Double.NaN;
+        }
+        for (double scale : new double[] {1, 360000, 1e6, 1e7, 1e5}) {
+            double degrees = raw / scale;
+            if (degrees >= min && degrees <= max) return degrees;
+        }
+        return Double.NaN;
+    }
+
+    static String joinArea(String first, String second) {
+        String text = (first + " " + second).trim();
+        return text.isEmpty() ? "" : text + " 부근";
+    }
+
+    private void requestArea() {
+        long now = SystemClock.elapsedRealtime();
+        if (areaRequest != 0 && now - areaRequest < AREA_MS) return;
+        areaRequest = now;
+        try {
+            app.sendBroadcast(new Intent(ADDRESS_REQUEST).setPackage(StockNavigation.PACKAGE)
+                .putExtra(ADDRESS + "lat", gpsLat).putExtra(ADDRESS + "lon", gpsLon)
+                .putExtra(ADDRESS + "addressdisp", 0d));
+        } catch (RuntimeException failure) {
+            Log.w(TAG, "area request refused", failure);
+        }
     }
 
     private void requestLocation() {
@@ -200,11 +283,15 @@ final class StockRoute {
             ? RouteMetrics.remainingFromArrival(eta, Calendar.getInstance()) : duration;
         Snapshot snapshot = new Snapshot(known, active, name.isEmpty() ? address : name, address, distance,
             remaining, RouteMetrics.arrivalLabel(eta));
-        snapshot.road = road;
+        // ccNC shows the district ("서울시 서초구 부근"); the road name is the fallback.
+        snapshot.road = area.isEmpty() ? road : area;
         snapshot.dayNight = dayNight;
         snapshot.mute = mute;
         snapshot.appVersion = appVersion;
         snapshot.mapVersion = mapVersion;
+        snapshot.destLat = active ? destLat : "";
+        snapshot.destLon = active ? destLon : "";
+        snapshot.registPoint = active ? registPoint : "";
         return snapshot;
     }
 
@@ -247,6 +334,7 @@ final class StockRoute {
 
     private void clearDetails() {
         name = address = distance = duration = eta = "";
+        destLat = destLon = registPoint = "";
         detailsAt = 0;
     }
 

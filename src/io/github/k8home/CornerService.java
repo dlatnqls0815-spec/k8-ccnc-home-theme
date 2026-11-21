@@ -49,7 +49,7 @@ public final class CornerService extends Service {
     private final Set<String> launchers = new HashSet<String>();
     private WindowManager windows;
     private WebView keys, mediaBox;
-    private boolean keysReady, mediaReady, attached, running;
+    private boolean keysReady, mediaReady, attached, running, rearView;
     private StockMedia media = StockMedia.EMPTY;
     private BluetoothCoverArt coverArt;
     private String coverImage = "";
@@ -67,6 +67,12 @@ public final class CornerService extends Service {
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (StockNavigation.REARVIEW_ON.equals(action) || StockNavigation.REARVIEW_OFF.equals(action)) {
+                rearView = StockNavigation.REARVIEW_ON.equals(action);
+                if (rearView) detach();
+                return;
+            }
             StockMedia next = media.update(intent.getAction(), intent.getExtras());
             if (next == media) return;
             media = next;
@@ -82,7 +88,7 @@ public final class CornerService extends Service {
                 stopSelf();
                 return;
             }
-            boolean want = keysReady && mediaReady && screenOn() && allowed(StockNavigation.foreground(CornerService.this));
+            boolean want = !rearView && keysReady && mediaReady && screenOn() && allowed(StockNavigation.foreground(CornerService.this));
             if (want && !attached) attach();
             else if (!want && attached) detach();
             handler.postDelayed(this, POLL_MS);
@@ -100,6 +106,8 @@ public final class CornerService extends Service {
         });
         IntentFilter filter = new IntentFilter();
         StockMedia.addActions(filter);
+        filter.addAction(StockNavigation.REARVIEW_ON);
+        filter.addAction(StockNavigation.REARVIEW_OFF);
         registerReceiver(receiver, filter);
         Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
         try {

@@ -72,8 +72,8 @@ public final class NavBarService extends Service {
         @Override public void onReceive(Context context, Intent intent) {
             if (sessionEnded) return;
             String action = intent.getAction();
-            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                endSession();
+            if (Intent.ACTION_SCREEN_OFF.equals(action) || StockNavigation.REARVIEW_ON.equals(action)) {
+                endSession(); // never draw over the rear camera; the stock row comes back
                 return;
             }
             StockMedia next = media.update(action, intent.getExtras());
@@ -126,6 +126,7 @@ public final class NavBarService extends Service {
         });
         windows = (WindowManager) getSystemService(WINDOW_SERVICE);
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(StockNavigation.REARVIEW_ON);
         StockMedia.addActions(filter);
         registerReceiver(receiver, filter);
         route = StockRoute.of(this);

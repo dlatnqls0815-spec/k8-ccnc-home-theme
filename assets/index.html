@@ -1729,6 +1729,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     splitWidgets: [
       { id: 'map', label: '지도', enabled: true, fixed: true },
       { id: 'energy', label: '에너지 흐름', enabled: true, fixed: false },
+      { id: 'car', label: '차량 정보', enabled: true, fixed: false },
       { id: 'media', label: '동영상', enabled: true, fixed: false },
       { id: 'weather', label: '날씨', enabled: true, fixed: false },
       { id: 'sports', label: '스포츠', enabled: true, fixed: false }
@@ -1773,6 +1774,34 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   var naviStatus = {};
   var climateInfo = {};
   var hybridInfo = {};
+  var weatherInfo = {};
+  var vehicleInfo = {};
+  // Stock vehicle status (StockVehicle.java). Open/lock/heat values are 0 off/closed, other = on/open
+  // unless the car shows otherwise; units follow the stock unit settings.
+  function vehicleLabels(v) {
+    var n = function (x) { return typeof x === 'number'; };
+    var open = function (x) { return n(x) ? (x === 0 ? '닫힘' : '열림') : ''; };
+    var onOff = function (x) { return n(x) ? (x === 0 ? '꺼짐' : '켜짐 (' + x + ')') : ''; };
+    var km = vehicleInfo.distanceUnit === 2 ? ' mi' : ' km';
+    var windows = ['driverWindow', 'passengerWindow', 'rearLeftWindow', 'rearRightWindow']
+      .filter(function (k) { return n(v[k]); });
+    var openWindows = windows.filter(function (k) { return v[k] !== 0; }).length;
+    var time = n(v.driveTime) && v.driveTime > 0 ? Math.floor(v.driveTime / 60) + '분' : '';
+    return {
+      carSpeed: n(v.speed) ? v.speed + (vehicleInfo.distanceUnit === 2 ? ' mph' : ' km/h') : '',
+      carRpm: n(v.rpm) && v.rpm > 0 ? v.rpm + ' rpm' : '',
+      carFuel: n(v.fuel) && v.fuel <= 100 ? v.fuel + '%' : '',
+      carOdometer: n(v.odometer) && v.odometer > 0 ? Math.round(v.odometer) + km : '',
+      carTrip: n(v.trip) && v.trip > 0 ? v.trip + km : '',
+      carEconomy: n(v.avgEconomy) && v.avgEconomy > 0 ? v.avgEconomy + (vehicleInfo.distanceUnit === 2 ? ' mpg' : ' km/L') : '',
+      carDoor: open(v.doorOpen), carDoorLock: n(v.doorLock) ? (v.doorLock === 0 ? '풀림' : '잠김') : '',
+      carTrunk: open(v.trunk), carHood: open(v.hoodOpen), carSunroof: open(v.sunroof),
+      carWindows: windows.length ? (openWindows ? openWindows + '곳 열림' : '모두 닫힘') : '',
+      carEpb: n(v.epb) ? (v.epb === 0 ? '풀림' : '채움') : '',
+      carDriverSeat: onOff(v.driverSeatHeat), carPassengerSeat: onOff(v.passengerSeatHeat), carWheelHeat: onOff(v.wheelHeat),
+      carEngine: n(v.engine) ? (v.engine === 0 ? '꺼짐' : '켜짐') : '', carDriveTime: time
+    };
+  }
   /* Stock 5W split-screen energy flow table (RightScreenHome z/a UD, 12 system modes x 7 columns).
      Columns: 0 engine-wheel (2 engine to wheel, 3 wheel to engine), 1 motor-wheel (2 wheel to motor,
      3 motor to wheel), 2 engine to motor (2), 3 motor-battery (2 motor to battery, 3 battery to motor),
@@ -1847,7 +1876,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     phone:'<path d="M6 4l4 4-2 3a9 9 0 0 0 5 5l3-2 4 4-3 2C10 20 4 14 4 7z"/>',
     photo:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m5 16 5-5 4 4 2-2 3 3"/>',
     weather:'<path d="M10 4v8.5a3.5 3.5 0 1 0 4 0V4a2 2 0 0 0-4 0z"/><path d="M17 7h3m-3 4h3"/>',
-    energy:'<path d="M13 2 5 13h6l-1 9 8-11h-6z"/>'
+    energy:'<path d="M13 2 5 13h6l-1 9 8-11h-6z"/>',
+    car:'<path d="M5 14l2-5h10l2 5v5H5v-5z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>'
   };
   function statusCard(parent, icon, title, detail, button, run) {
     var card = document.createElement('div');
@@ -2753,11 +2783,21 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           }).join('') +
         '<p data-system-row="climateNote" hidden>공조 값은 순정 공조 서비스에서 읽기만 합니다. 바람 세기·방향 번호의 뜻은 차에서 확인 중입니다.</p>' +
         [['hybridMode','에너지 흐름'],['hybridSoc','배터리 표시'],['hybridMotorUse','전기 모터 사용'],
-          ['hybridAvgFuel','평균 연비 값'],['hybridReady','하이브리드 준비']]
+          ['hybridAvgFuel','평균 연비 값'],['hybridTotalRange','주행 가능 거리'],['hybridGasRange','연료 주행 가능 거리'],
+          ['hybridReady','하이브리드 준비']]
           .map(function (row) {
             return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
               '</span><output data-system-value="' + row[0] + '"></output></div>';
           }).join('') +
+        [['carSpeed','속도'],['carFuel','연료량'],['carOdometer','누적 주행거리'],['carTrip','구간 주행거리'],['carEconomy','평균 연비'],
+          ['carDriveTime','이번 주행 시간'],['carDoor','앞문'],['carDoorLock','문 잠금'],['carTrunk','트렁크'],['carHood','후드'],
+          ['carSunroof','선루프'],['carWindows','창문'],['carEpb','주차 브레이크'],['carDriverSeat','운전석 열선'],
+          ['carPassengerSeat','조수석 열선'],['carWheelHeat','핸들 열선'],['carEngine','엔진'],['carRpm','엔진 회전수']]
+          .map(function (row) {
+            return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
+              '</span><output data-system-value="' + row[0] + '"></output></div>';
+          }).join('') +
+        '<p data-system-row="carNote" hidden>차량 상태는 순정 차량 서비스에서 읽기만 합니다. 열림·잠김 번호의 뜻은 차에서 확인 중입니다.</p>' +
         '<p data-system-row="hybridNote" hidden>하이브리드 값은 순정 하이브리드 서비스에서 읽기만 합니다. 배터리·모터 사용·연비 숫자의 단위는 차에서 확인 중입니다.</p>' : '';
       pane.innerHTML = start + readout + '<p>이 항목은 순정 설정 화면에서 변경할 수 있습니다.</p>' + external(path[0],path[1]);
     }
@@ -2784,8 +2824,13 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     readouts.hybridSoc = typeof hybridInfo.soc === 'number' ? (hybridInfo.soc <= 8 ? hybridInfo.soc + ' / 8칸' : hybridInfo.soc + '%') : '';
     readouts.hybridMotorUse = num(hybridInfo.motorUse);
     readouts.hybridAvgFuel = num(hybridInfo.avgFuel);
+    readouts.hybridTotalRange = typeof hybridInfo.totalRange === 'number' && hybridInfo.totalRange > 0 ? hybridInfo.totalRange + ' km' : '';
+    readouts.hybridGasRange = typeof hybridInfo.gasRange === 'number' && hybridInfo.gasRange > 0 ? hybridInfo.gasRange + ' km' : '';
     readouts.hybridReady = hybridInfo.ready === 1 ? '켜짐' : hybridInfo.ready === 0 ? '꺼짐' : '';
     readouts.hybridNote = readouts.hybridMode || readouts.hybridSoc || readouts.hybridMotorUse ? '1' : '';
+    var car = vehicleLabels(vehicleInfo);
+    Object.keys(car).forEach(function (key) { readouts[key] = car[key]; });
+    readouts.carNote = Object.keys(car).some(function (key) { return car[key]; }) ? '1' : '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-system-value]'), function (node) {
       node.textContent = readouts[node.getAttribute('data-system-value')] || '';
     });
@@ -3265,15 +3310,29 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         energyCard.insertBefore(flow, energyCard.querySelector('button'));
         var p0 = energyCard.querySelector('p');
         if (p0 && !p0.textContent) p0.hidden = true;
+      } else if (active.id === 'car') {
+        var c = vehicleLabels(vehicleInfo);
+        var warn = [c.carDoor === '열림' ? '문 열림' : '', c.carTrunk === '열림' ? '트렁크 열림' : '',
+          c.carHood === '열림' ? '후드 열림' : '', c.carWindows && c.carWindows !== '모두 닫힘' ? '창문 ' + c.carWindows : ''].filter(Boolean);
+        var range = typeof hybridInfo.totalRange === 'number' && hybridInfo.totalRange > 0 ? hybridInfo.totalRange + ' km' : '';
+        var lines = [c.carFuel && '연료 ' + c.carFuel, range && '주행 가능 ' + range, c.carTrip && '구간 ' + c.carTrip,
+          c.carEconomy && '평균 ' + c.carEconomy].filter(Boolean);
+        statusCard(box, 'car', warn.length ? warn.join(' · ') : lines.length ? (c.carFuel ? '연료 ' + c.carFuel : lines[0]) : '차량 정보 대기',
+          lines.join(' · ') || '순정 차량 서비스에서 값을 받으면 표시합니다.', '차량 정보',
+          function () { openSettingsSection('vehicle'); }).classList.add('split-live-state');
       } else if (active.id === 'weather') {
-        // No forecast without the network; the stock climate unit's outside sensor is the offline source.
+        // Stock weather (Kia Connect, same request as the navi) first; the climate unit's outside
+        // sensor is the offline fallback.
         var climate = climateLabels(climateInfo);
+        var stockTemp = weatherInfo.ok && typeof weatherInfo.temp === 'number' ? Math.round(weatherInfo.temp) + '°' : '';
         var cabin = [climate.climateDriver && '운전석 ' + climate.climateDriver,
           climate.climatePassenger && '조수석 ' + climate.climatePassenger,
           climate.climateAc && '에어컨 ' + climate.climateAc].filter(Boolean).join(' · ');
-        statusCard(box, 'weather', climate.climateOutside ? '바깥 ' + climate.climateOutside : '바깥 기온 대기',
-          cabin || '순정 공조에서 기온을 받으면 표시합니다.', '공조 정보', function () { openSettingsSection('vehicle'); })
-          .classList.add('split-live-state');
+        var sky = [typeof weatherInfo.rain === 'number' && weatherInfo.rain > 0 ? '강수 ' + weatherInfo.rain + '%' : '',
+          weatherInfo.sunrise ? '일출 ' + weatherInfo.sunrise : '', weatherInfo.sunset ? '일몰 ' + weatherInfo.sunset : ''].filter(Boolean).join(' · ');
+        statusCard(box, 'weather', stockTemp ? '현재 ' + stockTemp : climate.climateOutside ? '바깥 ' + climate.climateOutside : '바깥 기온 대기',
+          [sky, cabin].filter(Boolean).join(' · ') || '순정 날씨나 공조에서 기온을 받으면 표시합니다.', '공조 정보',
+          function () { openSettingsSection('vehicle'); }).classList.add('split-live-state');
       } else {
         statusCard(box, 'photo', active.label, '인터넷 정보가 필요해 아직 표시하지 않습니다.',
           '위젯 설정', function () { state.slTab = 'split'; navigateTo('screenlayout'); }).classList.add('split-live-state');
@@ -3757,6 +3816,34 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       else document.getElementById('phone-device-label').textContent = phoneData.calls.join(', ') || state.devices[0];
       if (state.page === 'media') renderMediaStage();
       if (state.page === 'settings' && settingsSection === 'devices') updateControlLabels();
+    },
+    vehicleChanged: function (info) {
+      vehicleInfo = parseHostJson(info, {});
+      // Driver label from the stock user profile: guest, or user type 1/2 for driver 1/2.
+      var index = vehicleInfo.guest === true ? 2 : vehicleInfo.userType === 1 ? 0 : vehicleInfo.userType === 2 ? 1 : -1;
+      if (index >= 0 && index !== state.driverIndex && state.drivers[index]) {
+        state.driverIndex = index;
+        updateAllStatuses();
+      }
+      updateSystemLabels();
+      var en = getEnabledSplitWidgets();
+      var shown = en.length ? en[state.splitActiveIdx % en.length] : null;
+      if (shown && shown.id === 'car') renderSplitWidget();
+    },
+    weatherChanged: function (info) {
+      weatherInfo = parseHostJson(info, {});
+      // Standby screen: show the stock temperature with the current road; air quality has no source.
+      var standby = document.querySelector('.standby-weather');
+      if (standby && weatherInfo.ok && typeof weatherInfo.temp === 'number') {
+        standby.hidden = false;
+        standby.querySelector('.standby-temp').textContent = Math.round(weatherInfo.temp) + '°c';
+        var place = standby.querySelector('div > span');
+        if (place) place.textContent = routeData.road || '현재 위치';
+        var detail = standby.querySelector('.standby-temp-row > span:last-child');
+        if (detail) detail.textContent = [weatherInfo.sunrise ? '일출 ' + weatherInfo.sunrise : '',
+          weatherInfo.sunset ? '일몰 ' + weatherInfo.sunset : ''].filter(Boolean).join(' · ');
+      }
+      renderSplitWidget();
     },
     hybridChanged: function (info) {
       hybridInfo = parseHostJson(info, {});

@@ -28,7 +28,41 @@ final class StockNavigation {
     static final String MUTE_STATE = "android.intent.action.VIT_NOTI_NAVI_MUTE_STATE";
     static final String BOOT_END = "android.intent.action.VIT_NOTI_NAVI_BOOTEND_SERVICE";
 
+    /** Navi open API (NaviOpenAPIRecevier): coordinates are decimal-degree text, name is free text. */
+    /** ModeManager (automotive.odex): the rear camera view opened or closed. */
+    static final String REARVIEW_ON = "com.hkmc.intent.action.SYSTEM_STATE_REARVIEW_ON";
+    static final String REARVIEW_OFF = "com.hkmc.intent.action.SYSTEM_STATE_REARVIEW_OFF";
+    static final String ROUTE_SEARCH = "com.hkmc.intent.action.ACTION_ROUTE_SEARCH";
+    private static final String EXTRA = "com.hkmc.navi.EXTRA_";
+
     private StockNavigation() {}
+
+    /** Converts a navi coordinate (degrees, or degrees x 360000 as used inside the navi) to degrees. */
+    static String degrees(String value) {
+        try {
+            double number = Double.parseDouble(value.trim());
+            if (Math.abs(number) > 1000) number /= 360000.0;
+            if (Math.abs(number) < 0.001 || Math.abs(number) > 180) return "";
+            return String.format(java.util.Locale.US, "%.6f", number);
+        } catch (RuntimeException failure) {
+            return "";
+        }
+    }
+
+    /** Asks the stock navigation to search a route to a saved point. Returns false when refused. */
+    static boolean routeTo(Context context, String name, String latitude, String longitude) {
+        if (latitude.isEmpty() || longitude.isEmpty()) return false;
+        try {
+            context.sendBroadcast(new Intent(ROUTE_SEARCH).setPackage(PACKAGE)
+                .putExtra(EXTRA + "LATITUDE", latitude).putExtra(EXTRA + "LONGITUDE", longitude)
+                .putExtra(EXTRA + "KEYWORD", name));
+            Log.i("K8StockNavigation", "route search sent to saved point " + name);
+            return true;
+        } catch (RuntimeException failure) {
+            Log.w("K8StockNavigation", "Route search rejected", failure);
+            return false;
+        }
+    }
 
     static boolean request(Context context, String action) {
         try {
