@@ -1218,6 +1218,71 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .split-widget { padding: 10px 2.2vw 10px 0; }
 .detail-view.split-on .media-right-box, .detail-view.split-on .phone-device-pane { display: none; }
 .detail-view.split-on .phone-list-box { margin-right: 0; }
+
+/* ccNC scale (measured on D-settings_theme_widget.png, D-systemoverview_home_main.png and the owner's
+   ccNC photo, all mapped to 1920x720): header title 34px, clock 49px, side menu 36px with 95px pitch,
+   list rows 124px with 28px labels and 41px check boxes, description 24px, home caption 35% of the card.
+   vw values are 1920-based so 1280x480 heads scale the same way. */
+.profile-btn, .top-title-wrap { font-size: 1.77vw; gap: .7vw; }
+.profile-btn .ico, #detail-search-btn .ico { width: 2.3vw; height: 2.3vw; }
+.device-switch-btn { width: 2.6vw; height: 2.6vw; }
+.device-switch-btn .ico { width: 1.25vw !important; height: 1.25vw !important; }
+.clock { font-size: 2.85vw; }
+.clock small { font-size: .52em; }
+.top-status svg { width: 1.6vw; height: 1.6vw; }
+.top-tab { font-size: 1.5vw; }
+.sl-tab { font-size: 1.88vw; min-height: 4.95vw; padding: .6vw 1vw .6vw 2.3vw; display: flex; align-items: center; }
+.sl-tab[aria-selected="true"]::before { left: .3vw; width: .5vw; height: 2.1vw; }
+.sl-nav { gap: 0; }
+.sl-desc { font-size: 1.25vw; max-width: 36vw; line-height: 1.35; }
+.sl-row-link, .sl-radio-row, .sl-check-row { font-size: 1.46vw; min-height: 5.8vw; padding: 0 1.2vw 0 2vw; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left { gap: 1.4vw; font-weight: 600; }
+.check-box, .radio-circle { width: 2.15vw; height: 2.15vw; font-size: 1.9vw; font-weight: 700; border-radius: 3px; }
+.sl-radio-row[aria-checked="true"] .radio-circle::after { width: .7vw; height: .7vw; }
+[data-standby-options] { font-size: 2.3vw; }
+.sl-preview { flex-direction: column; }
+.sl-preview-caption { font-size: 1.1vw; }
+.sl-row-link { font-weight: 600; }
+.sl-chevron { font-size: 2.3vw; }
+.detail-settings-layout .sl-nav { padding-left: 0; }
+.detail-settings-layout .sl-tab { padding-left: 1.9vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 3.75vw; }
+.theme-control, .detail-settings-actions button { font-size: 1.25vw; min-height: 3.6vw; padding: .5vw 1.4vw; }
+.sound-illustration span { font-size: 1.2vw; }
+.sound-nav .sound-back { font-size: 1.6vw; }
+.transport-icon-btn { width: 4.4vw; height: 4.4vw; font-size: 2.3vw; }
+.transport-icon-btn svg, .transport-icon-btn .ico { width: 2.5vw !important; height: 2.5vw !important; }
+.bb-tab-btn svg { width: 2.3vw !important; height: 2.3vw !important; }
+#media-source-desc { font-size: 1.25vw !important; }
+.media-single-phone { font-size: 1.35vw; }
+.media-single-artist { font-size: 1.6vw; }
+.media-single-album { font-size: 1.35vw; }
+.media-track-row { font-size: 1.46vw; flex-basis: 6vw; }
+.view-chip { font-size: 1.1vw; padding: .4vw .9vw; }
+.phone-row { min-height: 6.2vw; }
+.bb-media-meta strong { font-size: 1.46vw; }
+.bb-media-meta span { font-size: 1.2vw; }
+.radio-circle { border-radius: 50%; }
+.sl-grip { width: 2vw; height: 1.4vw; }
+.sl-preview canvas { max-width: 23vw; height: 17vw; }
+.sl-seg-btn { font-size: 1.35vw; padding: .8vw 1.2vw; }
+.sl-seg-group { max-width: 30vw; }
+.detail-settings-row { font-size: 1.46vw; min-height: 5.6vw; }
+.detail-settings-main > p { font-size: 1.25vw; }
+.sound-nav button { font-size: 1.6vw; min-height: 4.2vw; }
+.sound-content h2 { font-size: 1.9vw; }
+.sound-help { font-size: 1.2vw; }
+.sound-info-row { font-size: 1.46vw; padding: 1.2vw .3vw; }
+.sound-info-row span { font-size: 1.2vw; }
+.bb-icon { width: 2.3vw; height: 2.3vw; }
+.hcard, .app-tile { grid-template-rows: 65% 35%; }
+.hcard-caption-main strong { font-size: 1.6vw; }
+.hcard-caption-main span { font-size: 1.3vw; margin-top: .6vw; }
+.circle-btn { width: 5vw; height: 5vw; }
+.circle-btn .ico { width: 1.9vw; height: 1.9vw; }
+.hcard-circles { gap: 1.2vw; }
+.media-device-name { font-size: 2vw; }
+.call-name { font-size: 1.46vw; }
+.phone-row-right { font-size: 1.35vw; }
 </style>
 </head>
 <body>
@@ -3258,7 +3323,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         shtml +=
           '<div class="sl-check-row' + (w.fixed ? ' is-fixed' : '') + '" data-widget-card="' + w.id + '" aria-checked="' + w.enabled + '">' +
             '<button type="button" class="sl-check-left" data-split-toggle="' + idx + '" style="flex:1;text-align:left">' +
-              '<span class="check-box"><svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="m3 8 3.5 3.5L13 5"/></svg></span><span>' + w.label + '</span>' +
+              '<span class="check-box"><svg viewBox="0 0 16 16" style="width:76%;height:76%;fill:none;stroke:currentColor;stroke-width:2.2"><path d="m3 8 3.5 3.5L13 5"/></svg></span><span>' + w.label + '</span>' +
             '</button>' +
             '<div style="display:flex;align-items:center;gap:8px">' +
               '<button type="button" class="split-mini-btn" data-split-up="' + idx + '" title="위로 이동">▲</button>' +
