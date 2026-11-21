@@ -716,6 +716,17 @@ public final class HomeActivity extends Activity {
             openNavigation(true);
         } else if ("nav-search".equals(action)) {
             openNavigationCommand(StockNavigation.SEARCH);
+        } else if ("nav-petrol".equals(action) || "nav-parking".equals(action)) {
+            // Nearby list from the navi; if it does not come up, fall back to the navi search screen.
+            final String nearby = "nav-petrol".equals(action) ? StockNavigation.NEARBY_PETROL : StockNavigation.NEARBY_PARKING;
+            StockNavigation.request(this, nearby);
+            web.postDelayed(new Runnable() {
+                @Override public void run() {
+                    if (!StockNavigation.MAP.equals(StockNavigation.foreground(HomeActivity.this))) {
+                        openNavigationCommand(StockNavigation.SEARCH);
+                    }
+                }
+            }, 1500);
         } else if ("nav-current".equals(action)) {
             if (openNavigation(true)) StockNavigation.requestWhenMapOpens(this, StockNavigation.CURRENT_POSITION);
         } else if ("phone-history".equals(action) || "phone-contacts".equals(action)) {

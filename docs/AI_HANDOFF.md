@@ -1,5 +1,13 @@
 # K8 Gen5W 홈
 
+## 0.4.36 차량 상태 방송, 연료 부족 알림, 주변 주유소·주차장 (2026-11-22, Claude)
+
+- `StockVehicle`이 순정 상태 방송을 받는다(읽기만): `SYSTEM_STATE_ILLUMINATE_ON/OFF`(미등·전조등), `SYSTEM_STATE_DRIVE_ON/OFF`(주행), `SYSTEM_STATE_FUELWANING_ON/OFF`(연료 경고, 순정 철자 그대로), `VALET_ON/OFF`(발레 모드), `com.mobis.intent.action.WPC_STATUS_CHANGED`(`WPC_STATUS`, 무선 충전기 경고). 이름은 `ModeManager`·`PgsConstants`·`VehicleInfoManager` 상수에서 가져왔다.
+- 새 읽기: `VehicleInfoManager.getGearPStatus/getAvTailStatus/getRheostatLevel/getAvailableRheostatLevel/getEcoCoastingStatus/getWirelessChargingStatus`, `MicomPowerManager.isDisplayOffMode`. 무선 충전 값 7은 응답 없음이라 표시하지 않는다.
+- 화면: 설정 → 차량에 기어, 주행 상태, 미등·전조등, 실내 조명 밝기, 연료 경고, 발레 모드, 에코 관성 주행, 무선 충전기 줄. 시계 옆에 발레 모드 아이콘과 주황 연료 아이콘. 연료 경고가 켜지면 위쪽에 ccNC식 알림 "연료가 부족합니다 [주변 주유소] [닫기]"가 경고 한 번에 한 번 뜬다.
+- 내비 화면 왼쪽 도구 줄에 주변 주유소·주변 주차장 버튼. 내비 `NaviETCReceiver`의 `ACTION_INFO_PETROLSTATIONS`/`ACTION_INFO_PARKING`을 보낸다(내비가 앞에 있으면 내비가 무시하므로 내비를 띄우기 전에 보냄). 1.5초 뒤에도 내비가 앞에 없으면 내비 검색 화면을 연다. 이 방송은 내비 코드에 "TomTom phase 2"로 적혀 있어 국내판에서 동작하는지는 차에서 확인한다.
+- 확인: `verify-0436.cjs`(아이콘·알림·버튼 동작), 기존 차량·상태 아이콘·블루라이트·하이브리드·분할·날씨·모서리 검사 통과. 차에서 볼 것: `logcat -s K8StockVehicle`의 `event …` 줄, 무선 충전 값의 뜻, 주변 주유소 버튼이 목록을 여는지.
+
 ## 0.4.35 시계 옆 상태 아이콘 (2026-11-22, Claude)
 
 - ccNC 순정 화면(사용자 실차 사진)처럼 시계 왼쪽에 글자 없는 상태 아이콘: 블루투스 전화 연결(통화 기기 있음), 통화 중(전화 상태 있음, 초록), 음소거(음량 0). 기존 데이터(`phoneChanged`, `controlsChanged`)만 사용, 홈과 상세 화면 모두 표시. 숨겨져 있던 `BT 상태 대기` 글자 배지는 그대로 숨김.

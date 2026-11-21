@@ -888,6 +888,14 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .top-status:empty { display: none; }
 .top-status svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .top-status .is-call { color: #53d7c0; }
+.top-status .is-warn { color: #f0a33c; }
+/* ccNC-style low fuel notice: dark pill under the status bar with a nearby gas station shortcut. */
+.fuel-notice { position: fixed; left: 50%; top: 9.5vh; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 16px;
+  padding: 12px 14px 12px 22px; border-radius: 14px; background: rgba(28,31,36,.96); box-shadow: 0 6px 24px rgba(0,0,0,.45); color: #eef3f9; font-size: 19px; }
+.fuel-notice[hidden] { display: none; }
+.fuel-notice svg { width: 24px; height: 24px; fill: none; stroke: #f0a33c; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fuel-notice button { border: 0; border-radius: 10px; padding: 10px 18px; font: inherit; font-size: 17px; color: #eef3f9; background: rgba(238,243,249,.12); }
+#fuel-notice button.primary { background: #e8894a; color: #1b1206; font-weight: 600; -webkit-text-fill-color: #1b1206; }
 .bb-off-icon { display: none; width: 66%; height: 66%; fill: none; stroke: #eef3f9; stroke-width: 1.6; stroke-linejoin: round; }
 .bb-media-box.media-off .bb-media-thumb canvas, .bb-media-box.media-off .bb-media-topline, .bb-media-box.media-off .bb-media-meta span { display: none; }
 .bb-media-box.media-off .bb-off-icon { display: block; }
@@ -1261,6 +1269,12 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     </section>
 
     <!-- Page 1: Home 3-Card Screen (Systemoverview_home_2.png & 5W mod video 2.5s) -->
+    <div class="fuel-notice" id="fuel-notice" role="alert" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M7 8h5"/><path d="M14 10h2a1.5 1.5 0 0 1 1.5 1.5V16a1.3 1.3 0 0 0 2.6 0V8.5L17.5 6"/></svg>
+      <span>연료가 부족합니다</span>
+      <button type="button" class="primary" id="fuel-notice-go">주변 주유소</button>
+      <button type="button" id="fuel-notice-close">닫기</button>
+    </div>
     <section id="view-home" class="home-view" aria-label="홈 화면">
       <!-- 1. Map Card -->
       <article class="hcard hcard-map chamfer-br" data-card="map">
@@ -1336,6 +1350,12 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           <div class="navi-left-floating" aria-label="지도 도구 모음">
             <button type="button" class="navi-tool-btn" id="navi-search-btn" title="경로/목적지 변경">
               <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m15.5 15.5 4.5 4.5"/></svg>
+            </button>
+            <button type="button" class="navi-tool-btn" data-nearby="nav-petrol" title="주변 주유소" aria-label="주변 주유소">
+              <svg class="ico" viewBox="0 0 24 24"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M7 8h5"/><path d="M14 10h2a1.5 1.5 0 0 1 1.5 1.5V16a1.3 1.3 0 0 0 2.6 0V8.5L17.5 6"/></svg>
+            </button>
+            <button type="button" class="navi-tool-btn" data-nearby="nav-parking" title="주변 주차장" aria-label="주변 주차장">
+              <svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M10 17V8h3a2.5 2.5 0 0 1 0 5h-3"/></svg>
             </button>
             <button type="button" class="navi-tool-btn" id="navi-viewmode-btn" title="지도 뷰 모드 전환">
               <span id="navi-compass-label" style="font-weight: 500">3D</span>
@@ -1805,7 +1825,16 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       carWindows: windows.length ? (openWindows ? openWindows + '곳 열림' : '모두 닫힘') : '',
       carEpb: n(v.epb) ? (v.epb === 0 ? '풀림' : '채움') : '',
       carDriverSeat: onOff(v.driverSeatHeat), carPassengerSeat: onOff(v.passengerSeatHeat), carWheelHeat: onOff(v.wheelHeat),
-      carEngine: n(v.engine) ? (v.engine === 0 ? '꺼짐' : '켜짐') : '', carDriveTime: time
+      carEngine: n(v.engine) ? (v.engine === 0 ? '꺼짐' : '켜짐') : '', carDriveTime: time,
+      carGear: v.gearP === undefined ? '' : (v.gearP === true || v.gearP === 1 ? 'P (주차)' : 'P 아님'),
+      carDriving: typeof v.driving === 'boolean' ? (v.driving ? '주행 중' : '정차') : '',
+      carLamp: typeof v.illuminate === 'boolean' ? (v.illuminate ? '켜짐' : '꺼짐') :
+        typeof v.tailLamp === 'boolean' ? (v.tailLamp ? '켜짐' : '꺼짐') : '',
+      carDimmer: n(v.rheostat) ? v.rheostat + (n(v.rheostatMax) && v.rheostatMax > 0 ? ' / ' + v.rheostatMax : '') + '단계' : '',
+      carFuelWarn: v.fuelLow === true ? '연료 부족' : v.fuelLow === false ? '정상' : '',
+      carValet: typeof v.valet === 'boolean' ? (v.valet ? '사용 중' : '꺼짐') : '',
+      carCoasting: n(v.ecoCoasting) ? (v.ecoCoasting === 0 ? '꺼짐' : '켜짐') : '',
+      carWpc: n(v.wpc) && v.wpc !== 7 ? (v.wpc === 0 ? '알림 없음' : '알림 ' + v.wpc) : ''
     };
   }
   /* Stock 5W split-screen energy flow table (RightScreenHome z/a UD, 12 system modes x 7 columns).
@@ -2800,7 +2829,9 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         [['carSpeed','속도'],['carFuel','연료량'],['carOdometer','누적 주행거리'],['carTrip','구간 주행거리'],['carEconomy','평균 연비'],
           ['carDriveTime','이번 주행 시간'],['carDoor','앞문'],['carDoorLock','문 잠금'],['carTrunk','트렁크'],['carHood','후드'],
           ['carSunroof','선루프'],['carWindows','창문'],['carEpb','주차 브레이크'],['carDriverSeat','운전석 열선'],
-          ['carPassengerSeat','조수석 열선'],['carWheelHeat','핸들 열선'],['carEngine','엔진'],['carRpm','엔진 회전수']]
+          ['carPassengerSeat','조수석 열선'],['carWheelHeat','핸들 열선'],['carEngine','엔진'],['carRpm','엔진 회전수'],
+          ['carGear','기어'],['carDriving','주행 상태'],['carLamp','미등·전조등'],['carDimmer','실내 조명 밝기'],['carFuelWarn','연료 경고'],
+          ['carValet','발레 모드'],['carCoasting','에코 관성 주행'],['carWpc','무선 충전기']]
           .map(function (row) {
             return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
               '</span><output data-system-value="' + row[0] + '"></output></div>';
@@ -3660,6 +3691,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var calling = !!(phoneData && phoneData.state);
     if (calling) icons.push('<svg class="is-call" viewBox="0 0 24 24" aria-label="통화 중"><path d="M6.5 4 10 7.5 8 10a10 10 0 0 0 6 6l2.5-2 3.5 3.5-2.2 2.2C10 19.7 4.3 14 3.8 6.2z"/></svg>');
     else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>');
+    if (vehicleInfo.valet === true) icons.push('<svg viewBox="0 0 24 24" aria-label="발레 모드"><circle cx="12" cy="7" r="3.2"/><path d="M5.5 20c.6-4 3.2-6.2 6.5-6.2s5.9 2.2 6.5 6.2"/><path d="m10.4 14 1.6 3 1.6-3"/></svg>');
+    if (vehicleInfo.fuelLow === true) icons.push('<svg class="is-warn" viewBox="0 0 24 24" aria-label="연료 부족"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M7 8h5"/><path d="M14 10h2a1.5 1.5 0 0 1 1.5 1.5V16a1.3 1.3 0 0 0 2.6 0V8.5L17.5 6"/></svg>');
     if (controls.volume === 0) icons.push('<svg viewBox="0 0 24 24" aria-label="음소거"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>');
     box.innerHTML = icons.join('');
   }
@@ -3845,7 +3878,13 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       if (state.page === 'settings' && settingsSection === 'devices') updateControlLabels();
     },
     vehicleChanged: function (info) {
+      var wasLow = vehicleInfo.fuelLow === true;
       vehicleInfo = parseHostJson(info, {});
+      // Stock low-fuel warning: show the notice once per warning; it clears when the warning ends.
+      var notice = document.getElementById('fuel-notice');
+      if (vehicleInfo.fuelLow === true && !wasLow) notice.hidden = false;
+      if (vehicleInfo.fuelLow !== true) notice.hidden = true;
+      renderTopStatus();
       // Driver label from the stock user profile: guest, or user type 1/2 for driver 1/2.
       var index = vehicleInfo.guest === true ? 2 : vehicleInfo.userType === 1 ? 0 : vehicleInfo.userType === 2 ? 1 : -1;
       if (index >= 0 && index !== state.driverIndex && state.drivers[index]) {
@@ -4302,6 +4341,20 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     updateAllStatuses();
   });
 
+  document.getElementById('fuel-notice-go').addEventListener('click', function () {
+    document.getElementById('fuel-notice').hidden = true;
+    if (inVehicle) host('nav-petrol');
+    else navigateTo('search');
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-nearby]'), function (button) {
+    button.addEventListener('click', function () {
+      if (inVehicle) host(button.getAttribute('data-nearby'));
+      else navigateTo('search');
+    });
+  });
+  document.getElementById('fuel-notice-close').addEventListener('click', function () {
+    document.getElementById('fuel-notice').hidden = true;
+  });
   document.getElementById('navi-search-btn').addEventListener('click', function () {
     if (inVehicle) { host('nav-search'); return; }
     navigateTo('search');

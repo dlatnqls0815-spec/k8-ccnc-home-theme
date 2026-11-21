@@ -64,7 +64,30 @@ final class StockVehicle {
         {"com.hkmc.bluelight.BluelightManager", "getBluelightLevel", "blueLevel"},
         {"com.hkmc.bluelight.BluelightManager", "getStartTime", "blueStart"},
         {"com.hkmc.bluelight.BluelightManager", "getEndTime", "blueEnd"},
+        // Micom vehicle info (VehicleInfoManager): P gear, tail lamp, illumination dimmer, eco coasting
+        // setting, wireless charger warning (default 7 = no answer).
+        {"com.hkmc.micom.VehicleInfoManager", "getGearPStatus", "gearP"},
+        {"com.hkmc.micom.VehicleInfoManager", "getAvTailStatus", "tailLamp"},
+        {"com.hkmc.micom.VehicleInfoManager", "getRheostatLevel", "rheostat"},
+        {"com.hkmc.micom.VehicleInfoManager", "getAvailableRheostatLevel", "rheostatMax"},
+        {"com.hkmc.micom.VehicleInfoManager", "getEcoCoastingStatus", "ecoCoasting"},
+        {"com.hkmc.micom.VehicleInfoManager", "getWirelessChargingStatus", "wpc"},
+        {"com.hkmc.power.MicomPowerManager", "isDisplayOffMode", "displayOff"},
     };
+
+    /** System state broadcasts (ModeManager / PgsConstants / VehicleInfoManager action names). */
+    private static final String[][] EVENTS = {
+        {"com.hkmc.intent.action.SYSTEM_STATE_ILLUMINATE_ON", "illuminate", "true"},
+        {"com.hkmc.intent.action.SYSTEM_STATE_ILLUMINATE_OFF", "illuminate", "false"},
+        {"com.hkmc.intent.action.SYSTEM_STATE_DRIVE_ON", "driving", "true"},
+        {"com.hkmc.intent.action.SYSTEM_STATE_DRIVE_OFF", "driving", "false"},
+        {"com.hkmc.intent.action.SYSTEM_STATE_FUELWANING_ON", "fuelLow", "true"},
+        {"com.hkmc.intent.action.SYSTEM_STATE_FUELWANING_OFF", "fuelLow", "false"},
+        {"com.hkmc.intent.action.VALET_ON", "valet", "true"},
+        {"com.hkmc.intent.action.VALET_OFF", "valet", "false"},
+    };
+    private static final String WPC_CHANGED = "com.mobis.intent.action.WPC_STATUS_CHANGED";
+    private static final String WPC_EXTRA = "com.mobis.intent.extra.WPC_STATUS";
 
     private final Context app;
     private final Runnable changed;
@@ -75,6 +98,27 @@ final class StockVehicle {
     private HandlerThread thread;
     private Handler worker;
     private volatile JSONObject latest = new JSONObject();
+    private final java.util.Map<String, Object> events = new java.util.concurrent.ConcurrentHashMap<String, Object>();
+    private boolean listening;
+
+    private final android.content.BroadcastReceiver receiver = new android.content.BroadcastReceiver() {
+        @Override public void onReceive(Context context, android.content.Intent intent) {
+            String action = intent.getAction();
+            if (WPC_CHANGED.equals(action)) {
+                if (intent.hasExtra(WPC_EXTRA)) events.put("wpc", (long) intent.getIntExtra(WPC_EXTRA, 0));
+            } else {
+                for (String[] event : EVENTS) {
+                    if (event[0].equals(action)) events.put(event[1], Boolean.valueOf(event[2]));
+                }
+            }
+            Log.i(TAG, "event " + action);
+            Handler w = worker;
+            if (w != null) {
+                w.removeCallbacks(poll);
+                w.post(poll);
+            }
+        }
+    };
 
     StockVehicle(Context context, Runnable changed) {
         this.app = context.getApplicationContext();
@@ -89,6 +133,11 @@ final class StockVehicle {
                 if (value == null) continue;
                 try {
                     next.put(read[2], value);
+                } catch (JSONException ignored) { }
+            }
+            for (java.util.Map.Entry<String, Object> event : events.entrySet()) {
+                try {
+                    next.put(event.getKey(), event.getValue());
                 } catch (JSONException ignored) { }
             }
             if (!next.toString().equals(latest.toString())) {
@@ -106,10 +155,24 @@ final class StockVehicle {
         thread.start();
         worker = new Handler(thread.getLooper());
         worker.post(poll);
+        android.content.IntentFilter filter = new android.content.IntentFilter(WPC_CHANGED);
+        for (String[] event : EVENTS) filter.addAction(event[0]);
+        try {
+            app.registerReceiver(receiver, filter);
+            listening = true;
+        } catch (RuntimeException failure) {
+            Log.w(TAG, "state broadcasts unavailable", failure);
+        }
     }
 
     void stop() {
         if (thread == null) return;
+        if (listening) {
+            try {
+                app.unregisterReceiver(receiver);
+            } catch (IllegalArgumentException ignored) { }
+            listening = false;
+        }
         worker.removeCallbacksAndMessages(null);
         worker = null;
         thread.quit();

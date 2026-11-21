@@ -33,6 +33,10 @@ final class StockNavigation {
     static final String REARVIEW_ON = "com.hkmc.intent.action.SYSTEM_STATE_REARVIEW_ON";
     static final String REARVIEW_OFF = "com.hkmc.intent.action.SYSTEM_STATE_REARVIEW_OFF";
     static final String ROUTE_SEARCH = "com.hkmc.intent.action.ACTION_ROUTE_SEARCH";
+    // NaviService receivers (NaviETCReceiver): open the navi's nearby category list; ignored while
+    // the navi is already in front, so they are sent before the map is brought up.
+    static final String NEARBY_PETROL = "com.hkmc.intent.action.ACTION_INFO_PETROLSTATIONS";
+    static final String NEARBY_PARKING = "com.hkmc.intent.action.ACTION_INFO_PARKING";
     private static final String EXTRA = "com.hkmc.navi.EXTRA_";
 
     private StockNavigation() {}
