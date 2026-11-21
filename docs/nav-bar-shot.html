@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K8 5W ccNC 하단바 확인</title>
+<style>
+  body { margin:0; background:#0c1016; }
+  .cap { color:#93a3b8; font:12px/1.6 "Malgun Gothic", system-ui, sans-serif; padding:6px 12px; }
+  .sheet { width:100%; }
+  .sheet img { display:block; width:100%; }
+  .holder { position:relative; width:100%; height:59px; overflow:hidden; background:#686765; }
+  .holder iframe { position:absolute; left:0; top:0; width:1920px; height:88px; border:0;
+    transform-origin: top left; transform: scale(0.6666); }
+</style>
+</head>
+<body>
+  <div class="cap">1) 기아 공식 ccNC 길안내 화면(D-map_guidance.png)의 하단 줄 · 2) 우리 하단바(음악 정지) · 3) 우리 하단바(음악 재생, 앨범 표지) — 같은 배율(1920→1280)</div>
+  <div class="sheet"><img src="images/nav-compare/ccNC-하단줄.png" alt="공식 ccNC 하단 줄"></div>
+  <div class="holder"><iframe id="off" src="../assets/navbar.html" scrolling="no"></iframe></div>
+  <div class="holder"><iframe id="on" src="../assets/navbar.html" scrolling="no"></iframe></div>
+  <script>
+    function fill(frame, playing) {
+      try {
+        var view = frame.contentWindow && frame.contentWindow.K8NavBarView;
+        if (!view) return;
+        view.route('285 km', '2시간 18분', '서초구 양재대로12길', true, '3:39 PM');
+        if (playing) view.media('Synthetic Sympathy', 'Who-ya Extended', true, 42);
+        else view.media('', '', false, 0);
+      } catch (e) { }
+    }
+    var off = document.getElementById('off');
+    var on = document.getElementById('on');
+    off.addEventListener('load', function () { fill(off, false); });
+    on.addEventListener('load', function () { fill(on, true); });
+    window.addEventListener('load', function () { fill(off, false); fill(on, true); });
+  </script>
+</body>
+</html>

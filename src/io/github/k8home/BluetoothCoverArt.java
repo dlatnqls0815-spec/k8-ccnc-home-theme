@@ -1,0 +1,117 @@
+package io.github.k8home;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Locale;
+
+/** Reads completed AVRCP covers using the same cache as K8 Now Playing. */
+final class BluetoothCoverArt {
+    interface Listener {
+        void changed(String image);
+    }
+
+    private static final File[] DIRECTORIES = {
+        new File("/mnt/bt_cover_art/0"), new File("/mnt/bt_cover_art/1")
+    };
+    private static String cachedTrack = "", cachedImage = "", cachedFile = "";
+    private final Handler main = new Handler(Looper.getMainLooper());
+    private final HandlerThread thread = new HandlerThread("k8-album-art");
+    private final Handler worker;
+    private final Listener listener;
+    private String track = "";
+    private String lastFile = "";
+    private int generation;
+
+    BluetoothCoverArt(Listener listener) {
+        this.listener = listener;
+        thread.start();
+        worker = new Handler(thread.getLooper());
+    }
+
+    void setTrack(String nextTrack) {
+        if (track.equals(nextTrack)) return;
+        track = nextTrack;
+        int request = ++generation;
+        worker.removeCallbacksAndMessages(null);
+        if (!track.isEmpty() && track.equals(cachedTrack)) {
+            lastFile = cachedFile;
+            listener.changed(cachedImage);
+            return;
+        }
+        listener.changed("");
+        if (track.isEmpty()) return;
+        String previousFile = lastFile.isEmpty() ? cachedFile : lastFile;
+        long earliest = System.currentTimeMillis() - 4000;
+        long deadline = SystemClock.elapsedRealtime() + 10000;
+        worker.post(new Runnable() {
+            @Override public void run() {
+                File cover = newestCover(earliest);
+                String key = cover == null ? "" : cover.getPath() + ":" + cover.length() + ":" + cover.lastModified();
+                String image = cover == null || key.equals(previousFile) ? "" : encodeCover(cover);
+                final Runnable lookup = this;
+                main.post(new Runnable() {
+                    @Override public void run() {
+                        if (generation != request) return;
+                        if (!image.isEmpty()) {
+                            lastFile = key;
+                            cachedTrack = nextTrack;
+                            cachedImage = image;
+                            cachedFile = key;
+                            listener.changed(image);
+                        } else if (SystemClock.elapsedRealtime() < deadline) {
+                            worker.postDelayed(lookup, 600);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void close() {
+        setTrack("");
+        thread.quitSafely();
+    }
+
+    private static File newestCover(long earliest) {
+        File newest = null;
+        for (File directory : DIRECTORIES) {
+            File[] files = directory.listFiles();
+            if (files == null) continue;
+            for (File file : files) {
+                long modified = file.lastModified();
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".jpg") && file.length() > 0
+                    && file.canRead() && modified >= earliest
+                    && (newest == null || modified > newest.lastModified())) newest = file;
+            }
+        }
+        return newest;
+    }
+
+    private static String encodeCover(File file) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getPath(), options);
+        int side = Math.max(options.outWidth, options.outHeight);
+        if (options.outWidth <= 0 || options.outHeight <= 0) return "";
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = 1;
+        while (side / options.inSampleSize > 512) options.inSampleSize *= 2;
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), options);
+        if (bitmap == null) return "";
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 85, output)) return "";
+            return "data:image/jpeg;base64," + Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP);
+        } finally {
+            bitmap.recycle();
+        }
+    }
+}

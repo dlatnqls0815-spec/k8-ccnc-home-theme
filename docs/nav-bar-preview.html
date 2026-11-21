@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K8 5W 순정 내비 위 하단바 예시</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#0b0f16; color:#e8eef6; font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif; }
+  .wrap { display:flex; flex-direction:column; align-items:center; gap:14px; padding:18px; }
+  .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .controls button { background:#1c2532; color:#e8eef6; border:1px solid #33415a; border-radius:8px;
+    padding:8px 14px; font-size:14px; cursor:pointer; }
+  .controls button[aria-pressed="true"] { background:#2f9e6b; border-color:#2f9e6b; color:#fff; }
+  .note { font-size:13px; color:#93a3b8; max-width:900px; text-align:center; line-height:1.5; }
+  .stage { width:1920px; height:720px; transform-origin: top center; position:relative; overflow:hidden;
+    background:#e9e6dd; border:1px solid #26313f; }
+
+  /* 순정 5W 길안내 화면 모양 (기아 공식 매뉴얼 D-navi_guidance_a.png 기준) */
+  .navi { position:absolute; inset:0; background:
+      linear-gradient(20deg, transparent 0 38%, #ffffff 38% 39.4%, transparent 39.4% 100%),
+      linear-gradient(-35deg, transparent 0 58%, #ffffff 58% 59.4%, transparent 59.4% 100%),
+      linear-gradient(100deg, transparent 0 22%, #dfe8d8 22% 30%, transparent 30% 100%),
+      linear-gradient(0deg, transparent 0 68%, #dbe7d4 68% 82%, transparent 82% 100%), #eceadf; }
+  .navi-left { position:absolute; left:14px; top:70px; display:flex; flex-direction:column; gap:10px; }
+  .navi-left span { width:60px; height:60px; border-radius:10px; background:#3d444d; color:#e6ebf1;
+    font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .navi-guide { position:absolute; right:24px; top:26px; display:flex; align-items:center; gap:10px;
+    background:rgba(60,54,48,.92); color:#fff; border-radius:8px; padding:12px 18px; font-size:26px; }
+  .navi-guide b { font-size:34px; }
+  .navi-clock { position:absolute; left:50%; top:26px; transform:translateX(-50%); background:rgba(60,54,48,.92);
+    color:#fff; border-radius:8px; padding:10px 22px; font-size:26px; }
+  /* 순정 하단 줄: 메뉴 / 경로 종료 / 남은 거리 / 목적지 / 도착 시간 / 오른쪽 버튼 */
+  .navi-bottom { position:absolute; left:0; right:0; bottom:0; height:80px; background:rgba(58,54,48,.96);
+    color:#f2f2f2; display:flex; align-items:center; gap:0; font-size:22px; }
+  .navi-bottom .cell { padding:0 22px; border-right:1px solid rgba(255,255,255,.22); }
+  .navi-bottom .cell.dim { color:#c8c8c8; font-size:18px; }
+  .navi-bottom .grow { flex:1; border-right:none; }
+  .navi-bottom .right { border-left:1px solid rgba(255,255,255,.22); border-right:none; padding:0 26px; }
+
+  .bar { position:absolute; left:0; right:0; border:0; display:block; background:transparent; }
+  .barwrap { position:relative; height:78px; overflow:hidden; background:#23262a; }
+  .barwrap iframe { position:absolute; left:0; top:0; width:1920px; height:90px; border:0;
+    transform-origin: top left; }
+  .badge { position:absolute; right:14px; top:14px; font-size:13px; color:#e8eef6; background:rgba(12,17,24,.8);
+    border:1px solid #2a3543; border-radius:6px; padding:4px 10px; z-index:5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls">
+    <button type="button" data-pos="bottom" aria-pressed="true">위치: 하단</button>
+    <button type="button" data-pos="top" aria-pressed="false">위치: 상단</button>
+    <button type="button" data-h="64">높이 64</button>
+    <button type="button" data-h="90" aria-pressed="true">높이 90</button>
+    <button type="button" data-h="112">높이 112</button>
+    <button type="button" data-m="0" aria-pressed="true">여백 0</button>
+    <button type="button" data-m="44">여백 44</button>
+    <button type="button" data-m="90">여백 90</button>
+    <button type="button" data-m="140">여백 140</button>
+    <button type="button" data-route="1" aria-pressed="true">길안내 있음</button>
+    <button type="button" data-route="0">길안내 없음</button>
+  </div>
+  <p class="note">
+    아래는 기아 공식 5W 길안내 화면(D-navi_guidance_a.png)을 기준으로 만든 자리이고,
+    하단바는 실제로 APK에 들어가는 <code>assets/navbar.html</code> 그대로를 붙인 것이다.
+    기본값(높이 90 px, 여백 0)에서는 순정의 하단 줄(메뉴 · 경로 종료 · 남은 거리 · 도착 시간)을 덮고
+    ccNC 하단바가 그 자리를 차지한다. 중앙 알약은 5W 하단 줄이 담던 정보를 그대로 옮긴 형태다.
+  </p>
+  <div class="stage" id="stage">
+    <div class="navi"></div>
+    <div class="navi-left">
+      <span>홈</span><span>SE</span><span>Nav</span><span>＋</span><span>Auto</span><span>－</span>
+    </div>
+    <div class="navi-clock">10:39</div>
+    <div class="navi-guide"><b>↱</b><span>500 m</span><span style="font-size:18px">양재대로, 서울주모oming길</span></div>
+    <div class="navi-bottom">
+      <span class="cell">메뉴</span>
+      <span class="cell">경로<br>종료</span>
+      <span class="cell dim">287 km<br>14:32</span>
+      <span class="cell grow">ⓘ 서초구 현릉로</span>
+      <span class="cell dim">12시59분경</span>
+      <span class="right">⇤</span>
+    </div>
+    <iframe class="bar" id="bar" src="../assets/navbar.html" scrolling="no"></iframe>
+    <div class="badge" id="badge">높이 90 px · 여백 0 px · 하단</div>
+  </div>
+
+  <h2 style="margin-top:30px">공식 ccNC 하단 줄과 비교</h2>
+  <div class="pair">
+    <div class="card">
+      <div class="cap">공식 ccNC 길안내 화면 <span>D-map_guidance.png 하단</span></div>
+      <img src="images/nav-compare/ccNC-하단줄.png" alt="공식 ccNC 하단 줄">
+    </div>
+    <div class="card">
+      <div class="cap">우리 하단바 <span>assets/navbar.html</span></div>
+      <div class="barwrap"><iframe id="bar2" src="../assets/navbar.html" scrolling="no"></iframe></div>
+    </div>
+  </div>
+  <p class="note">
+    왼쪽은 기아 공식 ccNC 길안내 화면의 하단 줄, 오른쪽은 APK에 들어가는 우리 하단바다.
+    밝은 회색 키 띠, 어두운 경로 종료 원, 거리·시간과 목적지가 든 알약, 오른쪽 검은 띠의 재생 표시까지
+    구조와 색을 공식 화면에 맞췄다. 매뉴얼의 강조 표시인 흰 테두리 사각형은 넣지 않았다.
+  </p>
+</div>
+<script>
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar');
+  var badge = document.getElementById('badge');
+  var pos = 'bottom', height = 90, margin = 0, route = true;
+  function fit() {
+    var scale = Math.min(1, (window.innerWidth - 40) / 1920);
+    stage.style.transform = 'scale(' + scale + ')';
+    stage.style.marginBottom = (720 * scale - 720) + 'px';
+  }
+  function pushRoute() {
+    ['bar', 'bar2'].forEach(function (id) {
+      try {
+        var frame = document.getElementById(id);
+        var view = frame.contentWindow && frame.contentWindow.K8NavBarView;
+        if (!view) return;
+        if (route) view.route('285 km', '2시간 18분', '서초구 양재대로12길', true, '3:39 PM');
+        else view.route('', '', '', false, '');
+      } catch (e) { }
+    });
+  }
+  function fitBar2() {
+    var wrap = document.querySelector('.barwrap');
+    var frame = document.getElementById('bar2');
+    if (!wrap || !frame) return;
+    var scale = wrap.clientWidth / 1920;
+    frame.style.transform = 'scale(' + scale + ')';
+  }
+  function paint() {
+    bar.style.height = height + 'px';
+    bar.style.width = '1920px';
+    bar.style.left = '0px';
+    bar.style.top = pos === 'top' ? margin + 'px' : (720 - height - margin) + 'px';
+    badge.textContent = '높이 ' + height + ' px · 여백 ' + margin + ' px · ' + (pos === 'top' ? '상단' : '하단');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-pos]'), function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-pos') === pos));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-h]'), function (b) {
+      b.setAttribute('aria-pressed', String(Number(b.getAttribute('data-h')) === height));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-m]'), function (b) {
+      b.setAttribute('aria-pressed', String(Number(b.getAttribute('data-m')) === margin));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-route]'), function (b) {
+      b.setAttribute('aria-pressed', String((b.getAttribute('data-route') === '1') === route));
+    });
+    pushRoute();
+  }
+  document.addEventListener('click', function (event) {
+    var b = event.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-pos')) pos = b.getAttribute('data-pos');
+    if (b.hasAttribute('data-h')) height = Number(b.getAttribute('data-h'));
+    if (b.hasAttribute('data-m')) margin = Number(b.getAttribute('data-m'));
+    if (b.hasAttribute('data-route')) route = b.getAttribute('data-route') === '1';
+    paint();
+  });
+  bar.addEventListener('load', pushRoute);
+  document.getElementById('bar2').addEventListener('load', pushRoute);
+  window.addEventListener('resize', function () { fit(); fitBar2(); });
+  fit(); fitBar2(); paint();
+</script>
+</body>
+</html>

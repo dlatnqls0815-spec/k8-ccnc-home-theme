@@ -1,0 +1,936 @@
+﻿전체 문자열: 8874  후보: 799
+
+### android.intent.action
+    android.intent.action.BOOT_COMPLETED
+    android.intent.action.CALL
+    android.intent.action.DESTROY_GPS_DECODER
+    android.intent.action.DEVICE_STORAGE_LOW
+    android.intent.action.DEVICE_STORAGE_OK
+    android.intent.action.MAIN
+    android.intent.action.MEDIA_MOUNTED
+    android.intent.action.MEDIA_UNMOUNTED
+    android.intent.action.PRE_BOOTSTART_PROC
+    android.intent.action.PRE_BOOT_COMPLETED
+    android.intent.action.REQUEST_CAMERA_OFF
+    android.intent.action.SDCARD_REBOOT
+    android.intent.action.START_GPS_DECODER_NOUI
+    android.intent.action.TAPP_WEB_VIEW
+    android.intent.action.TIMEZONE_CHANGED
+    android.intent.action.TIME_SET
+    android.intent.action.TPEGSERVICE_ONDATACREATED
+    android.intent.action.USER_NETWORK_CHANGED
+    android.intent.action.VIT_ADDRESS_SEARCH_CHANGE
+    android.intent.action.VIT_END_ROUTESEARCH
+    android.intent.action.VIT_GLOBAL_SEARCH
+    android.intent.action.VIT_GLOBAL_SEARCH_RESPONSE
+    android.intent.action.VIT_GLOBAL_SEARCH_RESULT
+    android.intent.action.VIT_NOTI_ADDRESS_SEARCH_RESULT
+    android.intent.action.VIT_NOTI_ADD_SEARCH
+    android.intent.action.VIT_NOTI_CANCEL_ROUTE
+    android.intent.action.VIT_NOTI_CHANGE_ADMIN
+    android.intent.action.VIT_NOTI_CHANGE_ADMIN_CAPITAL_AREA
+    android.intent.action.VIT_NOTI_CHANGE_ADMIN_CAPITAL_AREA_BRZ
+    android.intent.action.VIT_NOTI_FUEL_LIGHT
+    android.intent.action.VIT_NOTI_MANUAL_INPUT
+    android.intent.action.VIT_NOTI_MEMORY_POINT
+    android.intent.action.VIT_NOTI_NAVI_BOOTEND_SERVICE
+    android.intent.action.VIT_NOTI_NAVI_BOOTSTART_SERVICE
+    android.intent.action.VIT_NOTI_NAVI_BOOTSTART_SERVICE : 
+    android.intent.action.VIT_NOTI_NAVI_CURRENT_LOCATION
+    android.intent.action.VIT_NOTI_NAVI_CURRENT_STATE_UPDATE
+    android.intent.action.VIT_NOTI_NAVI_DESTINATION_INFO
+    android.intent.action.VIT_NOTI_NAVI_MUTE_STATE
+    android.intent.action.VIT_NOTI_NAVI_MUTE_TEMP
+    android.intent.action.VIT_NOTI_NEAREST_POI_SEARCH_RESULT
+    android.intent.action.VIT_NOTI_POI_SEARCH_RESULT
+    android.intent.action.VIT_NOTI_PREVIOUS_DESTINATION_RESULT
+    android.intent.action.VIT_NOTI_ROUTE_CONTROL
+    android.intent.action.VIT_NOTI_TTS_READY_STATUS
+    android.intent.action.VIT_NOTI_USA_LOCAL_SEARCH
+    android.intent.action.VIT_NOTI_USA_LOCAL_SEARCH_CANCEL
+    android.intent.action.VIT_NOTI_USA_LOCAL_SEARCH_MANUAL
+    android.intent.action.VIT_NOTI_VIEW_ROUTE_ALL
+    android.intent.action.VIT_NOTI_VOICE_GUIDANCE_ONOFF
+    android.intent.action.VIT_NOTI_ZOOM_CONTROL
+    android.intent.action.VIT_REGIST_HOME_OFFICE_CHANGE
+    android.intent.action.VIT_REQUEST_ADMIN_CODE
+    android.intent.action.VIT_REQUEST_THUMBNAIL_CURRENT_POSITION
+    android.intent.action.VIT_REQUEST_THUMBNAIL_IMAGE
+    android.intent.action.VIT_REQUEST_THUMBNAIL_IMAGE_ICP
+    android.intent.action.VIT_REQUEST_THUMBNAIL_IMAGE_LARGE
+    android.intent.action.VIT_REQUEST_THUMBNAIL_IMAGE_MULTI_POI
+    android.intent.action.VIT_REQUEST_THUMBNAIL_IMAGE_MULTI_POI_NEW
+    android.intent.action.VIT_REQ_ADDRESS_SEARCH
+    android.intent.action.VIT_REQ_ADDRESS_SEARCH_APARTMENT
+    android.intent.action.VIT_REQ_ADDRESS_SEARCH_HOUSENUMBER
+    android.intent.action.VIT_REQ_ADDRESS_SEARCH_NA
+    android.intent.action.VIT_REQ_EVSVER
+    android.intent.action.VIT_REQ_MUTE_STATE
+    android.intent.action.VIT_REQ_NEAREST_POI_SEARCH
+    android.intent.action.VIT_REQ_POI_SEARCH
+    android.intent.action.VIT_REQ_RSPVER
+    android.intent.action.VIT_REQ_VOICE_RECOGNITION_START
+    android.intent.action.VIT_RESPONSE_ADMIN_CODE
+    android.intent.action.VIT_RESPONSE_THUMBNAIL_IMAGE
+    android.intent.action.VIT_RESPONSE_THUMBNAIL_IMAGE_ICP
+    android.intent.action.VIT_RESPONSE_THUMBNAIL_IMAGE_MULTI_POI
+    android.intent.action.VIT_RESPONSE_THUMBNAIL_IMAGE_MULTI_POI_NEW
+    android.intent.action.VIT_RES_EVSVER
+    android.intent.action.VIT_RES_RSPVER
+    android.intent.action.VIT_RES_RSPVER sent.
+    android.intent.action.VIT_START_ROUTESEARCH
+    android.intent.action.VIT_TPEG_ROADNUMBER_RESULT
+
+### com.android.phone
+    com.android.phone.LaunchCallScreen
+    com.android.phone.services.BTHFPManager
+
+### com.daudio.app
+    com.daudio.app.PhoneProjection.CLOSE
+    com.daudio.app.dipo
+    com.daudio.app.dipo.callstatus
+    com.daudio.app.dipo.close
+    com.daudio.app.dipo.setoempopupstatus.ACTIVE
+    com.daudio.app.dipo.setoempopupstatus.DISMISS
+    com.daudio.app.dipo.start
+    com.daudio.app.dipo.ui.DipoActivity
+    com.daudio.app.voicememo
+    com.daudio.app.voicememo.MainActivity
+
+### com.hkmc.app
+    com.hkmc.app.nmode.ui
+    com.hkmc.app.nmode.ui.NMode_MainActivity
+
+### com.hkmc.av
+    com.hkmc.av.app.sxmdata
+    com.hkmc.av.app.sxmdata.SXMDataMainActivity
+
+### com.hkmc.bluetooth
+    com.hkmc.bluetooth
+
+### com.hkmc.daudio
+    com.hkmc.daudio.app.circuit.action.BUTTON_STATUS_CHANGED
+    com.hkmc.daudio.app.circuit.action.CHANGED_NAVI_POSITION
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_BEST_LAP
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_MEASUREMENT
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_RESET
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_START
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_STOP
+    com.hkmc.daudio.app.circuit.action.NOTI_CIRCUIT_LAPTIMER_UPDATE
+    com.hkmc.daudio.app.circuit.action.REQUEST_NAVI_LIST_VIEW
+    com.hkmc.daudio.app.circuit.action.REQ_CIRCUIT_EXIST
+    com.hkmc.daudio.app.circuit.action.REQ_CIRCUIT_INFO
+    com.hkmc.daudio.app.circuit.action.REQ_CIRCUIT_LAPTIMER_MEASUREMENT
+    com.hkmc.daudio.app.circuit.action.RES_CIRCUIT_EXIST
+    com.hkmc.daudio.app.circuit.extra.AUTO_MEASUREMENT
+    com.hkmc.daudio.app.circuit.extra.BEST_LAP_DIF
+    com.hkmc.daudio.app.circuit.extra.CIRCUIT_EXIST
+    com.hkmc.daudio.app.circuit.extra.LAP_HOUR
+    com.hkmc.daudio.app.circuit.extra.LAP_MIN
+    com.hkmc.daudio.app.circuit.extra.LAP_MSEC
+    com.hkmc.daudio.app.circuit.extra.LAP_NUMBER
+    com.hkmc.daudio.app.circuit.extra.LAP_SEC
+    com.hkmc.daudio.app.circuit.extra.WIDGET_POSITION
+    com.hkmc.daudio.app.ev
+    com.hkmc.daudio.app.ev.LowBatteryActivity
+    com.hkmc.daudio.app.ev.MainActivity
+    com.hkmc.daudio.app.ev2.action.request_navi_view
+
+### com.hkmc.engineeringmode
+    com.hkmc.engineeringmode
+
+### com.hkmc.extras
+    com.hkmc.extras.launcher_page
+    com.hkmc.extras.weather.navi_precipitation
+    com.hkmc.extras.weather.navi_precipitation = 
+    com.hkmc.extras.weather.navi_result
+    com.hkmc.extras.weather.navi_sunrise
+    com.hkmc.extras.weather.navi_sunset
+    com.hkmc.extras.weather.navi_temp
+    com.hkmc.extras.weather.navi_weathertype
+    com.hkmc.extras.weather.navi_weathertype = 
+
+### com.hkmc.hardware
+    com.hkmc.hardware.ev
+    com.hkmc.hardware.hev
+    com.hkmc.hardware.phev
+
+### com.hkmc.intent
+    com.hkmc.intent.actioin.ERROR_ROUTE_SEARCH
+    com.hkmc.intent.action.ACTION_ADD_POINT
+    com.hkmc.intent.action.ACTION_ADD_SEARCH
+    com.hkmc.intent.action.ACTION_ADD_SPECIAL
+    com.hkmc.intent.action.ACTION_ADD_SPECIAL_RESULT
+    com.hkmc.intent.action.ACTION_ICP_SEARCH
+    com.hkmc.intent.action.ACTION_ICP_SEARCH_RESPONSE
+    com.hkmc.intent.action.ACTION_ICP_SEARCH_RESPONSE sent.
+    com.hkmc.intent.action.ACTION_INFO_CHARGINGSTATIONS
+    com.hkmc.intent.action.ACTION_INFO_LOCALSEARCH
+    com.hkmc.intent.action.ACTION_INFO_PARKING
+    com.hkmc.intent.action.ACTION_INFO_PETROLSTATIONS
+    com.hkmc.intent.action.ACTION_INFO_SATELLITE
+    com.hkmc.intent.action.ACTION_INFO_TRAFFIC
+    com.hkmc.intent.action.ACTION_INFO_WEATHER
+    com.hkmc.intent.action.ACTION_NAVI_CURRENTPOS
+    com.hkmc.intent.action.ACTION_NAVI_ENGINEERING
+    com.hkmc.intent.action.ACTION_NAVI_GCARPAY_LIST
+    com.hkmc.intent.action.ACTION_NAVI_MENU
+    com.hkmc.intent.action.ACTION_NAVI_SETUP
+    com.hkmc.intent.action.ACTION_NAVI_SHORTCUT
+    com.hkmc.intent.action.ACTION_NAVI_TOTALSEARCH
+    com.hkmc.intent.action.ACTION_ROUTE_SEARCH
+    com.hkmc.intent.action.ACTION_SEARCH
+    com.hkmc.intent.action.ACTION_SHOW_MAP
+    com.hkmc.intent.action.ACTION_SXM_POI
+    com.hkmc.intent.action.ACTION_SXM_TRAFFIC
+    com.hkmc.intent.action.ACTION_WAY_POINT
+    com.hkmc.intent.action.AGREE_USER_LICENSE
+    com.hkmc.intent.action.CLIMATE
+    com.hkmc.intent.action.CLIMATE_CHANGE
+    com.hkmc.intent.action.DATA_BACKUP_COMPLETED
+    com.hkmc.intent.action.DATA_RESTORE_COMPLETED
+    com.hkmc.intent.action.DISP_SHORTCUT
+    com.hkmc.intent.action.DYNAMIC_DATA_CONTROL_REQ
+    com.hkmc.intent.action.DYNAMIC_DATA_CONTROL_RESP
+    com.hkmc.intent.action.HOLD_FOR_CLIMATE_KEY
+    com.hkmc.intent.action.INFO_SELECTSTATE
+    com.hkmc.intent.action.LAUNCH_APPLICATION
+    com.hkmc.intent.action.LAUNCH_APPLICATION do not send
+    com.hkmc.intent.action.LAUNCH_APPLICATION sent (for na icp)
+    com.hkmc.intent.action.MAP_SHORTCUT
+    com.hkmc.intent.action.MAP_SHORTCUT_LONG
+    com.hkmc.intent.action.NAVI_PROCESS_END
+    com.hkmc.intent.action.NAVI_SHORTCUT
+    com.hkmc.intent.action.NAVI_SHORTCUT_LONG
+    com.hkmc.intent.action.PTT_SHORTCUT
+    com.hkmc.intent.action.QIBLA_SHORTCUT
+    com.hkmc.intent.action.RSA_CA_OFF
+    com.hkmc.intent.action.RSA_CA_ON
+    com.hkmc.intent.action.Request_Info_CurrentLoc
+    com.hkmc.intent.action.Request_Info_Destination
+    com.hkmc.intent.action.Request_Info_Waypoint
+    com.hkmc.intent.action.Response_Info_CurrentLoc
+    com.hkmc.intent.action.Response_Info_CurrentLoc sent
+    com.hkmc.intent.action.Response_Info_Destination
+    com.hkmc.intent.action.Response_Info_Destination sent
+    com.hkmc.intent.action.Response_Info_Waypoint
+    com.hkmc.intent.action.Response_Info_Waypoint sent
+    com.hkmc.intent.action.SCREEN_SOS_SHOW
+    com.hkmc.intent.action.SEND_ICP_STORE_VERSION
+    com.hkmc.intent.action.SEND_ICP_STORE_VERSION : 
+    com.hkmc.intent.action.SET_STG_SERVER
+    com.hkmc.intent.action.SOS_SHORTCUT
+    com.hkmc.intent.action.START_BT_PHONE
+    com.hkmc.intent.action.SYSTEM_POWEROFF
+    com.hkmc.intent.action.SchedUpdateReq
+    com.hkmc.intent.action.TAS_IS_READY
+    com.hkmc.intent.action.VALET_OFF
+    com.hkmc.intent.action.VALET_ON
+    com.hkmc.intent.action.request_weather_from_navi
+    com.hkmc.intent.action.response_weather_to_navi
+    com.hkmc.intent.extra.CONTROL_TYPE
+    com.hkmc.intent.extra.FROM
+    com.hkmc.intent.extra.ON
+    com.hkmc.intent.extra.SOS_FROM_EVAPP
+    com.hkmc.intent.ota.validation_check_end
+    com.hkmc.intent.ota.validation_check_start
+
+### com.hkmc.mediazen
+    com.hkmc.mediazen.vls
+
+### com.hkmc.mobis
+    com.hkmc.mobis.action.HOME_BLOCK
+
+### com.hkmc.mode
+    com.hkmc.mode.EXTRA_SHORTCUT_REASON
+
+### com.hkmc.navi
+    com.hkmc.navi.EXTRA_ADDR
+    com.hkmc.navi.EXTRA_ADDRESS
+    com.hkmc.navi.EXTRA_BG_SEARCH
+    com.hkmc.navi.EXTRA_BUTTON
+    com.hkmc.navi.EXTRA_CATEGORY
+    com.hkmc.navi.EXTRA_CLASS_CODE
+    com.hkmc.navi.EXTRA_COUNT
+    com.hkmc.navi.EXTRA_DISPLAY_LATITUDE
+    com.hkmc.navi.EXTRA_DISPLAY_LONGITUDE
+    com.hkmc.navi.EXTRA_ERROR
+    com.hkmc.navi.EXTRA_GLS_POIKEY
+    com.hkmc.navi.EXTRA_KEYWORD
+    com.hkmc.navi.EXTRA_LATITUDE
+    com.hkmc.navi.EXTRA_LONGITUDE
+    com.hkmc.navi.EXTRA_NAME
+    com.hkmc.navi.EXTRA_OPENING_STATUS
+    com.hkmc.navi.EXTRA_PHONENUM
+    com.hkmc.navi.EXTRA_POI_EVALUTION_POPUP
+    com.hkmc.navi.EXTRA_POI_ID
+    com.hkmc.navi.EXTRA_RESULT
+    com.hkmc.navi.EXTRA_ROUTE_OPTION
+    com.hkmc.navi.EXTRA_ROUTE_OPTION (Boolean) : 
+    com.hkmc.navi.EXTRA_SEARCH
+    com.hkmc.navi.EXTRA_SID
+    com.hkmc.navi.EXTRA_SID : 
+    com.hkmc.navi.EXTRA_TYPE
+    com.hkmc.navi.EXTRA_TYPES
+    com.hkmc.navi.EXTRA_TYPES : 
+    com.hkmc.navi.EXTRA_WHAT_LS
+    com.hkmc.navi.EXTRA_WHAT_LS : 
+    com.hkmc.navi.EXTRA_XEVO_ID
+    com.hkmc.navi.EXTRA_XEVO_ID (String) : 
+    com.hkmc.navi.EXTRA_evChargeOptions
+    com.hkmc.navi.EXTRA_evChargeOptions : 
+    com.hkmc.navi.EXTRA_primaryType
+    com.hkmc.navi.EXTRA_primaryType : 
+    com.hkmc.navi.action.ev.location.setting_info
+    com.hkmc.navi.action.ev.location.setting_req
+
+### com.hkmc.phone
+    com.hkmc.phone.widgetupdate
+
+### com.hkmc.software
+    com.hkmc.software.connectivity.mirrorlink
+    com.hkmc.software.engineermode.adb_hide
+    com.hkmc.software.kia.connect
+    com.hkmc.software.kia.new.emblem
+    com.hkmc.software.navi.sdcard
+    com.hkmc.software.security.unece
+    com.hkmc.software.ssearch
+    com.hkmc.software.telematics.calendar
+    com.hkmc.software.telematics.icp
+    com.hkmc.software.telematics.sop
+    com.hkmc.software.user.profile
+    com.hkmc.software.user.profile.ccs
+    com.hkmc.software.vcrm
+
+### com.hkmc.system
+    com.hkmc.system.app.OTAClient
+    com.hkmc.system.app.engineer.intent.action.CALL_NAVI
+    com.hkmc.system.app.swupdate/.UpdateModeActivity
+    com.hkmc.system.app.userprofile.intent.action.START_CCS_LINK_ACCOUNT
+
+### com.hkmc.telematics
+    com.hkmc.telematics.Location.Status_Changed
+    com.hkmc.telematics.action.EXTERNAL_RESPONSE_CENTER
+    com.hkmc.telematics.app.ev.ui.EVMenu
+    com.hkmc.telematics.apps.Calendar.Management.EventDetailActivity
+    com.hkmc.telematics.apps.Notification
+    com.hkmc.telematics.apps.Notification.Management.NotiManageDetail
+    com.hkmc.telematics.apps.Vrm.main
+    com.hkmc.telematics.apps.Vrm.settings.signin.SigninInputActivity
+    com.hkmc.telematics.apps.Vrm.settings.signin.TermsNConditionsActivity
+    com.hkmc.telematics.apps.Vrm.settings.ui.BluelinkUvoSettingsMenu
+    com.hkmc.telematics.apps.Vrm.settings.ui.SG.OfflineModeSG
+    com.hkmc.telematics.apps.Vrm.settings.ui.VasActivationPopUp
+    com.hkmc.telematics.apps.Vrm.userprofile.ui.LinkProfileActivity
+    com.hkmc.telematics.apps.gis.NAVIGATION
+    com.hkmc.telematics.extra.EXTERNAL_FILEPATH
+    com.hkmc.telematics.extra.EXTERNAL_JSON
+    com.hkmc.telematics.extra.EXTERNAL_PACKAGE_NAME
+    com.hkmc.telematics.extra.EXTERNAL_SERVICE_URI
+    com.hkmc.telematics.extra.EXTERNAL_STATUS_CODE
+    com.hkmc.telematics.extra.EXTRA_EXTERNAL_BYTE_ARRAY
+    com.hkmc.telematics.gis.action.DestinationWaypoint
+    com.hkmc.telematics.gis.action.FROM_BROWSER_TO_NAVI
+    com.hkmc.telematics.gis.action.GIS2P_BINARY_RECEIVED
+    com.hkmc.telematics.gis.action.ICP_RESPONSE
+    com.hkmc.telematics.gis.action.LOW_BATTERY_WARNING
+    com.hkmc.telematics.gis.action.LS_Agreement
+    com.hkmc.telematics.gis.action.LS_REQUEST
+    com.hkmc.telematics.gis.action.LS_RESPONSE
+    com.hkmc.telematics.gis.action.NAVI_GPS_CHANGED
+    com.hkmc.telematics.gis.action.NAVI_PLACES_RESULTLIST
+    com.hkmc.telematics.gis.action.REQUEST_CENTER_DATA
+    com.hkmc.telematics.gis.action.REQUEST_CENTER_JSON
+    com.hkmc.telematics.gis.action.REQUEST_GEOFENCE_SETTING
+    com.hkmc.telematics.gis.action.REQUEST_LOS_DETAIL_INFO
+    com.hkmc.telematics.gis.action.REQUEST_LOS_INFO
+    com.hkmc.telematics.gis.action.REQUEST_NEAREST_CHARGING_STATION
+    com.hkmc.telematics.gis.action.REQUEST_TO_SAVE_LOS_DETAIL_INFO
+    com.hkmc.telematics.gis.action.REQUEST_TO_SAVE_LOS_DETAIL_INFO with value 
+    com.hkmc.telematics.gis.action.RESPONSE
+    com.hkmc.telematics.gis.action.RESPONSE_AVAILABLE_DISTANCE
+    com.hkmc.telematics.gis.action.RESPONSE_CENTER_JSON
+    com.hkmc.telematics.gis.action.RESPONSE_GEOFENCE_SETTING
+    com.hkmc.telematics.gis.action.RESPONSE_LOS_DETAIL_INFO
+    com.hkmc.telematics.gis.action.RESPONSE_LOS_INFO
+    com.hkmc.telematics.gis.action.RESPONSE_NEAREST_CHARGING_STATION
+    com.hkmc.telematics.gis.action.SEARCH_CHARGING_STATION
+    com.hkmc.telematics.gis.action.SEARCH_DEALER
+    com.hkmc.telematics.gis.action.SEARCH_GAS_STATION
+    com.hkmc.telematics.gis.action.SEND_GASSTATION_DATA
+    com.hkmc.telematics.gis.action.SEND_ICP_STORE_DATA
+    com.hkmc.telematics.gis.action.SEND_PARKING_DATA
+    com.hkmc.telematics.gis.action.SHOW_EV_DIST_WARN
+    com.hkmc.telematics.gis.action.SHOW_EV_PATH_BAR
+    com.hkmc.telematics.gis.action.SHOW_MAP_VIOLATION
+    com.hkmc.telematics.gis.action.START_NAVIGATION
+    com.hkmc.telematics.gis.action.VIEW_AVAILABLE_DISTANCE
+    com.hkmc.telematics.gis.action.extra.LS_Agreement
+    com.hkmc.telematics.gis.action.launch.navi.detail.view
+    com.hkmc.telematics.gis.extra.ADDR
+    com.hkmc.telematics.gis.extra.ADDRESS
+    com.hkmc.telematics.gis.extra.ADMINNAME
+    com.hkmc.telematics.gis.extra.ALT
+    com.hkmc.telematics.gis.extra.ANGLE
+    com.hkmc.telematics.gis.extra.BTName
+    com.hkmc.telematics.gis.extra.BYTE_ARRAY
+    com.hkmc.telematics.gis.extra.COMMON_HOST
+    com.hkmc.telematics.gis.extra.COMMON_PORT
+    com.hkmc.telematics.gis.extra.COMMON_SSL
+    com.hkmc.telematics.gis.extra.COORD
+    com.hkmc.telematics.gis.extra.CUR_PAGE
+    com.hkmc.telematics.gis.extra.ColorCode
+    com.hkmc.telematics.gis.extra.DATA_FROM_SXM
+    com.hkmc.telematics.gis.extra.DISTANCE
+    com.hkmc.telematics.gis.extra.DestDistance
+    com.hkmc.telematics.gis.extra.DestDistanceType
+    com.hkmc.telematics.gis.extra.DestRemainTime
+    com.hkmc.telematics.gis.extra.DestRemainTimeType
+    com.hkmc.telematics.gis.extra.DestinationWaypoint.URI
+    com.hkmc.telematics.gis.extra.ERROR_CODE
+    com.hkmc.telematics.gis.extra.FILE_PATH_URI
+    com.hkmc.telematics.gis.extra.HDOP
+    com.hkmc.telematics.gis.extra.HEADING
+    com.hkmc.telematics.gis.extra.HOST
+    com.hkmc.telematics.gis.extra.JSON
+    com.hkmc.telematics.gis.extra.KEYWORD
+    com.hkmc.telematics.gis.extra.LAT
+    com.hkmc.telematics.gis.extra.LATITUDE
+    com.hkmc.telematics.gis.extra.LON
+    com.hkmc.telematics.gis.extra.LONGITUDE
+    com.hkmc.telematics.gis.extra.LOS_ATTRIBUTIONS_INFO
+    com.hkmc.telematics.gis.extra.LOS_ATTRIBUTIONS_INFO_LIST
+    com.hkmc.telematics.gis.extra.LOS_DETAIL_INFO
+    com.hkmc.telematics.gis.extra.LOS_INFO
+    com.hkmc.telematics.gis.extra.LOS_OPEN_INFO_LIST
+    com.hkmc.telematics.gis.extra.LocationSharing4.phoneNum
+    com.hkmc.telematics.gis.extra.MAP_VERSION
+    com.hkmc.telematics.gis.extra.NAME
+    com.hkmc.telematics.gis.extra.ON_OFF
+    com.hkmc.telematics.gis.extra.PAGE_MAX
+    com.hkmc.telematics.gis.extra.PDOP
+    com.hkmc.telematics.gis.extra.POI_DRIVER
+    com.hkmc.telematics.gis.extra.POI_DRIVER has Extra
+    com.hkmc.telematics.gis.extra.POI_INFO
+    com.hkmc.telematics.gis.extra.POI_KEY
+    com.hkmc.telematics.gis.extra.PickUpPlace.DestinationWaypoint
+    com.hkmc.telematics.gis.extra.PickUpPlace.phoneNum
+    com.hkmc.telematics.gis.extra.QUERY
+    com.hkmc.telematics.gis.extra.RADIUS
+    com.hkmc.telematics.gis.extra.RADIUS_UNIT
+    com.hkmc.telematics.gis.extra.REMAIN_DISTANCE
+    com.hkmc.telematics.gis.extra.REMAIN_DISTANCE_UNIT
+    com.hkmc.telematics.gis.extra.REQ_PAGE
+    com.hkmc.telematics.gis.extra.RESULT
+    com.hkmc.telematics.gis.extra.SERVICE_TID
+    com.hkmc.telematics.gis.extra.SERVICE_URI
+    com.hkmc.telematics.gis.extra.SETTING_TYPE
+    com.hkmc.telematics.gis.extra.STORE_TYPE
+    com.hkmc.telematics.gis.extra.STORE_VERSION
+    com.hkmc.telematics.gis.extra.TIME
+    com.hkmc.telematics.gis.extra.TOT_POI_CNT
+    com.hkmc.telematics.gis.extra.TYPE
+    com.hkmc.telematics.gis.extra.UNIT
+    com.hkmc.telematics.gis.extra.USER_TRIGGERED
+    com.hkmc.telematics.gis.extra.VIOLATION_INFOS
+    com.hkmc.telematics.gis.extra.VIOLATION_TYPE
+    com.hkmc.telematics.gis.extra.WARNING_MSG
+    com.hkmc.telematics.gis.extra.XEVO_ID
+    com.hkmc.telematics.gis.extra.evChargingSpeed
+    com.hkmc.telematics.gis.extra.fEHPE
+    com.hkmc.telematics.gis.extra.icp_popup_string
+    com.hkmc.telematics.gis.extra.locSharedList.DestinationWaypoint
+    com.hkmc.telematics.gis.extra.locationToTmu.DestinationWaypoint
+    com.hkmc.telematics.gis.extra.requestType
+    com.hkmc.telematics.gis.poiInfo.PoiInfo
+    com.hkmc.telematics.hscan.utils.intent.action.noti_changing_provision
+    com.hkmc.telematics.hscan.utils.intent.extra.noti_changing_provision_type
+    com.hkmc.telematics.intent.action.ACTIVATION_SERVICE_START
+    com.hkmc.telematics.iot.action.request_data_for_navi
+    com.hkmc.telematics.iot.action.response_data_for_navi
+    com.hkmc.telematics.iot.extra.HOST
+    com.hkmc.telematics.iot.extra.JSON
+    com.hkmc.telematics.iot.extra.SERVICE_URI
+    com.hkmc.telematics.iot.extra.response_status_code
+    com.hkmc.telematics.noti.mcs-w.complete
+    com.hkmc.telematics.request.event_season_info
+    com.hkmc.telematics.request.mcp.DestNWaypoint.Weather
+    com.hkmc.telematics.response.event_season_info
+    com.hkmc.telematics.safety.action.EMERGENCY
+    com.hkmc.telematics.safety.extra.EMERGENCY_ON
+    com.hkmc.telematics.safety.extra.EMERGENCY_SOUND
+    com.hkmc.telematics.safety.extra.EMERGENCY_TYPE
+    com.hkmc.telematics.service.ITAppService
+    com.hkmc.telematics.service.action.AUTO_PROVISIONING_START
+    com.hkmc.telematics.service.action.CHECK_NEW_SW
+    com.hkmc.telematics.service.action.START_ACTIVATION
+    com.hkmc.telematics.service.intent.action.agree_privacy
+    com.hkmc.telematics.service.intent.action.agree_privacy_closed_other
+    com.hkmc.telematics.service.intent.action.agree_privacy_no
+    com.hkmc.telematics.service.intent.action.agree_privacy_progress_closed_other
+    com.hkmc.telematics.service.intent.action.agree_privacy_retry_closed_other
+    com.hkmc.telematics.service.intent.action.agree_privacy_retry_no
+    com.hkmc.telematics.service.intent.action.agree_privacy_retry_yes
+    com.hkmc.telematics.service.intent.action.agree_privacy_yes
+    com.hkmc.telematics.service.intent.action.noti_changing_offline_mode_setting
+    com.hkmc.telematics.service.intent.action.noti_changing_offline_mode_setting_off_done
+    com.hkmc.telematics.service.intent.action.noti_changing_privacy_setting
+    com.hkmc.telematics.service.intent.action.request.collision
+    com.hkmc.telematics.service.intent.action.response.collision
+    com.hkmc.telematics.service.intent.action.response.collision.extra.linkID
+    com.hkmc.telematics.service.intent.action.response.collision.extra.locationCode
+    com.hkmc.telematics.service.intent.action.response.collision.extra.roadClassification
+    com.hkmc.telematics.service.intent.action.road.linkid.request
+    com.hkmc.telematics.service.intent.action.vehicletype
+    com.hkmc.telematics.service.intent.extra.offline_mode_value
+    com.hkmc.telematics.service.intent.extra.privacy_value
+    com.hkmc.telematics.service.intent.extra.vehicletype
+    com.hkmc.telematics.service.roadGripCondition.intent.action.gsensor_reference_value
+    com.hkmc.telematics.service.roadGripCondition.intent.extra.avnt_threshold_value
+    com.hkmc.telematics.service.roadGripCondition.intent.extra.gsensor_event_collect_time_unit
+    com.hkmc.telematics.service.roadGripCondition.intent.extra.gsensor_event_collect_time_value
+    com.hkmc.telematics.service.roadGripCondition.intent.extra.road_grip_configs
+    com.hkmc.telematics.service.util.checkCondition.action.request.error_popup
+    com.hkmc.telematics.service.util.checkCondition.extra.request.error_popup.error_type
+
+### com.hkmc.vitlite
+    com.hkmc.vitlite.service
+    com.hkmc.vitlite.service.IVitLiteManager
+    com.hkmc.vitlite.service.VitLiteService
+
+### com.mnsoft.navi
+    com.mnsoft.navi
+    com.mnsoft.navi.ACTION_RESTORE_CERTIFICATE
+    com.mnsoft.navi.ACTION_RESTORE_CERTIFICATE_COMPLETED
+    com.mnsoft.navi.HDRadio.NoIndicator
+    com.mnsoft.navi.HDRadio.NoIndicator sent
+    com.mnsoft.navi.IInterfaceService
+    com.mnsoft.navi.MAPCOPY_USB_TO_EMMC
+    com.mnsoft.navi.NaviApp
+    com.mnsoft.navi.NaviLoadingActivity
+    com.mnsoft.navi.PARKING_INFO_REQ
+    com.mnsoft.navi.PARKING_INFO_RES
+    com.mnsoft.navi.REGISTPOINT_STATE_LS3
+    com.mnsoft.navi.REGISTPOINT_STATE_LS3  (Unique ID)registpoint : 
+    com.mnsoft.navi.REQUEST_LS3_SETTINGS_SCREEN
+    com.mnsoft.navi.RESPONSE_SPECIAL_REGISTPOINT_STATE
+    com.mnsoft.navi.RESPONSE_SPECIAL_REGISTPOINT_STATE wParam 
+    com.mnsoft.navi.RegulationTest
+    com.mnsoft.navi.SoundPause.off
+    com.mnsoft.navi.SoundPause.on
+    com.mnsoft.navi.TPEG_ICON
+    com.mnsoft.navi.action.AUTHENTICATION
+    com.mnsoft.navi.action.DAYNIGHT_CHANGED
+    com.mnsoft.navi.action.DestinationInfo
+    com.mnsoft.navi.action.NaviAddressDispSettings
+    com.mnsoft.navi.action.NaviCameraAlertState
+    com.mnsoft.navi.action.NaviUsbExportState
+    com.mnsoft.navi.action.Navi_Screen_Changed
+    com.mnsoft.navi.action.Navi_View_Status
+    com.mnsoft.navi.action.OTA_Route_Guide_Status
+    com.mnsoft.navi.action.Request.NaviAddressInfo
+    com.mnsoft.navi.action.Response.NaviAddressInfo
+    com.mnsoft.navi.action.RouteSearchState
+    com.mnsoft.navi.action.Route_Guide_ACTION
+    com.mnsoft.navi.action.Route_Guide_NewStatus
+    com.mnsoft.navi.action.Route_Guide_Set
+    com.mnsoft.navi.action.Route_Guide_Status
+    com.mnsoft.navi.action.SOUND_OFF
+    com.mnsoft.navi.action.SOUND_ON
+    com.mnsoft.navi.action.SOUND_STATE_REQ
+    com.mnsoft.navi.action.SOUND_STATE_RES
+    com.mnsoft.navi.action.SchedUpdateRes
+    com.mnsoft.navi.action.extra.Address
+    com.mnsoft.navi.action.extra.Address.waypoint1
+    com.mnsoft.navi.action.extra.Address.waypoint2
+    com.mnsoft.navi.action.extra.ChargingStation
+    com.mnsoft.navi.action.extra.ChargingStation.waypoint1
+    com.mnsoft.navi.action.extra.ChargingStation.waypoint2
+    com.mnsoft.navi.action.extra.DestDistance
+    com.mnsoft.navi.action.extra.DestRemainTime
+    com.mnsoft.navi.action.extra.LAT
+    com.mnsoft.navi.action.extra.LAT.Display
+    com.mnsoft.navi.action.extra.LAT.waypoint1
+    com.mnsoft.navi.action.extra.LAT.waypoint1.Display
+    com.mnsoft.navi.action.extra.LAT.waypoint2
+    com.mnsoft.navi.action.extra.LAT.waypoint2.Display
+    com.mnsoft.navi.action.extra.LON
+    com.mnsoft.navi.action.extra.LON.Display
+    com.mnsoft.navi.action.extra.LON.waypoint1
+    com.mnsoft.navi.action.extra.LON.waypoint1.Display
+    com.mnsoft.navi.action.extra.LON.waypoint2
+    com.mnsoft.navi.action.extra.LON.waypoint2.Display
+    com.mnsoft.navi.action.extra.Lat_Guidance
+    com.mnsoft.navi.action.extra.Lon_Guidance
+    com.mnsoft.navi.action.extra.Navi_View_SS_Status
+    com.mnsoft.navi.action.extra.Passed.waypoint1
+    com.mnsoft.navi.action.extra.Passed.waypoint2
+    com.mnsoft.navi.action.extra.PoiID
+    com.mnsoft.navi.action.extra.PoiName
+    com.mnsoft.navi.action.extra.PoiName.waypoint1
+    com.mnsoft.navi.action.extra.PoiName.waypoint1.PoiID
+    com.mnsoft.navi.action.extra.PoiName.waypoint2
+    com.mnsoft.navi.action.extra.PoiName.waypoint2.PoiID
+    com.mnsoft.navi.action.extra.TYPE
+    com.mnsoft.navi.action.extra.address.step1
+    com.mnsoft.navi.action.extra.address.step2
+    com.mnsoft.navi.action.extra.address.step3
+    com.mnsoft.navi.action.extra.address.step4
+    com.mnsoft.navi.action.extra.addressdisp
+    com.mnsoft.navi.action.extra.admincode
+    com.mnsoft.navi.action.extra.countrycode
+    com.mnsoft.navi.action.extra.dte_button_status
+    com.mnsoft.navi.action.extra.language
+    com.mnsoft.navi.action.extra.lat
+    com.mnsoft.navi.action.extra.lon
+    com.mnsoft.navi.action.extra.registpoint
+    com.mnsoft.navi.action.extra.settings.fueltype
+    com.mnsoft.navi.action.extra.thumbnail_image_location
+    com.mnsoft.navi.action.longpress.selectlocation.launch.LS
+    com.mnsoft.navi.action.navi_ev3_dte_status
+    com.mnsoft.navi.action.navidb.delete.end
+    com.mnsoft.navi.action.navidb.delete.start
+    com.mnsoft.navi.action.setnavistatus
+    com.mnsoft.navi.action.settings
+    com.mnsoft.navi.carpay.req.pvid
+    com.mnsoft.navi.carpay.req.xevoid
+    com.mnsoft.navi.carpay.res.pvid
+    com.mnsoft.navi.carpay.res.xevoid
+    com.mnsoft.navi.circuit.action.NOTI_CIRCUIT_INFO
+    com.mnsoft.navi.circuit.action.NOTI_CIRCUIT_LAPTIMER_BUTTON
+    com.mnsoft.navi.circuit.action.NOTI_CIRCUIT_LAPTIMER_UPDATE
+    com.mnsoft.navi.circuit.action.NOTI_CIRCUIT_PASS_FINISH_LINE
+    com.mnsoft.navi.circuit.extra.BOUNDARY_ENTRYEXIT
+    com.mnsoft.navi.circuit.extra.BUTTON
+    com.mnsoft.navi.circuit.extra.CIRCUIT_ID
+    com.mnsoft.navi.circuit.extra.CIRCUIT_NAME
+    com.mnsoft.navi.circuit.extra.COUNTRY_CODE
+    com.mnsoft.navi.circuit.extra.COURSE_ID
+    com.mnsoft.navi.circuit.extra.COURSE_NAME
+    com.mnsoft.navi.circuit.extra.FINISHLINE_EXIST
+    com.mnsoft.navi.circuit.extra.LAP_HOUR
+    com.mnsoft.navi.circuit.extra.LAP_MIN
+    com.mnsoft.navi.circuit.extra.LAP_MSEC
+    com.mnsoft.navi.circuit.extra.LAP_NUMBER
+    com.mnsoft.navi.circuit.extra.LAP_SEC
+    com.mnsoft.navi.cpType
+    com.mnsoft.navi.curposition.req.thumbnail
+    com.mnsoft.navi.db_load_fail
+    com.mnsoft.navi.distance.unit
+    com.mnsoft.navi.emergency.res.thumbnail
+    com.mnsoft.navi.etc_init_fail
+    com.mnsoft.navi.extra.AUTHENTICATION_STATE
+    com.mnsoft.navi.extra.STATE
+    com.mnsoft.navi.extra.info
+    com.mnsoft.navi.extra.status
+    com.mnsoft.navi.force.crash
+    com.mnsoft.navi.force.show.popup
+    com.mnsoft.navi.hd.sxm.switching
+    com.mnsoft.navi.hdradio.fuel.test
+    com.mnsoft.navi.hdradio.fuelprice.poi
+    com.mnsoft.navi.hdradio.fuelprice.poi.test
+    com.mnsoft.navi.intent.action.gsensor_signal_info
+    com.mnsoft.navi.intent.action.road.linkid
+    com.mnsoft.navi.intent.action.road.linkid.extra
+    com.mnsoft.navi.intent.action.road.roadClassification
+    com.mnsoft.navi.intent.action.road.roadClassification.extra
+    com.mnsoft.navi.intent.extra.avnt_gsensor_signal_infos
+    com.mnsoft.navi.map.country_code
+    com.mnsoft.navi.mymenu.navimenu.db.write.request
+    com.mnsoft.navi.new_mymenu.select_icon
+    com.mnsoft.navi.new_mymenu.updateDB
+    com.mnsoft.navi.noti.NAVI_VERSION_TABLE_UPDATED
+    com.mnsoft.navi.noti.NAVI_VERSION_TABLE_UPDATED sent
+    com.mnsoft.navi.noti.TomTomAvailable
+    com.mnsoft.navi.noti.TomTomStatus
+    com.mnsoft.navi.noti.VR_DB_WRITE_DONE
+    com.mnsoft.navi.notify.official.countrycode
+    com.mnsoft.navi.notify.tunnel.enter_state
+    com.mnsoft.navi.req.TomTomStatus
+    com.mnsoft.navi.req.battery_popup.controller
+    com.mnsoft.navi.req.battery_popup.controller : isShow = 
+    com.mnsoft.navi.request.mcp.DestNWaypoint.Weather
+    com.mnsoft.navi.request.mcp.Position.Weather
+    com.mnsoft.navi.request.mcp.sports
+    com.mnsoft.navi.request.sound_stop
+    com.mnsoft.navi.response.mcp.Position.Weather
+    com.mnsoft.navi.response.mcp.sports
+    com.mnsoft.navi.sdmodule_fail
+    com.mnsoft.navi.select.notify.FRSJson
+    com.mnsoft.navi.setting.ACTION_CAM_ALERT_CHECK_STATE
+    com.mnsoft.navi.setting.NAVI_SETTING_MENU
+    com.mnsoft.navi.setting.NOTI_CAM_ALERT_CHECK_STATE
+    com.mnsoft.navi.setting.NOTI_CAM_ALERT_CHECK_STATE = 
+    com.mnsoft.navi.setting.NOTI_CAM_ALERT_CHECK_STATE sent
+    com.mnsoft.navi.setting.extra.menuType
+    com.mnsoft.navi.sqlite.destination.update
+    com.mnsoft.navi.ssview.map.status
+    com.mnsoft.navi.statusbar.changed
+    com.mnsoft.navi.sxm.req.routes
+    com.mnsoft.navi.sxm.req.startguidance
+    com.mnsoft.navi.sxm.req.thumbnail
+    com.mnsoft.navi.sxm.req.thumnail
+    com.mnsoft.navi.sxm.res.thumbnail
+    com.mnsoft.navi.test.REQ_HDA_LINE_NUM_VAL
+    com.mnsoft.navi.test.SERVICE_STATE
+    com.mnsoft.navi.test.activate_receiver
+    com.mnsoft.navi.test.activity_popup
+    com.mnsoft.navi.test.autofactory
+    com.mnsoft.navi.test.block.hk.incoming.call
+    com.mnsoft.navi.test.block.hk.review.popup
+    com.mnsoft.navi.test.extra.activate_pw
+    com.mnsoft.navi.test.extra.block
+    com.mnsoft.navi.test.extra.incoming.state
+    com.mnsoft.navi.test.fuel.1
+    com.mnsoft.navi.test.fuel.2
+    com.mnsoft.navi.test.fuel.test_time.off
+    com.mnsoft.navi.test.fuel.test_time.on
+    com.mnsoft.navi.test.keyboard_setting
+    com.mnsoft.navi.test.mic_on_off_osd
+    com.mnsoft.navi.test.only.lookChanged
+    com.mnsoft.navi.test.out_tmp
+    com.mnsoft.navi.test.popup.three_button
+    com.mnsoft.navi.test.prov.table
+    com.mnsoft.navi.test.receive.roadgripdata
+    com.mnsoft.navi.test.roadIncov.name
+    com.mnsoft.navi.test.sccsync
+    com.mnsoft.navi.test.screen_capture
+    com.mnsoft.navi.test.slif
+    com.mnsoft.navi.test.sscard_state
+    com.mnsoft.navi.test.system_info
+    com.mnsoft.navi.test.tool.scenario
+    com.mnsoft.navi.test.tool.scenario 10 Intent doesn't have key or value extra
+    com.mnsoft.navi.test.tool.scenario 10 Intent key & value size is different
+    com.mnsoft.navi.test.tool.scenario 8 Intent doesn't have key extra
+    com.mnsoft.navi.test.tool.scenario 9 Intent doesn't have key extra
+    com.mnsoft.navi.test.tool.scenario Intent 13 doesn't have state extra
+    com.mnsoft.navi.test.tool.scenario Intent 14 doesn't have state extra
+    com.mnsoft.navi.test.tool.scenario Intent 15 doesn't have state extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have filepath extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have fps extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have lat or lon extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have lat_dest or lon_dest extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have lat_waypoint1 or lon_waypoint1 extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have lat_waypoint2 or lon_waypoint2 extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have modeValue state extra
+    com.mnsoft.navi.test.tool.scenario Intent doesn't have type extra
+    com.mnsoft.navi.test.tpeg_noti_ccs
+    com.mnsoft.navi.test.valet_mode.getter
+    com.mnsoft.navi.test.vr.POI_ID_LIST
+    com.mnsoft.navi.test.vr.simul.sendMsgNavi
+    com.mnsoft.navi.test.vr_poi_icon
+    com.mnsoft.navi.test.wifiActivity
+    com.mnsoft.navi.tomtom.certificate
+    com.mnsoft.navi.user_profile.intent.action.VIEWMODE_CHANGE
+    com.mnsoft.navi.user_profile.intent.action.VIEWMODE_GETSTATE
+    com.mnsoft.navi.user_profile.intent.action.VIEWMODE_STATE
+    com.mnsoft.navi.vr.SEND_POI_ID_LIST
+    com.mnsoft.navi.vr.WRITE_EXTRA_SEARCH_TABLE_DONE
+    com.mnsoft.navi.vr.extra.POI_ID_LIST
+    com.mnsoft.navi.waypointpass.cancelroute.status
+    com.mnsoft.navi.waypointpass.cancelroute.status sent.
+
+### com.mnsoft.navi_data_backup
+    com.mnsoft.navi_data_backup
+
+### com.mnsoft.navi_data_restore
+    com.mnsoft.navi_data_restore
+
+### com.mnsoft.navipopupservice
+    com.mnsoft.navipopupservice
+    com.mnsoft.navipopupservice.NaviPopupService
+    com.mnsoft.navipopupservice.bus.IRequestPopupService
+
+### com.mobis.action
+    com.mobis.action.BACKGROUND_UPDATE
+    com.mobis.action.EUNAVI_TMC_TPEG_NONE
+    com.mobis.action.REQUEST_UPDATE_HISTORY
+    com.mobis.action.RESERVED_UPDATE
+    com.mobis.action.RESPONSE_UPDATE_HISTORY
+    com.mobis.action.VOICE_MEMO
+
+### com.mobis.extra
+    com.mobis.extra.BACKGROUND_UPDATE_ON
+    com.mobis.extra.RESERVED_UPDATE_ON
+    com.mobis.extra.VOICE_MEMO_ON
+    com.mobis.extra.VOICE_MEMO_RECORDING
+
+### com.mobis.hardware
+    com.mobis.hardware.key.scroll_tunekey
+
+### com.mobis.intent
+    com.mobis.intent.CHANGE_NAVI_GUIDEPRIORITY
+    com.mobis.intent.action.CANCEL_ROUTE_SHORTCUT
+    com.mobis.intent.action.CIRCUIT_CLICK
+    com.mobis.intent.action.CLICK_CLOCK
+    com.mobis.intent.action.CLIMATE_REC_MODE_STATUS_CHANGED
+    com.mobis.intent.action.CLIMATE_STATUS_CHANGED
+    com.mobis.intent.action.END_NEW_LOG_CAPTURE
+    com.mobis.intent.action.LAMP_WARN_CHANGED
+    com.mobis.intent.action.NOTIFY_CIRCUIT
+    com.mobis.intent.action.OTA_BG_UPDATE_COMPLETED
+    com.mobis.intent.action.REROUTE_SHORTCUT
+    com.mobis.intent.action.SCONTROL_GET_REQ
+    com.mobis.intent.action.SCONTROL_GET_RES
+    com.mobis.intent.action.SCONTROL_SET_REQ
+    com.mobis.intent.action.SCONTROL_SET_RES
+    com.mobis.intent.action.SCREEN_OFF
+    com.mobis.intent.action.SCREEN_ON
+    com.mobis.intent.action.SOS_CLICKED
+    com.mobis.intent.action.SPLIT_BUTTON_HIDE
+    com.mobis.intent.action.SPLIT_BUTTON_SHOW
+    com.mobis.intent.action.SPLIT_SCREEN_HIDE
+    com.mobis.intent.action.SPLIT_SCREEN_SHOW
+    com.mobis.intent.action.SSEARCH_RESULT
+    com.mobis.intent.action.SSEARCH_SCREEN
+    com.mobis.intent.action.START_NEW_LOG_CAPTURE
+    com.mobis.intent.action.VR_ACTIVITY_BEGIN_TO_NAVI
+    com.mobis.intent.action.VR_ACTIVITY_END_TO_NAVI
+    com.mobis.intent.action.WPC_STATUS_CHANGED
+    com.mobis.intent.action.navi_keyboard_hide
+    com.mobis.intent.action.navi_keyboard_show
+    com.mobis.intent.action.splitscreen.NAVI_VIEW_STATE
+    com.mobis.intent.action.sports.update.mcs-v
+    com.mobis.intent.action_ERROR_NEW_LOG_CAPTURE
+    com.mobis.intent.extra.LAMP_WARN_SOURCE
+    com.mobis.intent.extra.LAMP_WARN_STATUS
+    com.mobis.intent.extra.WPC_STATUS
+
+### com.mobis.systemui
+    com.mobis.systemui.avnstatusbar.PROFILE_CLICKED
+
+### com.mobis.tdmbtpegservice
+    com.mobis.tdmbtpegservice.MSG_UPDATE_REGION
+
+### com.mobis.user_profile
+    com.mobis.user_profile.intent.action.GUEST_LOG_OFF
+    com.mobis.user_profile.intent.action.MOVE_GUEST_TO_DR1
+    com.mobis.user_profile.intent.action.WRITE_JSON
+
+### com.mobis.voicehandler
+    com.mobis.voicehandler
+    com.mobis.voicehandler.IVRServiceToNavi
+    com.mobis.voicehandler.VoiceHandlerActivity
+    com.mobis.voicehandler.VoiceHandlerService
+
+### com.mobis.wifi
+    com.mobis.wifi.action.Service_agreement
+    com.mobis.wifi.noti.WifiServiceAgree
+    com.mobis.wifi.req.WifiServiceAgree
+
+### com_android_action_DestinationInfo
+    com_android_action_DestinationInfo
+
+### com_android_action_DestinationInfo2
+    com_android_action_DestinationInfo2
+
+### com_android_action_DestinationInfo2, getCalendarMoveNaviPlaces() true -> DestRemainTime extra Send
+    com_android_action_DestinationInfo2, getCalendarMoveNaviPlaces() true -> DestRemainTime extra Send
+
+### com_android_action_DestinationInfoAllNew2() ChargingStation = 
+    com_android_action_DestinationInfoAllNew2() ChargingStation = 
+
+### com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint1 isCharging = 
+    com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint1 isCharging = 
+
+### com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint1 passed	  = 
+    com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint1 passed	  = 
+
+### com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint2 isCharging = 
+    com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint2 isCharging = 
+
+### com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint2 passed	  = 
+    com_android_action_DestinationInfoAllNew2() ChargingStation.waypoint2 passed	  = 
+
+### com_android_action_DestinationInfoAllNew2() DestinationInfo sent
+    com_android_action_DestinationInfoAllNew2() DestinationInfo sent
+
+### com_android_action_DestinationInfoAllNew2() Exception = 
+    com_android_action_DestinationInfoAllNew2() Exception = 
+
+### com_android_action_DestinationInfoAllNew2() Waypoint Pass = 
+    com_android_action_DestinationInfoAllNew2() Waypoint Pass = 
+
+### com_android_action_DestinationInfoAllNew2() com.mnsoft.navi
+    com_android_action_DestinationInfoAllNew2() com.mnsoft.navi.action.extra.Passed.waypoint1 passed = 
+    com_android_action_DestinationInfoAllNew2() com.mnsoft.navi.action.extra.Passed.waypoint2 passed = 
+
+### com_android_action_DestinationInfoAllNew2() num of way point : 1
+    com_android_action_DestinationInfoAllNew2() num of way point : 1
+
+### com_android_action_DestinationInfoAllNew2() num of way point : 2
+    com_android_action_DestinationInfoAllNew2() num of way point : 2
+
+### com_android_action_GpsSchedLocationPoiInfo
+    com_android_action_GpsSchedLocationPoiInfo
+
+### com_android_action_longpress_selectlocation_launch_LS
+    com_android_action_longpress_selectlocation_launch_LS
+
+### content://com.hkmc.telematics
+    content://com.hkmc.telematics.apps.Notification.db.NotificationDB/notification
+    content://com.hkmc.telematics.service.GIS.db.PoiInfoDB/poi
+    content://com.hkmc.telematics.service.Location3.db.Location3InfoDB/Location3AutoSharing
+    content://com.hkmc.telematics.service.util.db.UserProfileProvider/accountInfo
+    content://com.hkmc.telematics.service.util.db.UserProfileProvider/user_acnt_status_info
+    content://com.hkmc.telematics.service.util.db.VCRMSettingProvider/info_big
+    content://com.hkmc.telematics.service.util.db.VehicleSettingProvider/mof_info
+    content://com.hkmc.telematics.service.util.db.VehicleSettingProvider/prov_info
+    content://com.hkmc.telematics.service.util.db.VehicleSettingProvider/service_info
+    content://com.hkmc.telematics.service.util.db.VehicleSettingProvider/tmu_info
+    content://com.hkmc.telematics.service.util.db.VehicleSettingProvider/vehicle_info
+    content://com.hkmc.telematics.service.valetmode.db.ValetModeDB/valet
+
+### content://com.mnsoft.navi/CurrentLoc_Table
+    content://com.mnsoft.navi/CurrentLoc_Table
+
+### content://com.mnsoft.navi/Destination_Table
+    content://com.mnsoft.navi/Destination_Table
+
+### content://com.mnsoft.navi/Extra_Search_Table
+    content://com.mnsoft.navi/Extra_Search_Table
+
+### content://com.mnsoft.navi/IsbnGs
+    content://com.mnsoft.navi/IsbnGs
+
+### content://com.mnsoft.navi/MapDetailInfo
+    content://com.mnsoft.navi/MapDetailInfo
+
+### content://com.mnsoft.navi/MemoryPoint_Table
+    content://com.mnsoft.navi/MemoryPoint_Table
+
+### content://com.mnsoft.navi/NaviMenu_ButtonState_Table
+    content://com.mnsoft.navi/NaviMenu_ButtonState_Table
+
+### content://com.mnsoft.navi/NaviVersion
+    content://com.mnsoft.navi/NaviVersion
+
+### content://com.mnsoft.navi/NewMyMenu_Table
+    content://com.mnsoft.navi/NewMyMenu_Table
+
+### content://com.mnsoft.navi/NonSearch_Table
+    content://com.mnsoft.navi/NonSearch_Table
+
+### content://com.mnsoft.navi/RegistPnt_G1_Table
+    content://com.mnsoft.navi/RegistPnt_G1_Table
+
+### content://com.mnsoft.navi/RegistPnt_G2_Table
+    content://com.mnsoft.navi/RegistPnt_G2_Table
+
+### content://com.mnsoft.navi/RegistPnt_G3_Table
+    content://com.mnsoft.navi/RegistPnt_G3_Table
+
+### content://com.mnsoft.navi/RegistPnt_SectorName_Table
+    content://com.mnsoft.navi/RegistPnt_SectorName_Table
+
+### content://com.mnsoft.navi/RegistPnt_Special_Table
+    content://com.mnsoft.navi/RegistPnt_Special_Table
+
+### content://com.mnsoft.navi/Search_Table
+    content://com.mnsoft.navi/Search_Table
+
+### content://com.mnsoft.navi/SettingsSearch_Table
+    content://com.mnsoft.navi/SettingsSearch_Table
+
+### content://com.mnsoft.navi/State_Table
+    content://com.mnsoft.navi/State_Table

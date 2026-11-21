@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>K8 ccNC 하단바</title>
+<style>
+/* ccNC 길안내 하단바. 1920×720에서 왼쪽 세 키의 피치는 152px이다. */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+html, body {
+  margin: 0; width: 100%; height: 100%; overflow: hidden;
+  background: #686765; color: #f4f2ef;
+  font: 400 26px/1.2 Roboto, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  user-select: none; -webkit-user-select: none;
+}
+button { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
+button:active { opacity: .82; }
+img { -webkit-user-drag: none; user-select: none; }
+
+.bottom-bar {
+  position: absolute; left: 0; bottom: 0; width: 1920px; height: 88px;
+  -webkit-transform-origin: left bottom; transform-origin: left bottom;
+  background: #686765; display: flex; align-items: stretch;
+}
+
+/* 왼쪽 키 세 개: 각각 152px 칸 */
+.bb-nav-keys { width: 526px; flex: 0 0 526px; display: flex; padding-left: 5px; }
+.bb-key {
+  flex: 0 0 152px; height: 88px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.bb-icon {
+  display: block; width: 32px; height: 32px; flex-shrink: 0;
+  fill: none; stroke: #f2f0ed; stroke-width: 2.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* 가운데 알약 */
+.bb-center { width: 902px; flex: 0 0 902px; position: relative; display: flex; align-items: center; }
+.bb-pill {
+  position: relative; height: 68px; width: 862px; flex-shrink: 0;
+  background: #525150; border-radius: 999px;
+  display: flex; align-items: center; padding: 0 36px 0 126px;
+}
+.bb-route-cancel {
+  position: absolute; left: 6px; top: 10px;
+  width: 48px; height: 48px; padding: 0; border-radius: 50%;
+  background: #464544; color: #f2f0ed;
+  display: flex; align-items: center; justify-content: center;
+}
+.bb-route-info { display: flex; flex: 1; min-width: 0; align-items: center; white-space: nowrap; }
+.bb-metric {
+  display: flex; min-width: 104px; flex: 0 0 auto; align-items: baseline; margin-right: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.bb-time {
+  display: flex; align-items: baseline; padding: 0; min-height: 48px;
+  margin-right: 0; text-align: left;
+}
+.bb-route-value { font-size: 30px; font-weight: 500; letter-spacing: -.25px; line-height: 48px; }
+.bb-route-unit { font-size: 21px; font-weight: 400; line-height: 48px; }
+.bb-route-unit:not(:empty) { margin-left: 4px; }
+.bb-route-divider {
+  width: 2px; height: 28px; background: rgba(255,255,255,.28);
+  margin: 0 20px 0 24px; flex-shrink: 0;
+}
+.bb-location { fill: #f2f0ed; stroke: none; }
+.bb-dest {
+  margin-left: 16px; color: #f2f0ed;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: none; padding: 0; text-align: left; height: 48px;
+}
+.bb-idle { display: flex; align-items: center; padding-left: 68px; color: #e6e3df; text-align: left; }
+.bb-idle .bb-icon { margin-right: 20px; }
+
+/* 오른쪽 앨범과 현재 곡. 영역 안의 좌우 제스처는 곡을 바꾼다. */
+.bb-media-zone { width: 492px; flex: 0 0 492px; display: flex; align-items: stretch; touch-action: pan-y; }
+.bb-media-play {
+  width: 88px; flex: 0 0 88px; height: 88px; padding: 0; background: #1c1c1c; overflow: hidden;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.bb-media-play img.bb-cover { display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.bb-media-play img.bb-media-state { width: auto; height: 32px; -webkit-filter: brightness(0) invert(1); filter: brightness(0) invert(1); }
+.bb-media-off-icon {
+  width: 54px; height: 54px; fill: none; stroke: #f2f0ed; stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.bb-media-body { flex: 1; min-width: 0; display: flex; align-items: center; padding: 0 18px; text-align: left; }
+.bb-media-meta { min-width: 0; flex: 1; }
+.bb-media-meta strong {
+  display: block; font-weight: 400; color: #f2f0ed;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bb-media-meta span {
+  display: block; font-size: 22px; font-weight: 400; color: #b9b7b4; margin-top: 1px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bb-media-off { color: #f2f0ed; }
+</style>
+</head>
+<body>
+<footer class="bottom-bar" id="detail-bottom-bar">
+  <div class="bb-nav-keys">
+    <button type="button" class="bb-key" id="bb-back-btn" aria-label="순정 하단줄 표시">
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M20 9l-7 7 7 7"/></svg>
+    </button>
+    <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 14L16 3l13 11v12H3z"/></svg>
+    </button>
+    <button type="button" class="bb-key" id="bb-menu-btn" aria-label="ccNC 전체 기능">
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 5h28M2 16h28M2 27h28"/></svg>
+    </button>
+  </div>
+
+  <div class="bb-center">
+    <button type="button" class="bb-pill bb-idle" id="bb-idle-pill">
+      <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l13 24-13-6-13 6z"/></svg>
+      <span id="bb-idle-label">목적지 검색</span>
+    </button>
+
+    <div class="bb-pill" id="bb-route-pill" hidden>
+      <button type="button" class="bb-route-cancel" id="bb-cancel-route" aria-label="경로 종료">
+        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 9l14 14M23 9L9 23"/></svg>
+      </button>
+      <div class="bb-route-info">
+        <div class="bb-metric" id="bb-distance-metric"><span class="bb-route-value" id="bb-route-dist"></span><span class="bb-route-unit" id="bb-route-unit"></span></div>
+        <button type="button" class="bb-metric bb-time" id="bb-time-metric" aria-label="남은 시간과 도착 예정 표시 전환">
+          <span class="bb-route-value" id="bb-route-time"></span><span class="bb-route-unit" id="bb-route-period"></span>
+        </button>
+        <span class="bb-route-divider" id="bb-route-divider"></span>
+        <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l13 24-13-6-13 6z"/></svg>
+        <button type="button" class="bb-dest" id="bb-dest-info" aria-haspopup="true">목적지</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bb-media-zone" id="bb-media-zone">
+    <button type="button" class="bb-media-play" id="bb-media-btn" aria-label="재생">
+      <svg id="bb-media-off-icon" class="bb-media-off-icon" viewBox="0 0 54 54" aria-hidden="true">
+        <rect x="2" y="2" width="50" height="50" rx="3"/>
+        <path d="M21 14L39 27 21 40Z"/>
+      </svg>
+      <img id="bb-media-icon" class="bb-media-state" src="icons/I-media_play_new.png" alt="" hidden>
+      <img id="bb-media-cover" class="bb-cover" alt="" draggable="false" hidden>
+    </button>
+    <button type="button" class="bb-media-body" id="bb-playlist-btn" aria-label="재생목록">
+      <span class="bb-media-off" id="bb-media-off">Media Off</span>
+      <span class="bb-media-meta" id="bb-media-meta" hidden>
+        <strong id="bb-media-title">-</strong>
+        <span id="bb-media-sub"></span>
+      </span>
+    </button>
+  </div>
+</footer>
+
+<script>
+  function send(action) {
+    if (window.K8NavBar) window.K8NavBar.action(action);
+  }
+  document.getElementById('bb-back-btn').addEventListener('click', function () { send('back'); });
+  document.getElementById('bb-home-btn').addEventListener('click', function () { send('home'); });
+  document.getElementById('bb-menu-btn').addEventListener('click', function () { send('menu'); });
+  document.getElementById('bb-idle-pill').addEventListener('click', function () { send('search'); });
+  document.getElementById('bb-media-btn').addEventListener('click', function () { send('play'); });
+  document.getElementById('bb-playlist-btn').addEventListener('click', function () { send('playlist'); });
+  document.getElementById('bb-dest-info').addEventListener('click', function () { send('route-details'); });
+  document.getElementById('bb-cancel-route').addEventListener('click', function (event) {
+    event.stopPropagation();
+    send('cancel');
+  });
+  var arrivalMode = true;
+  var currentRemain = '', currentArrival = '';
+  function renderTime() {
+    var showArrival = arrivalMode && currentArrival || !currentRemain && currentArrival;
+    var time = showArrival ? currentArrival : currentRemain;
+    var clock = showArrival && /^(\d{1,2}:\d{2})(?:\s+(AM|PM))?$/i.exec(time);
+    var metric = document.getElementById('bb-time-metric');
+    metric.hidden = !time;
+    metric.setAttribute('aria-label', (showArrival ? '도착 예정 ' : '남은 시간 ') + time);
+    document.getElementById('bb-route-time').textContent = clock ? clock[1] : time;
+    document.getElementById('bb-route-period').textContent = clock && clock[2] || '';
+  }
+  document.getElementById('bb-time-metric').addEventListener('click', function () {
+    if (!currentRemain || !currentArrival) return;
+    arrivalMode = !arrivalMode;
+    renderTime();
+  });
+
+  function fitBar() {
+    var root = document.documentElement;
+    var widthScale = root.clientWidth / 1920;
+    var contentHeight = Math.min(root.clientHeight, Math.round(88 * widthScale));
+    var scale = 'scale(' + widthScale + ',' + contentHeight / 88 + ')';
+    var bar = document.getElementById('detail-bottom-bar');
+    bar.style.webkitTransform = scale;
+    bar.style.transform = scale;
+  }
+  window.addEventListener('resize', fitBar);
+  fitBar();
+  document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+
+  var mediaZone = document.getElementById('bb-media-zone');
+  var swipeStart = null, ignoreClickUntil = 0;
+  function startSwipe(point) {
+    swipeStart = point && { x: point.clientX, y: point.clientY };
+  }
+  function finishSwipe(point, event) {
+    var start = swipeStart;
+    swipeStart = null;
+    if (!start || !point) return;
+    var dx = point.clientX - start.x, dy = point.clientY - start.y;
+    if (Math.abs(dx) < Math.max(32, mediaZone.getBoundingClientRect().width * .13) ||
+        Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    ignoreClickUntil = Date.now() + 400;
+    event.preventDefault();
+    send(dx < 0 ? 'next' : 'previous');
+  }
+  mediaZone.addEventListener('touchstart', function (event) {
+    startSwipe(event.touches.length === 1 ? event.touches[0] : null);
+  });
+  mediaZone.addEventListener('touchend', function (event) { finishSwipe(event.changedTouches[0], event); });
+  mediaZone.addEventListener('touchcancel', function () { swipeStart = null; });
+  mediaZone.addEventListener('mousedown', function (event) { if (event.button === 0) startSwipe(event); });
+  mediaZone.addEventListener('mouseup', function (event) { finishSwipe(event, event); });
+  mediaZone.addEventListener('mouseleave', function () { swipeStart = null; });
+  mediaZone.addEventListener('click', function (event) {
+    if (Date.now() >= ignoreClickUntil) return;
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }, true);
+
+  var songPlaying = false, songKnown = false;
+  var cover = document.getElementById('bb-media-cover');
+  function refreshMediaIcon() {
+    var active = songKnown || songPlaying;
+    document.getElementById('bb-media-icon').hidden = !cover.hidden || !active;
+    var off = document.getElementById('bb-media-off-icon');
+    if (!cover.hidden || active) off.setAttribute('hidden', '');
+    else off.removeAttribute('hidden');
+  }
+  cover.onload = function () { cover.hidden = false; refreshMediaIcon(); };
+  cover.onerror = function () { cover.hidden = true; refreshMediaIcon(); };
+
+  window.K8NavBarView = {
+    media: function (title, artist, playing) {
+      var name = title || '';
+      var off = document.getElementById('bb-media-off');
+      var meta = document.getElementById('bb-media-meta');
+      var icon = document.getElementById('bb-media-icon');
+      icon.src = playing
+        ? 'icons/I-media_pause_new.png' : 'icons/I-media_play_new.png';
+      songKnown = !!name;
+      songPlaying = playing;
+      refreshMediaIcon();
+      document.getElementById('bb-media-btn').setAttribute('aria-label', playing ? '일시정지' : '재생');
+      if (name) {
+        off.hidden = true;
+        meta.hidden = false;
+        document.getElementById('bb-media-title').textContent = name;
+        document.getElementById('bb-media-sub').textContent = artist || '';
+      } else {
+        off.hidden = false;
+        meta.hidden = true;
+        off.textContent = playing ? '재생 중' : 'Media Off';
+      }
+    },
+    cover: function (uri) {
+      if (uri && /^data:image\/jpeg;base64,/.test(uri)) {
+        if (cover.getAttribute('src') !== uri) cover.src = uri;
+      } else {
+        cover.hidden = true;
+        cover.removeAttribute('src');
+        refreshMediaIcon();
+      }
+    },
+    route: function (dist, remain, dest, guidanceActive, arrival, road) {
+      var idle = document.getElementById('bb-idle-pill');
+      var route = document.getElementById('bb-route-pill');
+      // D-map_main.png: without a route the pill shows the current location, like "서울 서초구 부근".
+      document.getElementById('bb-idle-label').textContent = road || '목적지 검색';
+      if (!dest && !guidanceActive) {
+        arrivalMode = true;
+        currentRemain = currentArrival = '';
+        route.hidden = true;
+        idle.hidden = false;
+        return;
+      }
+      idle.hidden = true;
+      route.hidden = false;
+      var parts = String(dist || '').match(/^([0-9][0-9.,]*)\s*(km|m|mi)$/i);
+      document.getElementById('bb-route-dist').textContent = parts ? parts[1] : '';
+      document.getElementById('bb-route-unit').textContent = parts ? parts[2] : '';
+      currentRemain = remain || '';
+      currentArrival = arrival || '';
+      document.getElementById('bb-distance-metric').hidden = !parts;
+      document.getElementById('bb-route-divider').hidden = !parts && !currentRemain && !currentArrival;
+      renderTime();
+      document.getElementById('bb-dest-info').textContent = dest || '길안내 중';
+    }
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=432,user-scalable=no">
+<title>경로 요약</title>
+<style>
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #2c302f; color: #f3f4f2; font: 18px/1.25 Roboto, "Malgun Gothic", sans-serif; }
+main { height: 100%; padding: 12px 16px; border: 1px solid #626863; }
+header { display: flex; align-items: center; justify-content: space-between; }
+h1 { font-size: 19px; font-weight: 500; margin: 0; color: #d6dbd7; }
+button { width: 44px; height: 44px; border: 0; border-radius: 5px; background: transparent; color: inherit; font: 29px/1 sans-serif; padding: 0; }
+button:active { background: #474d49; }
+#destination { display: block; margin: 0 0 12px; font-size: 25px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.summary { display: flex; align-items: flex-start; }
+.metric { flex: 0 0 auto; margin-right: 19px; white-space: nowrap; }
+.metric:last-child { margin-right: 0; }
+.metric strong, .metric span { display: block; }
+.metric strong { font-size: 23px; font-weight: 500; }
+.metric span { font-size: 15px; color: #c5cbc6; }
+</style>
+<main>
+  <header><h1>경로 요약</h1><button id="close" type="button" aria-label="닫기">×</button></header>
+  <strong id="destination">길안내 중</strong>
+  <div class="summary">
+    <div class="metric" hidden><strong id="distance"></strong><span>남은 거리</span></div>
+    <div class="metric" hidden><strong id="remaining"></strong><span>남은 시간</span></div>
+    <div class="metric" hidden><strong id="arrival"></strong><span>도착 예정</span></div>
+  </div>
+</main>
+<script>
+(function () {
+  function setMetric(id, value) {
+    var field = document.getElementById(id);
+    field.textContent = value;
+    field.parentNode.hidden = !value;
+  }
+  document.getElementById('close').onclick = function () {
+    if (window.K8NavBar) window.K8NavBar.action('route-close');
+  };
+  window.K8RoutePanel = {
+    update: function (destination, distance, remaining, arrival) {
+      document.getElementById('destination').textContent = destination || '길안내 중';
+      setMetric('distance', distance || '');
+      setMetric('remaining', remaining || '');
+      setMetric('arrival', arrival || '');
+    }
+  };
+}());
+</script>
+</html>

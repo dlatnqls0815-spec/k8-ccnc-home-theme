@@ -37,8 +37,13 @@ def build(sdk, jdk, output):
         classes.mkdir()
         jar = stage / "android.jar"
         shutil.copyfile(android, jar)
+        # Compile-only copies of the firmware's optional automotive library; never packaged.
+        stubs = stage / "stubs"
+        stubs.mkdir()
         run(javac, "-encoding", "UTF-8", "-source", "8", "-target", "8", "-Xlint:-options",
-            "-bootclasspath", jar, "-d", classes, *sorted((ROOT / "src").rglob("*.java")))
+            "-bootclasspath", jar, "-d", stubs, *sorted((ROOT / "stubs").rglob("*.java")))
+        run(javac, "-encoding", "UTF-8", "-source", "8", "-target", "8", "-Xlint:-options",
+            "-bootclasspath", jar, "-classpath", stubs, "-d", classes, *sorted((ROOT / "src").rglob("*.java")))
         run(java, "-cp", d8, "com.android.tools.r8.D8", "--min-api", "19", "--lib", jar,
             "--output", stage, *sorted(classes.rglob("*.class")))
         manifest = stage / "AndroidManifest.xml"
@@ -51,6 +56,12 @@ def build(sdk, jdk, output):
         with zipfile.ZipFile(unsigned, "a", zipfile.ZIP_DEFLATED) as apk:
             apk.write(stage / "classes.dex", "classes.dex")
             apk.write(ROOT / "assets" / "index.html", "assets/index.html")
+            apk.write(ROOT / "assets" / "navbar.html", "assets/navbar.html")
+            apk.write(ROOT / "assets" / "corners.html", "assets/corners.html")
+            apk.write(ROOT / "assets" / "playback_panel.html", "assets/playback_panel.html")
+            apk.write(ROOT / "assets" / "route_panel.html", "assets/route_panel.html")
+            for icon in sorted((ROOT / "assets" / "icons").glob("*.png")):
+                apk.write(icon, "assets/icons/" + icon.name)
         aligned = stage / "aligned.apk"
         run(zipalign, "-f", "4", unsigned, aligned)
         stage_key = stage / "k8-home.p12"

@@ -1,5 +1,217 @@
 # K8 Gen5W 홈
 
+## 0.4.25 하단 모서리 곡률·비율 실측 맞춤, 차 없이 되는 연결 (2026-11-21, Claude)
+
+- 실측(`D-settings_theme_widget.png` 944×354): 왼쪽 조각 0–230(24.4%), 오른쪽 710–944(24.8%), 높이 44(12.4%), 색 #1c1c1c, 위 테두리 한 줄이 살짝 밝음, 가운데 띠 #131313. 미디어 상자의 앨범 칸은 상자 높이만큼 정사각형으로 왼쪽에 붙음(#292d2e). 화면 안쪽 위 모서리가 둥글다(1920 기준 12px로 적용).
+- 테마 안: 하단줄 비율 24.4/50.8/24.8, 안쪽 위 모서리 둥글게, 앨범 칸 정사각형(옛 웹뷰용으로 `12.5vh`). `▷ Off`는 공식처럼 사각 테두리 안 ▷. 화면구성·설정 상세의 왼쪽 메뉴 칸과 오른쪽 그림 칸을 아래 두 조각과 같은 폭으로 맞춤(바깥 여백 없앰, 메뉴 글자 2.9% 안쪽). 분할 화면 위젯 폭도 24.8%. 화면구성 ≡ 손잡이를 공식 크기로 키움.
+- 순정 화면 위 조각(`CornerService`): 창 폭 24.4%/24.8%, 창을 투명하게 하고 페이지가 둥근 조각을 그림.
+- 차 없이 연결한 것: 내비 화면 하단 가운데(경로 없을 때)가 `길안내 정보 연결 대기` 대신 0.4.21의 현재 위치(없으면 `목적지 검색`). 분할 화면 `날씨` 위젯이 0.4.22 공조의 바깥 기온과 운전석·조수석 온도, 에어컨 상태를 보여 줌(예보는 인터넷이 필요해 없음). `스포츠`는 인터넷이 필요하다고 사실대로 표시.
+- 검사: 빌드·서명, `verify-integration`, 메뉴 호환 사본, 분할 화면 밀기, 공조 표시, 모서리 페이지, 날씨 위젯·내비 현재 위치 시험 모두 화면 오류 없음. 배포 `deliverables/K8-5W-홈-0.4.25.apk`, `K8-ccNC-Home-NEMESIS-0.4.25-USB.zip`(SHA-256 `3344a2e820a3f6f8cdb67c5cea3bed84644b2de9b71783ff4b2706d0ae67acfd`).
+
+## 0.4.24 하단 모서리 두 조각을 순정 화면에도 (2026-11-21, Claude)
+
+사용자 확인: ccNC는 상세 화면마다 왼쪽 아래 `‹ ⌂ ≡`과 오른쪽 아래 현재 재생 상자가 **항상 떠 있다**(순정 설정 화면 사진). 홈 화면에는 없다(공식 홈 그림).
+- 테마 안: 상세 화면 하단줄의 가운데가 비어 있으면 투명(`.bottom-bar.no-center`)하게 바꿔 두 조각만 떠 보이게 함. 미디어가 없을 때 상자는 공식처럼 `▷ Off`(사각 테두리 안 재생 표시).
+- 순정 화면 위: 새 `CornerService` + `assets/corners.html`. 화면의 24%×12.5%(왼쪽)와 26%×12.5%(오른쪽) 창 두 개를 `TYPE_PHONE`으로 띄운다. 0.4초마다 맨 위 화면을 보고 테마, 런처(HOME 앱), 순정 내비(내비는 `NavBarService` 몫), 이름에 phoneprojection·carplay·androidauto·camera·rvm·avm·pdw가 들어간 화면에서는 숨긴다.
+- 버튼: ⌂ → 테마 홈, ≡ → 테마 전체 기능, 미디어 상자 → 재생 중인 순정 플레이어(없으면 테마 미디어 화면). ‹ 는 일반 앱이 다른 앱에 뒤로 키를 보낼 수 없어서(0.4.8에서 키 도우미 제거) **바로 전에 쓰던 화면을 앞으로**(`moveTaskToFront`, `REORDER_TASKS` 권한 추가) 가져온다. 순정 앱 안의 한 단계 뒤로는 순정 화면의 뒤로 화살표를 쓴다.
+- 설정: 설정 → 일반 → `순정 화면에도 하단 버튼 띄우기`(기본 꺼짐). 켜면 시동 후 `BootReceiver`와 테마 시작 때 서비스가 다시 뜬다.
+- 검사: 빌드·서명(같은 인증서), `verify-integration`, 메뉴 호환 사본, 분할 화면 밀기, 공조 표시, 모서리 페이지(버튼 3개·미디어 상자 동작, 화면 오류 없음). 배포 `deliverables/K8-5W-홈-0.4.24.apk`, `K8-ccNC-Home-NEMESIS-0.4.24-USB.zip`(SHA-256 `e149c4cecdd135a47736a4b87f1bd9f682820a63dbab959e30d60391780a3f62`).
+- 차에서 볼 것: 순정 설정·라디오·블루투스 화면에서 두 조각이 뜨는지(`logcat -s K8HomeCorners`에 `overlay window was refused`가 없어야 함), 순정 화면 아래 모서리의 순정 버튼을 가리지 않는지, 후방 카메라·CarPlay·안드로이드 오토에서 숨는지(숨지 않으면 그 화면의 패키지 이름을 숨김 목록에 추가), ‹ 가 직전 화면으로 가는지.
+
+## 0.4.23 공식 매뉴얼 화면에 맞춤 (2026-11-21, Claude)
+
+차이 목록은 [ccNC-디자인-차이.md](ccNC-디자인-차이.md). 이번에 고친 것:
+- 글꼴: 굵기 600~900을 모두 500으로(맑은 고딕에서는 보통 굵기로 보임). `strong/h1~h3`도 500.
+- 기본 배경을 ccNC 검정으로. 예전 저장값(`design` 표시 없음)은 한 번 검정으로 바뀐다. 5W 파란 배경은 설정 → 디스플레이 → 화면 밝기 탭의 `홈 배경` 줄로 옮김. 검정일 때 배경 무늬 투명도 0.
+- 홈: 위 가운데 손잡이 막대와 `BT 상태 대기` 숨김(위에서 끌어내리기는 그대로). 아래는 페이지 점 4개만(배경화면·전체 메뉴 글자, 대기 화면 점, 5W 파란배경·화면구성 버튼 숨김). 미디어 카드는 짙은 바탕 + 왼쪽 정사각형 앨범, `미디어` 꼬리표·진행선 없앰.
+- 전체 기능: 모든 카드 같은 짙은 회색(#25211f/#181615), 카드별 색·줄무늬·`연결됨` 꼬리표 없앰. 끌 때는 점선 대신 카드가 밝아짐.
+- 미디어·전화 아래 탭: 아이콘만(글자 숨김), 아이콘 크게. 미디어 `목록/한 곡/플레이어` 버튼 없앰 → 앨범 그림을 누르면 플레이어, 플레이어의 ☰가 목록. 재생 목록 줄은 번호 + 곡명만. 앨범 그림과 재생 버튼을 크게.
+- 분할 화면: 기본 닫힘(예전 저장값도 한 번 닫힘). 하단 오른쪽 미디어 상자를 위로 밀면 열리고 위젯을 오른쪽으로 밀면 닫힘. 오른쪽 끝 손잡이, 제목·▲▼⚙ 머리줄 숨김. ‹ ›는 위젯을 만질 때 2.5초만 보임. 너비 26%(미디어 상자와 같은 줄).
+- 퀵 컨트롤: `퀵 컨트롤` 제목 없앰(편집 중에만 `퀵 컨트롤 편집`). 오른쪽 열 아래를 비움.
+- 화면구성: 분할 화면 ▲▼ 숨김(≡ 길게 눌러 끌기로 순서 변경), `지도` 줄 흐리게. 디지털 액자 줄 끝 `›`. 안내문을 공식 문장에 가깝게(차에서 실제로 하는 일과 어긋나는 부분은 사실대로: 디지털 액자는 "선택한 이미지", 그래픽 스타일은 "홈 화면"만). 대기 화면 톱니 크게.
+- 순정 내비 위 하단바: 경로가 없을 때 가운데 글자가 0.4.21의 현재 위치(없으면 `목적지 검색`).
+- 검사: 빌드·서명(같은 인증서), `verify-integration.cjs` 통과. `verify-menu-compat.cjs`는 이제 숨긴 `전체 메뉴 ›` 버튼을 누르려다 멈추므로, 그 단계만 화면 전환 호출로 바꾼 사본(스크래치)으로 통과. 분할 화면 밀어 열기·닫기 시험 통과. 배포 `deliverables/K8-5W-홈-0.4.23.apk`, `K8-ccNC-Home-NEMESIS-0.4.23-USB.zip`(SHA-256 `6fedb7e85409f5a466e894601168bd0763898f0b4bce3de0936ba82391c4aa6d`).
+- 남은 차이: 공식 글꼴(얇고 둥근 서체) 파일이 없어 맑은 고딕/차의 기본 글꼴을 쓴다. 화면구성 오른쪽 그림(겹친 화면, 액자), 블루투스 플레이어의 `⌄ 블루투스 오디오` 접기 버튼, 미디어 상자를 짧게 눌렀을 때의 동작(지금은 미디어 화면 열기)은 그대로.
+
+## 0.4.22 공조 값 읽기 (2026-11-21, Claude)
+
+- 근거: `automotive.odex`의 `com/hkmc/datc`. `DATCManager(Context)`, `addDATCListener(DATCListener)`, `getClimateInfo(int DATCFlag)`, `getTemperatureUnit()`. 수신 클래스 `DATCListener`는 일반 클래스(인터페이스 아님)라 상속한다. `onDatcStatus(DatcStatus)`의 `getDrTempC/getPsTempC/getAmbientTempC`(°C 실수), `getAirconOnOff`, `getAuto`, `getMainBlowerLevel`, `getModeDrive`, `getIntake`, `getOperationStatus`; `onTemperatureInformation(...)`도 온도를 실수로 준다. `addDATCListener`는 등록 직후 저장된 상태를 한 번 보내는 것으로 보인다(smali 흐름).
+- 번호 뜻(`DATCFlag$DATCConstants`): 켜짐 1/꺼짐 0, 바람 세기 0=꺼짐·2~9=1~8단, 바람 방향 1 얼굴·2 얼굴+발·3 발·4 발+앞유리·5 앞유리·6 자동 김서림, 내기 순환 1/외기 0, 단위 1=°C·2=°F. 바람 세기·방향은 `DatcStatus` 값에도 같은 번호를 쓰는지 차에서 확인 필요.
+- 구현: `src/io/github/k8home/StockClimate.java`(읽기만, 명령 송신 없음). 라이브러리 클래스 참조는 안쪽 클래스 `Binding`/`Receiver`에만 있어 라이브러리가 없거나 서비스가 거부해도 테마는 그대로 뜬다. 컴파일용 껍데기 `stubs/com/hkmc/datc/*`는 `build.py`가 컴파일 때만 쓰고 APK에는 안 들어간다(dexdump로 `com/hkmc` 클래스 0개 확인).
+- 화면: 설정 → 차량에 운전석·조수석·외부 온도, 에어컨, 오토, 바람 세기·방향, 공기 유입 줄. 값이 하나도 없으면 줄이 숨는다.
+- 검증: 빌드·서명(0.4.19와 같은 인증서), 코덱스 검사 2종, 공조 표시 시험(1920×720, 화면 오류 없음). 배포 `deliverables/K8-5W-홈-0.4.22.apk`, `K8-ccNC-Home-NEMESIS-0.4.22-USB.zip`(SHA-256 `f1482aec8184518fa1ca387273104f89b3a720ecff166019103d8a55438f5aec`).
+- 차에서 볼 것: `logcat -s K8StockClimate`에 `climate listener added`와 `status dr=...`가 찍히는지. `climate service unavailable`이면 공조 서비스가 일반 앱을 거부한 것(그때는 네메시스 system 도우미로 읽는 방법을 검토). 공조를 바꾸면서 바람 세기·방향 번호가 화면과 맞는지.
+
+## 0.4.21 PC 조사로 찾은 통로 연결 (2026-11-21, Claude)
+
+근거: 차에서 뽑은 `HKMC_Navi_ExSL.odex`(research/k8-ambient-sync/private/nowplaying/apps)와 `automotive.odex`(research/k8-ecs-damping/private/vs)를 smali로 풀어 확인. 풀기 도구는 apktool.jar 안의 dexlib2/baksmali(`DexBackedOdexFile`)로 클래스 전체를 덤프하는 짧은 Java 파일.
+
+넣은 것(PC에서만 확인, 차 미확인):
+- **현재 도로명·주소**: `com.hkmc.intent.action.Request_Info_CurrentLoc`를 내비에 보내면 `Response_Info_CurrentLoc`(extras `address` 문자열, `on_road`)이 온다. NaviService가 `Request_Info_Destination`과 같은 필터로 받는다(권한 없음). `StockRoute`가 5초 간격 이상으로 요청하고, 길안내가 없을 때 홈 지도 카드 아래 줄과 우측 지도 위젯에 표시한다. `on_road`의 형식은 로그 `K8StockRoute current location`으로 확인.
+- **내비 상태 방송**: `com.mnsoft.navi.action.DAYNIGHT_CHANGED`(`daynight_status`), `android.intent.action.VIT_NOTI_NAVI_MUTE_STATE`(`Value`), `android.intent.action.VIT_NOTI_NAVI_BOOTEND_SERVICE`(`appVersion`, `mapVersion`). 설정 → 일반에 지도 버전·내비 주야간·안내 음소거 줄을 추가. 주야간·음소거 숫자의 뜻은 해석 전이라 "신호 N (해석 전)"으로 보인다. BOOTEND는 내비가 켜질 때만 오므로 테마가 그 뒤에 켜지면 지도 버전이 안 보일 수 있다.
+- **순정 앰프 값**: `com.hkmc.media.MicomAudioManager(Context).getStatus()` → `MicomAudioStatus`의 공개 필드 `mTreble`, `mMiddle`, `mBass`, `mBalance`, `mFade`, `mSDVC`, `mSoundPriority`, `mAmpType`. 리플렉션으로 읽어 사운드 화면의 고음/중음/저음·밸런스·속도 연동 음량·안내 우선에 "순정 값 N"으로 표시. 서비스가 일반 앱을 거부하면 이전처럼 "순정 연동 대기"로 남는다. 숫자 단위는 차에서 확인.
+
+찾았지만 못 넣는 것:
+- **회전·차선·교차로·제한속도**: 내비가 `com.hkmc.cluster.NavigationCluster`/`ClusterManager`로 계기판에 보내는 한 방향 통로다. `INavigationClusterListener`는 계기판→내비 방향(배터리, DTE, HDA 등)만 있다. 앱 주입 없이는 테마가 읽을 수 없다(주입기 새로 만들기는 하지 않기로 함). 카메라 경고는 `com.mnsoft.navi.action.NaviCameraAlertState`(`CamAlertState`, `Time_ms`)만 있다.
+- **내비 AIDL `IInterfaceService` 거래 21**: `getNaviCurrentLocationInfo(lat, lon)` → 문자열(네이티브). 방송 쪽이 더 단순해 쓰지 않았다. 거래 8은 `getNaviInfoToSXM(lat, lon)`(SXM 전용).
+- **공조**: `com.hkmc.datc.DATCManager.getClimateInfo(int)` 등 읽기 메서드가 있으나 번호 뜻(`DATCConstants`)을 아직 대조하지 않았다. 다음 후보.
+- **프로필**: `UserProfileManager`에 `getDownSync*Property`, `getSystemSetupJson(int)`, `getTmsProfileImage(int)`가 있다. 운전자별 사진·설정의 다음 후보.
+
+검증: JDK 21 빌드·v1 서명, 코덱스 검사 2종(1920×720·1280×480), 새 시험(현재 도로명이 홈 카드에 표시, 길안내 중에는 기존 경로 줄 유지, 화면 오류 없음). 배포: `deliverables/K8-5W-홈-0.4.21.apk`, `K8-ccNC-Home-NEMESIS-0.4.21-USB.zip`(SHA-256 `e2ca16b1daa0fcd33a2dfbe5caf751c3f6f5983c4e7bec1f5cda36dfc492bdfd`), 서명 인증서 0.4.19·0.4.20과 같음.
+
+차에서 볼 것(0.4.21 설치 뒤, 정차): `logcat -s K8StockRoute`로 현재 위치 응답과 `on_road` 형식, 내비 상태 방송 키; 사운드 화면에 순정 값이 뜨는지(안 뜨면 MicomAudio 서비스가 일반 앱을 거부한 것).
+
+## 0.4.20 차량 데이터·순정 버튼 연동 (2026-11-21, 코덱스가 중간에 멈춤 → Claude 이어받음)
+
+- 코덱스가 19:19(한국 시간)에 사용자 요청으로 멈췄다. 이 절은 Claude가 코덱스 대화 기록과 파일로 정리했다.
+- 넣은 것(PC에서만 확인): 홈·우측 지도 위젯도 하단바와 같은 길안내 값(목적지·남은 거리·남은 시간·도착 시각)을 받음(`RouteMetrics`, `StockRoute`). 순정 라디오 주파수·프리셋, USB 반복·셔플(`StockMedia`). 통화 상태·연결 기기·순정 사용자 이름·폰 프로젝션 설정·헤드유닛 설정값 읽기(`StockPhone`, `HeadUnitInfo`). USB·자연의 소리 재생 버튼과 라디오 이전·다음은 순정 위젯과 같은 명령(`StockTransport`). 근거 매니페스트·스말리 사본은 `C:/AI-Work/2026-11-21-k8-ccnc-offline-integrations/checks/`.
+- 확인한 것: 현재 소스가 JDK 21(`C:/Users/dlatn/.local/share/rea/jdk/jdk-21.0.12.1+1`, 문서의 JDK 17 경로는 지금 없음)로 빌드되고 v1 서명 검사를 통과한다. 코덱스 검사 `verify-integration.cjs`(경로·출처·전화·시스템 값·순정 요청), `verify-menu-compat.cjs`(카드 크기·앱 실행·넘김·배치 저장)가 1920×720·1280×480에서 모두 통과했다. 코덱스 산출물 `k8-home-0.4.20.apk`, `K8-ccNC-Home-NEMESIS-0.4.20-USB.zip`은 위 AI-Work 폴더에만 있고 deliverables에는 아직 없다(마지막 소스 수정이 APK보다 1분 늦음 → 배포 전 다시 빌드).
+- 배포(20:08): Claude가 다시 빌드해 `deliverables/K8-5W-홈-0.4.20.apk`, `K8-ccNC-Home-NEMESIS-0.4.20-USB.zip`(SHA-256 `b8fe93dc30b9f87b8d181663385a9a4b72e5207b9f90813a8e611ca466b85eec`)을 두었다. 묶음 안 APK와 바이트 일치, 서명 인증서가 0.4.19와 같다(`9bc243ec…`).
+- 남은 일: ① (끝남) ② 실차(정차)에서 확인: 길안내 중 홈 위젯 값과 단위(`DestDistanceType=2`, `DestRemainTimeType=1` 해석), 라디오 주파수·이전/다음, USB·자연의 소리 재생, 통화 상태, 0.4.18~0.4.19 카드 3개(네메시스·마이드라이브·유튜브) 실행. ③ 0.4.7 이후 작업 대부분(새 Java 파일 다수 포함)이 커밋되지 않았다. 커밋할 때 `private/`는 넣지 말 것. GitHub `main`은 0.4.6 상태.
+
+## 0.4.19 네메시스 앱 실행 연결
+
+- K8 마이드라이브와 유튜브 카드가 각각 k8ecs.damping 및 Gen5W SmartTube 네메시스 패키지에 선언된 Android 화면을 직접 연다. 마이드라이브 0.4.1과 SmartTube v32.71-gen5w.1의 패키지 선언 및 APK 매니페스트를 확인했다. 0.4.18의 기존 앱 선택값이 새 연결에 적용되지 않도록 실행 키를 갱신했다.
+- 1920×720·1280×480 브라우저에서 세 카드 실행 요청과 배치 저장, API 19 APK 서명, USB ZIP의 내부 APK 일치 및 SHA-256을 확인했다. 차량 설치 및 카드 탭은 확인 전이다. 배포본은 C:/AI 통합/네메시스/deliverables, 작업본과 보관 기록은 C:/AI-Work/2026-11-21-k8-ccnc-nemesis-app-targets에 있다.
+
+## 0.4.18 전체 기능 카드
+
+- 전체 기능 3페이지에 네메시스, K8 마이드라이브, 유튜브 카드를 추가했다. 기아 전체 기능 화면 자료와 Astryx Grid·ClickableCard를 대조했고, 기존 6열 크기와 흰색 선 아이콘을 사용한다. 저장된 카드 순서는 유지되며 신규 카드에도 스와이프와 1초 길게 누르기 재배치가 적용된다.
+- 네메시스는 com.nemesis.manager/.MainActivity, 마이드라이브는 io.github.k8ecs.hu의 실행 화면을 사용한다. 대상 패키지는 로컬 APK 선언에서 검증했다. 유튜브는 설치된 com.google.android.youtube를 열고 기본 앱을 열 수 없을 때 기존 앱 선택을 사용한다.
+- 1920×720·1280×480 브라우저, 구형 WebView 호환 레이아웃, APK/USB ZIP과 API 19 서명을 검증했다. 차량 설치와 실제 앱 실행은 확인 전이다. 배포 파일은 C:/AI 통합/네메시스/deliverables, 캡처와 검증 기록은 C:/AI-Work/2026-11-21-k8-ccnc-extra-cards에 있다. G 보관 드라이브 미연결로 C 작업본을 유지했다.
+
+## 0.4.17 내비 하단바 및 경로 요약
+
+- 순정 ccNC 길안내 사진과 사용자 첨부를 대조했다. 거리와 시각 숫자를 같은 크기와 기준선에 두고 AM/PM은 단위 크기로 같은 줄에 표시한다. 도착 예정 시각이 기본이고 시각 터치로 남은 시간을 표시한다.
+- 블루투스 표지는 오른쪽 미디어의 검은 88×88px 칸에 놓았다. 표지 탭은 재생/일시정지, 곡 제목 탭은 재생 패널, 왼쪽 스와이프는 다음 곡, 오른쪽은 이전 곡 키로 보낸다. 장식용 끝 목록 아이콘을 제거했다.
+- 목적지 제목은 전체 화면을 바꾸지 않고 하단바 위 432×166px 경로 요약을 열도록 했다. 순정 응답에서 확인된 거리·시간·목적지 값만 표시한다. 순정 내비의 교차로 확대 화면 자체는 이 앱에서 크기를 제어할 경로를 확인하지 못했다.
+- 순정 내비에서 방향과 교차로 데이터를 계기판으로 전달하는 코드가 있다. 앱에서 읽을 수 있는 방향·차선 송신 경로는 미확인이다. 방향 카드 시안은 `C:/AI-Work/2026-11-21-k8-ccnc-navigation-polish/direction-preview.png`에 있다. 예시 방향을 앱에 넣지 않았다.
+- ADB 연결 없음. Android 19 빌드와 브라우저 검증을 수행했다. 실제 표지 수신, 곡 전환, 경로 응답 및 오버레이 위치는 실차에서 확인할 항목이다. G 동기화 드라이브가 연결되지 않아 C 원본을 유지했다.
+
+## 0.4.16 순정 버튼 연동과 내비 하단 정보
+
+- 기존 전체 메뉴의 카드 영역과 73% 구분선을 복원하고 홈을 그 기준에 맞췄다. 1920×720 브라우저에서 기존 전체 메뉴, 수정 전체 메뉴, 수정 홈의 위·아래·구분선 좌표가 같았다.
+- 순정 5W 앱 실행 코드를 `StockApps`로 모았다. 차량에서 확인한 지도·전화·미디어·BT·USB·라디오·자연의 소리·폰 프로젝션·설정·차량 설정·프로필 진입점을 사용한다. USB 미장착이면 미디어 선택 화면을 연다. FM/AM은 순정 라디오의 공개 서비스에 요청하며 실제 대역 전환을 확인하지 못했다.
+- 내비 하단 오른쪽 곡 정보 버튼과 목록 아이콘은 지도 위 재생 패널을 연다. 순정 위젯의 현재 곡과 재생 상태를 보여 주고 이전·재생/일시정지·다음 키 및 확인된 순정 플레이어 실행을 제공한다. 순정 BT 대기열은 위젯 방송에 없으며 내부 목록 액티비티/서비스는 외부 진입을 제공하지 않는다.
+- 내비 하단 중앙은 순정 `Response_Info_Destination` 응답의 `remain_dist`, `arrival_time`, `poi`, `address`를 사용한다. 남은 시간을 기본으로 표시하고 누르면 도착 예정으로 바꾼다. 출처 없는 숫자 단위는 추정하지 않는다. 검색 중에는 순정 하단줄을 쓰고 새 길안내 확인 시 테마 줄을 복귀하도록 연결했다. [기아 내비 매뉴얼](https://ownersmanual.kia.com/ivi/ccNC/AVNT/KOR/Korean/Map.html)
+- 빌드/검증 및 테스트 캡처는 `C:/AI-Work/2026-11-21-k8-ccnc-5w-buttons`에 있다. 0.4.16이 차량에 설치되지 않아 실제 ETA 응답과 검색·경로 취소·미디어 키 결과는 확인 전이다. G 보관 위치가 연결되지 않아 C 원본을 유지했다.
+
+## 0.4.15 홈 카드·설정·미디어 디자인 수정
+
+- 홈 카드와 전체 메뉴의 위·아래 경계 및 라벨 구분선을 통일했다. 홈 본문 65% 비율과 미디어 표지 위치는 기아 공식 홈 이미지에 맞췄다. KitKat 설정 카드는 두 행의 높이와 열 간격을 명시했다. 미디어는 한 곡 보기를 기본으로 하고 재생 목록 행은 54px로 제한했다. 분할 화면 설정에는 SVG 아이콘을 사용한다. [기아 홈 화면](https://ownersmanual.kia.com/ivi/ccNC/AVNT/KOR/Korean/Systemoverview_home.html)
+- K8의 순정 내비와 런처 산출물에서 홈 지도 렌더링 인터페이스를 대조했다. 홈 카드에 `TextureView`를 배치하고 전경에서만 순정 내비의 내보낸 `InterfaceService`에 연결한다. 퀵 컨트롤과 화면 전환 시 지도 표면을 숨긴다. 블루투스 앨범 표지는 기존 나우플레잉이 사용하는 AVRCP 캐시의 읽기 가능한 완료 파일을 받아 홈과 플레이어에 표시한다. USB 표지 경로는 확인하지 못했다.
+- 1920×720 브라우저에서 KitKat 레이아웃 분기로 13개 화면을 렌더링했다. 홈·전체 메뉴의 세로 경계가 일치했고 4×2 설정 8개 카드 높이, 지도 카드 터치 요청, 재생 목록 행 높이, 앨범 이미지 렌더링을 확인했다. 비교판의 지도와 앨범은 테스트 이미지다.
+- Android API 19 빌드 및 v1 서명을 확인했다. 0.4.15는 실차 미설치. 실차에서는 기본 홈 선호도에 `io.github.k8home/.HomeActivity`가 `mAlways=true`로 저장돼 있는 것을 읽었다. 물리 키의 복귀 동작과 새 버전의 지도 표면·앨범 표지는 차량 연결이 종료돼 시험하지 못했다.
+- Astryx 0.7.17 CLI의 `Grid`, `ClickableCard`, `GridGalleryExample`을 검토했다. 기존 KitKat WebView 구현에 간격과 카드 구조 원칙을 적용했다. 비교판과 로그는 `C:/AI-Work/2026-11-21-k8-ccnc-home-cards`에 있다. G 보관 드라이브는 연결되지 않아 C 원본을 유지했다.
+
+## 0.4.14 순정 내비 화면과 ccNC 하단바 실차 연동
+
+- K8 정차 로그를 확인하고 테마의 **설정 → 일반 → 순정 내비에서 ccNC 하단바 시험**을 켰다. 테마 홈의 지도 카드를 눌러 `com.mnsoft.navi/.NaviApp`이 전면에 표시되고 `K8HomeNavBar` 창이 그 위에 붙는 것을 확인했다.
+- 1920×720 실차 캡처에서 순정 지도와 차선 표시를 유지하면서 기존 하단줄 자리에 ccNC 뒤로·홈·전체 기능, 목적지 검색, 미디어 표시가 그려졌다. 순정 내비 방송을 통해 거리·시간 원시값도 수신했다. 경로가 걸려 있지 않아 둘 다 0이었다.
+- 이후 차량이 움직이는 것을 속도 로그에서 확인했다. 터치 시험을 중단하고 지도와 하단바는 열린 상태로 두었다. 하단바 홈 터치·검색·경로 취소·재생 제어, 안내 중 거리·시간 단위, 홈 카드 안 실시간 지도 표시를 확인할 단계가 남았다.
+- 위치가 포함된 실차 캡처와 작업 기록은 `C:/AI-Work/2026-11-21-k8-ccnc-nav-live`에 있다. G 보관 경로가 연결되지 않아 C 원본을 유지했다.
+
+## 0.4.14 K8 실차 설치·실행 확인
+
+- 정차 상태에서 기존 네메시스의 패키지 설치 경로로 `k8home.install 0.4.14`를 설치했다. 차량 호환 판정은 `full`이다. 설치된 `io.github.k8home 0.4.10`의 SHA-256이 배포용 APK와 일치했다.
+- 네메시스 Launch 후 `io.github.k8home/.HomeActivity`가 전면에 표시됐다. 1920×720 실차 캡처에서 테마의 블루투스 오디오 화면과 실제 곡명·가수가 하단에 표시되는 것을 확인했다.
+- 순정 내비 위 하단바, 물리 HOME, 시동 후 자동 실행, 재생 제어 및 길안내 수치는 이번 설치에서 시험하지 않았다.
+- 실차 캡처와 설치 기록은 `C:/AI-Work/2026-11-21-k8-ccnc-home-install`에 있다. G 보관 드라이브는 연결되지 않아 C 원본을 유지했다.
+
+## 0.4.14 네메시스 ccNC 홈 독립 실행 패키지
+
+- `deliverables/K8-ccNC-Home-NEMESIS-0.4.14-USB.zip`에 최신 로컬 ccNC 홈 APK 0.4.10을 원본 그대로 넣었다. 기존 0.4.10 USB 안 APK는 같은 버전명이지만 길안내 방송 수신을 추가하기 전의 DEX였다.
+- 패키지 ID는 `k8home.install`이고, 네메시스 매니저의 **K8 ccNC Home Theme → Launch**는 `io.github.k8home/.HomeActivity`를 가리킨다. 서개모, HMG-API 및 별도 패키지 스크립트 의존성이 없다. USB 묶음은 매니저 USB 탭의 `type=list`를 사용한다. [설치 안내](NEMESIS_INSTALL.md)
+- ZIP 두 층과 APK의 무결성, 매니저 등록 항목 및 APK 매니페스트의 액티비티 식별자, 최신 APK와의 바이트 일치, 길안내 방송 식별자, 재빌드 일치, 기존 순정 바로가기 11개 및 잘못된 APK 입력 거부를 확인했다. REA APK 인벤토리 `ev_036b7bddbb6e4772506f48f00c2865621f1e0ed338afc132faebb24c4ccd6df9`. USB ZIP SHA-256 `add0781ec42ccc33441a5384588a9e0b5ef798c69c99c0599a07f18fdddab831`.
+- 패키지 제작 시 실차는 미연결이었다. APK에는 기존 차량 진단용 내비 로그가 남아 있다.
+- 배포 파일은 C 드라이브 작업 공간의 `deliverables`에 보관했다. `G:/내 드라이브/AI-작업보관` 경로가 보이지 않아 복사와 클라우드 업로드 확인을 진행하지 못했다. C 원본을 유지했다.
+
+## 길안내 값 실제 통로 (2026-11-21 실차 로그)
+
+- 순정 내비(`com.mnsoft.navi`)가 **매초** `com.hkmc.telematics.gis.action.NAVI_GPS_CHANGED` 방송을 쏜다. extras는 `com.hkmc.telematics.gis.extra.` 아래에 있다.
+  - `DestDistance`, `DestRemainTime` → **숫자**(문자열 아님). `DestDistanceType=2`, `DestRemainTimeType=1`이 단위 구분 코드다. `LAT`, `LON`, `ALT`, `HEADING`, `TYPE`, `PDOP`, `HDOP`, `TIME`도 함께 온다.
+  - 같은 방송을 `ModeManagerService`, `Location2Service`, `DMB_APP`, `USBVideo`가 받고 있다. 시스템 표준 경로다.
+- **차량 로그가 "아무 값도 안 뜬다"의 정체를 밝혀냈다.** 기존 코드는 `com.mnsoft.navi.action.extra.DestDistance`만 읽었고 문자열로만 변환했다(`text()`는 CharSequence만 통과). 실제로 오는 값은 숫자이고 이름도 `telematics.gis` 쪽이다.
+- 대응: `NavBarService`가 `GPS_CHANGED` 방송을 받고 `value()`(숫자도 통과)로 읽도록 고쳤다. 모든 내비 방송은 `nav extras:` 로그로 값과 타입이 같이 찍힌다.
+- 단위(미터인지 초인지)는 `DestDistanceType`/`DestRemainTimeType` 해석이 아직 안 끝났다. 실차에서 한 번 값이 붙은 상태로 돌려보면 확정된다.
+- 원본 경로 목록과 근거는 [VEHICLE_API.md](VEHICLE_API.md), 확인 스크립트는 `tools/nav_route_probe.sh`.
+
+## 0.4.13 순정 바로가기 재검증
+
+- 매니저의 K8 Settings 상세 화면에서 Launch 버튼으로 순정 설정을 열었다. 나머지 순정 바로가기도 패키지 실행 경로로 확인했으며, 0.4.12에서 USB 음악만 실차 화면이 전면에 유지되지 않았다. 차량에 USB 저장 장치가 마운트되지 않은 상태였다.
+- USB 음악 바로가기는 정상 마운트 시 순정 USB 음악, 마운트가 없으면 순정 미디어 선택 화면을 연다. USB 항목만 실차에 0.4.13으로 갱신하고, 네메시스 Manager의 Launch에서 미디어 선택 화면이 전면에 표시되는 것을 확인했다. USB 연결 분기는 모의 마운트 입력으로만 확인했다.
+
+## 0.4.12 네메시스 셸 바로가기
+
+- 실차의 K8 Ambient Relay 및 BLE Probe와 같은 `kind=sh`를 사용하며, 화면 실행에는 검증된 순정 런처 컴포넌트만 지정한다. 앱마다 패키지 하나, `app.0` 하나로 구성했다. 설치 후 자동 서비스와 APK가 없다.
+- 매니저 1.16.9의 `PackageActivity`는 패키지 ID 하나로 Launch를 호출한다. 여러 바로가기를 단일 Launch에 묶었던 0.4.11은 0.4.12 지도로 갱신한다. 나머지 바로가기는 개별 ID로 제공한다.
+- USB 묶음은 공식 `type=list`를 사용한다. [설치 안내](NEMESIS_INSTALL.md)를 참고한다. 이 패키지는 순정 화면 바로가기이며 기존 ccNC 홈과 하단바의 렌더링 경로는 별도 확인이 필요하다.
+- 실차 매니저에 11개 모두 0.4.12로 등록됐다. 정차 상태에서 지도 패키지를 실행했고 `com.mnsoft.navi/.NaviApp`이 실제로 전면에 뜨는 것을 확인했다. 다른 10개는 실차 패키지 등록까지 확인했다.
+
+## 0.4.10 실차에서 찾은 순정 진입점
+
+- K8 헤드유닛 API 19와 1920×720에서 순정 지도 실행, 하단 간단 메뉴와 통합 검색 터치를 확인했다. 실제 하단줄 상단은 y=627이다. 실차에서 확보한 순정 내비 APK는 이전 REA 조사본과 동일한 SHA-256이다.
+- 실차에서 확인한 MediaGate, 블루투스 전화, 라디오, 블루투스 오디오, USB 음악, 자연의 소리, 차량 설정, 사용자 프로필, 폰 프로젝션 등록 패키지를 기존 테마 버튼의 기본 진입점에 연결했다. 앱별 기존 사용자 지정은 우선 적용된다. FM/AM 탭에서 대역을 강제 변경하는 동작은 확인 전이다.
+- 순정 통합 검색에서 우리집·사무실이 나란히 보인다. ADB로 순정 메뉴·통합검색 요청을 보내면 완료 메시지는 왔으나 화면이 바뀌지 않았다. 일반 앱에서 같은 요청이 수락되는지는 추가 검증이 필요하다. 하단바 메뉴는 ccNC 전체 기능 화면으로 열고, 뒤로 키로 순정 줄을 다시 볼 수 있게 했다.
+- PC에서 Android 4.4 서명 확인은 통과했다. 실차 ADB 설치는 0.4.9와 0.4.10 v1 전용 호환본 모두 `INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES`로 실패했다. USB가 없어 네메시스 Manager 설치는 시험하지 못했다. 테마 경로, 권한, 지도 데이터·경로 취소 및 미디어 상태 응답은 설치 후 검증한다.
+
+## 0.4.9 하단바 정렬과 다음 실차 확인
+
+- 공식 길안내 하단바와 첨부 이미지를 1920×720 기준으로 대조했다. 순정 내비 위 하단바의 왼쪽 버튼은 152px 간격과 32px 아이콘 영역을 이용한다. 거리·시각은 34px, 목적지·미디어 제목은 26px, 단위·AM/PM·보조 라벨은 22px다. 테마 안의 하단바에도 같은 글자 위계와 버튼 도형을 적용했다. 안내 중 숫자가 아직 없으면 목적지 표시를 앞으로 배치한다.
+- 실차가 ADB에서 정식 승인된 기기로 확인되면 정차 상태에서 내비·미디어·전화 관련 앱의 현재 버전과 선언, 버튼을 눌렀을 때의 상태 변화를 대조한다. REA에서는 관련 순정 앱의 처리 분기와 호출 조건을 확인한다. 내비 메뉴·통합검색·경로 취소·경로 상세, BT/USB 재생·일시정지, 전화·설정 순으로 확인한다.
+- 테마 앱 자체 권한으로 호출에 응답이 오고 순정 화면 전환이 없어야 화면 안에서 실행할 수 있다고 판정한다. 순정 지도 렌더러의 외부 제공 경로와 전용 화면만 있는 기능은 별도 확인이 필요하다. ADB는 실차 진단과 검증에 사용한다.
+
+## 0.4.8 네메시스 직접 실행과 순정 내비 연결
+
+- `tools/build_nemesis.py`가 Manager APK 등록 항목 `io.github.k8home/.HomeActivity`를 포함한 USB 묶음을 만든다. 패키지 ID는 `k8home.install`을 사용하고, APK·네메시스 버전은 0.4.8이다.
+- 차량 앱에서 지도 카드를 터치하면 `com.mnsoft.navi/.NaviApp`으로 바로 이동한다. 순정 앱을 연 뒤 내비 설정 및 검색/경로 진입을 요청한다. 우리 집·회사는 순정 등록 지점에서 직접 선택한다.
+- 하단바는 **설정 → 일반 → 순정 내비에서 ccNC 하단바 시험**을 켠 뒤 테마에서 지도를 열었을 때 시작한다. 최상위 액티비티만 확인한다. 화면 꺼짐, 다른 앱 전환, 순정 메뉴, 왼쪽 화살표, 목적지 상세에서 순정 하단줄을 복원한다. 경로 취소는 순정 요청과 상태 응답을 연결하며, 종료 응답이 없으면 순정 줄이 돌아온다.
+- 순정 내비 ODEX에서 메뉴·경로 취소·목적지 정보 요청의 처리 분기를 확인했다. NAV 키 메뉴와 5W 하단 간단 메뉴의 화면 일치 여부, 일반 앱 요청 수락 및 방송 데이터 단위는 실차 검증 대상이다. 미디어는 Android 표준 키를 이용한다.
+- 0.4.8은 [설치 안내](NEMESIS_INSTALL.md)를 따른다. 이전 버전의 루트 설치 스크립트와 미디어 키 도우미는 아래 이력에 해당한다.
+
+## 0.4.7 작업 이력
+
+### 네메시스 패키지 제공
+
+차량 헤드유닛은 일반 APK 설치를 거부한다. 그래서 이 테마는 **네메시스 패키지 하나**로 묶어 넣는다. `tools/build_nemesis.py`가 APK와 키 도우미 dex를 묶어 `private/nemesis/k8home.install-<ver>.zip`과 USB 묶음 `K8-ccnc-home-<ver>-USB.zip`을 만든다.
+
+- 패키지 하나에 들어가는 것: `bin/install.sh`(root, `pm install -r`), `bin/status.sh`(root), `svc/keys.sh`(system uid, media key helper), `bin/k8home-keys.dex`, `apk/k8-home.apk`.
+- **미디어 키 도우미**: `helper/src/io/github/k8home/helper/KeyHelper.java`가 추상 소켓 `k8home.keys`에서 `io.github.k8home` uid만 받아 이전(166)·재생/일시정지(91)·다음(167) 키만 `IModeManager.generateKeyEvent`로 다시 보낸다. 일반 앱은 `INJECT_EVENTS`가 없어 모드 매니저가 키를 버린다(2026-11-16 차량 확인). 앱 쪽은 `src/io/github/k8home/MediaKeys.java`가 소켓에 물어보고, 도우미가 없으면 `AudioManager.dispatchMediaKeyEvent`로 물러간다.
+- `docs/NEMESIS_INSTALL.md`에 USB 설치 절차를 적었다. USB의 `NEMESIS.data`는 덮어쓰므로 백업이 필요하다.
+- 서개모 경로는 쓰지 않는다. 세ogaemo/서개모 port는 `research/k8-ccnc-theme-seogaemo*`에 따로 남아 있다.
+
+## 5W 순정 내비와 ccNC 내비 비교
+
+기아 공식 한국어 매뉴얼 이미지만 근거로 두 플랫폼의 내비 화면을 맞붙였다. 문서는 [5W-vs-ccNC-내비비교.md](5W-vs-ccNC-내비비교.md), 나란히 보는 페이지는 [nav-compare.html](nav-compare.html), 받은 원본 이미지는 `docs/images/nav-compare/`다.
+
+- **하단 표시줄이 가장 큰 차이다.** 5W 아래 줄은 순정 내비 앱의 메뉴(메뉴 · 경로 종료 · 287 km/14:32 · ⓘ 목적지 · 오른쪽 끝 버튼)이고, ccNC 아래 줄은 시스템 바(← 뒤로 · ⌂ 홈 · ≡ 메뉴 · 중앙 알약 · ▶ Media Off)다. **우리 테마가 만든 하단바는 ccNC 쪽 모양**(`assets/index.html`의 `.bottom-bar`, `assets/navbar.html`이 같은 것을 쓴다). 그래서 5W 내비 위에 얹으면 ccNC 스타일 바가 5W 스타일 메뉴줄 위에 놓인다.
+- **왼쪽 세로 버튼은 순정 내비 영역이다.** 5W는 홈·SE·Nav·＋·Auto 400 m·− 6개, ccNC는 검색·나침반·Nav·Auto·Scale 5개. 테마가 새로 만들 대상이 아니다.
+- **안내 카드와 시계 위치가 다르다.** 5W는 우상단 카드 3장 + 상단 중앙 시계, ccNC는 우측 카드 + 지도 중앙 하단 차선 안내 띠 + 우상단 시계.
+- **검색 UI가 완전히 다르다.** 5W는 검은 타일 메뉴에 **우리집·사무실·즐겨찾기 1·2·3** 탭, ccNC는 검색창 + 한글 자판 + 최근 검색 패널 + (최근 목적지·주변 검색·등록 지점) 탭. '우리 집·회사 바로 안내'는 5W의 우리집/사무실 탭을 여는 방식이 정공법에 가깝다.
+- **ccNC 등록 지점**은 목적지 설정·위치 저장·선택지 주변 검색 버튼을 준다. 5W 화면에는 이 버튼들이 없다.
+- 아직 확인하지 못한 것: 두 플랫폼의 지도 공급자·렌더링 엔진 일치 여부, 5W의 ccNC 기능 지원 범위, 실제 차량 화면에서의 표시 크기.
+
+## 차량용 APK 0.4.7 시동 자동 실행·HOME 등록·순정 내비 위 하단바
+
+0.4.6 조사에서 근거를 찾은 항목 중 **물리 HOME·시동 자동 실행**과 **순정 내비 위 하단바**를 먼저 구현했다. 차량 연결은 없었다.
+
+- **HOME 등록**: `HomeActivity`에 `MAIN`+`HOME`+`DEFAULT` 인텐트 필터를 추가했다. 차량 런처와 테마가 함께 HOME이 되면 안드로이드 4.4는 선택창을 띄우므로, 물리 HOME 버튼이 어디로 전달되는지는 실차 확인이 필요하다. 앱 안의 `차량 홈 화면 설정` 버튼이 시스템 홈 설정으로 간다.
+- **시동 자동 실행**: `BootReceiver`가 `BOOT_COMPLETED`·`QUICKBOOT_POWERON`·`MY_PACKAGE_REPLACED`를 받고, 곧바로 열지 않고 알람으로 22초 뒤 미룬다. 알람이 울리면 `sys.boot_completed`, 화면 점등, 카메라·안전 화면 여부를 확인한 뒤에만 테마를 연다. 준비가 안 되면 7초 뒤 다시 확인한다. 일반 설정의 `시동 후 자동 실행`으로 끌 수 있다.
+- **순정 내비 위 하단바**: `NavBarService`가 `TYPE_SYSTEM_ALERT` 창으로 하단바를 띄운다. 순정 내비(`com.mnsoft.navi`)가 맨 앞에 있을 때만 나타나고, 바 안은 테마 안의 하단바와 같은 화면이다. `assets/navbar.html`은 **기아 공식 ccNC 길안내 화면(`D-map_guidance.png`)의 하단 표시줄을 픽셀 단위로 옮긴 것**이다. 공식 그림을 1920×720 기준으로 재서 값을 뽑았다. 바 높이 88px, 바 배경 `#686765`, 키 띠 0~521px(키마다 152px 칸, 아이콘 30px), 중앙 알약 521~1423px(배경 `#525150`, 높이 68px), 경로 종료 원 지름 48px(알약 왼쪽에서 30px 지점), `285` 36px·`km` 22px·`3:39` 30px·`PM` 20px, 구분선 x=976, 깃발 32px, 목적지 22px, 재생 띠 1437~1511px(배경 `#1C1C1C`, 삼각형 26px), `Media Off` 27px. 매뉴얼의 강조 표시(흰 테두리·갈색 상자·주황 번호)는 실제 화면에 없는 요소라 넣지 않았다. 앞선 판(색 `#5c6065`/`#36393e`)은 이 수치로 다시 만들었다. 아이콘은 공식 매뉴얼 원본 파일(`contents/images/I-menu_home_gary.png`, `I-menu_new.png`, `I-media_play_new.png`, `I-media_pause_new.png`)을 `assets/icons/`에 그대로 넣어 쓴다. `build.py`가 `assets/icons/*.png`도 APK에 넣는다. 음악이 없으면 검은 재생 띠와 `Media Off`, 음악이 틀어지면 같은 자리에 앨범 표지(테마와 같은 자리 그림)·제목·가수가 나온다. 깃발은 공식처럼 속을 채웠다.
+- **5W 하단 줄의 기능을 ccNC 쪽으로 옮겼다.** 5W 아래 줄은 `메뉴 · 경로 종료 · 남은 거리/시간 · ⓘ 목적지 · 오른쪽 끝 버튼`이고, ccNC 아래 줄은 `뒤로 · 홈 · 메뉴 + 중앙 알약 + 미디어 상자`다. 순정 줄을 가리고 그 자리에 ccNC 바를 놓으려면(기본 높이 90 px, 아래 여백 0), 5W의 기능도 중앙 알약으로 옮겨야 한다.(ccNC 공식 길안내 화면 `D-map_guidance.png`의 중앙 알약이 이미 `✕ + 거리 + 시간 + 목적지` 형태다.)
+  - `✕` 경로 종료 → `com.mobis.intent.action.CANCEL_ROUTE_SHORTCUT` 를 `com.mnsoft.navi`에 보낸다.
+  - `≡` 메뉴 → `com.hkmc.intent.action.ACTION_NAVI_MENU`. 테마 안의 `≡`(전체 앱)와는 뜻이 다르다.
+  - `ⓘ` 목적지 → `com.hkmc.intent.action.Request_Info_Destination`.
+  - 남은 거리·남은 시간·목적지 이름 → `com.mnsoft.navi.action.Route_Guide_Status` / `Route_Guide_NewStatus` / `OTA_Route_Guide_Status` / `DestinationInfo` broadcasts의 `com.mnsoft.navi.action.extra.DestDistance`, `DestRemainTime`, `Address`, `PoiName` extras로 읽는다. 값이 없으면 중앙 알약은 `길안내 정보 연결 대기`로 남는다.
+  - `←` 뒤로는 바를 3분 숨기고, `⌂` 홈은 테마 홈, 미디어 상자는 재생·일시정지다. 바를 길게 누르면 위치(상단/하단), 높이(64/90/112 px), 아래 여백(0/44/90/140 px)을 바꾼다.
+  - **동작 이름 근거**: 차량에서 뽑은 순정 내비 ODEX(`research/k8-ambient-sync/private/nowplaying/apps/HKMC_Navi_ExSL.odex`)의 문자열. dexdump으로 만든 이전 REA 증거와 같은 원본이다. 이 액션들이 실제 라우처에서 받아들이는지는 실차 확인 전이다.
+- **일반 설정**: `시동 후 자동 실행`, `순정 내비 위 하단바`, `차량 홈 화면 설정` 세 줄을 추가했다. 웹 데모에서도 같은 줄이 보인다.
+- **새 파일**: `src/io/github/k8home/BootReceiver.java`, `NavBarService.java`, `ThemePrefs.java`, `assets/navbar.html`. `HomeActivity`는 단일 태스크로 바꾸고 `page` 인텐트 extras로 전체 앱 화면을 열 수 있게 했다. `build.py`가 `assets/navbar.html`도 APK에 넣는다.
+- **배포 파일은 `deliverables/K8-5W-홈-0.4.7.apk`다.** API 19, 0.4.6과 동일 서명(SHA-1 `77fde4e9808b507a43f079ea711ab13a6efeb0e7`), APK SHA-256 `e89f3138f9d86a154950b23b1b64c89e4715302ce6ac025a0dcca6c7113d6865`. 0.4.6 위에 덮어써도 데이터가 지워지지 않는다.
+- **검증 범위**: 브라우저(1280×720)에서 일반 설정의 새 세 줄, 테마 안 지도 화면의 하단바(✕·거리·시간·목적지·ⓘ), `navbar.html` 단독 렌더링, `docs/nav-bar-preview.html` 목업을 확인했고 콘솔 오류는 없다. `deliverables/K8-5W-하단바-0.4.7-예시.png`은 그 목업(순정 5W 길안내 자리 위에 실제 `navbar.html`을 얹은 모습)이다.
+- **실차 시험 준비**: `tools/field_test_0.4.7.sh`(status·install·home·boot·navbar·shot·restore)와 `docs/FIELD_TEST_0.4.7.md` 체크리스트. 연결되면 이 순서로 확인한다.
+- **아직 확인하지 않은 것**: 물리 HOME 전달 방식, 완전 부팅과 QuickBoot의 자동 실행, 오버레이 권한 허용 여부, 순정 줄을 덮은 뒤 순정 내비 하단 버튼이 안 보이는지, 카메라 화면에서의 오버레이 동작, CarPlay 진입 시 상태, 내비 broadcast 액션이 실제로 받아들이는지. 네메시스 메뉴 등록은 아직 손대지 않았다. 통화 상태 표시, 우리 집·회사 바로 안내, FM·AM 직접 전환은 이번 버전에 넣지 않았다.
+
 ## 0.4.6 연동 조사
 
 GitHub `e8b80a0`의 Android 코드, K8 5W 순정 APK와 기존 네메시스 실차 기록을 대조했다. 이번 조사 시 ADB에 연결된 차량은 없었다.

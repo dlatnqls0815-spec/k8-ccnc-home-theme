@@ -19,7 +19,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.KeyEvent;
@@ -33,6 +32,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -44,11 +44,9 @@ import java.util.List;
 
 public final class HomeActivity extends Activity {
     private static final String PAGE = "file:///android_asset/index.html";
-    private static final ComponentName NAVIGATION = new ComponentName("com.mnsoft.navi", "com.mnsoft.navi.NaviApp");
-    private static final String VEHICLE_SETTINGS = "com.hkmc.software.vehiclesetting";
-    private static final String BT_WIDGET = "com.hkmc.audio.btaudio.widgetupdate";
-    private static final String USB_WIDGET = "com.hkmc.audio.usb.widgetupdate";
-    private static final String WIDGET_REQUEST = "com.hkmc.request.widgetupdate";
+    static final String EXTRA_OPEN_APPS = "io.github.k8home.extra.OPEN_APPS";
+    static final String EXTRA_OPEN_MEDIA = "io.github.k8home.extra.OPEN_MEDIA";
+    private static final String STOCK_PHONE = "com.hkmc.bluetooth";
     private static final int STANDBY_PHOTO = 21;
     private static final int SPLIT_PHOTO = 22;
     private static final int DRIVER_ONE_PHOTO = 23;
@@ -56,46 +54,78 @@ public final class HomeActivity extends Activity {
     private static final String[] SHORTCUTS = {"media", "phone", "radio", "projection", "settings",
         "settings-car", "settings-general", "settings-nav", "settings-sound",
         "settings-devices", "settings-profile", "settings-voice", "settings-display",
-        "voicememo", "connect", "alerts", "source-bt", "source-usb", "source-fm", "source-am", "source-nature"};
+        "voicememo", "connect", "alerts", "source-bt", "source-usb", "source-fm", "source-am", "source-nature",
+        "nemesis", "nemesis-mydrive", "nemesis-youtube"};
     private static final String[] LABELS = {"미디어", "전화", "라디오", "폰 프로젝션", "순정 설정",
         "차량", "일반", "내비게이션", "사운드", "기기 연결", "사용자 프로필", "음성인식", "디스플레이",
-        "음성 메모", "Kia Connect", "알림", "블루투스 오디오", "USB 오디오", "FM 라디오", "AM 라디오", "자연의 소리"};
+        "음성 메모", "Kia Connect", "알림", "블루투스 오디오", "USB 오디오", "FM 라디오", "AM 라디오", "자연의 소리",
+        "네메시스", "K8 마이드라이브", "유튜브"};
     private FrameLayout root;
     private FrameLayout mapSlot;
+    private StockMapPreview stockMapPreview;
+    private boolean activityResumed;
+    private boolean mapFrameReady;
     private WebView web;
     private SharedPreferences shortcuts;
     private boolean pageReady;
-    private String mediaTitle = "";
-    private String mediaArtist = "";
-    private Boolean mediaPlaying;
-    private long mediaPosition = -1;
-    private long mediaDuration = -1;
-    private String mediaSource = "";
+    private StockMedia media = StockMedia.EMPTY;
+    private BluetoothCoverArt coverArt;
+    private String coverImage = "";
     private int brightness = -1;
     private VoiceMemos memos;
     private int unmutedVolume = -1;
+    private boolean pendingHome;
+    private boolean pendingApps, pendingMedia;
+    private StockRoute route;
+    private StockPhone phone;
+    private StockTransport transport;
+    private StockClimate climate;
+    private JSONObject vehicleSettings = new JSONObject();
+    private boolean readingVehicleSettings;
+
+    private final StockRoute.Listener routeListener = new StockRoute.Listener() {
+        @Override public void routeChanged(boolean guidanceStarted) {
+            syncRoute();
+        }
+    };
     private final BroadcastReceiver mediaReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(intent.getAction()) ||
-                BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(intent.getAction())) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)
+                    || BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)
+                    || StockPhone.isConnectionAction(action)) {
+                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)
+                        && intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
+                    phone.clearBluetoothCall();
+                }
                 syncControls();
                 return;
             }
-            Bundle extras = intent.getExtras();
-            if (extras == null) return;
-            mediaTitle = mediaText(extras.get("filename"));
-            mediaArtist = mediaText(extras.get("artist_name"));
-            String playstate = String.valueOf(extras.get("playstate"));
-            mediaPlaying = "1".equals(playstate) ? Boolean.TRUE : "0".equals(playstate) ? Boolean.FALSE : null;
-            mediaPosition = timeValue(extras.get("audio_current_time"));
-            mediaDuration = timeValue(extras.get("audio_total_time"));
-            mediaSource = USB_WIDGET.equals(intent.getAction()) ? "usb" : "bt";
+            if (phone.updateCall(action, intent.getExtras())) {
+                syncPhone();
+                return;
+            }
+            StockMedia next = media.update(action, intent.getExtras());
+            if (next == media) return;
+            if (!media.source.equals(next.source)) transport.close();
+            media = next;
+            coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "");
             syncMedia();
         }
     };
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        transport = new StockTransport(this);
+        climate = new StockClimate(this, new Runnable() {
+            @Override public void run() { syncClimate(); }
+        });
+        phone = new StockPhone(this, new Runnable() {
+            @Override public void run() { syncPhone(); }
+        });
+        pendingApps = getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_APPS, false);
+        pendingMedia = getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_MEDIA, false);
+        pendingHome = pendingApps || pendingMedia;
         shortcuts = getSharedPreferences("shortcuts", MODE_PRIVATE);
         brightness = shortcuts.getInt("theme-brightness", -1);
         if (shortcuts.contains("theme-brightness")) applyBrightness();
@@ -107,6 +137,12 @@ public final class HomeActivity extends Activity {
         });
         if (state != null) memos.restoreExport(state.getString("memo-export-id"));
         root = new FrameLayout(this);
+        coverArt = new BluetoothCoverArt(new BluetoothCoverArt.Listener() {
+            @Override public void changed(String image) {
+                coverImage = image;
+                syncCover();
+            }
+        });
         web = new WebView(this);
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -130,12 +166,18 @@ public final class HomeActivity extends Activity {
                 if (PAGE.equals(url)) {
                     pageReady = true;
                     syncMapContent();
+                    syncRoute();
                     syncMedia();
+                    syncCover();
                     syncControls();
+                    syncSystemSettings();
+                    syncClimate();
+                    syncFlags();
                     syncPhoto("standby");
                     syncPhoto("split");
                     syncPhoto("profile0");
                     syncPhoto("profile1");
+                    openPendingHome();
                 }
             }
         });
@@ -144,23 +186,67 @@ public final class HomeActivity extends Activity {
         mapSlot.setVisibility(View.GONE);
         root.addView(mapSlot, new FrameLayout.LayoutParams(0, 0));
         setContentView(root);
+        stockMapPreview = new StockMapPreview(this, new StockMapPreview.Listener() {
+            @Override public void frameChanged(boolean ready) {
+                mapFrameReady = ready;
+                syncMapFrame();
+            }
+        });
+        setMapContent(stockMapPreview);
         web.loadUrl(PAGE);
     }
 
     @Override protected void onStart() {
         super.onStart();
-        IntentFilter filter = new IntentFilter(BT_WIDGET);
-        filter.addAction(USB_WIDGET);
+        IntentFilter filter = new IntentFilter();
+        StockMedia.addActions(filter);
+        StockPhone.addActions(filter);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mediaReceiver, filter);
-        sendBroadcast(new Intent(WIDGET_REQUEST));
+        route = StockRoute.of(this);
+        route.start(routeListener);
+        phone.start();
+        climate.start();
+        sendBroadcast(new Intent(StockMedia.REQUEST));
         syncControls();
+        stopService(new Intent(this, NavBarService.class));
+        CornerService.sync(this);
+    }
+
+    private void openPendingHome() {
+        if (!pageReady || !pendingHome) return;
+        pendingHome = false;
+        String script = pendingApps ? "window.K8Home.openHome(); window.K8Home.showPage('apps1')"
+            : pendingMedia ? "window.K8Home.openHome(); window.K8Home.showPage('media')"
+            : "window.K8Home.openHome()";
+        pendingApps = false;
+        pendingMedia = false;
+        web.evaluateJavascript(script, null);
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        pendingHome = true;
+        pendingApps = intent != null && intent.getBooleanExtra(EXTRA_OPEN_APPS, false);
+        pendingMedia = intent != null && intent.getBooleanExtra(EXTRA_OPEN_MEDIA, false);
+        openPendingHome();
     }
 
     @Override protected void onPause() {
+        activityResumed = false;
+        stockMapPreview.setActive(false);
         memos.stop();
         super.onPause();
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        activityResumed = true;
+        syncSystemSettings();
+        refreshVehicleSettings();
+        stockMapPreview.setActive(hasWindowFocus() && mapSlot.getVisibility() == View.VISIBLE);
     }
 
     @Override protected void onSaveInstanceState(Bundle state) {
@@ -170,19 +256,15 @@ public final class HomeActivity extends Activity {
 
     @Override protected void onStop() {
         unregisterReceiver(mediaReceiver);
-        mediaTitle = "";
-        mediaArtist = "";
-        mediaPlaying = null;
-        mediaPosition = mediaDuration = -1;
-        mediaSource = "";
+        route.stop(routeListener);
+        phone.stop();
+        climate.stop();
+        transport.close();
+        syncPhone();
+        media = StockMedia.EMPTY;
+        coverArt.setTrack("");
         syncMedia();
         super.onStop();
-    }
-
-    private static String mediaText(Object value) {
-        if (!(value instanceof CharSequence)) return "";
-        String text = value.toString();
-        return text.substring(0, Math.min(text.length(), 160));
     }
 
     private static String javascriptString(String value) {
@@ -190,18 +272,42 @@ public final class HomeActivity extends Activity {
     }
 
     private void syncMedia() {
-        if (pageReady) web.evaluateJavascript("window.K8Home.mediaChanged(" + javascriptString(mediaTitle)
-            + "," + javascriptString(mediaArtist) + "," + mediaPlaying + "," + mediaPosition + ","
-            + mediaDuration + "," + javascriptString(mediaSource) + ")", null);
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.mediaChanged(" + javascriptString(media.title) + ","
+            + javascriptString(media.artist) + "," + media.playing + "," + media.position + "," + media.duration
+            + "," + javascriptString(media.source) + "," + javascriptString(media.settings) + ")", null);
     }
 
-    private static long timeValue(Object value) {
+    private void syncRoute() {
+        if (!pageReady || route == null) return;
+        StockRoute.Snapshot data = route.snapshot();
+        web.evaluateJavascript("window.K8Home.routeChanged(" + data.known + "," + data.active + ","
+            + javascriptString(data.destination) + "," + javascriptString(data.address) + ","
+            + javascriptString(data.distance) + "," + javascriptString(data.remaining) + ","
+            + javascriptString(data.arrival) + "," + javascriptString(data.road) + ","
+            + javascriptString(naviStatus(data)) + ")", null);
+    }
+
+    private void syncClimate() {
+        if (!pageReady || climate == null) return;
+        web.evaluateJavascript("window.K8Home.climateChanged("
+            + javascriptString(climate.snapshot().toString()) + ")", null);
+    }
+
+    private static String naviStatus(StockRoute.Snapshot data) {
+        JSONObject status = new JSONObject();
         try {
-            long time = Long.parseLong(String.valueOf(value));
-            return time >= 0 && time <= 86400000 ? time : -1;
-        } catch (NumberFormatException ignored) {
-            return -1;
-        }
+            if (!data.dayNight.isEmpty()) status.put("dayNight", data.dayNight);
+            if (!data.mute.isEmpty()) status.put("mute", data.mute);
+            if (!data.mapVersion.isEmpty()) status.put("mapVersion", data.mapVersion);
+            if (!data.appVersion.isEmpty()) status.put("appVersion", data.appVersion);
+        } catch (JSONException ignored) { }
+        return status.toString();
+    }
+
+    private void syncCover() {
+        if (pageReady) web.evaluateJavascript("window.K8Home.coverArtChanged("
+            + javascriptString(coverImage) + ")", null);
     }
 
     private void syncControls() {
@@ -216,7 +322,7 @@ public final class HomeActivity extends Activity {
                 if (bluetoothEnabled) {
                     List<String> paired = new ArrayList<>();
                     for (BluetoothDevice device : bluetooth.getBondedDevices()) {
-                        String name = mediaText(device.getName());
+                        String name = StockMedia.text(device.getName());
                         paired.add(name.isEmpty() ? "이름 없는 기기" : name);
                     }
                     Collections.sort(paired);
@@ -230,10 +336,45 @@ public final class HomeActivity extends Activity {
             + "," + brightness + "," + bluetoothEnabled + ")", null);
         String deviceNames = String.valueOf(names).replace("\u2028", "\\u2028").replace("\u2029", "\\u2029");
         web.evaluateJavascript("window.K8Home.pairedDevicesChanged(" + deviceNames + ")", null);
+        syncPhone();
+    }
+
+    private void syncPhone() {
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.phoneChanged(" + javascriptString(phone.callDevices().toString())
+            + "," + javascriptString(phone.audioDevices().toString()) + "," + javascriptString(phone.callState())
+            + "," + javascriptString(phone.caller()) + "," + javascriptString(phone.callSource()) + ")", null);
+    }
+
+    private void syncSystemSettings() {
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.systemSettingsChanged("
+            + javascriptString(HeadUnitInfo.androidSettings(this).toString()) + ","
+            + javascriptString(vehicleSettings.toString()) + ")", null);
+    }
+
+    private void refreshVehicleSettings() {
+        if (readingVehicleSettings) return;
+        readingVehicleSettings = true;
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final JSONObject settings = HeadUnitInfo.savedVehicleSettings(HomeActivity.this);
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        readingVehicleSettings = false;
+                        if (isDestroyed()) return;
+                        vehicleSettings = settings;
+                        syncSystemSettings();
+                    }
+                });
+            }
+        }, "K8HomeVehicleSettings").start();
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        if (stockMapPreview != null) stockMapPreview.setActive(hasFocus && activityResumed
+            && mapSlot.getVisibility() == View.VISIBLE);
         if (hasFocus) syncControls();
     }
 
@@ -276,6 +417,13 @@ public final class HomeActivity extends Activity {
     private void syncPhoto(String target) {
         if (pageReady) web.evaluateJavascript("window.K8Home.photoChanged(" + javascriptString(target)
             + "," + javascriptString(shortcuts.getString("photo-" + target, "")) + ")", null);
+    }
+
+    /** Sends the two switches of the general settings screen to the page. */
+    private void syncFlags() {
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.systemFlagsChanged("
+            + ThemePrefs.autoStart(this) + "," + ThemePrefs.navBar(this) + "," + ThemePrefs.corners(this) + ")", null);
     }
 
     private void choosePhoto(int request) {
@@ -353,8 +501,14 @@ public final class HomeActivity extends Activity {
     }
 
     private void syncMapContent() {
-        if (pageReady) web.evaluateJavascript(
-            "window.K8Home.mapAttached(" + (mapSlot.getChildCount() != 0) + ")", null);
+        if (pageReady) {
+            web.evaluateJavascript("window.K8Home.mapAttached(" + (mapSlot.getChildCount() != 0) + ")", null);
+            syncMapFrame();
+        }
+    }
+
+    private void syncMapFrame() {
+        if (pageReady) web.evaluateJavascript("window.K8Home.mapFrameChanged(" + mapFrameReady + ")", null);
     }
 
     public final class HomeBridge {
@@ -386,8 +540,9 @@ public final class HomeActivity extends Activity {
             if (number == null || number.length() > 24 || !number.matches("\\+?[0-9*#]{2,24}") || !number.matches(".*[0-9].*")) return;
             runOnUiThread(new Runnable() {
                 @Override public void run() {
-                    if (!isFinishing() && !isDestroyed()
-                        && !open(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null)))) {
+                    if (isFinishing() || isDestroyed()) return;
+                    Intent dial = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null));
+                    if (!open(new Intent(dial).setPackage(STOCK_PHONE)) && !open(dial) && !open(StockApps.PHONE)) {
                         toast("이 기기에서 전화 걸기 화면을 열 수 없습니다.");
                     }
                 }
@@ -408,6 +563,7 @@ public final class HomeActivity extends Activity {
                 @Override public void run() {
                     if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
                     if (viewport <= 0 || width <= 0 || height <= 0 || left < 0 || top < 0) {
+                        stockMapPreview.setActive(false);
                         mapSlot.setVisibility(View.GONE);
                         return;
                     }
@@ -417,6 +573,7 @@ public final class HomeActivity extends Activity {
                     int w = Math.min(Math.round(width * scale), web.getWidth() - x);
                     int h = Math.min(Math.round(height * scale), web.getHeight() - y);
                     if (w <= 0 || h <= 0) {
+                        stockMapPreview.setActive(false);
                         mapSlot.setVisibility(View.GONE);
                         return;
                     }
@@ -425,6 +582,7 @@ public final class HomeActivity extends Activity {
                     bounds.topMargin = y;
                     mapSlot.setLayoutParams(bounds);
                     mapSlot.setVisibility(View.VISIBLE);
+                    stockMapPreview.setActive(activityResumed && hasWindowFocus());
                 }
             });
         }
@@ -435,13 +593,32 @@ public final class HomeActivity extends Activity {
         if ("exit".equals(action)) {
             finish();
         } else if ("navi".equals(action)) {
-            openNavigation();
+            openNavigation(true);
+        } else if ("nav-search".equals(action)) {
+            openNavigationCommand(StockNavigation.SEARCH);
+        } else if ("nav-current".equals(action)) {
+            if (openNavigation(true)) StockNavigation.requestWhenMapOpens(this, StockNavigation.CURRENT_POSITION);
+        } else if ("phone-history".equals(action) || "phone-contacts".equals(action)) {
+            String phoneAction = "phone-history".equals(action) ? "android.bluetooth.intent.action.RECENT_CALLS"
+                : "com.android.contacts.action.LIST_CONTACTS_WITH_PHONES";
+            if (!open(new Intent(phoneAction).setPackage(STOCK_PHONE)) && !open(StockApps.PHONE)) {
+                toast("이 기기에서 순정 전화 화면을 열 수 없습니다.");
+            }
+        } else if ("stock-memos".equals(action)) {
+            if (!open(new ComponentName("com.daudio.app.voicememo", "com.daudio.app.voicememo.MainActivity"))) {
+                toast("순정 음성 메모를 열 수 없습니다.");
+            }
+        } else if ("media-player".equals(action)) {
+            if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {
             String destination = "nav-home".equals(action) ? "우리 집" : "회사";
             new AlertDialog.Builder(this).setTitle(destination)
-                .setMessage("순정 내비를 열고 저장된 " + destination + "을 선택하세요.")
-                .setPositiveButton("순정 내비 열기", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface dialog, int index) { openNavigation(); }
+                .setMessage("순정 통합 검색 왼쪽에서 저장된 " + destination
+                    + "을 선택하세요. 검색이 열리지 않으면 순정 하단의 돋보기를 누르세요.")
+                .setPositiveButton("순정 검색 열기", new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int index) {
+                        openNavigationCommand(StockNavigation.SEARCH);
+                    }
                 })
                 .setNegativeButton("취소", null).show();
         } else if ("media-prev".equals(action)) {
@@ -474,6 +651,27 @@ public final class HomeActivity extends Activity {
             choosePhoto("photo-standby".equals(action) ? STANDBY_PHOTO : SPLIT_PHOTO);
         } else if ("photo-profile0".equals(action) || "photo-profile1".equals(action)) {
             choosePhoto("photo-profile0".equals(action) ? DRIVER_ONE_PHOTO : DRIVER_TWO_PHOTO);
+        } else if ("auto-start-toggle".equals(action)) {
+            boolean on = !ThemePrefs.autoStart(this);
+            ThemePrefs.setAutoStart(this, on);
+            syncFlags();
+            toast(on ? "시동 후 자동 실행을 켰습니다." : "시동 후 자동 실행을 껐습니다.");
+        } else if ("nav-bar-toggle".equals(action)) {
+            boolean on = !ThemePrefs.navBar(this);
+            ThemePrefs.setNavBar(this, on);
+            if (!on) stopService(new Intent(this, NavBarService.class));
+            syncFlags();
+            toast(on ? "테마에서 지도를 열면 하단바 시험이 시작됩니다." : "순정 하단줄을 사용합니다.");
+        } else if ("corners-toggle".equals(action)) {
+            boolean on = !ThemePrefs.corners(this);
+            ThemePrefs.setCorners(this, on);
+            CornerService.sync(this);
+            syncFlags();
+            toast(on ? "순정 화면에도 하단 버튼을 띄웁니다." : "순정 화면의 하단 버튼을 껐습니다.");
+        } else if ("home-settings".equals(action)) {
+            if (!open(new Intent("android.settings.HOME_SETTINGS"))) {
+                toast("이 기기에서 홈 화면 설정을 열 수 없습니다.");
+            }
         } else if ("configure".equals(action)) {
             new AlertDialog.Builder(this).setTitle("바로가기 설정")
                 .setItems(LABELS, new DialogInterface.OnClickListener() {
@@ -498,50 +696,67 @@ public final class HomeActivity extends Activity {
 
     private boolean openDefaultShortcut(String action, String label) {
         switch (action) {
+            case "media":
+                return open(StockApps.MEDIA);
+            case "phone":
+                return open(StockApps.PHONE);
+            case "radio":
+                return open(StockApps.RADIO);
             case "settings":
-                return open(new Intent(Settings.ACTION_SETTINGS));
+                return open(StockApps.SETTINGS) || open(new Intent(Settings.ACTION_SETTINGS));
             case "settings-general":
                 return openSettingsRoot();
             case "settings-car":
-                Intent vehicle = getPackageManager().getLaunchIntentForPackage(VEHICLE_SETTINGS);
-                if (vehicle != null && open(vehicle)) return true;
+                if (open(StockApps.VEHICLE) || openPackage("com.hkmc.software.vehiclesetting")) return true;
                 showSettingsFallback(label);
                 return true;
             case "settings-nav":
-                new AlertDialog.Builder(this).setTitle(label)
-                    .setMessage("순정 내비게이션을 열고 설정 메뉴를 선택하세요.")
-                    .setPositiveButton("순정 내비 열기", new DialogInterface.OnClickListener() {
-                        @Override public void onClick(DialogInterface dialog, int index) { openNavigation(); }
-                    })
-                    .setNegativeButton("취소", null).show();
+                openNavigationCommand(StockNavigation.SETTINGS);
                 return true;
             case "settings-sound":
                 return openSettingsPanel(Settings.ACTION_SOUND_SETTINGS, label);
             case "settings-devices":
-                return openSettingsPanel(Settings.ACTION_BLUETOOTH_SETTINGS, label);
+                return open(StockApps.PROJECTION) || openSettingsPanel(Settings.ACTION_BLUETOOTH_SETTINGS, label);
             case "projection":
-                Intent projection = getPackageManager().getLaunchIntentForPackage("com.daudio.app.dipo");
-                return projection != null && open(projection);
+                return open(StockApps.PROJECTION) || openPackage("com.daudio.app.dipo");
             case "settings-display":
                 return openSettingsPanel(Settings.ACTION_DISPLAY_SETTINGS, label);
             case "settings-profile":
+                if (open(StockApps.PROFILE)) return true;
+                showSettingsFallback(label);
+                return true;
             case "settings-voice":
                 showSettingsFallback(label);
                 return true;
             case "source-fm":
             case "source-am":
-                return openSaved("radio");
+                return openSaved("radio") || StockApps.openRadioBand(this, "source-fm".equals(action));
             case "source-bt":
+                return StockApps.openPlayer(this, "bt");
             case "source-usb":
+                return StockApps.openPlayer(this, "usb");
             case "source-nature":
-                return openSaved("media");
+                return open(StockApps.NATURE) || open(StockApps.MEDIA);
+            case "nemesis":
+                return open(new Intent(Intent.ACTION_MAIN)
+                    .setClassName("com.nemesis.manager", "com.nemesis.manager.MainActivity"));
+            case "nemesis-mydrive":
+                return open(new ComponentName("io.github.k8ecs.hu", "io.github.k8ecs.hu.HuActivity"));
+            case "nemesis-youtube":
+                return open(new ComponentName("org.smarttube.stable",
+                    "com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"));
             default:
                 return false;
         }
     }
 
     private boolean openSettingsRoot() {
-        return openSaved("settings") || open(new Intent(Settings.ACTION_SETTINGS));
+        return openSaved("settings") || open(StockApps.SETTINGS) || open(new Intent(Settings.ACTION_SETTINGS));
+    }
+
+    private boolean openPackage(String packageName) {
+        Intent launch = getPackageManager().getLaunchIntentForPackage(packageName);
+        return launch != null && open(launch);
     }
 
     private boolean openSettingsPanel(String action, String label) {
@@ -560,37 +775,46 @@ public final class HomeActivity extends Activity {
             .setNegativeButton("취소", null).show();
     }
 
-    private void openNavigation() {
-        if (!open(NAVIGATION)) toast("이 기기에서 순정 내비게이션을 열 수 없습니다.");
+    private boolean openNavigation(boolean withBar) {
+        if (!open(StockNavigation.MAP)) {
+            toast("이 기기에서 순정 내비게이션을 열 수 없습니다.");
+            return false;
+        }
+        if (withBar && ThemePrefs.navBar(this)) {
+            try {
+                startService(new Intent(this, NavBarService.class).setAction(NavBarService.OPENED_MAP));
+            } catch (RuntimeException e) {
+                toast("하단바를 시작할 수 없습니다. 순정 하단줄을 사용합니다.");
+            }
+        }
+        return true;
+    }
+
+    private void openNavigationCommand(String action) {
+        if (openNavigation(false)) {
+            if (StockNavigation.SEARCH.equals(action) && ThemePrefs.navBar(this)) {
+                try {
+                    startService(new Intent(this, NavBarService.class).setAction(NavBarService.SEARCHING_MAP));
+                } catch (RuntimeException ignored) {
+                    toast("순정 내비 화면을 사용합니다.");
+                }
+            }
+            StockNavigation.requestWhenMapOpens(this, action);
+        }
     }
 
     private void sendMediaKey(int key) {
-        AudioManager audio = (AudioManager) getSystemService(AUDIO_SERVICE);
-        if (audio == null) {
-            toast("미디어 제어를 사용할 수 없습니다.");
-            return;
-        }
-        long time = SystemClock.uptimeMillis();
-        try {
-            audio.dispatchMediaKeyEvent(new KeyEvent(time, time, KeyEvent.ACTION_DOWN, key, 0));
-            audio.dispatchMediaKeyEvent(new KeyEvent(time, time, KeyEvent.ACTION_UP, key, 0));
-        } catch (SecurityException ignored) {
+        if (!transport.send(media.source, key) && !MediaKeys.dispatch(this, key)) {
             toast("이 기기에서 미디어 키를 전달할 수 없습니다.");
         }
     }
 
     private boolean open(ComponentName component) {
-        return open(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-            .setComponent(component).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        return StockApps.open(this, component);
     }
 
     private boolean open(Intent intent) {
-        try {
-            startActivity(intent);
-            return true;
-        } catch (ActivityNotFoundException | SecurityException ignored) {
-            return false;
-        }
+        return StockApps.open(this, intent);
     }
 
     private void chooseApp(final int index, final boolean launch) {
@@ -642,6 +866,9 @@ public final class HomeActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        pageReady = false;
+        coverArt.close();
+        stockMapPreview.setActive(false);
         mapSlot.removeAllViews();
         root.removeView(web);
         web.removeJavascriptInterface("K8Host");

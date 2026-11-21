@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5W 순정 내비 vs ccNC 내비 비교</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#0b0f16; color:#e8eef6;
+    font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif; line-height:1.55; }
+  .wrap { max-width:1600px; margin:0 auto; padding:28px 24px 60px; }
+  h1 { font-size:30px; margin:0 0 6px; }
+  .lead { color:#93a3b8; margin:0 0 26px; font-size:15px; }
+  h2 { font-size:21px; margin:38px 0 14px; padding-bottom:8px; border-bottom:1px solid #1e2a38; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .card { background:#111823; border:1px solid #1e2a38; border-radius:10px; overflow:hidden; }
+  .card .cap { padding:10px 14px; font-size:15px; font-weight:600; background:#151d29;
+    border-bottom:1px solid #1e2a38; display:flex; justify-content:space-between; }
+  .card .cap span { font-weight:400; font-size:13px; color:#8fa1b6; }
+  .card img { display:block; width:100%; background:#fff; }
+  .crop { height:78px; overflow:hidden; position:relative; background:#fff; }
+  .crop img { position:absolute; left:0; bottom:0; }
+  .crop .tag { position:absolute; left:8px; top:6px; font-size:12px; background:rgba(10,16,24,.85);
+    color:#e8eef6; padding:2px 8px; border-radius:5px; z-index:2; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin-top:6px; }
+  th, td { border:1px solid #1e2a38; padding:9px 11px; text-align:left; vertical-align:top; }
+  th { background:#151d29; font-weight:600; }
+  td:first-child { background:#111823; width:20%; color:#c6d3e2; }
+  .note { font-size:13px; color:#8fa1b6; margin-top:10px; }
+  .tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .tag-chip { font-size:12px; background:#16202d; border:1px solid #24334a; border-radius:999px;
+    padding:3px 10px; color:#9fb0c4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>5W 순정 내비 vs ccNC 내비</h1>
+  <p class="lead">
+    기아 공식 한국어 매뉴얼 화면 이미지만 근거로 비교했다. 차량 실물 확인은 없다.
+    왼쪽이 5W(K8 Gen5W), 오른쪽이 ccNC. 아래 그림은 각 매뉴얼에서 받은 원본이다.
+  </p>
+
+  <h2>1. 지도 화면과 길안내</h2>
+  <div class="pair">
+    <div class="card">
+      <div class="cap">5W 길안내 <span>D-navi_guidance_a.png</span></div>
+      <img src="images/nav-compare/5W-길안내.png" alt="5W 길안내 화면">
+    </div>
+    <div class="card">
+      <div class="cap">ccNC 길안내 <span>D-map_guidance.png</span></div>
+      <img src="images/nav-compare/ccNC-길안내.png" alt="ccNC 길안내 화면">
+    </div>
+  </div>
+  <div class="note">
+    5W는 안내 카드가 우상단 3장으로 쌓이고 시계가 상단 중앙에 있다. ccNC는 시계가 우상단이고,
+    지도 중앙 하단에 차선 안내 띠(605 m)가 따로 있다. 왼쪽 세로 버튼도 5W는 6개(홈·SE·Nav·＋·Auto·−),
+    ccNC는 5개(검색·나침반·Nav·Auto·Scale)다.
+  </div>
+
+  <h2>2. 하단 표시줄</h2>
+  <div class="pair">
+    <div class="card">
+      <div class="cap">5W 하단 줄 <span>순정 내비 메뉴</span></div>
+      <div class="crop"><span class="tag">하단 78 px 확대</span>
+        <img src="images/nav-compare/5W-길안내.png" alt="5W 하단 줄">
+      </div>
+      <div class="cap" style="border-top:1px solid #1e2a38; border-bottom:none;">
+        <span style="font-weight:400;">메뉴 · 경로 종료 · 287 km/14:32 · ⓘ 목적지 · 오른쪽 끝 버튼</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cap">ccNC 하단 줄 <span>시스템 표시줄</span></div>
+      <div class="crop"><span class="tag">하단 78 px 확대</span>
+        <img src="images/nav-compare/ccNC-길안내.png" alt="ccNC 하단 줄">
+      </div>
+      <div class="cap" style="border-top:1px solid #1e2a38; border-bottom:none;">
+        <span style="font-weight:400;">← 뒤로 · ⌂ 홈 · ≡ 메뉴 · 중앙 알약(거리·시간·목적지) · ▶ Media Off</span>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    여기가 가장 큰 차이다. 5W의 아래 줄은 내비 앱의 메뉴이고, ccNC의 아래 줄은 시스템 바다.
+    우리 테마가 만든 하단바는 ccNC 쪽 모양(assets/navbar.html)이라, 5W 내비 위에 얹으면
+    ccNC 스타일 바가 5W 스타일 메뉴줄 위에 놓인다.
+  </div>
+
+  <h2>3. 검색과 목적지</h2>
+  <div class="pair">
+    <div class="card">
+      <div class="cap">5W 검색/경로 <span>D-navi_searchroute_main_a.png</span></div>
+      <img src="images/nav-compare/5W-검색경로.png" alt="5W 검색과 경로 화면">
+    </div>
+    <div class="card">
+      <div class="cap">ccNC 검색 <span>D-map_route.png</span></div>
+      <img src="images/nav-compare/ccNC-경로검색.png" alt="ccNC 검색 화면">
+    </div>
+  </div>
+  <div class="note">
+    5W는 검은 타일 메뉴(통합 검색·주변 검색·주소 검색·최근 목적지·등록 지점·기아오토라·경로 취소·경로 편집…)이고,
+    아래 탭에 <b>우리집 · 사무실 · 즐겨찾기 1·2·3</b>이 있다. ccNC는 검색창에 한글 자판이 나오고
+    오른쪽에 최근 검색 패널이 붙는다. 5W 쪽 우리집·사무실 탭은 '우리 집·회사 바로 안내' 만들 때 그대로 쓸 수 있다.
+  </div>
+
+  <h2>4. 등록 지점과 경로 편집</h2>
+  <div class="pair">
+    <div class="card">
+      <div class="cap">ccNC 등록 지점 <span>D-map_place_main.png</span></div>
+      <img src="images/nav-compare/ccNC-등록지점.png" alt="ccNC 등록 지점 화면">
+    </div>
+    <div class="card">
+      <div class="cap">ccNC 경로 편집 <span>D-map_route_edit.png</span></div>
+      <img src="images/nav-compare/ccNC-경로편집.png" alt="ccNC 경로 편집 화면">
+    </div>
+  </div>
+  <div class="note">
+    ccNC는 등록 지점에서 '목적지 설정 · 위치 저장 · 선택지 주변 검색'을 준다. 5W 화면에는 이 버튼들이 없다.
+  </div>
+
+  <h2>5. 항목별 정리</h2>
+  <table>
+    <tr><th>항목</th><th>5W 순정 내비</th><th>ccNC 내비</th><th>우리 쪽 의미</th></tr>
+    <tr><td>하단 줄 성격</td><td>내비 앱 메뉴(메뉴·경로 종료·거리·목적지)</td><td>시스템 바(뒤로·홈·메뉴 + 중앙 알약 + 미디어)</td><td>우리 하단바는 ccNC 쪽. 5W 위에서는 두 시스템이 나란히 보인다</td></tr>
+    <tr><td>왼쪽 세로 버튼</td><td>6개: 홈·SE·Nav·＋·Auto·−</td><td>5개: 검색·나침반·Nav·Auto·Scale</td><td>순정 내비 영역. 테마가 새로 만들 대상 아님</td></tr>
+    <tr><td>안내 카드</td><td>우상단 3장</td><td>우측 스택 + 지도 중앙 하단 차선 띠</td><td>테마에 넣으려면 데이터 경로가 아직 없다</td></tr>
+    <tr><td>시계 위치</td><td>상단 중앙</td><td>우상단</td><td>테마 상단 시계는 따로 둠</td></tr>
+    <tr><td>검색 UI</td><td>검은 타일 메뉴</td><td>검색창 + 한글 자판 + 최근 검색 패널</td><td>테마 검색은 한글 통합 검색. 5W 타일 메뉴와는 다르다</td></tr>
+    <tr><td>우리 집·회사</td><td>검색 화면 탭에 우리집·사무실 있음</td><td>'등록 지점' 개념으로만 있음</td><td>5W 탭을 여는 방식이 정공법에 가깝다</td></tr>
+    <tr><td>분할 화면</td><td>내비 안에서 우측 패널(안내 카드 + 확대 지도)</td><td>시스템 위젯으로 우측 영역</td><td>홈 오른쪽 위젯은 별개 과제</td></tr>
+    <tr><td>지도 색</td><td>연두 배경 + 초록 경로</td><td>회록 도로 + 촘촘한 POI</td><td>테마 지도는 예시 데이터</td></tr>
+  </table>
+
+  <div class="tags">
+    <span class="tag-chip">근거: 5W 공식 매뉴얼 006_Navigation_basic.html</span>
+    <span class="tag-chip">근거: ccNC 공식 매뉴얼 Map.html · Map_search.html · Map_editroute.html</span>
+    <span class="tag-chip">차량 실물 확인 전</span>
+  </div>
+</div>
+</body>
+</html>

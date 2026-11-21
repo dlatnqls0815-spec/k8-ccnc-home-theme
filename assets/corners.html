@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>K8 ccNC 모서리 버튼</title>
+<style>
+/* ccNC 하단 모서리 두 조각(D-settings_theme_widget.png 실측). 창 크기는 화면의 24.4%/24.8% × 12.5%.
+   창은 투명하고, 화면 안쪽 위 모서리만 둥글다(1920 기준 12px). */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+html, body {
+  margin: 0; width: 100%; height: 100%; overflow: hidden;
+  color: #eef3f9; background: transparent;
+  font: 400 26px/1.2 Roboto, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  user-select: none; -webkit-user-select: none;
+}
+.keys, .box { background: #1c1c1c; box-shadow: inset 0 1px 0 rgba(255,255,255,.07); overflow: hidden; }
+.keys { border-top-right-radius: 13.3vh; }
+.box { border-top-left-radius: 13.3vh; }
+button { border: 0; padding: 0; color: inherit; background: none; font: inherit; }
+button:active { background-color: #262626; }
+
+.keys { display: flex; width: 100%; height: 100%; }
+.key { flex: 1; display: flex; align-items: center; justify-content: center; }
+.icon {
+  width: 36vh; height: 36vh; fill: none; stroke: #d6dde6; stroke-width: 2.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.box { display: flex; align-items: center; width: 100%; height: 100%; padding: 0 16px 0 0; text-align: left; }
+.thumb {
+  width: 100vh; height: 100vh; flex-shrink: 0; margin-right: 4.5vw; background: #292d2e;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.thumb img { width: 100%; height: 100%; display: block; }
+.off-icon { width: 66%; height: 66%; fill: none; stroke: #eef3f9; stroke-width: 1.6; stroke-linejoin: round; }
+.meta { min-width: 0; flex: 1; }
+.meta strong, .meta span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
+.meta strong { font-size: 28vh; }
+.meta span { font-size: 23vh; color: #8d96a2; margin-top: 1px; }
+</style>
+</head>
+<body>
+<div class="keys" id="keys" hidden>
+  <button type="button" class="key" data-action="back" aria-label="뒤로">
+    <svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M20 9l-7 7 7 7"/></svg>
+  </button>
+  <button type="button" class="key" data-action="home" aria-label="홈">
+    <svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 14L16 3l13 11v12H3z"/></svg>
+  </button>
+  <button type="button" class="key" data-action="menu" aria-label="전체 메뉴">
+    <svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 5h28M2 16h28M2 27h28"/></svg>
+  </button>
+</div>
+<button type="button" class="box off" id="box" data-action="media" aria-label="현재 미디어" hidden>
+  <span class="thumb" id="thumb"><svg class="off-icon" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M13.5 11.5l6.5 4.5-6.5 4.5z"/></svg></span>
+  <span class="meta"><strong id="title">Off</strong><span id="sub" hidden></span></span>
+</button>
+<script>
+(function () {
+  'use strict';
+  var OFF_ICON = document.getElementById('thumb').innerHTML;
+  function send(action) {
+    if (window.K8Corners && window.K8Corners.action) window.K8Corners.action(action);
+  }
+  document.addEventListener('click', function (event) {
+    var node = event.target;
+    while (node && node !== document.body && !(node.getAttribute && node.getAttribute('data-action'))) node = node.parentNode;
+    if (node && node.getAttribute && node.getAttribute('data-action')) send(node.getAttribute('data-action'));
+  });
+  window.K8CornerView = {
+    part: function (name) {
+      var keys = name === 'keys';
+      document.getElementById('keys').hidden = !keys;
+      document.getElementById('box').hidden = keys;
+      document.body.className = keys ? 'keys-part' : 'media';
+    },
+    media: function (title, sub, playing, cover) {
+      var on = !!title;
+      var box = document.getElementById('box');
+      box.classList.toggle('off', !on);
+      document.getElementById('title').textContent = on ? title : 'Off';
+      var subNode = document.getElementById('sub');
+      subNode.textContent = on ? (sub || '') : '';
+      subNode.hidden = !on || !sub;
+      var thumb = document.getElementById('thumb');
+      if (on && cover && /^data:image\/jpeg;base64,/.test(cover)) {
+        thumb.innerHTML = '';
+        var img = document.createElement('img');
+        img.alt = '';
+        img.src = cover;
+        thumb.appendChild(img);
+      } else {
+        thumb.innerHTML = on ? '' : OFF_ICON;
+      }
+    }
+  };
+})();
+</script>
+</body>
+</html>
