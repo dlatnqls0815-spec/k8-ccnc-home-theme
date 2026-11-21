@@ -58,6 +58,12 @@ final class StockVehicle {
         {"com.hkmc.mode.ModeManager", "isRearViewOn", "rearView"},
         {"com.hkmc.userprofile.UserProfileManager", "getUserType", "userType"},
         {"com.hkmc.userprofile.UserProfileManager", "isGuest", "guest"},
+        // Stock night light (BluelightManager / BluelightConstants: mode 0 auto, 1 scheduled; isEnable 0/1).
+        {"com.hkmc.bluelight.BluelightManager", "isEnable", "blueEnabled"},
+        {"com.hkmc.bluelight.BluelightManager", "getMode", "blueMode"},
+        {"com.hkmc.bluelight.BluelightManager", "getBluelightLevel", "blueLevel"},
+        {"com.hkmc.bluelight.BluelightManager", "getStartTime", "blueStart"},
+        {"com.hkmc.bluelight.BluelightManager", "getEndTime", "blueEnd"},
     };
 
     private final Context app;
@@ -135,6 +141,10 @@ final class StockVehicle {
             Method method = manager.getClass().getMethod(getter);
             Object value = method.invoke(manager);
             if (value instanceof Boolean) return value;
+            if (value instanceof String) {
+                String text = ((String) value).trim();
+                return text.isEmpty() || text.length() > 24 ? null : text;
+            }
             if (value instanceof Number) {
                 Number number = (Number) value;
                 if (value instanceof Float || value instanceof Double) {

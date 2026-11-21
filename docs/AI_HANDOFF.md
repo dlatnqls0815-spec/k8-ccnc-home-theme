@@ -1,5 +1,11 @@
 # K8 Gen5W 홈
 
+## 0.4.34 순정 블루라이트 상태, 남은 통로 조사 결과 (2026-11-22, Claude)
+
+- `BluelightManager`(automotive.odex, `BluelightConstants`: 모드 0 자동·1 예약, `isEnable` 0/1)의 켜짐·모드·단계·예약 시간을 `StockVehicle`이 함께 읽는다(짧은 글자 값도 읽도록 확장). 설정 → 디스플레이 → 블루라이트에 `순정 블루라이트` 줄, 순정이 켜져 있으면 테마 효과와 겹친다는 안내.
+- 조사했지만 넣지 않은 것: `homeaidl`의 `IHomeServiceManager`·`IHome*Listener`는 분할 화면 허브처럼 `onDoCommand(int)`만 있는 명령 통로(데이터 아님). `DVRSManager`(빌트인 캠)는 11개 숫자 콜백뿐이고 순서 뜻 미상. `DisplaySettingFwManager`는 `isAdmEnable`/`isRhstaSwista`뿐. `RegulationActivityManager`는 생성자가 비공개. `FavoriteSongManager`는 화면에 쓸 곳 없음.
+- 배포 `deliverables/K8-5W-홈-0.4.34.apk`, `K8-ccNC-Home-NEMESIS-0.4.34-USB.zip`. 이전 검사와 블루라이트 시험 통과.
+
 ## 0.4.33 차량 상태 전체, 운전자, 시작 오디오 모드 (2026-11-22, Claude)
 
 - `StockVehicle.java`: 자동차 라이브러리 관리자(`TMUManager`, `BCMManager`, `USMManager`, `ModeManager`, `UserProfileManager`)를 반사로 만들어 값이 있는 무인자 getter만 3초마다 백그라운드 스레드에서 읽는다(서비스 거부·클래스 없음이면 그 값만 빠짐, 같은 경고는 한 번만 기록). 개인 식별 정보 getter는 목록에 없음.

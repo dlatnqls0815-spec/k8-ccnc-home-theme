@@ -2733,7 +2733,9 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         '<label class="detail-settings-row">색온도<input id="warmth-level" type="range" min="1" max="5" value="' + state.warmth.level + '"></label>' +
         '<div class="detail-settings-row">사용자 설정<div class="warmth-timing">' +
         '<input id="warmth-start" type="time" aria-label="시작 시간" value="' + state.warmth.start + '"> ~ ' +
-        '<input id="warmth-end" type="time" aria-label="종료 시간" value="' + state.warmth.end + '"></div></div>';
+        '<input id="warmth-end" type="time" aria-label="종료 시간" value="' + state.warmth.end + '"></div></div>' +
+        '<div class="detail-settings-row" data-system-row="blueStock" hidden><span>순정 블루라이트</span><output data-system-value="blueStock"></output></div>' +
+        '<p data-system-row="blueOverlap" hidden>순정 블루라이트가 켜져 있어 테마 효과를 켜면 두 번 겹쳐 적용됩니다. 순정 설정은 차량 설정의 화면 메뉴에서 바꿉니다.</p>';
       detailSettings(pane, '디스플레이 메뉴', nav, content, art);
       if (bright) {
         var range = pane.querySelector('#theme-brightness-range');
@@ -2828,6 +2830,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     readouts.hybridGasRange = typeof hybridInfo.gasRange === 'number' && hybridInfo.gasRange > 0 ? hybridInfo.gasRange + ' km' : '';
     readouts.hybridReady = hybridInfo.ready === 1 ? '켜짐' : hybridInfo.ready === 0 ? '꺼짐' : '';
     readouts.hybridNote = readouts.hybridMode || readouts.hybridSoc || readouts.hybridMotorUse ? '1' : '';
+    var blueOn = vehicleInfo.blueEnabled === 1 || vehicleInfo.blueEnabled === true;
+    readouts.blueStock = typeof vehicleInfo.blueEnabled === 'number' || typeof vehicleInfo.blueEnabled === 'boolean'
+      ? (blueOn ? '켜짐 · ' + (vehicleInfo.blueMode === 1 ? '예약 ' + [vehicleInfo.blueStart, vehicleInfo.blueEnd].filter(Boolean).join('~')
+        : '자동') + (typeof vehicleInfo.blueLevel === 'number' ? ' · ' + vehicleInfo.blueLevel + '단계' : '') : '꺼짐') : '';
+    readouts.blueOverlap = blueOn ? '1' : '';
     var car = vehicleLabels(vehicleInfo);
     Object.keys(car).forEach(function (key) { readouts[key] = car[key]; });
     readouts.carNote = Object.keys(car).some(function (key) { return car[key]; }) ? '1' : '';
