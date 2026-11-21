@@ -716,6 +716,9 @@ public final class HomeActivity extends Activity {
             openNavigation(true);
         } else if ("nav-search".equals(action)) {
             openNavigationCommand(StockNavigation.SEARCH);
+        } else if (action.startsWith("pkg:") && action.length() > 4) {
+            // Stock app tiles in the all-apps screen; only installed packages with a launcher entry open.
+            if (!openPackage(action.substring(4))) toast("이 차에서 해당 순정 앱을 열 수 없습니다.");
         } else if ("nav-petrol".equals(action) || "nav-parking".equals(action)) {
             // Nearby list from the navi; if it does not come up, fall back to the navi search screen.
             final String nearby = "nav-petrol".equals(action) ? StockNavigation.NEARBY_PETROL : StockNavigation.NEARBY_PARKING;

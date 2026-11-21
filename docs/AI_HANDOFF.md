@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.4.38 남은 순정 앱 타일, 키보드·음성인식 중 모서리 숨김 (2026-11-22, Claude)
+
+- 차에서 뽑은 `hmgapi.log`(앰비언트 저장소 `private/vehicle-usb`)의 설치 앱 목록과 대조해, 테마에 바로가기가 없던 순정 앱을 전체 메뉴에 넣었다: 빌트인 캠(`com.daudio.app.dvrs`), 하이브리드(`com.hkmc.daudio.app.hev2`), DMB(`com.daudio.av.app.dmb`), USB 동영상(`com.daudio.av.app.usbvideo`), 음악 스트리밍(`com.daudio.app.musicstreaming`), 후석 케어(`com.android.rear_care`), 주차 위치(`com.daudio.app.findmyvehicle`, 이름은 패키지 뜻으로 붙임), 테마(`com.android.themesettings`). 전체 메뉴가 4페이지가 됐다.
+- 타일 동작은 `pkg:<패키지>` → `HomeActivity`가 실행 진입점이 있는 설치 앱만 연다. 없으면 "이 차에서 해당 순정 앱을 열 수 없습니다".
+- `CornerService`: 순정 한글 키보드(`com.android.inputmethod.Korean.action.showwindow/hidewindow`), 내비 키보드(`com.mobis.intent.action.navi_keyboard_show/hide`), 음성인식(`VR_START/VR_FINISH`, `start_dialog_vr/end_dialog_vr`) 중에는 떠 있는 모서리 조각을 숨긴다. 닫힘 방송을 놓쳐도 2분 뒤 다시 나온다. 이름은 순정 분할 화면이 듣는 방송에서 가져왔다.
+- 확인: `verify-0438.cjs`, 메뉴 검사(3페이지 6칸으로 기대값 갱신) 등 기존 검사 통과. 차에서 볼 것: 새 타일 8개가 각각 열리는지, 주차 위치 앱의 실제 이름, 키보드가 뜰 때 모서리가 숨는지.
+
 ## 0.4.37 휴대폰 신호·배터리, 주행 모드 (2026-11-22, Claude)
 
 - 순정 분할 화면(`SplitScreenHome`, 수신기 `c`, `f/f`)이 쓰는 Broadcom 핸즈프리 방송을 받는다: `MOBIS_BT_SIGNAL_STRENGTH`(`STRENGTH`), `MOBIS_BT_BATTERY_LEVEL`(`LEVEL`), 값 0~5로 보고 -1은 지운다. 시작할 때 순정 분할 화면처럼 `com.mobis.intent.action.GetBatteryLevel`을 보내 배터리 값을 다시 받는다(조회 요청, 차량 명령 아님). 통신사 이름(`CARRIER`)은 쓰지 않는다.

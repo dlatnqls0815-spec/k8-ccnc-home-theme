@@ -50,6 +50,23 @@ public final class CornerService extends Service {
     private WindowManager windows;
     private WebView keys, mediaBox;
     private boolean keysReady, mediaReady, attached, running, rearView;
+    // Elapsed-time marks; 0 = not shown. A missed close broadcast expires after the limit below.
+    private long keyboardAt, voiceAt;
+    private static final long INPUT_LIMIT_MS = 120000;
+    // Stock Korean keyboard and navi keyboard (split screen listens to the same), voice recognition.
+    private static final String[] KEYBOARD_SHOW = {"com.android.inputmethod.Korean.action.showwindow", "com.mobis.intent.action.navi_keyboard_show"};
+    private static final String[] KEYBOARD_HIDE = {"com.android.inputmethod.Korean.action.hidewindow", "com.mobis.intent.action.navi_keyboard_hide"};
+    private static final String[] VOICE_START = {"com.mobis.intent.action.VR_START", "com.hkmc.intent.action.start_dialog_vr"};
+    private static final String[] VOICE_END = {"com.mobis.intent.action.VR_FINISH", "com.hkmc.intent.action.end_dialog_vr"};
+
+    private static boolean recent(long at) {
+        return at != 0 && android.os.SystemClock.elapsedRealtime() - at < INPUT_LIMIT_MS;
+    }
+
+    private static boolean any(String[] list, String action) {
+        for (String each : list) if (each.equals(action)) return true;
+        return false;
+    }
     private StockMedia media = StockMedia.EMPTY;
     private BluetoothCoverArt coverArt;
     private String coverImage = "";
@@ -73,6 +90,16 @@ public final class CornerService extends Service {
                 if (rearView) detach();
                 return;
             }
+            if (any(KEYBOARD_SHOW, action) || any(KEYBOARD_HIDE, action)) {
+                keyboardAt = any(KEYBOARD_SHOW, action) ? android.os.SystemClock.elapsedRealtime() : 0;
+                if (keyboardAt != 0) detach();
+                return;
+            }
+            if (any(VOICE_START, action) || any(VOICE_END, action)) {
+                voiceAt = any(VOICE_START, action) ? android.os.SystemClock.elapsedRealtime() : 0;
+                if (voiceAt != 0) detach();
+                return;
+            }
             StockMedia next = media.update(intent.getAction(), intent.getExtras());
             if (next == media) return;
             media = next;
@@ -88,7 +115,7 @@ public final class CornerService extends Service {
                 stopSelf();
                 return;
             }
-            boolean want = !rearView && keysReady && mediaReady && screenOn() && allowed(StockNavigation.foreground(CornerService.this));
+            boolean want = !rearView && !recent(keyboardAt) && !recent(voiceAt) && keysReady && mediaReady && screenOn() && allowed(StockNavigation.foreground(CornerService.this));
             if (want && !attached) attach();
             else if (!want && attached) detach();
             handler.postDelayed(this, POLL_MS);
@@ -108,6 +135,9 @@ public final class CornerService extends Service {
         StockMedia.addActions(filter);
         filter.addAction(StockNavigation.REARVIEW_ON);
         filter.addAction(StockNavigation.REARVIEW_OFF);
+        for (String[] list : new String[][] {KEYBOARD_SHOW, KEYBOARD_HIDE, VOICE_START, VOICE_END}) {
+            for (String each : list) filter.addAction(each);
+        }
         registerReceiver(receiver, filter);
         Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
         try {

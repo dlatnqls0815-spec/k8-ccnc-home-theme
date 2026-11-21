@@ -1582,6 +1582,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       <button type="button" class="pager-bar" data-page="apps1" aria-label="전체 기능 1페이지" aria-current="false"></button>
       <button type="button" class="pager-bar" data-page="apps2" aria-label="전체 기능 2페이지" aria-current="false"></button>
       <button type="button" class="pager-bar" data-page="apps3" aria-label="전체 기능 3페이지" aria-current="false"></button>
+      <button type="button" class="pager-bar" data-page="apps4" aria-label="전체 기능 4페이지" aria-current="false"></button>
     </div>
     <button type="button" class="pager-nav-btn" id="pager-right-btn">전체 메뉴 ›</button>
 
@@ -1740,7 +1741,16 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       { id: 'mods', label: '모드', color: '#6e5e4d', action: 'screenlayout' },
       { id: 'nemesis', label: '네메시스', color: '#505b70', action: 'nemesis' },
       { id: 'mydrive', label: 'K8 마이드라이브', color: '#536d66', action: 'nemesis-mydrive' },
-      { id: 'youtube', label: '유튜브', color: '#704d54', action: 'nemesis-youtube' }
+      { id: 'youtube', label: '유튜브', color: '#704d54', action: 'nemesis-youtube' },
+      // Stock apps installed on the K8 (hmgapi app list) that the theme had no tile for.
+      { id: 'dvrs', label: '빌트인 캠', color: '#555', action: 'pkg:com.daudio.app.dvrs' },
+      { id: 'hev', label: '하이브리드', color: '#555', action: 'pkg:com.hkmc.daudio.app.hev2' },
+      { id: 'dmb', label: 'DMB', color: '#555', action: 'pkg:com.daudio.av.app.dmb' },
+      { id: 'usbvideo', label: 'USB 동영상', color: '#555', action: 'pkg:com.daudio.av.app.usbvideo' },
+      { id: 'streaming', label: '음악 스트리밍', color: '#555', action: 'pkg:com.daudio.app.musicstreaming' },
+      { id: 'rearcare', label: '후석 케어', color: '#555', action: 'pkg:com.android.rear_care' },
+      { id: 'findcar', label: '주차 위치', color: '#555', action: 'pkg:com.daudio.app.findmyvehicle' },
+      { id: 'theme', label: '테마', color: '#555', action: 'pkg:com.android.themesettings' }
     ],
 
     // Settings & Split-screen Widget state (Settings_screenlayout_7.png)
@@ -1769,7 +1779,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   };
 
   var shell = document.getElementById('shell');
-  var appPages = ['apps1', 'apps2', 'apps3'];
+  var appPages = ['apps1', 'apps2', 'apps3', 'apps4'];
   var tilesPerPage = 6;
   var inVehicle = !!window.K8Host;
   var livePreview = inVehicle || /(?:^|[?&])vehicle=1(?:&|$)/.test(location.search);
@@ -2383,6 +2393,33 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       ctx.quadraticCurveTo(12, 50, 12, 43); ctx.lineTo(12, 27);
       ctx.quadraticCurveTo(12, 20, 19, 20); ctx.closePath();
       ctx.moveTo(31, 28); ctx.lineTo(43, 35); ctx.lineTo(31, 42); ctx.closePath();
+    } else if (id === 'dvrs') {
+      ctx.rect(12, 22, 34, 26);
+      ctx.moveTo(46, 30); ctx.lineTo(58, 23); ctx.lineTo(58, 47); ctx.lineTo(46, 40);
+      ctx.moveTo(22, 31); ctx.arc(19, 31, 3, 0, Math.PI * 2);
+    } else if (id === 'hev') {
+      ctx.moveTo(38, 12); ctx.lineTo(24, 38); ctx.lineTo(35, 38); ctx.lineTo(31, 58); ctx.lineTo(47, 30); ctx.lineTo(36, 30); ctx.closePath();
+    } else if (id === 'dmb') {
+      ctx.rect(12, 22, 46, 30);
+      ctx.moveTo(26, 12); ctx.lineTo(35, 22); ctx.lineTo(44, 12);
+    } else if (id === 'usbvideo') {
+      ctx.rect(12, 18, 46, 34);
+      ctx.moveTo(31, 27); ctx.lineTo(42, 35); ctx.lineTo(31, 43); ctx.closePath();
+    } else if (id === 'streaming') {
+      ctx.moveTo(28, 46); ctx.lineTo(28, 18); ctx.lineTo(50, 14); ctx.lineTo(50, 42);
+      ctx.moveTo(28, 46); ctx.arc(23, 46, 5, 0, Math.PI * 2);
+      ctx.moveTo(50, 42); ctx.arc(45, 42, 5, 0, Math.PI * 2);
+    } else if (id === 'rearcare') {
+      ctx.moveTo(20, 56); ctx.lineTo(20, 26); ctx.quadraticCurveTo(20, 16, 30, 16); ctx.lineTo(34, 16);
+      ctx.lineTo(34, 40); ctx.lineTo(52, 40); ctx.lineTo(52, 56);
+      ctx.moveTo(48, 14); ctx.quadraticCurveTo(56, 18, 54, 27); ctx.quadraticCurveTo(46, 27, 48, 14);
+    } else if (id === 'findcar') {
+      ctx.moveTo(35, 58); ctx.quadraticCurveTo(16, 36, 16, 29); ctx.arc(35, 29, 19, Math.PI, 0); ctx.quadraticCurveTo(54, 36, 35, 58);
+      ctx.moveTo(31, 38); ctx.lineTo(31, 21); ctx.lineTo(37, 21); ctx.quadraticCurveTo(43, 21, 43, 26); ctx.quadraticCurveTo(43, 31, 37, 31); ctx.lineTo(31, 31);
+    } else if (id === 'theme') {
+      ctx.arc(35, 35, 21, 0, Math.PI * 2);
+      ctx.moveTo(35, 14); ctx.lineTo(35, 56);
+      ctx.moveTo(14, 35); ctx.arc(35, 35, 21, Math.PI, Math.PI / 2, true);
     } else if (id === 'hmgapi') {
       ctx.rect(13, 18, 44, 34);
       ctx.moveTo(27, 29); ctx.lineTo(20, 35); ctx.lineTo(27, 41);
@@ -2499,7 +2536,9 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       navigateTo(tile.action === 'voicememo' ? 'memo' : tile.action);
       return;
     }
-    if (['projection','configure','radio','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0) {
+    if (['projection','configure','radio','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0 ||
+        tile.action.indexOf('pkg:') === 0) {
+      if (!inVehicle && tile.action.indexOf('pkg:') === 0) { showNotice(tile.label + ' · 차에서 순정 앱을 엽니다'); return; }
       host(tile.action);
       return;
     }
