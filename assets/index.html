@@ -2868,7 +2868,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         '<p data-system-row="climateNote" hidden>공조 값은 순정 공조 서비스에서 읽기만 합니다. 바람 세기·방향 번호의 뜻은 차에서 확인 중입니다.</p>' +
         [['hybridMode','에너지 흐름'],['hybridSoc','배터리 표시'],['hybridMotorUse','전기 모터 사용'],
           ['hybridAvgFuel','평균 연비 값'],['hybridTotalRange','주행 가능 거리'],['hybridGasRange','연료 주행 가능 거리'],
-          ['hybridReady','하이브리드 준비']]
+          ['hybridReady','하이브리드 준비'],['hybridEcoScore','에코 운전 점수'],['hybridCo2','CO₂ 절감'],
+          ['hybridEnergyUse','에너지 사용 (구동·발전·공조·전장)'],['hybridPower','소비 전력 값']]
           .map(function (row) {
             return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
               '</span><output data-system-value="' + row[0] + '"></output></div>';
@@ -2914,6 +2915,14 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     readouts.hybridTotalRange = typeof hybridInfo.totalRange === 'number' && hybridInfo.totalRange > 0 ? hybridInfo.totalRange + ' km' : '';
     readouts.hybridGasRange = typeof hybridInfo.gasRange === 'number' && hybridInfo.gasRange > 0 ? hybridInfo.gasRange + ' km' : '';
     readouts.hybridReady = hybridInfo.ready === 1 ? '켜짐' : hybridInfo.ready === 0 ? '꺼짐' : '';
+    var arr = function (list, i) { return list && typeof list[i] === 'number' && list[i] >= 0 ? list[i] : null; };
+    var eco = arr(hybridInfo.myDrive, 0);
+    readouts.hybridEcoScore = eco !== null && eco <= 100 ? eco + '점' : '';
+    var co2 = arr(hybridInfo.co2, 1), co2Trip = arr(hybridInfo.co2, 0);
+    readouts.hybridCo2 = co2 !== null && co2 > 0 ? co2 + (co2Trip ? ' · 거리 값 ' + co2Trip : '') : '';
+    var use = [0, 1, 2, 3].map(function (i) { return arr(hybridInfo.history, i); });
+    readouts.hybridEnergyUse = use.some(function (v) { return v !== null && v > 0; }) ? use.map(function (v) { return v === null ? '-' : v; }).join(' · ') : '';
+    readouts.hybridPower = typeof hybridInfo.power === 'number' && hybridInfo.power > 0 ? String(hybridInfo.power) : '';
     readouts.hybridNote = readouts.hybridMode || readouts.hybridSoc || readouts.hybridMotorUse ? '1' : '';
     var blueOn = vehicleInfo.blueEnabled === 1 || vehicleInfo.blueEnabled === true;
     readouts.blueStock = typeof vehicleInfo.blueEnabled === 'number' || typeof vehicleInfo.blueEnabled === 'boolean'
@@ -3421,7 +3430,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           climate.climatePassenger && '조수석 ' + climate.climatePassenger,
           climate.climateAc && '에어컨 ' + climate.climateAc].filter(Boolean).join(' · ');
         var sky = [typeof weatherInfo.rain === 'number' && weatherInfo.rain > 0 ? '강수 ' + weatherInfo.rain + '%' : '',
-          weatherInfo.sunrise ? '일출 ' + weatherInfo.sunrise : '', weatherInfo.sunset ? '일몰 ' + weatherInfo.sunset : ''].filter(Boolean).join(' · ');
+          weatherInfo.sunrise ? '일출 ' + weatherInfo.sunrise : '', weatherInfo.sunset ? '일몰 ' + weatherInfo.sunset : '',
+          weatherInfo.error ? (weatherInfo.error === 'unavailable' ? '날씨 서비스 사용 불가' : '날씨 갱신 실패') : ''].filter(Boolean).join(' · ');
         statusCard(box, 'weather', stockTemp ? '현재 ' + stockTemp : climate.climateOutside ? '바깥 ' + climate.climateOutside : '바깥 기온 대기',
           [sky, cabin].filter(Boolean).join(' · ') || '순정 날씨나 공조에서 기온을 받으면 표시합니다.', '공조 정보',
           function () { openSettingsSection('vehicle'); }).classList.add('split-live-state');

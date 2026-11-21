@@ -23,6 +23,9 @@ final class StockWeather {
     static final String REQUEST = "com.hkmc.intent.action.request_weather_from_navi";
     static final String RESPONSE = "com.hkmc.intent.action.response_weather_to_navi";
     private static final String EXTRA = "com.hkmc.extras.weather.navi_";
+    // Stock split screen also listens to these when the Kia Connect weather cannot be fetched.
+    static final String UNAVAILABLE = "com.hkmc.intent.action.weather_info_unavailable";
+    static final String UPDATE_ERROR = "com.hkmc.intent.action.weather_update_error";
     private static final long REFRESH_MS = 20 * 60 * 1000;
 
     private final Context app;
@@ -33,6 +36,20 @@ final class StockWeather {
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
+            if (UNAVAILABLE.equals(intent.getAction()) || UPDATE_ERROR.equals(intent.getAction())) {
+                // Keep the last good values; only mark that the latest update failed.
+                JSONObject next;
+                try {
+                    next = new JSONObject(latest.toString());
+                    next.put("error", UNAVAILABLE.equals(intent.getAction()) ? "unavailable" : "update");
+                } catch (JSONException ignored) {
+                    return;
+                }
+                Log.i(TAG, "weather " + intent.getAction());
+                latest = next;
+                changed.run();
+                return;
+            }
             Bundle data = intent.getExtras();
             if (data == null) return;
             JSONObject next = new JSONObject();
@@ -72,7 +89,10 @@ final class StockWeather {
     void start() {
         if (started) return;
         started = true;
-        app.registerReceiver(receiver, new IntentFilter(RESPONSE));
+        IntentFilter filter = new IntentFilter(RESPONSE);
+        filter.addAction(UNAVAILABLE);
+        filter.addAction(UPDATE_ERROR);
+        app.registerReceiver(receiver, filter);
         handler.post(refresh);
     }
 

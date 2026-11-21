@@ -40,6 +40,11 @@ final class StockHybrid {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final SparseIntArray values = new SparseIntArray();
     private Binding binding;
+    /** Cached arrays the service already holds (no request sent): HEVManager$DrivingHistoryIndex
+     *  (0 motor, 1 generator, 2 climate, 3 electrical load), $CO2RdcIndex (0 trip distance, 1 CO2
+     *  reduction), $MyDrivingModeIndex (0 eco score, 1 economy state, 2..4 high/normal/low fuel). */
+    private volatile int[] history, co2, myDrive;
+    private volatile int power = -1;
     private String failure = "";
 
     StockHybrid(Context context, Runnable changed) {
@@ -52,6 +57,7 @@ final class StockHybrid {
         try {
             binding = new Binding(this);
             failure = "";
+            refreshArrays();
         } catch (Throwable error) {
             binding = null;
             failure = error.getClass().getSimpleName();
@@ -78,8 +84,32 @@ final class StockHybrid {
                 if (value >= 0) info.put(KEYS[i], value);
             }
             if (!failure.isEmpty()) info.put("failure", failure);
+            putArray(info, "history", history);
+            putArray(info, "co2", co2);
+            putArray(info, "myDrive", myDrive);
+            if (power >= 0) info.put("power", power);
         } catch (JSONException ignored) { }
         return info;
+    }
+
+    private static void putArray(JSONObject info, String key, int[] values) throws JSONException {
+        if (values == null || values.length == 0) return;
+        org.json.JSONArray list = new org.json.JSONArray();
+        for (int i = 0; i < Math.min(values.length, 12); i++) list.put(values[i]);
+        info.put(key, list);
+    }
+
+    private void refreshArrays() {
+        Binding current = binding;
+        if (current == null) return;
+        try {
+            history = current.manager.getDrivingHistory();
+            co2 = current.manager.getCO2Rdc();
+            myDrive = current.manager.getMyDrivingMode();
+            power = current.manager.getPwrConsumption();
+        } catch (Throwable error) {
+            Log.w(TAG, "hybrid history unavailable: " + error.getClass().getSimpleName());
+        }
     }
 
     private void set(final int flag, final int value) {
@@ -87,6 +117,7 @@ final class StockHybrid {
             @Override public void run() {
                 if (value < 0 || values.get(flag, -1) == value) return;
                 values.put(flag, value);
+                if (flag == 0x6) refreshArrays();
                 changed.run();
             }
         });

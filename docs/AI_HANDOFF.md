@@ -1,5 +1,13 @@
 # K8 Gen5W 홈
 
+## 0.4.39 하이브리드 에코 점수·CO₂ 절감·에너지 사용, 날씨 오류 (2026-11-22, Claude)
+
+- `StockHybrid`가 서비스가 이미 들고 있는 배열을 읽는다(요청 송신 없음, IHEVService 조회만): `getMyDrivingMode()`(`MyDrivingModeIndex` 0 에코 점수), `getCO2Rdc()`(0 거리, 1 CO₂ 절감), `getDrivingHistory()`(0 구동, 1 발전, 2 공조, 3 전장), `getPwrConsumption()`. 시작할 때와 에너지 흐름 상태가 바뀔 때마다 다시 읽는다. 컴파일용 껍데기에 메서드 4개 추가(APK에 `com/hkmc` 클래스 0개 확인).
+- 설정 → 차량에 에코 운전 점수(0~100일 때만), CO₂ 절감, 에너지 사용, 소비 전력 값 줄. 단위는 차에서 확인 중이라 숫자 그대로 보인다. 일부는 전기차·PHEV 전용 값일 수 있다.
+- `StockWeather`: `weather_info_unavailable`/`weather_update_error`(순정 분할 화면이 듣는 방송)를 받으면 마지막 값은 두고 분할 화면 날씨 위젯에 "날씨 서비스 사용 불가"/"날씨 갱신 실패"를 붙인다.
+- 그 밖에 본 것: `VehicleOptionManager`는 CPU 변형 코드뿐, `NModeManager`는 험로 모드(K8 해당 없음), `ON_HEV_STATUS_CHANGED`는 순정 분할 화면의 전기차 전용 길이라 넣지 않았다.
+- 확인: `verify-0439.cjs`, 기존 검사 전부 통과.
+
 ## 0.4.38 남은 순정 앱 타일, 키보드·음성인식 중 모서리 숨김 (2026-11-22, Claude)
 
 - 차에서 뽑은 `hmgapi.log`(앰비언트 저장소 `private/vehicle-usb`)의 설치 앱 목록과 대조해, 테마에 바로가기가 없던 순정 앱을 전체 메뉴에 넣었다: 빌트인 캠(`com.daudio.app.dvrs`), 하이브리드(`com.hkmc.daudio.app.hev2`), DMB(`com.daudio.av.app.dmb`), USB 동영상(`com.daudio.av.app.usbvideo`), 음악 스트리밍(`com.daudio.app.musicstreaming`), 후석 케어(`com.android.rear_care`), 주차 위치(`com.daudio.app.findmyvehicle`, 이름은 패키지 뜻으로 붙임), 테마(`com.android.themesettings`). 전체 메뉴가 4페이지가 됐다.
