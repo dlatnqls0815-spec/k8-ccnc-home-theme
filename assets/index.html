@@ -1283,6 +1283,54 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .media-device-name { font-size: 2vw; }
 .call-name { font-size: 1.46vw; }
 .phone-row-right { font-size: 1.35vw; }
+
+/* Pixel pass against ccNC (red/cyan overlay of D-systemoverview_home_main.png and
+   D-settings_theme_widget.png at 1920x720). */
+.top-title-wrap { padding-left: 0; margin-left: -.85vw; margin-top: .36vw; }
+.profile-btn { margin-left: -.42vw; }
+.profile-btn .ico { width: 2.1vw; height: 2.1vw; }
+.top-right { margin-right: -1.05vw; }
+.clock { font-weight: 400; }
+.clock small { font-size: .6em; }
+.sl-panel-content { padding: 1.15vw 2.3vw 0 2.2vw; }
+.sl-desc { margin: 1.15vw 0 1.1vw 3.15vw; }
+.sl-row-link, .sl-radio-row, .sl-check-row { padding: 0 2.5vw 0 3.7vw; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left { gap: 2vw; }
+.profile-btn, .top-title-wrap { gap: 1.25vw; }
+.sl-preview canvas { margin-top: 2.9vw; }
+.deck { top: 13.1%; bottom: 7.9%; }
+.hcard-caption { align-items: flex-end; padding: 0 1.55vw .95vw; }
+.hcard-caption-main { align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; padding: 1.4vw 0 1.8vw; }
+.hcard-caption-main span { margin-top: 0; }
+.hcard-caption-main span .ico { width: 2vw !important; height: 2vw !important; }
+.circle-btn { width: 5.2vw; height: 5.2vw; }
+.hcard-circles { gap: 1.45vw; }
+.sl-row-link { padding-left: 2.15vw; }
+.sl-chevron { margin-right: 2.2vw; display: inline-flex; }
+.sl-chevron svg { width: 1vw; height: 2vw; fill: none; stroke: #9aa1a9; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.standby-option > [data-standby-options] { padding-right: 2.2vw; margin-right: 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+
+/* D-media_bluetooth_main.png / D-phone_calllist_main.png geometry (1920x720): media device card
+   18-432, playlist 476-1396, cards 110-608, artwork 321px centred at 1641 with keys at 560;
+   phone list 22-1392 from 98, phone drawing 220px wide, "Phone Name" 40px. */
+.media-stage { padding: 1.4vw 1.77vw 1.15vw .94vw; }
+.media-device-box { width: 21.56vw; }
+.media-center-box { flex: none; width: 47.9vw; margin-left: 2.3vw; padding: 0; }
+.media-right-box { flex: 1; width: auto; }
+.media-album-art { width: 16.7vw; height: 16.7vw; }
+.media-device-name { font-size: 2.1vw; margin-left: 1.1vw; }
+.media-track-row { flex-basis: 6.45vw; font-size: 1.6vw; }
+.phone-stage { padding: .78vw 1vw 1.15vw 1.15vw; }
+.phone-list-box { flex: none; width: 71.35vw; margin-right: 0; }
+.phone-device-pane { flex: 1; width: auto; }
+.phone-device-art { width: 14vw !important; height: 15.5vw !important; stroke-width: 1.4 !important; }
+.phone-device-label { margin-top: .9vw; }
+.bb-center { padding: 0 3.33vw 0 2.2vw; }
+.bb-tab-btn { flex-basis: 6.25vw; }
+.phone-device-label { font-size: 2.1vw !important; font-weight: 400; }
+.phone-row { flex: 0 0 6.45vw; padding: 0 2.4vw; }
+.device-switch-btn { width: 3.2vw; height: 3.2vw; }
+.device-switch-btn .ico { width: 1.7vw !important; height: 1.7vw !important; }
 </style>
 </head>
 <body>
@@ -1574,13 +1622,13 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         <div id="stage-phone" class="phone-stage" hidden>
           <div class="phone-list-box" id="phone-call-list"></div>
           <aside class="phone-device-pane">
-            <svg viewBox="0 0 120 180" style="width:95px;height:140px;fill:none;stroke:#8b94a0;stroke-width:2">
+            <svg class="phone-device-art" viewBox="0 0 120 180" style="width:95px;height:140px;fill:none;stroke:#8b94a0;stroke-width:2">
               <g transform="rotate(18 60 90)">
                 <rect x="28" y="14" width="64" height="152" rx="12"/>
                 <line x1="50" y1="24" x2="70" y2="24"/>
               </g>
             </svg>
-            <strong style="font-size:clamp(15px,1.35vw,23px);color:#e4ebf3" id="phone-device-label">Phone Name</strong>
+            <strong class="phone-device-label" style="font-size:clamp(15px,1.35vw,23px);color:#e4ebf3" id="phone-device-label">Phone Name</strong>
           </aside>
         </div>
 
@@ -2404,9 +2452,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 
     var cx = w * 0.5, cy = h * 0.5;
     ctx.save();
-    ctx.translate(cx - 24, cy - 24);
+    var k = Math.max(1, Math.min(w, h) / 150);
+    ctx.translate(cx - 24 * k, cy - 24 * k);
+    ctx.scale(k, k);
     ctx.strokeStyle = '#e4ebf5';
-    ctx.lineWidth = 2.8;
+    ctx.lineWidth = 2.6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -3234,8 +3284,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     if (state.slTab === 'frame') {
       panel.innerHTML =
         '<p class="sl-desc">대기 화면과 분할 화면에 선택한 이미지가 표시됩니다.</p>' +
-        '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span class="sl-chevron" aria-hidden="true">›</span></button>' +
-        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span class="sl-chevron" aria-hidden="true">›</span></button>';
+        '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span class="sl-chevron" aria-hidden="true"><svg viewBox="0 0 12 24"><path d="m2 3 8 9-8 9"/></svg></span></button>' +
+        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span class="sl-chevron" aria-hidden="true"><svg viewBox="0 0 12 24"><path d="m2 3 8 9-8 9"/></svg></span></button>';
       Array.prototype.forEach.call(panel.querySelectorAll('[data-frame-act]'), function (b) {
         b.addEventListener('click', function () {
           frameTarget = b.getAttribute('data-frame-act');
@@ -3380,7 +3430,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var inFrame = state.slTab === 'frame';
     frame.hidden = !inFrame || !photo[frameTarget];
     if (!frame.hidden) frame.src = photo[frameTarget];
-    caption.hidden = !inFrame;
+    caption.hidden = !inFrame || !photo[frameTarget];
     caption.textContent = (frameTarget === 'standby' ? '대기 화면' : '분할 화면') +
       (photo[frameTarget] ? ' 사진' : ' · 선택한 사진 없음');
     canvas.hidden = !frame.hidden;
@@ -3393,13 +3443,34 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     ctx.lineWidth = 2;
 
     if (state.slTab === 'split') {
-      ctx.fillStyle = '#181b1f';
-      ctx.strokeRect(w * 0.24, h * 0.08, w * 0.52, h * 0.60);
-      ctx.fillRect(w * 0.24, h * 0.08, w * 0.52, h * 0.60);
-      ctx.strokeRect(w * 0.28, h * 0.72, w * 0.44, h * 0.22);
+      // D-settings_theme_widget.png: rounded widget card, a fading card below, two thick teal arrows.
+      var roundRect = function (x, y, rw, rh, r) {
+        ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + rw - r, y); ctx.quadraticCurveTo(x + rw, y, x + rw, y + r);
+        ctx.lineTo(x + rw, y + rh - r); ctx.quadraticCurveTo(x + rw, y + rh, x + rw - r, y + rh);
+        ctx.lineTo(x + r, y + rh); ctx.quadraticCurveTo(x, y + rh, x, y + rh - r); ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+      };
+      var bx = w * 0.224, bw = w * 0.514, by = h * 0.04, bh = h * 0.70;
+      var low = ctx.createLinearGradient(0, by + bh, 0, h);
+      low.addColorStop(0, 'rgba(117,128,141,.9)'); low.addColorStop(1, 'rgba(117,128,141,0)');
+      ctx.strokeStyle = low; roundRect(bx + w * .04, by + bh + h * .04, bw - w * .08, h * .3, w * .02); ctx.stroke();
+      ctx.fillStyle = '#26282b'; ctx.strokeStyle = '#8a9098'; ctx.lineWidth = 2.5;
+      roundRect(bx, by, bw, bh, w * .03); ctx.fill(); ctx.stroke();
+      var arrow = function (x, top, bottom, down) {
+        var sw = w * .045, head = w * .05;
+        ctx.beginPath();
+        if (down) {
+          ctx.moveTo(x - sw / 2, top); ctx.lineTo(x + sw / 2, top); ctx.lineTo(x + sw / 2, bottom - head);
+          ctx.lineTo(x + head, bottom - head); ctx.lineTo(x, bottom); ctx.lineTo(x - head, bottom - head); ctx.lineTo(x - sw / 2, bottom - head);
+        } else {
+          ctx.moveTo(x - sw / 2, bottom); ctx.lineTo(x + sw / 2, bottom); ctx.lineTo(x + sw / 2, top + head);
+          ctx.lineTo(x + head, top + head); ctx.lineTo(x, top); ctx.lineTo(x - head, top + head); ctx.lineTo(x - sw / 2, top + head);
+        }
+        ctx.closePath(); ctx.fill();
+      };
       ctx.fillStyle = '#2bb79b';
-      ctx.font = '700 28px sans-serif';
-      ctx.fillText('↓↑', w * 0.41, h * 0.75);
+      arrow(w * 0.425, by + bh * 0.80, by + bh + h * .14, true);
+      arrow(w * 0.535, by + bh * 0.78, by + bh + h * .12, false);
     } else if (state.slTab === 'cluster') {
       ctx.fillStyle = '#142230';
       ctx.fillRect(w * .11, h * .20, w * .78, h * .59);
@@ -3421,10 +3492,29 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       ctx.font = '13px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(state.gaugeStyle, w * .5, h * .40);
+    } else if (state.slTab === 'frame') {
+      // D-settings_theme_digitalpicture.png: tilted picture frame with a diagonal sheen.
+      var q = function (pts) { ctx.beginPath(); ctx.moveTo(w * pts[0], h * pts[1]); for (var i = 2; i < pts.length; i += 2) ctx.lineTo(w * pts[i], h * pts[i + 1]); ctx.closePath(); };
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#8a9098'; ctx.lineWidth = 3;
+      q([.13, .15, .74, .0, .74, .78, .13, .68]); ctx.fillStyle = '#0b0b0c'; ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 1.5;
+      q([.16, .19, .71, .05, .71, .73, .16, .65]); ctx.stroke();
+      var sheen = ctx.createLinearGradient(w * .16, h * .2, w * .7, h * .5);
+      sheen.addColorStop(0, 'rgba(255,255,255,.28)'); sheen.addColorStop(1, 'rgba(255,255,255,.08)');
+      q([.16, .19, .71, .05, .71, .25, .16, .55]); ctx.fillStyle = sheen; ctx.fill();
     } else {
       ctx.fillStyle = '#14181d';
+      if (state.slTab === 'standby') {
+        // D-settings_theme_standbyscreen.png: thick dark-grey frame around a black screen.
+        ctx.fillStyle = '#2a2a2b';
+        ctx.fillRect(w * .088, h * .144, w * .781, h * .491);
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(w * .12, h * .19, w * .717, h * .40);
+      } else {
       ctx.fillRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
       ctx.strokeRect(w * 0.16, h * 0.20, w * 0.68, h * 0.56);
+      }
       if (state.slTab === 'standby' && state.standbyMode === 'clock') {
         ctx.fillStyle = '#dce3ed';
         if (state.standbyClock === 'analog') {
@@ -3582,7 +3672,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var slot = document.getElementById('bb-center-slot');
     var tr = state.tracks[state.trackIndex];
 
-    var mediaOn = !!(livePreview || state.playing);
+    // ccNC shows the boxed play icon and "Off" until a source has a real track.
+    var mediaOn = !!(state.playing || (livePreview && tr && tr.title && tr.title !== '미디어 정보 대기'));
     document.getElementById('bb-media-btn').classList.toggle('media-off', !mediaOn);
     document.getElementById('bb-media-title').textContent = mediaOn ? tr.title : 'Off';
     document.getElementById('bb-media-sub').textContent = mediaOn ? tr.artist || mediaSettings : '';
