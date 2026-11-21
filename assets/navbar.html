@@ -150,10 +150,13 @@ button.bb-idle { line-height: 80px; }
 /* 구분선 942, 깃발 976, 목적지 1032 (설명서). 시간 칸은 폭을 고정해 숫자가 바뀌어도 안 움직이게. */
 .bb-route-info .bb-time { min-width: 147px; margin-right: 0; }
 .bb-route-info .bb-route-divider { margin: 0 29px 0 24px; }
-.bb-route-info .bb-dest { margin-left: 30px; }
+
 .bb-route-info .bb-route-value { font-size: 33px; }
 .bb-route-info .bb-route-unit { font-size: 23px; }
-.bb-route-info .bb-location { margin-left: -3px; }
+
+/* 깃발 31x30 #d6d6d6 (976~1007, 위 20), 목적지 25px (1032~, 글자 위 24). */
+.bb-route-info .bb-location { margin-left: 2px; fill: #d6d6d6; }
+.bb-route-info .bb-dest { margin-left: 23px; font-size: 25px; position: relative; top: 1px; color: #e4e2df; }
 </style>
 </head>
 <body>
@@ -186,7 +189,7 @@ button.bb-idle { line-height: 80px; }
           <span class="bb-route-value" id="bb-route-time"></span><span class="bb-route-unit" id="bb-route-period"></span>
         </button>
         <span class="bb-route-divider" id="bb-route-divider"></span>
-        <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1.5l15 28-15-7-15 7z"/></svg>
+        <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1l15.5 30-15.5-7.5L.5 31z"/></svg>
         <button type="button" class="bb-dest" id="bb-dest-info" aria-haspopup="true">목적지</button>
       </div>
     </div>
