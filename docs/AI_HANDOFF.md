@@ -1,5 +1,13 @@
 # K8 Gen5W 홈
 
+## 0.4.40 앰프 설정 읽기, 후석 취침·음소거 상태 아이콘 (2026-11-22, Claude)
+
+- `StockVehicle`에 `MicomAudioManager` 값 반환 조회만 추가: `getUserMuteState`(순정 음소거), `getRearSleepMode`(후석 취침), `getActiveSoundDesign`, `getAutoAdjustingVolumeSetting`, `getDimVolumeWhileInReverse`, `getNaviDuringCall`. 같은 클래스의 `getBtVolume()`·`getNaviVolume()` 등 반환값 없는(void) 메서드는 앰프에 요청을 보내는 것이라 쓰지 않는다.
+- 사운드 화면: 고급 음향에 능동 사운드 디자인·자동 음량 조절, 안내음에 통화 중 내비 안내, 운전자 보조에 후진 시 음량 줄임, 새 항목 "후석 취침 모드". 켜짐/꺼짐으로 보이고, 값이 바뀌면 화면을 다시 그린다(미디어 음량 화면 제외).
+- 시계 옆: 후석 취침이 켜져 있으면 달 아이콘, 순정 음소거가 켜져 있으면 음량 0이 아니어도 음소거 아이콘.
+- 그 밖에 본 것: 내비 `RouteSearchState`는 경로 시작/종료 알림으로 기존 `Route_Guide_Status`와 겹치고, `SOUND_ON/OFF`는 내비가 받는 쪽이라 넣지 않았다. `DisplaySettingFwManager`·`ThemeSettingFwManager`에는 쓸 조회값이 없다.
+- 확인: `verify-0440.cjs`, 기존 검사 전부 통과.
+
 ## 0.4.39 하이브리드 에코 점수·CO₂ 절감·에너지 사용, 날씨 오류 (2026-11-22, Claude)
 
 - `StockHybrid`가 서비스가 이미 들고 있는 배열을 읽는다(요청 송신 없음, IHEVService 조회만): `getMyDrivingMode()`(`MyDrivingModeIndex` 0 에코 점수), `getCO2Rdc()`(0 거리, 1 CO₂ 절감), `getDrivingHistory()`(0 구동, 1 발전, 2 공조, 3 전장), `getPwrConsumption()`. 시작할 때와 에너지 흐름 상태가 바뀔 때마다 다시 읽는다. 컴파일용 껍데기에 메서드 4개 추가(APK에 `com/hkmc` 클래스 0개 확인).

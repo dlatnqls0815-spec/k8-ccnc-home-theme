@@ -73,6 +73,13 @@ final class StockVehicle {
         {"com.hkmc.micom.VehicleInfoManager", "getEcoCoastingStatus", "ecoCoasting"},
         {"com.hkmc.micom.VehicleInfoManager", "getWirelessChargingStatus", "wpc"},
         {"com.hkmc.power.MicomPowerManager", "isDisplayOffMode", "displayOff"},
+        // Amplifier settings (MicomAudioManager plain getters only; the void get*Volume ones send requests).
+        {"com.hkmc.media.MicomAudioManager", "getUserMuteState", "userMute"},
+        {"com.hkmc.media.MicomAudioManager", "getRearSleepMode", "rearSleep"},
+        {"com.hkmc.media.MicomAudioManager", "getActiveSoundDesign", "activeSound"},
+        {"com.hkmc.media.MicomAudioManager", "getAutoAdjustingVolumeSetting", "autoVolume"},
+        {"com.hkmc.media.MicomAudioManager", "getDimVolumeWhileInReverse", "reverseDim"},
+        {"com.hkmc.media.MicomAudioManager", "getNaviDuringCall", "naviDuringCall"},
     };
 
     /** System state broadcasts (ModeManager / PgsConstants / VehicleInfoManager action names). */

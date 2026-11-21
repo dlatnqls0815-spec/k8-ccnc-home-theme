@@ -3018,12 +3018,13 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 
   function renderSoundControls(pane) {
     var items = [
-      ['premium','고급 음향',['속도 연동 음량','시동 시 오디오 음량 제한'], 'speaker'],
+      ['premium','고급 음향',['속도 연동 음량','시동 시 오디오 음량 제한','능동 사운드 디자인','자동 음량 조절'], 'speaker'],
       ['balance','전후/좌우',['앞뒤 소리 배분','좌우 소리 배분'], 'cabin'],
       ['tone','고음/중음/저음',['고음','중음','저음'], 'tone'],
-      ['guidance','안내음',['안내 음량','음성 변경','내비 안내 우선'], 'speaker'],
+      ['guidance','안내음',['안내 음량','음성 변경','내비 안내 우선','통화 중 내비 안내'], 'speaker'],
+      ['rear','후석 취침 모드',['후석 취침 모드'], 'cabin'],
       ['radio','라디오 음질',['라디오 노이즈 제어'], 'speaker'],
-      ['driver','운전자 보조',['경고 음량','주행·주차 안전 우선'], 'shield'],
+      ['driver','운전자 보조',['경고 음량','주행·주차 안전 우선','후진 시 음량 줄임'], 'shield'],
       ['devices','연결 기기',['Android Auto 음량','Apple CarPlay 음량'], 'device'],
       ['volume','미디어 음량',[], 'speaker']
     ];
@@ -3050,14 +3051,23 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         '<button type="button" id="theme-mute" class="theme-control" data-host="volume-mute">음소거</button></section>';
     } else {
       var soundKeys = {'고음':'soundTreble', '중음':'soundMiddle', '저음':'soundBass', '앞뒤 소리 배분':'soundFade',
-        '좌우 소리 배분':'soundBalance', '속도 연동 음량':'soundSdvc', '내비 안내 우선':'soundPriority'};
-      var anyRead = selected[2].some(function (label) { return typeof vehicleSettings[soundKeys[label]] === 'number'; });
+        '좌우 소리 배분':'soundBalance', '속도 연동 음량':'soundSdvc', '내비 안내 우선':'soundPriority',
+        '능동 사운드 디자인':'activeSound', '자동 음량 조절':'autoVolume', '통화 중 내비 안내':'naviDuringCall',
+        '후석 취침 모드':'rearSleep', '후진 시 음량 줄임':'reverseDim'};
+      // Amplifier reads from StockVehicle (MicomAudioManager) sit in vehicleInfo; older ones in vehicleSettings.
+      var soundValue = function (label) {
+        var key = soundKeys[label];
+        var raw = typeof vehicleSettings[key] === 'number' ? vehicleSettings[key] : vehicleInfo[key];
+        if (typeof raw === 'boolean') return raw ? '켜짐' : '꺼짐';
+        if (key === 'rearSleep' && typeof raw === 'number') return raw === 0 ? '꺼짐' : '켜짐 (' + raw + ')';
+        return typeof raw === 'number' ? '순정 값 ' + raw : '';
+      };
+      var anyRead = selected[2].some(function (label) { return !!soundValue(label); });
       content += '<p class="sound-help">' + (anyRead ? '순정 앰프에서 읽은 값입니다. 숫자의 단위는 차에서 확인 중이며, 변경은 기기 사운드 설정에서 합니다.'
         : '이 항목의 순정 제어 경로를 확인 중입니다.') + '</p>';
       selected[2].forEach(function (label) {
-        var raw = vehicleSettings[soundKeys[label]];
         content += '<div class="sound-info-row">' + label + '<span>' +
-          (typeof raw === 'number' ? '순정 값 ' + raw : '순정 연동 대기') + '</span>' +
+          (soundValue(label) || '순정 연동 대기') + '</span>' +
           (selected[0] === 'tone' ? '<i class="sound-unavailable-track" aria-hidden="true"></i>' : '') + '</div>';
       });
     }
@@ -3765,7 +3775,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>');
     if (vehicleInfo.valet === true) icons.push('<svg viewBox="0 0 24 24" aria-label="발레 모드"><circle cx="12" cy="7" r="3.2"/><path d="M5.5 20c.6-4 3.2-6.2 6.5-6.2s5.9 2.2 6.5 6.2"/><path d="m10.4 14 1.6 3 1.6-3"/></svg>');
     if (vehicleInfo.fuelLow === true) icons.push('<svg class="is-warn" viewBox="0 0 24 24" aria-label="연료 부족"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M7 8h5"/><path d="M14 10h2a1.5 1.5 0 0 1 1.5 1.5V16a1.3 1.3 0 0 0 2.6 0V8.5L17.5 6"/></svg>');
-    if (controls.volume === 0) icons.push('<svg viewBox="0 0 24 24" aria-label="음소거"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>');
+    if (typeof vehicleInfo.rearSleep === 'number' && vehicleInfo.rearSleep > 0) icons.push('<svg viewBox="0 0 24 24" aria-label="후석 취침 모드"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></svg>');
+    if (controls.volume === 0 || vehicleInfo.userMute === true) icons.push('<svg viewBox="0 0 24 24" aria-label="음소거"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>');
     box.innerHTML = icons.join('');
   }
 
@@ -3967,6 +3978,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       var en = getEnabledSplitWidgets();
       var shown = en.length ? en[state.splitActiveIdx % en.length] : null;
       if (shown && shown.id === 'car') renderSplitWidget();
+      if (state.page === 'settings' && settingsSection === 'sound' && soundSection !== 'volume') renderSettingsControls();
     },
     weatherChanged: function (info) {
       weatherInfo = parseHostJson(info, {});
