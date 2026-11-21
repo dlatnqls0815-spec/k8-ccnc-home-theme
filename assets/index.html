@@ -9,7 +9,7 @@
 [hidden] { display: none !important; }
 html, body {
   margin: 0; width: 100%; height: 100%; overflow: hidden;
-  background: #06080c; color: #f4f7fb;
+  background: #000000; color: #f4f7fb;
   font: 500 16px/1.38 "Malgun Gothic", "Apple SD Gothic Neo", Roboto, sans-serif;
   user-select: none; -webkit-user-select: none;
 }
@@ -22,7 +22,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 /* Root shell (1920x720 aspect target, responsive) */
 .shell {
   position: relative; width: 100%; height: 100%; min-height: 340px;
-  overflow: hidden; background: #06080c;
+  overflow: hidden; background: #000000;
 }
 
 /* 5W mod blue wallpaper & ccNC dark style support */
@@ -44,7 +44,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .shell.in-detail .top {
   left: 0; right: 0; padding: 0 2.2%;
-  background: #06080c;
+  background: #000000;
 }
 /* In navigation detail, map fills full top and clock floats top-right (online_navi.jpeg & Map_1.png) */
 .shell.in-navi .top {
@@ -174,7 +174,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .home-view { position: relative; width: 100%; height: 100%; }
 .hcard {
   position: absolute; top: 0; bottom: 0; overflow: hidden;
-  background: rgba(20, 24, 31, 0.90);
+  background: #1d1e20;
   border: 1px solid rgba(255, 255, 255, 0.16);
   display: grid;
   box-shadow: 0 10px 28px rgba(0,0,0,.42);
@@ -214,7 +214,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .hcard-caption {
   position: relative; display: flex; align-items: center; justify-content: space-between;
   padding: 0 14px; padding: 0 clamp(14px, 1.4vw, 24px);
-  background: rgba(24, 27, 33, 0.96);
+  background: #1d1e20;
   border-top: 1px solid rgba(255,255,255,.07);
 }
 .hcard-caption-main {
@@ -347,7 +347,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .detail-view {
   position: relative; width: 100%; height: 100%;
   display: flex; align-items: stretch; overflow: hidden;
-  background: #06080c;
+  background: #000000;
 }
 .detail-primary {
   position: relative; flex: 1; min-width: 0; height: 100%; overflow: hidden;
@@ -499,7 +499,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .media-device-box {
   position: relative; width: 23%; min-width: 150px;
-  background: #2b231d; border-radius: 6px;
+  background: #30241d; border-radius: 6px;
   border: 1px solid rgba(255,255,255,.12);
   padding: 16px; overflow: hidden;
   display: flex; flex-direction: column; justify-content: space-between;
@@ -517,7 +517,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center;
 }
 .media-track-list {
-  width: 100%; height: 100%; background: #2b231d; border-radius: 6px;
+  width: 100%; height: 100%; background: #30241d; border-radius: 6px;
   border: 1px solid rgba(255,255,255,.12);
   display: flex; flex-direction: column; overflow-y: auto;
 }
@@ -618,7 +618,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   display: flex; align-items: stretch; gap: 2%;
 }
 .phone-list-box {
-  flex: 1; background: #2b231d; border-radius: 8px;
+  flex: 1; background: #30241d; border-radius: 8px;
   border: 1px solid rgba(255,255,255,.14);
   display: flex; flex-direction: column; overflow-y: auto;
 }
@@ -1331,6 +1331,85 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .phone-row { flex: 0 0 6.45vw; padding: 0 2.4vw; }
 .device-switch-btn { width: 3.2vw; height: 3.2vw; }
 .device-switch-btn .ico { width: 1.7vw !important; height: 1.7vw !important; }
+
+/* ccNC solid icon style (manual I-bt_*, I-media*, home card buttons): filled glyphs, cut-outs in the
+   background colour, grey for the navigation shortcuts. */
+.ico.ico-fill { fill: currentColor; stroke: none; }
+.ico .ico-plus { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: butt; }
+.ico .ico-cut { fill: none; stroke: #1f2125; stroke-width: 1.4; }
+.ico .ico-cut-fill { fill: #1f2125; stroke: none; }
+.bb-tab-btn .ico-cut { stroke: #181a1d; }
+.bb-tab-btn .ico-cut-fill { fill: #181a1d; }
+.bb-tab-btn[aria-selected="true"] .ico-cut { stroke: #279480; }
+.bb-tab-btn[aria-selected="true"] .ico-cut-fill { fill: #279480; }
+.ico-grey { color: #8e8e8e; }
+.circle-btn .ico { width: 2.2vw; height: 2.2vw; }
+
+/* ccNC colours sampled from the manual screens: black screen, home floor fading to #111,
+   neutral card caption #1d1e20, card edge #1e2228, brown lists #30241d. */
+.shell[data-bg="dark"] { background: linear-gradient(180deg, #000 0%, #000 45%, #111 100%); }
+.hcard { border-color: #1e2228; }
+.circle-btn.warm-ring { border-color: #8a7360; }
+.circle-btn { border-color: #3a3c40; }
+
+/* D-settings_main.png (1920x720): cards 45-1875 x 93-608, 6x2, 17px gaps, #1b1b1b, bold 28px titles,
+   ~64px outline icons bottom-right. */
+.settings-stage { padding: 10px 2.35vw 22px; gap: 0; }
+.settings-grid, .settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.set-card { background: #1b1b1b; border-radius: 4px; padding: 1.5vw 1.3vw 1.3vw 1.3vw; clip-path: none; }
+.set-card:hover { background: #262626; }
+.set-card strong { font-size: 1.56vw; font-weight: 600; color: #f2f2f2; }
+.set-card span:not(.set-card-icon) { display: none; }
+.set-card-icon { opacity: 1; color: #e6e6e6; }
+.set-card-icon .ico { width: 3.4vw; height: 3.4vw; stroke-width: 1.25; }
+#settings-grid-toggle { display: none !important; }
+
+/* Side menus as in D-settings_sound_premium.png / D-settings_display_bluelight.png: no box, teal text with
+   the slash, 36px items on a 95px pitch starting at x=51; no back row (the bottom key goes back). */
+.sound-nav { margin-left: 0; padding: 0 1vw 0 0; width: 24.4vw; border-right: 1px solid rgba(255,255,255,.08); }
+.sound-nav button { position: relative; font-size: 1.88vw; min-height: 4.95vw; padding: 0 0 0 2.65vw; color: #8b94a0; background: none !important; box-shadow: none !important; border-radius: 0; }
+.sound-nav button[aria-pressed=true] { color: #2bb79b; }
+.sound-nav button[aria-pressed=true]::before { content: ""; position: absolute; left: .3vw; top: 50%; width: .5vw; height: 2.1vw; background: #2bb79b !important; transform: translateY(-50%) skewX(-22deg); }
+.sound-nav .sound-back { display: none; }
+.sound-content { padding: 0 2.3vw 0 2.2vw; }
+.sound-content h2 { display: none; }
+.sound-help { margin: 1.15vw 0 1.1vw 2.35vw; padding-left: 12px; border-left: 2px solid #555e6a; font-size: 1.25vw; color: #8c96a3; }
+.sound-info-row { margin-left: 2.35vw; padding: 1.5vw .3vw; font-weight: 600; border-bottom-color: rgba(255,255,255,.08); }
+.sound-info-row span { font-weight: 400; color: #9aa1a9; }
+.sound-illustration span { display: none; }
+.sound-illustration svg { width: 19vw; max-width: none; height: 15vw; }
+.sl-tab:focus-visible, .sound-nav button:focus-visible { outline: none; }
+.detail-settings-layout .sl-nav { margin-left: 0; width: 24.4vw; padding-left: 0; }
+.shell.sound-mode .settings-stage, .shell.detail-settings .settings-stage { padding-left: 0; }
+.detail-settings-layout .sl-tab { padding-left: 2.65vw; border: 0 !important; background: none !important; box-shadow: none !important; }
+/* D-systemoverview_search_main.png: tall dark keys with 36px glyphs, 8px gaps, field 75px. */
+.search-field { min-height: 3.9vw; font-size: 1.45vw; }
+.search-field .ico { width: 1.9vw; height: 1.9vw; }
+.search-keyboard { padding: .5vw 0 0; }
+.search-key-row button { height: 3.75vw; min-height: 0; margin: 0 8px 6px 0; background: #2b2b2b; border-radius: 3px; font-size: 1.85vw; }
+.search-shortcuts button { font-size: 1.35vw; min-height: 2.9vw; }
+.search-results h2 { font-size: 1.46vw; font-weight: 600; }
+.search-results .detail-settings-row { background: #1f1f1f; font-weight: 600; }
+/* D-phone_keypad_main.png: big brown digits with jamo hints, dark action keys, green call key. */
+.theme-dial-keys button { background: #30241d; border: 2px solid #1b1512; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+.theme-dial-keys .dial-digit { font-size: 2.6vw; color: #eadfd6; }
+.theme-dial-keys small { font-size: .75vw; color: #b8a99d; margin-top: .25vw; }
+.theme-dial-actions button { min-height: 3.6vw; background: #232323; font-size: 1.6vw; }
+.theme-dial-actions [data-dial-confirm] { background: #1f8a6e; }
+.theme-dial-actions .ico { width: 1.9vw; height: 1.9vw; }
+.dial-panel { padding: 1vw 2.3vw; }
+.dial-panel label { display: block; font-size: 1.6vw; color: #a7a7a7; margin-bottom: .8vw; }
+.dial-panel .phone-dial { font-size: 2.2vw; }
+.dial-panel p { font-size: 1.2vw; }
+/* D-voicememo_main.png: larger memo icon, storage text, record/stop keys, brown memo cards. */
+.memo-side > .ico { width: 4.6vw; height: 4.6vw; }
+.memo-side p { font-size: 1.35vw; }
+.memo-transport button { min-height: 3.6vw; background: #2a2a2a; font-size: 1.5vw; }
+.memo-card { background: #3a2c22; }
+.memo-entry { font-size: 1.35vw; min-height: 9vw; }
+.detail-settings-row > span:first-child { font-weight: 600; }
+.search-shortcuts button { min-height: 2.6vw; }
+.top-status svg.st-fill { fill: currentColor; stroke: none; }
 </style>
 </head>
 <body>
@@ -1429,16 +1508,16 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           <button type="button" class="hcard-caption-main" data-open="navi">
             <strong id="home-map-title">아리랑리조텔</strong>
             <span id="home-map-sub">
-              <svg class="ico" style="width:15px;height:15px;fill:#9aa5b4;stroke:none" viewBox="0 0 24 24"><path d="m12 3 8 17-8-4-8 4z"/></svg>
+              <svg class="ico" style="width:15px;height:15px;fill:#9a9a9a;stroke:none" viewBox="0 0 24 24"><path d="m12 2.5 8.5 19-8.5-5.2-8.5 5.2z"/></svg>
               <em id="home-map-addr" style="font-style:normal">강원특별자치도 속초시 청봉로6길 · 약 148분</em>
             </span>
           </button>
           <div class="hcard-circles" aria-label="지도 바로가기">
             <button type="button" class="circle-btn warm-ring" data-dest="home" title="우리 집 길안내" aria-label="우리 집">
-              <svg class="ico" viewBox="0 0 24 24"><path d="m3 11 9-7 9 7v8H5v-8z"/><path d="M18 16v5M15.5 18.5h5"/></svg>
+              <svg class="ico ico-fill ico-grey" viewBox="0 0 24 24"><path d="M12 3.6 2.6 11.4h2.6V20h4.5v-4.8h4.4v4.8h.4v-1.7a4.4 4.4 0 0 1 4.3-4.4V11.4h2.6z"/><path class="ico-plus" d="M18.5 15.2v6.2M15.4 18.3h6.2"/></svg>
             </button>
             <button type="button" class="circle-btn warm-ring" data-dest="work" title="회사 길안내" aria-label="회사">
-              <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="4" width="11" height="16" rx="1"/><path d="M8 8h2M11 8h2M8 12h2M11 12h2M8 16h2M19 15v5M16.5 17.5h5"/></svg>
+              <svg class="ico ico-fill ico-grey" viewBox="0 0 24 24"><path d="M5.2 3.2h11.2v10.3a4.7 4.7 0 0 0-3.6 4.6V20.8H5.2z"/><path class="ico-cut" d="M7.4 6.4h6.8M7.4 9.2h6.8M7.4 12h6.8M7.4 14.8h3.6"/><path class="ico-plus" d="M18.5 15.2v6.2M15.4 18.3h6.2"/></svg>
             </button>
           </div>
         </div>
@@ -1458,10 +1537,10 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
           </button>
           <div class="hcard-circles" aria-label="미디어 제어">
             <button type="button" class="circle-btn" id="home-play-btn" title="재생 / 일시정지" aria-label="재생 또는 일시정지">
-              <svg class="ico" id="home-play-ico" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+              <svg class="ico ico-fill" id="home-play-ico" viewBox="0 0 24 24"><rect x="7.2" y="5.5" width="2.6" height="13" rx="1.3"/><rect x="14.2" y="5.5" width="2.6" height="13" rx="1.3"/></svg>
             </button>
             <button type="button" class="circle-btn" id="home-source-btn" title="미디어 소스 전환 (블루투스 / 자연의 소리 / FM)" aria-label="미디어 소스 전환">
-              <svg class="ico" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="13" rx="2"/><path d="M7 3h10M10 15a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm5-4v4"/></svg>
+              <svg class="ico ico-fill ico-grey" viewBox="0 0 24 24"><path d="M5.5 4.5h13v2h-13zM4.6 7.6h14.8V9H4.6z"/><path d="M3.5 10h17v10.5h-17z"/><path class="ico-cut-fill" d="M13.8 11.8v5.2a1.9 1.9 0 1 1-1.2-1.8v-2.6l-3 .7v4.2a1.9 1.9 0 1 1-1.2-1.8v-3.4z"/></svg>
             </button>
           </div>
         </div>
@@ -2441,7 +2520,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var info = setupCanvas(document.getElementById('home-phone-canvas'));
     if (!info) return;
     var ctx = info.ctx, w = info.w, h = info.h;
-    ctx.fillStyle = '#1b222d';
+    ctx.fillStyle = '#151925';
     ctx.fillRect(0, 0, w, h);
 
     ctx.fillStyle = 'rgba(200, 175, 140, 0.14)';
@@ -2450,22 +2529,15 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     ctx.lineTo(w, h * 0.42); ctx.lineTo(w * 0.24, h * 0.68);
     ctx.closePath(); ctx.fill();
 
-    var cx = w * 0.5, cy = h * 0.5;
+    // Home card phone glyph from D-systemoverview_home_main.png: angular handset outline, ~82px at 1920.
+    var size = Math.min(w, h) * 0.36, ox = w * 0.5 - size * 0.5, oy = h * 0.5 - size * 0.52;
+    var pts = [[0, 0], [.36, 0], [.44, .34], [.32, .44], [.64, .78], [.75, .66], [1, .72], [1, 1], [.62, 1], [0, .38]];
     ctx.save();
-    var k = Math.max(1, Math.min(w, h) / 150);
-    ctx.translate(cx - 24 * k, cy - 24 * k);
-    ctx.scale(k, k);
-    ctx.strokeStyle = '#e4ebf5';
-    ctx.lineWidth = 2.6;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#eef1f4';
+    ctx.lineWidth = Math.max(2.5, size * 0.075);
+    ctx.lineJoin = 'miter';
     ctx.beginPath();
-    ctx.moveTo(11, 6); ctx.lineTo(19, 16); ctx.lineTo(14, 22);
-    ctx.quadraticCurveTo(20, 32, 29, 36);
-    ctx.lineTo(35, 31); ctx.lineTo(45, 39);
-    ctx.quadraticCurveTo(43, 47, 36, 47);
-    ctx.quadraticCurveTo(11, 43, 5, 15);
-    ctx.quadraticCurveTo(6, 8, 11, 6);
+    pts.forEach(function (pt, i) { ctx[i ? 'lineTo' : 'moveTo'](ox + pt[0] * size, oy + pt[1] * size); });
     ctx.closePath();
     ctx.stroke();
     ctx.restore();
@@ -2785,7 +2857,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         '123456789*0#'.split('').forEach(function (digit) {
           var key = document.createElement('button');
           key.type = 'button';
-          key.textContent = digit;
+          var jamo = {'1':'ㄱㅋ','2':'ㄴ','3':'ㄷㅌ','4':'ㄹ','5':'ㅁ','6':'ㅂㅍ','7':'ㅅ','8':'ㅇ','9':'ㅈㅊ','0':'ㅎ+'}[digit] || '';
+          key.innerHTML = '<span class="dial-digit">' + digit + '</span>' + (jamo ? '<small>' + jamo + '</small>' : '');
           key.onclick = function () {
             if (input.value.length < 24) input.value += digit;
             dialNumber = input.value;
@@ -2862,25 +2935,37 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     document.getElementById('settings-grid-toggle').hidden = !!settingsSection;
     if (settingsSection) { renderSettingsControls(); return; }
     setClass(grid, 'mode-6x1', state.settingsGrid6x1);
+    // D-settings_main.png: 6x2 dark cards in the stock order, title top-left, outline icon bottom-right.
     var items = [
-      { id: 'vehicle', title: '차량', sub: '운전자 보조 · 드라이브 모드 · 클러스터 · 공조 · 시트', svg: '<path d="M5 14l2-5h10l2 5v5H5v-5z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>' },
-      { id: 'general', title: '일반', sub: '시스템 정보 · 날짜/시간 · 언어 · 키보드', svg: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>' },
-      { id: 'navi', title: '내비게이션', sub: '표시 · 안내 · 경로 옵션', svg: '<path d="m12 3 7 17-7-4-7 4z"/>' },
-      { id: 'sound', title: '사운드', sub: '음량 · 이퀄라이저 · 주행 사운드', svg: '<path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7"/>' },
-      { id: 'devices', title: '기기 연결', sub: '블루투스 · 폰 프로젝션 (Android Auto)', svg: '<rect x="4" y="6" width="10" height="12" rx="1"/><rect x="12" y="4" width="8" height="16" rx="1"/>' },
-      { id: 'profile', title: '사용자 프로필', sub: state.drivers[state.driverIndex] + ' · 프로필 이미지 및 연동', svg: '<circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/>' },
-      { id: 'voice', title: '음성인식', sub: '호출어 · 안내음 간략화', svg: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>' },
-      { id: 'display', title: '디스플레이', sub: '화면 밝기 · 화면구성', svg: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>' }
+      { id: 'vehicle', title: '차량', svg: '<path d="M3.5 13.5 5.6 8.6a2 2 0 0 1 1.8-1.2h9.2a2 2 0 0 1 1.8 1.2l2.1 4.9v4.8h-17z"/><path d="M3.5 13.5h17M6 16h2.5m7 0H18M5 18.3v1.7M19 18.3v1.7M7 7.4 5.5 4.8M17 7.4l1.5-2.6"/>' },
+      { id: 'navi', title: '내비게이션', svg: '<path d="M20.5 3.5 3.5 10.6l7.2 2.7 2.7 7.2z"/>' },
+      { id: 'sound', title: '사운드', svg: '<path d="M4 9.2h3.6L12.5 5v14l-4.9-4.2H4z"/><path d="M15.5 9v6M18 7.5v9M20.5 9v6"/>' },
+      { id: 'devices', title: '기기 연결', svg: '<rect x="6" y="2.8" width="9.5" height="18.4" rx="1.2"/><path d="M9.5 5.4h2.5M14.5 12.2l4 3.8-2 1.9v-7.6l2 1.9-4 3.8M10.8 21.2v-2"/>' },
+      { id: 'profile', title: '사용자 프로필', svg: '<rect x="2.8" y="5" width="18.4" height="14" rx="1.5"/><circle cx="8.6" cy="10.6" r="2.2"/><path d="M5.2 16.4c.6-2 2-3 3.4-3s2.8 1 3.4 3M14 10h4.5M14 13h4.5"/>' },
+      { id: 'voice', title: '음성인식', svg: '<rect x="5.5" y="2.8" width="13" height="18.4" rx="1.5"/><rect x="10" y="6.5" width="4" height="7" rx="2"/><path d="M8.2 11.5a3.8 3.8 0 0 0 7.6 0M12 15.3v2.5M10 17.8h4"/>' },
+      { id: 'screenlayout', title: '화면구성', svg: '<rect x="2.8" y="4.5" width="18.4" height="15" rx="1"/><path d="m2.8 16 5.6-5.6 4.2 4.2 3.2-3.2 5.4 5.4"/>' },
+      { id: 'display', title: '디스플레이', svg: '<rect x="2.8" y="4" width="18.4" height="14.5" rx="1"/><circle cx="12" cy="11.2" r="2.1"/><path d="M12 6.8v1.1M12 14.5v1.1M7.6 11.2h1.1M15.3 11.2h1.1M8.9 8.1l.8.8M14.3 13.5l.8.8M8.9 14.3l.8-.8M14.3 8.9l.8-.8"/>' },
+      { id: 'buttons', title: '버튼', svg: '<path d="M10.5 12V5.5a1.5 1.5 0 0 1 3 0v6l3.4.6a2 2 0 0 1 1.6 2.3l-.9 5.6h-7.2L7 15.3a1.4 1.4 0 0 1 2.1-1.8l1.4 1.3"/><path d="M8.3 8.5a3.8 3.8 0 0 1 7.4 0"/>' },
+      { id: 'cluster', title: '클러스터/HUD', svg: '<path d="M4.2 18.5a8.6 8.6 0 1 1 15.6 0z"/><path d="m12 13.5 3-3.4M7 13.5h1.2M15.8 13.5H17M12 7.4v1.2"/>' },
+      { id: 'connect', title: 'Kia Connect', svg: '<path d="M3 13.5 6 8h1.6l-1.8 3.4L9.5 8h1.7l-3 5.5H6.6l1.6-3-3.6 3zM12 13.5 15 8h1.6l-3 5.5zM16.6 13.5 19.6 8h1.6l-3 5.5z"/><text x="12" y="19.5" text-anchor="middle" font-size="4.2" stroke="none" fill="currentColor">Connect</text>' },
+      { id: 'general', title: '일반', svg: '<path d="M10.3 3h3.4l.5 2.4 1.7.9 2.3-.9 1.7 2.9-1.8 1.6v2.2l1.8 1.6-1.7 2.9-2.3-.9-1.7.9-.5 2.4h-3.4l-.5-2.4-1.7-.9-2.3.9-1.7-2.9 1.8-1.6V9.9L3.6 8.3l1.7-2.9 2.3.9 1.7-.9z"/><path d="m9.6 12 1.7 1.7 3.2-3.4"/>' }
     ];
+    var openCard = function (id) {
+      if (id === 'screenlayout') { navigateTo('screenlayout'); return; }
+      if (id === 'cluster') { state.slTab = 'cluster'; navigateTo('screenlayout'); return; }
+      if (id === 'buttons') { host('settings'); return; }
+      if (id === 'connect') { host('connect'); return; }
+      openSettingsSection(id);
+    };
     grid.innerHTML = '';
     items.forEach(function (it) {
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'set-card chamfer-both';
+      btn.className = 'set-card';
       btn.innerHTML =
-        '<div><strong>' + it.title + '</strong><span>' + escapeText(it.sub) + '</span></div>' +
-        '<span class="set-card-icon"><svg class="ico" style="width:26px;height:26px" viewBox="0 0 24 24">' + it.svg + '</svg></span>';
-      btn.addEventListener('click', function () { openSettingsSection(it.id); });
+        '<div><strong>' + it.title + '</strong></div>' +
+        '<span class="set-card-icon"><svg class="ico" viewBox="0 0 24 24">' + it.svg + '</svg></span>';
+      btn.addEventListener('click', function () { openCard(it.id); });
       grid.appendChild(btn);
     });
   }
@@ -3173,7 +3258,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       ['volume','미디어 음량',[], 'speaker']
     ];
     var art = {
-      speaker:'<path d="M11 36h13l22-17v58L24 60H11zM60 35c11 7 11 19 0 26m12-35c20 12 20 32 0 44"/>',
+      speaker:'<g style="stroke:#8a8f96"><ellipse cx="34" cy="56" rx="15" ry="22" transform="rotate(-28 34 56)"/><ellipse cx="34" cy="56" rx="7" ry="11" transform="rotate(-28 34 56)"/><path d="M22 36c6-6 16-8 24-4M24 77c8 3 18 1 24-6"/></g><g style="stroke:#2bb79b;stroke-width:3"><path d="M58 30c9 7 12 18 9 29M66 22c13 10 17 26 13 41M74 14c17 13 22 33 17 53"/></g>',
       cabin:'<rect x="25" y="10" width="46" height="76" rx="15"/><path d="M25 31h46M25 66h46M48 32v33"/><circle cx="48" cy="49" r="6"/>',
       tone:'<path d="M21 17v62m27-62v62m27-62v62"/><rect x="14" y="32" width="14" height="10" rx="3"/><rect x="41" y="52" width="14" height="10" rx="3"/><rect x="68" y="43" width="14" height="10" rx="3"/>',
       shield:'<path d="M48 13 74 25v23c0 15-9 27-26 37-17-10-26-22-26-37V25zM48 34v18m0 12v1"/>',
@@ -3726,11 +3811,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     } else if (state.page === 'media') {
       // Media_btmusic_3.png 5 monochrome SVG media source tabs
       var sources = [
-        { id: 'nature', trackIdx: 1, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M7 4h10M11 15a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm3-4v4"/></svg>' },
-        { id: 'bt',     trackIdx: 0, svg: '<svg class="ico" viewBox="0 0 24 24"><path d="m7 7 8 8-4 4V5l4 4-8 8"/><path d="M17 12v5a1.5 1.5 0 1 1-1.5-1.5"/></svg>' },
-        { id: 'fm',     trackIdx: 3, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="m7 8 9-4"/><text x="7" y="16" fill="currentColor" stroke="none" font-size="7" font-weight="bold">FM</text></svg>' },
-        { id: 'am',     trackIdx: 3, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="m7 8 9-4"/><text x="6.5" y="16" fill="currentColor" stroke="none" font-size="7" font-weight="bold">AM</text></svg>' },
-        { id: 'usb',    trackIdx: 2, svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="6" y="8" width="12" height="13" rx="2"/><path d="M9 4h6v4H9zM12 13v4"/></svg>' }
+        { id: 'nature', trackIdx: 1, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M5.5 4.5h13v2h-13zM4.6 7.6h14.8V9H4.6z"/><path d="M3.5 10h17v10.5h-17z"/><path class="ico-cut-fill" d="M13.8 11.8v5.2a1.9 1.9 0 1 1-1.2-1.8v-2.6l-3 .7v4.2a1.9 1.9 0 1 1-1.2-1.8v-3.4z"/></svg>' },
+        { id: 'bt',     trackIdx: 0, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M10.5 2.5a6.5 6.5 0 0 1 6.5 6.5v5.4a6.5 6.5 0 0 1-13 0V9a6.5 6.5 0 0 1 6.5-6.5z"/><path class="ico-cut" d="m7.6 8.4 5.6 5.4-2.7 2.6V5.6l2.7 2.6-5.6 5.4"/><path d="M19 13.5v5.7a1.6 1.6 0 1 1-1.1-1.5M19 13.5l2.2 1.2" style="fill:none;stroke:currentColor;stroke-width:1.5"/></svg>' },
+        { id: 'fm',     trackIdx: 3, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M3 8.5h18v11.5H3z"/><path d="M6.5 7.8 17 4.2l.4 1.1L8.6 8.4z"/><text class="ico-cut-fill" x="6.6" y="17.6" font-size="7" font-weight="bold">FM</text></svg>' },
+        { id: 'am',     trackIdx: 3, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M3 8.5h18v11.5H3z"/><path d="M6.5 7.8 17 4.2l.4 1.1L8.6 8.4z"/><text class="ico-cut-fill" x="6.3" y="17.6" font-size="7" font-weight="bold">AM</text></svg>' },
+        { id: 'usb',    trackIdx: 2, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M8.5 2.5h7v4.2h-7z"/><path d="M6 7.5h12V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20z"/><path class="ico-cut-fill" d="M13.6 10.5v5.4a1.8 1.8 0 1 1-1.1-1.7v-3.7z"/><path class="ico-cut" d="M10.4 4.2v1M13.6 4.2v1"/></svg>' }
       ];
       var shtml = '<div class="bb-icon-tabs" role="tablist">';
       sources.forEach(function (s) {
@@ -3754,11 +3839,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     } else if (state.page === 'phone') {
       // Phone_callhistory_3.png 5 monochrome SVG phone tabs
       var ptabs = [
-        { id: 'history',  svg: '<svg class="ico" viewBox="0 0 24 24"><path d="M6.5 5 10 8.5 8 11a10 10 0 0 0 5 5l2.5-2L19 17.5c-.5 2-2 3-3.8 3C8.5 19.5 4.5 15.5 3.5 8.8 3.5 7 4.5 5.5 6.5 5z"/><path d="M14 5h5m-5 4h5"/></svg>' },
-        { id: 'contacts', svg: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M5 19c1.5-3.6 12.5-3.6 14 0"/></svg>' },
-        { id: 'keypad',   svg: '<svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="16" cy="6" r="1.2"/><circle cx="8" cy="11" r="1.2"/><circle cx="12" cy="11" r="1.2"/><circle cx="16" cy="11" r="1.2"/><circle cx="8" cy="16" r="1.2"/><circle cx="12" cy="16" r="1.2"/><circle cx="16" cy="16" r="1.2"/></svg>' },
-        { id: 'messages', svg: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="m4 8 8 5 8-5"/></svg>' },
-        { id: 'privacy',  svg: '<svg class="ico" viewBox="0 0 24 24"><path d="M9 9a3 3 0 0 1 6 0v3H9V9z"/><rect x="7" y="12" width="10" height="7" rx="2"/><path d="M4 8a9 9 0 0 0 0 8M20 8a9 9 0 0 1 0 8"/></svg>' }
+        { id: 'history',  svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M6.6 3.2 9.9 7.6 8 10a12.6 12.6 0 0 0 6 6l2.4-1.9 4.4 3.3-1.6 2.6c-.5.7-1.3 1-2.1.9C10.6 20.1 3.9 13.4 3.1 6.9c-.1-.8.2-1.6.9-2.1z"/><path d="M13.5 5.2h7.5m-2.2-2.2 2.2 2.2-2.2 2.2M21 10.2h-7.5m2.2-2.2-2.2 2.2 2.2 2.2" style="fill:none;stroke:currentColor;stroke-width:1.5"/></svg>' },
+        { id: 'contacts', svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="4.4"/><path d="M3.5 21.5c.6-5 4.2-7.6 8.5-7.6s7.9 2.6 8.5 7.6z"/></svg>' },
+        { id: 'keypad',   svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><rect x="5.3" y="2.4" width="3.4" height="3.4"/><rect x="10.3" y="2.4" width="3.4" height="3.4"/><rect x="15.3" y="2.4" width="3.4" height="3.4"/><rect x="5.3" y="7.4" width="3.4" height="3.4"/><rect x="10.3" y="7.4" width="3.4" height="3.4"/><rect x="15.3" y="7.4" width="3.4" height="3.4"/><rect x="5.3" y="12.4" width="3.4" height="3.4"/><rect x="10.3" y="12.4" width="3.4" height="3.4"/><rect x="15.3" y="12.4" width="3.4" height="3.4"/><rect x="10.3" y="17.4" width="3.4" height="3.4"/></svg>' },
+        { id: 'messages', svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M2.5 5h19v14h-19z"/><path class="ico-cut" d="m3.5 6.5 8.5 6 8.5-6"/></svg>' },
+        { id: 'privacy',  svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M12 5.5a3.4 3.4 0 0 1 3.4 3.4v2.3h1.1v8H7.5v-8h1.1V8.9A3.4 3.4 0 0 1 12 5.5zm0 1.7a1.7 1.7 0 0 0-1.7 1.7v2.3h3.4V8.9A1.7 1.7 0 0 0 12 7.2z"/><path d="M4.6 7.5a9.5 9.5 0 0 0 0 9.5M2 5.5a13 13 0 0 0 0 13.5M19.4 7.5a9.5 9.5 0 0 1 0 9.5M22 5.5a13 13 0 0 1 0 13.5" style="fill:none;stroke:currentColor;stroke-width:1.5"/></svg>' }
       ];
       var phtml = '<div class="bb-icon-tabs" role="tablist">';
       ptabs.forEach(function (p) {
@@ -3807,8 +3892,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     document.getElementById('standby-track').textContent = tr.title;
     document.getElementById('standby-artist').textContent = tr.artist + (tr.album ? ' · ' + tr.album : '');
     document.getElementById('home-play-ico').innerHTML = state.playing
-      ? '<path d="M9 6v12M15 6v12"/>'
-      : '<path d="m8 6 10 6-10 6z"/>';
+      ? '<rect x="7.2" y="5.5" width="2.6" height="13" rx="1.3"/><rect x="14.2" y="5.5" width="2.6" height="13" rx="1.3"/>'
+      : '<path d="M8 5.2 19 12 8 18.8z"/>';
 
     document.getElementById('navi-compass-label').textContent = state.naviViewMode;
     document.getElementById('navi-scale-text').textContent = state.naviScale;
@@ -3957,12 +4042,14 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         '<rect x="5" y="9.5" width="' + w.toFixed(1) + '" height="5" rx=".8" style="fill:currentColor;stroke:none"/></svg>');
     }
     var calling = !!(phoneData && phoneData.state);
-    if (calling) icons.push('<svg class="is-call" viewBox="0 0 24 24" aria-label="통화 중"><path d="M6.5 4 10 7.5 8 10a10 10 0 0 0 6 6l2.5-2 3.5 3.5-2.2 2.2C10 19.7 4.3 14 3.8 6.2z"/></svg>');
-    else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>');
+    // I-top_bt_calling: solid handset with sound waves; I-top_bt_phone: solid rounded block with a
+    // Bluetooth cut-out and a small handset.
+    if (calling) icons.push('<svg class="is-call st-fill" viewBox="0 0 24 24" aria-label="통화 중"><path d="M5.6 3.4 8.6 7.3 6.9 9.4a11.3 11.3 0 0 0 5.4 5.4l2.1-1.7 3.9 3-1.4 2.3c-.4.6-1.1.9-1.9.8C9.3 18.2 3.6 12.5 2.9 6.8c-.1-.7.2-1.4.8-1.9z"/><path d="M14 3.5a6.5 6.5 0 0 1 6.5 6.5M14 6.6a3.4 3.4 0 0 1 3.4 3.4" style="fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round"/></svg>');
+    else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg class="st-fill" viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="M10 2a6.5 6.5 0 0 1 6.5 6.5v6a6.5 6.5 0 0 1-13 0v-6A6.5 6.5 0 0 1 10 2z"/><path d="m7.3 8.4 5.3 5-2.6 2.5V5.1l2.6 2.5-5.3 5" style="fill:none;stroke:#000;stroke-width:1.4"/><path d="M15.6 17.8a3 3 0 0 0 4.2 2.6l.8-.6-1.3-1.5-.8.4a2.4 2.4 0 0 1-1.1-1.1l.4-.8-1.5-1.3z"/></svg>');
     if (vehicleInfo.valet === true) icons.push('<svg viewBox="0 0 24 24" aria-label="발레 모드"><circle cx="12" cy="7" r="3.2"/><path d="M5.5 20c.6-4 3.2-6.2 6.5-6.2s5.9 2.2 6.5 6.2"/><path d="m10.4 14 1.6 3 1.6-3"/></svg>');
     if (vehicleInfo.fuelLow === true) icons.push('<svg class="is-warn" viewBox="0 0 24 24" aria-label="연료 부족"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M7 8h5"/><path d="M14 10h2a1.5 1.5 0 0 1 1.5 1.5V16a1.3 1.3 0 0 0 2.6 0V8.5L17.5 6"/></svg>');
-    if (typeof vehicleInfo.rearSleep === 'number' && vehicleInfo.rearSleep > 0) icons.push('<svg viewBox="0 0 24 24" aria-label="후석 취침 모드"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></svg>');
-    if (controls.volume === 0 || vehicleInfo.userMute === true) icons.push('<svg viewBox="0 0 24 24" aria-label="음소거"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>');
+    if (typeof vehicleInfo.rearSleep === 'number' && vehicleInfo.rearSleep > 0) icons.push('<svg class="st-fill" viewBox="0 0 24 24" aria-label="후석 취침 모드"><path d="M18.5 15.2A8 8 0 0 1 8.8 5.5a8 8 0 1 0 9.7 9.7z"/><path d="m17.2 3 .8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>');
+    if (controls.volume === 0 || vehicleInfo.userMute === true) icons.push('<svg class="st-fill" viewBox="0 0 24 24" aria-label="음소거"><path d="M5 9.5h3.4L13 5.5v13l-4.6-4H5z"/><path d="M4 20 20 4" style="fill:none;stroke:#e8683f;stroke-width:1.8;stroke-linecap:round"/></svg>');
     box.innerHTML = icons.join('');
   }
 
