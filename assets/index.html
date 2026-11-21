@@ -883,6 +883,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .hybrid-flow { display: block; width: 100%; height: auto; max-height: 170px; font-family: inherit; }
 .hybrid-flow .hf-flow { stroke-dasharray: 8 6; animation: hf-move .8s linear infinite; }
 @keyframes hf-move { to { stroke-dashoffset: -14; } }
+/* ccNC status glyphs left of the clock (photos of the stock ccNC settings screens): icon only. */
+.top-status { display: inline-flex; align-items: center; gap: 10px; margin-right: 18px; color: #eef3f9; }
+.top-status:empty { display: none; }
+.top-status svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.top-status .is-call { color: #53d7c0; }
 .bb-off-icon { display: none; width: 66%; height: 66%; fill: none; stroke: #eef3f9; stroke-width: 1.6; stroke-linejoin: round; }
 .bb-media-box.media-off .bb-media-thumb canvas, .bb-media-box.media-off .bb-media-topline, .bb-media-box.media-off .bb-media-meta span { display: none; }
 .bb-media-box.media-off .bb-off-icon { display: block; }
@@ -1219,6 +1224,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
         <svg class="ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
         <span id="top-bluetooth-label">BT 상태 대기</span>
       </span>
+      <span class="top-status" id="top-status" aria-label="상태"></span>
       <time class="clock" id="clock">11:29<small>PM</small></time>
     </div>
   </header>
@@ -3646,6 +3652,18 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     showPage(next);
   }
 
+  // Status glyphs: Bluetooth phone connected, call in progress, sound muted (volume 0).
+  function renderTopStatus() {
+    var box = document.getElementById('top-status');
+    if (!box || !livePreview) return;
+    var icons = [];
+    var calling = !!(phoneData && phoneData.state);
+    if (calling) icons.push('<svg class="is-call" viewBox="0 0 24 24" aria-label="통화 중"><path d="M6.5 4 10 7.5 8 10a10 10 0 0 0 6 6l2.5-2 3.5 3.5-2.2 2.2C10 19.7 4.3 14 3.8 6.2z"/></svg>');
+    else if (phoneData && phoneData.calls && phoneData.calls.length) icons.push('<svg viewBox="0 0 24 24" aria-label="블루투스 전화 연결"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>');
+    if (controls.volume === 0) icons.push('<svg viewBox="0 0 24 24" aria-label="음소거"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>');
+    box.innerHTML = icons.join('');
+  }
+
   /* Native Android WebView Bridge (HomeActivity.java compatibility) */
   // The split widget's map page is drawn by the stock navigation itself (map, route and turn arrow)
   // into a native surface placed over #split-content-box.
@@ -3802,6 +3820,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     controlsChanged: function (volume, maxVolume, brightness, bluetooth) {
       var changed = controls.bluetooth !== bluetooth;
       controls = { volume:volume, maxVolume:maxVolume, brightness:brightness, bluetooth:bluetooth };
+      renderTopStatus();
       state.devices[0] = bluetooth === null ? '블루투스 상태 대기' : bluetooth ? '블루투스 켜짐' : '블루투스 꺼짐';
       document.getElementById('qc-device-status').textContent = state.devices[0];
       document.getElementById('top-bluetooth-label').textContent =
@@ -3816,6 +3835,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     phoneChanged: function (callDevices, audioDevices, callState, caller, source) {
       phoneData = {calls:parseHostJson(callDevices, []), audio:parseHostJson(audioDevices, []),
         state:callState, caller:caller, source:source};
+      renderTopStatus();
       var summary = document.getElementById('home-call-state');
       summary.textContent = [callState, caller].filter(Boolean).join(' · ');
       summary.hidden = !callState;
