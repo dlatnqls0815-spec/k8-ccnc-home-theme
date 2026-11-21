@@ -132,16 +132,38 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 .bb-media-play .bb-media-off-icon[hidden], .bb-media-play img[hidden] { display: none; }
 .bb-media-body { position: absolute; left: 88px; right: 0; top: 0; height: 88px; display: block; }
 .bb-media-meta, .bb-media-off { display: block; }
+/* 설명서 D-map_guidance.png 확대 실측(1920 기준): 알약 513~1373, 위아래 4px(높이 80), X는 알약 왼쪽 끝의
+   지름 76px 밝은 원(중심 551) 안 26px, 뒤로 화살표 20x26, 집 31x24, 목록 30x24, 선 굵기 2px,
+   거리 649, 시간 771, 재생 띠 1423~1509. */
+.bb-key .bb-icon, .bb-route-cancel .bb-icon { stroke-width: 2; }
+#bb-back-btn { left: 3px; }
+#bb-home-btn { left: 155px; }
+#bb-menu-btn { left: 305px; }
+.bb-pill { left: -13px; top: 4px; height: 80px; width: 860px; }
+.bb-route-cancel { left: 1px; top: 2px; width: 76px; height: 76px; background: #5b5a58; }
+.bb-route-cancel .bb-icon { width: 26px; height: 26px; }
+.bb-route-info { left: 136px; top: 16px; }
+button.bb-idle { line-height: 80px; }
+.bb-media-zone { left: 1423px; width: 497px; }
+.bb-media-play { width: 86px; flex-basis: 86px; }
+.bb-media-body { left: 86px; }
+/* 구분선 942, 깃발 976, 목적지 1032 (설명서). 시간 칸은 폭을 고정해 숫자가 바뀌어도 안 움직이게. */
+.bb-route-info .bb-time { min-width: 147px; margin-right: 0; }
+.bb-route-info .bb-route-divider { margin: 0 29px 0 24px; }
+.bb-route-info .bb-dest { margin-left: 30px; }
+.bb-route-info .bb-route-value { font-size: 33px; }
+.bb-route-info .bb-route-unit { font-size: 23px; }
+.bb-route-info .bb-location { margin-left: -3px; }
 </style>
 </head>
 <body>
 <footer class="bottom-bar" id="detail-bottom-bar">
   <div class="bb-nav-keys">
     <button type="button" class="bb-key" id="bb-back-btn" aria-label="순정 하단줄 표시">
-      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M19 6l-9 10 9 10"/></svg>
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M25 3.5 8.5 16 25 28.5"/></svg>
     </button>
     <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
-      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 14L16 3l13 11v12H3z"/></svg>
+      <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M1.5 14.5 16 4l14.5 10.5V27h-29z"/></svg>
     </button>
     <button type="button" class="bb-key" id="bb-menu-btn" aria-label="ccNC 전체 기능">
       <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 5h28M2 16h28M2 27h28"/></svg>
@@ -156,7 +178,7 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 
     <div class="bb-pill" id="bb-route-pill" hidden>
       <button type="button" class="bb-route-cancel" id="bb-cancel-route" aria-label="경로 종료">
-        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 9l14 14M23 9L9 23"/></svg>
+        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 3.5l25 25M28.5 3.5l-25 25"/></svg>
       </button>
       <div class="bb-route-info">
         <div class="bb-metric" id="bb-distance-metric"><span class="bb-route-value" id="bb-route-dist"></span><span class="bb-route-unit" id="bb-route-unit"></span></div>
@@ -164,7 +186,7 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
           <span class="bb-route-value" id="bb-route-time"></span><span class="bb-route-unit" id="bb-route-period"></span>
         </button>
         <span class="bb-route-divider" id="bb-route-divider"></span>
-        <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l13 24-13-6-13 6z"/></svg>
+        <svg class="bb-icon bb-location" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1.5l15 28-15-7-15 7z"/></svg>
         <button type="button" class="bb-dest" id="bb-dest-info" aria-haspopup="true">목적지</button>
       </div>
     </div>
