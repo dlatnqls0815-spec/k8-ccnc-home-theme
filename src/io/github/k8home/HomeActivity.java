@@ -63,6 +63,9 @@ public final class HomeActivity extends Activity {
     private FrameLayout root;
     private FrameLayout mapSlot;
     private StockMapPreview stockMapPreview;
+    private FrameLayout splitSlot;
+    private StockMapPreview splitMapPreview;
+    private boolean splitFrameReady;
     private boolean activityResumed;
     private boolean mapFrameReady;
     private WebView web;
@@ -80,6 +83,7 @@ public final class HomeActivity extends Activity {
     private StockPhone phone;
     private StockTransport transport;
     private StockClimate climate;
+    private StockHybrid hybrid;
     private JSONObject vehicleSettings = new JSONObject();
     private boolean readingVehicleSettings;
 
@@ -117,6 +121,9 @@ public final class HomeActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         transport = new StockTransport(this);
+        hybrid = new StockHybrid(this, new Runnable() {
+            @Override public void run() { syncHybrid(); }
+        });
         climate = new StockClimate(this, new Runnable() {
             @Override public void run() { syncClimate(); }
         });
@@ -172,6 +179,7 @@ public final class HomeActivity extends Activity {
                     syncControls();
                     syncSystemSettings();
                     syncClimate();
+                    syncHybrid();
                     syncFlags();
                     syncPhoto("standby");
                     syncPhoto("split");
@@ -185,6 +193,9 @@ public final class HomeActivity extends Activity {
         mapSlot = new FrameLayout(this);
         mapSlot.setVisibility(View.GONE);
         root.addView(mapSlot, new FrameLayout.LayoutParams(0, 0));
+        splitSlot = new FrameLayout(this);
+        splitSlot.setVisibility(View.GONE);
+        root.addView(splitSlot, new FrameLayout.LayoutParams(0, 0));
         setContentView(root);
         stockMapPreview = new StockMapPreview(this, new StockMapPreview.Listener() {
             @Override public void frameChanged(boolean ready) {
@@ -193,6 +204,14 @@ public final class HomeActivity extends Activity {
             }
         });
         setMapContent(stockMapPreview);
+        splitMapPreview = new StockMapPreview(this, new StockMapPreview.Listener() {
+            @Override public void frameChanged(boolean ready) {
+                splitFrameReady = ready;
+                if (pageReady) web.evaluateJavascript("window.K8Home.splitMapFrameChanged(" + ready + ")", null);
+            }
+        }, true);
+        splitSlot.addView(splitMapPreview, new FrameLayout.LayoutParams(-1, -1));
+        splitSlot.setOnTouchListener(new SplitGestures());
         web.loadUrl(PAGE);
     }
 
@@ -208,6 +227,7 @@ public final class HomeActivity extends Activity {
         route.start(routeListener);
         phone.start();
         climate.start();
+        hybrid.start();
         sendBroadcast(new Intent(StockMedia.REQUEST));
         syncControls();
         stopService(new Intent(this, NavBarService.class));
@@ -237,6 +257,7 @@ public final class HomeActivity extends Activity {
     @Override protected void onPause() {
         activityResumed = false;
         stockMapPreview.setActive(false);
+        splitMapPreview.setActive(false);
         memos.stop();
         super.onPause();
     }
@@ -247,6 +268,7 @@ public final class HomeActivity extends Activity {
         syncSystemSettings();
         refreshVehicleSettings();
         stockMapPreview.setActive(hasWindowFocus() && mapSlot.getVisibility() == View.VISIBLE);
+        splitMapPreview.setActive(hasWindowFocus() && splitSlot.getVisibility() == View.VISIBLE);
     }
 
     @Override protected void onSaveInstanceState(Bundle state) {
@@ -259,6 +281,7 @@ public final class HomeActivity extends Activity {
         route.stop(routeListener);
         phone.stop();
         climate.stop();
+        hybrid.stop();
         transport.close();
         syncPhone();
         media = StockMedia.EMPTY;
@@ -286,6 +309,12 @@ public final class HomeActivity extends Activity {
             + javascriptString(data.distance) + "," + javascriptString(data.remaining) + ","
             + javascriptString(data.arrival) + "," + javascriptString(data.road) + ","
             + javascriptString(naviStatus(data)) + ")", null);
+    }
+
+    private void syncHybrid() {
+        if (!pageReady || hybrid == null) return;
+        web.evaluateJavascript("window.K8Home.hybridChanged && window.K8Home.hybridChanged("
+            + javascriptString(hybrid.snapshot().toString()) + ")", null);
     }
 
     private void syncClimate() {
@@ -375,6 +404,8 @@ public final class HomeActivity extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if (stockMapPreview != null) stockMapPreview.setActive(hasFocus && activityResumed
             && mapSlot.getVisibility() == View.VISIBLE);
+        if (splitMapPreview != null) splitMapPreview.setActive(hasFocus && activityResumed
+            && splitSlot.getVisibility() == View.VISIBLE);
         if (hasFocus) syncControls();
     }
 
@@ -557,6 +588,31 @@ public final class HomeActivity extends Activity {
             });
         }
 
+        /** Bounds of the split widget's map page, or zeros when it is not on screen. */
+        @JavascriptInterface public void updateSplitBounds(final int viewport, final int left, final int top,
+                                                            final int width, final int height) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed()) return;
+                    float scale = viewport > 0 ? web.getWidth() / (float) viewport : 0;
+                    int x = Math.round(left * scale), y = Math.round(top * scale);
+                    int w = Math.min(Math.round(width * scale), web.getWidth() - x);
+                    int h = Math.min(Math.round(height * scale), web.getHeight() - y);
+                    if (scale <= 0 || left < 0 || top < 0 || w <= 0 || h <= 0) {
+                        splitMapPreview.setActive(false);
+                        splitSlot.setVisibility(View.GONE);
+                        return;
+                    }
+                    FrameLayout.LayoutParams bounds = new FrameLayout.LayoutParams(w, h);
+                    bounds.leftMargin = x;
+                    bounds.topMargin = y;
+                    splitSlot.setLayoutParams(bounds);
+                    splitSlot.setVisibility(View.VISIBLE);
+                    splitMapPreview.setActive(activityResumed && hasWindowFocus());
+                }
+            });
+        }
+
         @JavascriptInterface public void updateBounds(final int viewport, final int left, final int top,
                                                        final int width, final int height) {
             runOnUiThread(new Runnable() {
@@ -585,6 +641,30 @@ public final class HomeActivity extends Activity {
                     stockMapPreview.setActive(activityResumed && hasWindowFocus());
                 }
             });
+        }
+    }
+
+    /**
+     * The native split map sits above the page, so it reads the widget gestures itself: a tap opens the
+     * stock navigation, a swipe right closes the split screen, a vertical swipe changes the widget.
+     */
+    private final class SplitGestures implements View.OnTouchListener {
+        private float startX, startY;
+
+        @Override public boolean onTouch(View view, android.view.MotionEvent event) {
+            int action = event.getActionMasked();
+            if (action == android.view.MotionEvent.ACTION_DOWN) {
+                startX = event.getRawX();
+                startY = event.getRawY();
+            } else if (action == android.view.MotionEvent.ACTION_UP) {
+                float dx = event.getRawX() - startX, dy = event.getRawY() - startY;
+                float slop = 60 * getResources().getDisplayMetrics().density;
+                String gesture = Math.abs(dx) < slop && Math.abs(dy) < slop ? "tap"
+                    : Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy < 0 ? "up" : "down");
+                if ("tap".equals(gesture)) handleAction("navi");
+                else if (pageReady) web.evaluateJavascript("window.K8Home.splitGesture('" + gesture + "')", null);
+            }
+            return true;
         }
     }
 
@@ -869,7 +949,9 @@ public final class HomeActivity extends Activity {
         pageReady = false;
         coverArt.close();
         stockMapPreview.setActive(false);
+        splitMapPreview.setActive(false);
         mapSlot.removeAllViews();
+        splitSlot.removeAllViews();
         root.removeView(web);
         web.removeJavascriptInterface("K8Host");
         web.destroy();

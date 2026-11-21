@@ -878,6 +878,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .bottom-bar.no-center { background: transparent; border-top: 0; pointer-events: none; }
 .bottom-bar.no-center > .bb-nav-keys, .bottom-bar.no-center > .bb-media-box { pointer-events: auto; }
 .bottom-bar.no-center > .bb-media-box { border-left: 0; }
+.split-content-box.native-map > * { visibility: hidden; }
+.hybrid-flow-wrap { width: 100%; margin: 6px 0 10px; }
+.hybrid-flow { display: block; width: 100%; height: auto; max-height: 170px; font-family: inherit; }
+.hybrid-flow .hf-flow { stroke-dasharray: 8 6; animation: hf-move .8s linear infinite; }
+@keyframes hf-move { to { stroke-dashoffset: -14; } }
 .bb-off-icon { display: none; width: 66%; height: 66%; fill: none; stroke: #eef3f9; stroke-width: 1.6; stroke-linejoin: round; }
 .bb-media-box.media-off .bb-media-thumb canvas, .bb-media-box.media-off .bb-media-topline, .bb-media-box.media-off .bb-media-meta span { display: none; }
 .bb-media-box.media-off .bb-off-icon { display: block; }
@@ -1723,6 +1728,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     splitSubPage: 0,
     splitWidgets: [
       { id: 'map', label: '지도', enabled: true, fixed: true },
+      { id: 'energy', label: '에너지 흐름', enabled: true, fixed: false },
       { id: 'media', label: '동영상', enabled: true, fixed: false },
       { id: 'weather', label: '날씨', enabled: true, fixed: false },
       { id: 'sports', label: '스포츠', enabled: true, fixed: false }
@@ -1766,6 +1772,53 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   var vehicleSettings = {};
   var naviStatus = {};
   var climateInfo = {};
+  var hybridInfo = {};
+  /* Stock 5W split-screen energy flow table (RightScreenHome z/a UD, 12 system modes x 7 columns).
+     Columns: 0 engine-wheel (2 engine to wheel, 3 wheel to engine), 1 motor-wheel (2 wheel to motor,
+     3 motor to wheel), 2 engine to motor (2), 3 motor-battery (2 motor to battery, 3 battery to motor),
+     4 engine icon, 5 motor icon (0 idle, 1 active, 2 driving), 6 battery active. */
+  var HYBRID_FLOW = [
+    [1,1,1,1,0,0,0], [0,0,0,0,0,0,0], [0,3,0,3,0,2,0], [2,3,0,3,2,2,0],
+    [2,0,0,0,2,0,0], [0,0,2,2,2,1,1], [0,2,0,2,0,1,1], [3,0,0,0,1,0,0],
+    [2,0,2,2,2,1,1], [0,3,2,2,2,2,1], [0,2,2,2,2,1,1], [3,2,0,2,1,1,1]
+  ];
+  var HYBRID_MODE_NAMES = ['준비', '정지', '전기 모터 주행', '엔진·모터 주행', '엔진 주행', '엔진으로 충전',
+    '회생 제동 충전', '엔진 감속', '엔진 주행·충전', '모터 주행·엔진 충전', '회생 제동·엔진 충전', '감속 회생 충전'];
+
+  function hybridFlowSvg(info) {
+    var mode = typeof info.mode === 'number' && info.mode >= 0 && info.mode < HYBRID_FLOW.length ? info.mode : -1;
+    var row = mode >= 0 ? HYBRID_FLOW[mode] : [0,0,0,0,0,0,0];
+    var on = '#e8894a', idle = 'rgba(238,243,249,.18)', soft = 'rgba(238,243,249,.45)';
+    // Nodes: engine (left top), motor (centre), battery (left bottom), wheels (right).
+    var E = [40, 34], M = [120, 70], B = [40, 112], W = [205, 70];
+    function line(a, b, value, forward, back) {
+      var active = value === forward || value === back;
+      var from = value === back ? b : a, to = value === back ? a : b;
+      var color = active ? on : value === 1 ? soft : idle;
+      var d = 'M' + from[0] + ' ' + from[1] + ' L' + to[0] + ' ' + to[1];
+      return '<path d="' + d + '" stroke="' + color + '" stroke-width="' + (active ? 4 : 2.5) + '" fill="none"' +
+        (active ? ' marker-end="url(#hf-arrow)" class="hf-flow"' : '') + '/>';
+    }
+    function node(p, label, state) {
+      var fill = state === 2 ? on : state === 1 ? '#eef3f9' : '#3a3f46';
+      var text = state === 2 ? '#1b1206' : state === 1 ? '#111' : '#cfd8e3';
+      return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="19" fill="' + fill + '"/>' +
+        '<text x="' + p[0] + '" y="' + (p[1] + 5) + '" text-anchor="middle" font-size="13" fill="' + text + '">' + label + '</text>';
+    }
+    var soc = typeof info.soc === 'number' ? info.soc : -1;
+    var segments = soc < 0 ? -1 : soc <= 8 ? soc : Math.round(Math.min(100, soc) / 12.5);
+    var bars = '';
+    for (var i = 0; i < 8; i++) {
+      bars += '<rect x="' + (14 + i * 7) + '" y="136" width="5" height="10" rx="1" fill="' +
+        (segments > i ? (row[6] ? on : '#53d7c0') : 'rgba(238,243,249,.2)') + '"/>';
+    }
+    return '<svg class="hybrid-flow" viewBox="0 0 240 150" role="img" aria-label="에너지 흐름">' +
+      '<defs><marker id="hf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
+      '<path d="M0 0 L10 5 L0 10z" fill="' + on + '"/></marker></defs>' +
+      line(E, W, row[0], 2, 3) + line(M, W, row[1], 3, 2) + line(E, M, row[2], 2, -1) + line(B, M, row[3], 3, 2) +
+      node(E, '엔진', row[4]) + node(M, '모터', row[5]) + node(B, '배터리', row[6] ? 1 : 0) + node(W, '바퀴', mode >= 2 && mode !== 5 ? 1 : 0) +
+      bars + '</svg>';
+  }
   var dialNumber = '';
   var photo = { standby: '', split: '', profile0: '', profile1: '' };
   var frameTarget = 'standby';
@@ -1793,7 +1846,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     media:'<path d="M15 4v12a3 3 0 1 1-3-3h3m0-9 4 2"/>',
     phone:'<path d="M6 4l4 4-2 3a9 9 0 0 0 5 5l3-2 4 4-3 2C10 20 4 14 4 7z"/>',
     photo:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m5 16 5-5 4 4 2-2 3 3"/>',
-    weather:'<path d="M10 4v8.5a3.5 3.5 0 1 0 4 0V4a2 2 0 0 0-4 0z"/><path d="M17 7h3m-3 4h3"/>'
+    weather:'<path d="M10 4v8.5a3.5 3.5 0 1 0 4 0V4a2 2 0 0 0-4 0z"/><path d="M17 7h3m-3 4h3"/>',
+    energy:'<path d="M13 2 5 13h6l-1 9 8-11h-6z"/>'
   };
   function statusCard(parent, icon, title, detail, button, run) {
     var card = document.createElement('div');
@@ -2697,7 +2751,14 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
             return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
               '</span><output data-system-value="' + row[0] + '"></output></div>';
           }).join('') +
-        '<p data-system-row="climateNote" hidden>공조 값은 순정 공조 서비스에서 읽기만 합니다. 바람 세기·방향 번호의 뜻은 차에서 확인 중입니다.</p>' : '';
+        '<p data-system-row="climateNote" hidden>공조 값은 순정 공조 서비스에서 읽기만 합니다. 바람 세기·방향 번호의 뜻은 차에서 확인 중입니다.</p>' +
+        [['hybridMode','에너지 흐름'],['hybridSoc','배터리 표시'],['hybridMotorUse','전기 모터 사용'],
+          ['hybridAvgFuel','평균 연비 값'],['hybridReady','하이브리드 준비']]
+          .map(function (row) {
+            return '<div class="detail-settings-row" data-system-row="' + row[0] + '" hidden><span>' + row[1] +
+              '</span><output data-system-value="' + row[0] + '"></output></div>';
+          }).join('') +
+        '<p data-system-row="hybridNote" hidden>하이브리드 값은 순정 하이브리드 서비스에서 읽기만 합니다. 배터리·모터 사용·연비 숫자의 단위는 차에서 확인 중입니다.</p>' : '';
       pane.innerHTML = start + readout + '<p>이 항목은 순정 설정 화면에서 변경할 수 있습니다.</p>' + external(path[0],path[1]);
     }
     updateControlLabels();
@@ -2718,6 +2779,13 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     };
     var climateText = climateLabels(climateInfo);
     Object.keys(climateText).forEach(function (key) { readouts[key] = climateText[key]; });
+    var num = function (value) { return typeof value === 'number' ? String(value) : ''; };
+    readouts.hybridMode = typeof hybridInfo.mode === 'number' ? (HYBRID_MODE_NAMES[hybridInfo.mode] || '값 ' + hybridInfo.mode) : '';
+    readouts.hybridSoc = typeof hybridInfo.soc === 'number' ? (hybridInfo.soc <= 8 ? hybridInfo.soc + ' / 8칸' : hybridInfo.soc + '%') : '';
+    readouts.hybridMotorUse = num(hybridInfo.motorUse);
+    readouts.hybridAvgFuel = num(hybridInfo.avgFuel);
+    readouts.hybridReady = hybridInfo.ready === 1 ? '켜짐' : hybridInfo.ready === 0 ? '꺼짐' : '';
+    readouts.hybridNote = readouts.hybridMode || readouts.hybridSoc || readouts.hybridMotorUse ? '1' : '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-system-value]'), function (node) {
       node.textContent = readouts[node.getAttribute('data-system-value')] || '';
     });
@@ -3134,6 +3202,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var wrap = document.getElementById('split-widget');
     var handle = document.getElementById('split-toggle-btn');
     setClass(wrap, 'is-closed', !state.splitOpen);
+    syncNativeSplitMap();
+    window.setTimeout(syncNativeSplitMap, 260); // after the open/close width transition
     handle.textContent = state.splitOpen ? '›' : '‹';
 
     var enabled = getEnabledSplitWidgets();
@@ -3184,6 +3254,17 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       } else if (active.id === 'media') {
         statusCard(box, 'media', tr.title, [tr.artist, tr.dur === '—' ? '' : tr.cur + ' / ' + tr.dur, mediaSettings].filter(Boolean).join(' · '),
           '미디어 화면', function () { navigateTo('media'); }).classList.add('split-live-state');
+      } else if (active.id === 'energy') {
+        var hasMode = typeof hybridInfo.mode === 'number';
+        var energyCard = statusCard(box, 'energy', hasMode ? (HYBRID_MODE_NAMES[hybridInfo.mode] || '상태 ' + hybridInfo.mode) : '에너지 흐름 대기',
+          hasMode ? '' : '순정 하이브리드 정보를 받으면 표시합니다.', '차량 정보', function () { openSettingsSection('vehicle'); });
+        energyCard.classList.add('split-live-state');
+        var flow = document.createElement('div');
+        flow.className = 'hybrid-flow-wrap';
+        flow.innerHTML = hybridFlowSvg(hybridInfo);
+        energyCard.insertBefore(flow, energyCard.querySelector('button'));
+        var p0 = energyCard.querySelector('p');
+        if (p0 && !p0.textContent) p0.hidden = true;
       } else if (active.id === 'weather') {
         // No forecast without the network; the stock climate unit's outside sensor is the offline source.
         var climate = climateLabels(climateInfo);
@@ -3500,7 +3581,26 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   }
 
   /* Native Android WebView Bridge (HomeActivity.java compatibility) */
+  // The split widget's map page is drawn by the stock navigation itself (map, route and turn arrow)
+  // into a native surface placed over #split-content-box.
+  function syncNativeSplitMap() {
+    if (!window.K8Host || !window.K8Host.updateSplitBounds) return;
+    var widget = document.getElementById('split-widget');
+    var en = getEnabledSplitWidgets();
+    var active = en.length ? en[state.splitActiveIdx % en.length] : null;
+    var box = document.getElementById('split-content-box');
+    var show = isDetailPage(state.page) && state.splitOpen && active && active.id === 'map' &&
+      state.splitSubPage !== 2 && !slide && document.getElementById('qc-drawer').hidden &&
+      !widget.classList.contains('is-closed') && box;
+    var width = document.documentElement.clientWidth;
+    if (!show) { window.K8Host.updateSplitBounds(width, 0, 0, 0, 0); return; }
+    var rect = box.getBoundingClientRect();
+    window.K8Host.updateSplitBounds(width, Math.round(rect.left), Math.round(rect.top),
+      Math.round(rect.right - rect.left), Math.round(rect.bottom - rect.top));
+  }
+
   function syncNativeMapSlot() {
+    syncNativeSplitMap();
     if (!window.K8Host) return;
     var slot = document.getElementById('map-slot');
     if (state.page !== 'home' || !slot || slide || !document.getElementById('qc-drawer').hidden) {
@@ -3557,6 +3657,24 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     mapAttached: function (attached) {
       if (!attached) window.K8Home.mapFrameChanged(false);
       syncNativeMapSlot();
+    },
+    splitMapFrameChanged: function (ready) {
+      document.getElementById('split-content-box').classList.toggle('native-map', ready === true);
+    },
+    splitGesture: function (gesture) {
+      if (!isDetailPage(state.page) || !state.splitOpen) return;
+      if (gesture === 'right') {
+        state.splitOpen = false;
+        saveDisplay();
+      } else if (gesture === 'up' || gesture === 'down') {
+        var en = getEnabledSplitWidgets();
+        state.splitActiveIdx = (state.splitActiveIdx + (gesture === 'up' ? 1 : en.length - 1)) % en.length;
+        state.splitSubPage = 0;
+      } else {
+        return;
+      }
+      renderSplitWidget();
+      window.setTimeout(function () { updateAllStatuses(); }, 230);
     },
     mapFrameChanged: function (ready) {
       liveMapReady = ready === true;
@@ -3639,6 +3757,11 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
       else document.getElementById('phone-device-label').textContent = phoneData.calls.join(', ') || state.devices[0];
       if (state.page === 'media') renderMediaStage();
       if (state.page === 'settings' && settingsSection === 'devices') updateControlLabels();
+    },
+    hybridChanged: function (info) {
+      hybridInfo = parseHostJson(info, {});
+      updateSystemLabels();
+      renderSplitWidget();
     },
     climateChanged: function (info) {
       climateInfo = parseHostJson(info, {});

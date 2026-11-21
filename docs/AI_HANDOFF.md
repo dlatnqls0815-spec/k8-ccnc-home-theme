@@ -1,5 +1,29 @@
 # K8 Gen5W 홈
 
+## ccNC / 5W 지식 문서 (다른 AI에 넘길 정리)
+
+**화면 구성·차량 API·내비 데이터 구조·펌웨어 상태를 한 장에 모은 문서가 [CCNC_5W_KNOWLEDGE.md](CCNC_5W_KNOWLEDGE.md)다.**
+다른 AI(Claude 등)에 넘길 때는 이 문서와 `deliverables/CCNC-5W-지식자료.zip`(원본 데이터·근거·도구 포함)만 주면 된다.
+추출된 원본: `docs/ccnc-5w-data/`(내비 설정 JSON·POI 분류·충전소 DB 41,190건), `docs/images/nav-compare/`(공식 화면),
+`docs/vehicle-api.json`(차량 앱 20개 매니페스트), `docs/vehicle-nav-strings.txt`(내비 dex 문자열표).
+주요 발견: 길안재 값은 `com.hkmc.telematics.gis.action.NAVI_GPS_CHANGED`의 `com.hkmc.telematics.gis.extra.DestDistance/DestRemainTime`(숫자, 매초),
+경로 상태는 `com.mnsoft.navi.action.Route_Guide_Status`(sticky, `ROUTE_GUIDE_STATE`), 목적지는 `com.mnsoft.navi.action.DestinationInfo`(`PoiName`/`Address`/`registpoint`).
+
+## 0.4.27 하이브리드 에너지 흐름 (2026-11-22, Claude)
+
+- 근거: `automotive.odex`의 `com.hkmc.hev.HEVManager`(읽기: `getHEVStatus(int)`, 리스너 `HEVListener.onHEVStatusChanged(flag, value)`), 플래그 `HEVManager$HEVFlag`(HEV_SYSTEM_MODE 0x6, DISPLAY_SOC 0x19, ELECTRIC_MOTOR_USAGE 0x5, AVG_FCU 0x1, AVG_FCI 0x2, ECO_LEVEL 0x8, HEV_RDY 0x1a, GAS_DTE 0xa, TOTAL_DTE 0xb). 순정 분할 화면(`RightScreenHome` `z/a`)의 12×7 표 `UD`로 시스템 모드별 흐름을 풀었다: 열 0 엔진↔바퀴(2 엔진→바퀴, 3 바퀴→엔진), 1 모터↔바퀴(2 바퀴→모터, 3 모터→바퀴), 2 엔진→모터(2), 3 모터↔배터리(2 모터→배터리, 3 배터리→모터), 4 엔진 그림, 5 모터 그림(0 꺼짐, 1 활성, 2 구동), 6 배터리 활성. 배터리 그림은 0~8칸.
+- 모드 이름(표에서 추정): 0 준비, 1 정지, 2 전기 모터 주행, 3 엔진·모터 주행, 4 엔진 주행, 5 엔진으로 충전, 6 회생 제동 충전, 7 엔진 감속, 8 엔진 주행·충전, 9 모터 주행·엔진 충전, 10 회생 제동·엔진 충전, 11 감속 회생 충전.
+- 구현: `StockHybrid.java`(읽기 전용, 요청·설정 호출 없음, 라이브러리 참조는 안쪽 클래스에만), 컴파일용 껍데기 `stubs/com/hkmc/hev/*`. 분할 화면에 `에너지 흐름` 위젯(지도 다음, 예전 저장값에도 자동 추가)과 설정 → 차량에 에너지 흐름·배터리 표시·전기 모터 사용·평균 연비 값·하이브리드 준비 줄.
+- 확인 못 한 것: 순정 하이브리드 앱이 HEV_SYSTEM_MODE 값을 분할 화면 표 번호로 그대로 넘기는지(가장 큰 가정), DISPLAY_SOC가 칸 수인지 %인지, 모터 사용·연비의 단위. 차에서 `logcat -s K8StockHybrid`로 `hybrid listener added {...}`와 `status flag=0x6 value=...`를 보며 주행 상태와 맞춰 볼 것. `hybrid service unavailable`이면 일반 앱 거부.
+- 검사: 빌드·서명(APK에 `com/hkmc` 클래스 0개), 이전 검사 전부와 에너지 흐름 시험(모드 2/4/5/6에서 흐름 선 2/1/2/2개, 화면 오류 없음). 배포 `deliverables/K8-5W-홈-0.4.27.apk`, `K8-ccNC-Home-NEMESIS-0.4.27-USB.zip`(SHA-256 `4715ce53b4cb4b5240ab72e332a79854c9b7278b16dfe9f790211b422a1490ad`).
+
+## 0.4.26 분할 화면 지도에 순정 내비 화면 (2026-11-22, Claude)
+
+- 사용자가 D 드라이브에 ccNC·5W 펌웨어를 받아 둠. 둘 다 시스템 이미지가 제조사 암호화라 풀지 않음. 자세한 분석과 새로 찾은 통로는 [펌웨어-분석-2026-11-22.md](펌웨어-분석-2026-11-22.md).
+- 차에서 뽑아 둔 순정 분할 화면(`RightScreenHome`)을 풀어 보니, 내비가 넘겨받은 화면(Surface)에 지도·경로·회전 화살표를 직접 그린다(`IInterfaceService` 22번 생성, 16번 해제, 권한·호출자 확인 없음). 테마 분할 화면의 `지도` 페이지에 같은 방식으로 내비 화면을 올림(`StockMapPreview` split 모드, `HomeActivity.updateSplitBounds`, 페이지 `syncNativeSplitMap`). 누르면 내비, 오른쪽으로 밀면 닫기, 위아래로 밀면 위젯 바꾸기(`K8Home.splitGesture`). 내비 그림이 들어오면 아래 상태 카드는 숨김.
+- 검사: 빌드·서명, `verify-integration`, 메뉴 호환 사본, 분할 화면 밀기, 날씨 위젯, 분할 지도 위치 보고·몸짓 시험(화면 오류 없음). 배포 `deliverables/K8-5W-홈-0.4.26.apk`, `K8-ccNC-Home-NEMESIS-0.4.26-USB.zip`(SHA-256 `c23cf94ffaca290669a7b6f4773bcd4b91405738c942d16d6db6aacb07b3acf2`).
+- 차에서 볼 것은 분석 문서 1번 끝. 다음 후보: 하이브리드 에너지 흐름(`HEVManager`).
+
 ## 0.4.25 하단 모서리 곡률·비율 실측 맞춤, 차 없이 되는 연결 (2026-11-21, Claude)
 
 - 실측(`D-settings_theme_widget.png` 944×354): 왼쪽 조각 0–230(24.4%), 오른쪽 710–944(24.8%), 높이 44(12.4%), 색 #1c1c1c, 위 테두리 한 줄이 살짝 밝음, 가운데 띠 #131313. 미디어 상자의 앨범 칸은 상자 높이만큼 정사각형으로 왼쪽에 붙음(#292d2e). 화면 안쪽 위 모서리가 둥글다(1920 기준 12px로 적용).

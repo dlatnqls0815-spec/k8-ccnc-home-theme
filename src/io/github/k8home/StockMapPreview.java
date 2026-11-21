@@ -12,7 +12,12 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 
-/** Hosts the rendering surface for the Gen5W navigation home widget. */
+/**
+ * Hosts a rendering surface that the stock navigation draws into. Home mode is the Gen5W home map
+ * widget (calls 1/2/3). Split mode is the right split-screen view that the stock RightScreenHome
+ * uses (calls 22 create with width/height, 16 destroy); the navigation draws its own map, route and
+ * turn arrow there. Call numbers come from com.mnsoft.navi.IInterfaceService in both apps' odex.
+ */
 final class StockMapPreview extends TextureView implements TextureView.SurfaceTextureListener, ServiceConnection {
     private static final String TAG = "K8HomeMap";
     private static final String DESCRIPTOR = "com.mnsoft.navi.IInterfaceService";
@@ -22,8 +27,11 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
     private static final int SURFACE_CHANGED = IBinder.FIRST_CALL_TRANSACTION + 1;
     private static final int SURFACE_DESTROYED = IBinder.FIRST_CALL_TRANSACTION + 2;
     private static final int HOME_WIDGET_FORMAT = 0x3201;
+    private static final int SPLIT_CREATED = 0x16;
+    private static final int SPLIT_DESTROYED = 0x10;
 
     private final Listener listener;
+    private final boolean split;
     private IBinder service;
     private Surface surface;
     private boolean active, bound, attached, frameReady;
@@ -33,8 +41,13 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
     }
 
     StockMapPreview(Context context, Listener listener) {
+        this(context, listener, false);
+    }
+
+    StockMapPreview(Context context, Listener listener, boolean split) {
         super(context);
         this.listener = listener;
+        this.split = split;
         setOpaque(false);
         setSurfaceTextureListener(this);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -80,7 +93,13 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
     }
 
     @Override public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
-        if (attached) sendSize(width, height);
+        if (!attached) return;
+        if (split) {
+            detachSurface();
+            connectSurface();
+        } else {
+            sendSize(width, height);
+        }
     }
 
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
@@ -96,6 +115,19 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
 
     private void connectSurface() {
         if (!active || service == null || surface == null || !surface.isValid() || attached) return;
+        if (split) {
+            final int width = getWidth(), height = getHeight();
+            if (width <= 0 || height <= 0) return;
+            attached = transact(SPLIT_CREATED, new Arguments() {
+                @Override public void write(Parcel parcel) {
+                    parcel.writeInt(1);
+                    surface.writeToParcel(parcel, 0);
+                    parcel.writeInt(width);
+                    parcel.writeInt(height);
+                }
+            });
+            return;
+        }
         attached = transact(SURFACE_CREATED, new Arguments() {
             @Override public void write(Parcel parcel) {
                 parcel.writeInt(1);
@@ -121,9 +153,9 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
     private void detachSurface() {
         if (attached) {
             attached = false;
-            transact(SURFACE_DESTROYED, new Arguments() {
+            transact(split ? SPLIT_DESTROYED : SURFACE_DESTROYED, new Arguments() {
                 @Override public void write(Parcel parcel) {
-                    parcel.writeString(getContext().getPackageName());
+                    parcel.writeString(split ? "" : getContext().getPackageName());
                 }
             });
         }
