@@ -1189,6 +1189,35 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
   .search-key-row button { min-height: 34px; }
   .search-shortcuts button { min-height: 40px; }
 }
+
+/* Column grid shared with the bottom bar (24.4% keys | 50.8% centre | 24.8% media box, full screen width).
+   Every detail page puts its left column edge on the key block's right edge (24.4vw) and its right column
+   on the media box's left edge (75.2vw), inside the 2.2vw page gutter. Percent values come first for
+   WebViews without vw/calc. */
+:root { --k8-left: 22.2vw; --k8-right: 22.6vw; --k8-gap: 1.2vw; }
+.sound-nav { width: 22%; width: var(--k8-left); max-width: none; padding-right: 12px; }
+.sound-illustration { width: 23%; width: var(--k8-right); max-width: none; }
+.sound-content { padding-left: var(--k8-gap); padding-right: var(--k8-gap); }
+.detail-settings-layout .sl-nav { width: 22%; width: var(--k8-left); padding: 0 16px 0 1.6vw; }
+.detail-settings-art { width: 23%; width: var(--k8-right); }
+.detail-settings-main { padding: 0 var(--k8-gap); }
+.media-stage, .phone-stage { gap: 0; }
+.media-device-box { width: 22%; width: var(--k8-left); min-width: 0; flex-shrink: 0; }
+.media-right-box { width: 23%; width: var(--k8-right); min-width: 0; flex-shrink: 0; }
+.media-center-box { padding: 0 var(--k8-gap) 0 calc(var(--k8-gap) + 1vw); }
+.phone-list-box { margin-right: var(--k8-gap); }
+.phone-device-pane { width: 23%; width: var(--k8-right); min-width: 0; flex-shrink: 0; }
+.memo-side { width: 22%; width: var(--k8-left); max-width: none; flex-shrink: 0; }
+.search-side { flex: 1; padding-right: var(--k8-gap); }
+.search-results { flex: none; width: 23%; width: var(--k8-right); }
+.settings-grid { grid-template-columns: calc(var(--k8-left) - 5px) minmax(0, 1fr) minmax(0, 1fr) calc(var(--k8-right) - 5px); }
+.settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.media-stage, .phone-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
+.settings-stage, .aux-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
+/* Split widget fills the right column exactly (75.2vw to the 2.2vw gutter). */
+.split-widget { padding: 10px 2.2vw 10px 0; }
+.detail-view.split-on .media-right-box, .detail-view.split-on .phone-device-pane { display: none; }
+.detail-view.split-on .phone-list-box { margin-right: 0; }
 </style>
 </head>
 <body>
@@ -3358,6 +3387,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
     var wrap = document.getElementById('split-widget');
     var handle = document.getElementById('split-toggle-btn');
     setClass(wrap, 'is-closed', !state.splitOpen);
+    setClass(document.getElementById('view-detail'), 'split-on', state.splitOpen);
     syncNativeSplitMap();
     window.setTimeout(syncNativeSplitMap, 260); // after the open/close width transition
     handle.textContent = state.splitOpen ? '›' : '‹';
