@@ -376,7 +376,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .split-toggle-handle:hover { background: #2c3846; color: #fff; }
 .split-card {
   position: relative; width: 100%; height: 100%;
-  border-radius: 10px; background: #242120;
+  border-radius: 10px; background: #1f1f20;
   border: 1px solid rgba(255,255,255,.12);
   display: flex; flex-direction: column; justify-content: space-between;
   padding: 14px; padding: clamp(14px, 1.4vw, 22px); overflow: hidden;
@@ -1449,6 +1449,42 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .detail-settings-art svg { color: #8a8f96; }
 /* The brown in the manual screens is the callout highlight, not a ccNC colour: lists, cards and keys use
    the unhighlighted surfaces' dark grey (#1f1f20). */
+
+.phone-row .call-dir { width: 2.4vw; height: 2.4vw; }
+.phone-row .call-type { width: 2vw; height: 2vw; color: #9a9a9a; }
+.phone-row-left { gap: 1.4vw; }
+.phone-row-right { gap: 2.4vw; color: #9a9a9a; }
+.call-name { font-weight: 600; }
+#list-mini-transport .ico { width: 2vw !important; height: 2vw !important; }
+#list-mini-transport .transport-icon-btn { width: 3.6vw !important; height: 3.6vw !important; }
+
+/* D-media_bluetooth_main2.png single-song view: top-aligned block from x=519, device 31px, title 60px,
+   artist/album 36px (album grey), transport ~50px glyphs 158px apart, thin full-width progress, 27px times. */
+.media-center-box { justify-content: flex-start; }
+.media-single-info { padding: .35vw 0 0 2.2vw; gap: .35vw; }
+.media-single-title { margin-top: .8vw; }
+.media-single-album { min-height: 2.5vw; }
+.media-scrubber { gap: .9vw; }
+.bb-icon-tabs .bb-tab-btn[data-msrc]:first-child { margin-right: 1.5vw; }
+.media-single-phone { font-size: 1.6vw; color: #cfcfcf; }
+.media-single-title { font-size: 3.1vw; }
+.media-single-artist { font-size: 1.85vw; color: #dcdcdc; }
+.media-single-album { font-size: 1.85vw; color: #6a6a6a; }
+#back-to-list-btn, #single-track-index { display: none !important; }
+.media-controls-row { margin-top: 2.6vw; }
+.media-transport-btns { gap: 3.3vw; }
+.media-single-info .transport-icon-btn { width: 5vw; height: 5vw; font-size: 3vw; }
+.media-single-info .transport-icon-btn svg, .media-single-info .transport-icon-btn .ico { width: 3.6vw !important; height: 3.6vw !important; }
+.media-single-info .transport-icon-btn { font-size: 3.6vw; }
+.media-scrubber { margin-top: .4vw; }
+.media-time-pair { font-size: 1.4vw; }
+.hybrid-flow .hf-rev { animation-direction: reverse; }
+.hybrid-flow { max-height: 13vw; }
+.split-live-state .theme-control { font-size: 1vw; min-height: 2.6vw; }
+.split-card { border-color: #2a2b2e; }
+/* ccNC action buttons are flat dark grey (D-phone_message_list.png 듣기/회신, D-voicememo_main.png). */
+.theme-control { background: #2a2b2e; border-color: #3a3c40; color: #f0f0f0; }
+.theme-control:hover { background: #36383c; }
 </style>
 </head>
 <body>
@@ -2127,39 +2163,42 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   var HYBRID_MODE_NAMES = ['준비', '정지', '전기 모터 주행', '엔진·모터 주행', '엔진 주행', '엔진으로 충전',
     '회생 제동 충전', '엔진 감속', '엔진 주행·충전', '모터 주행·엔진 충전', '회생 제동·엔진 충전', '감속 회생 충전'];
 
+  // D-hev_energyflow*.png / D-hev_main.png: see-through car (side view), engine at the front, motor in the
+  // middle, segmented teal battery at the rear; engine power flows orange, electric power blue.
   function hybridFlowSvg(info) {
     var mode = typeof info.mode === 'number' && info.mode >= 0 && info.mode < HYBRID_FLOW.length ? info.mode : -1;
     var row = mode >= 0 ? HYBRID_FLOW[mode] : [0,0,0,0,0,0,0];
-    var on = '#e8894a', idle = 'rgba(238,243,249,.18)', soft = 'rgba(238,243,249,.45)';
-    // Nodes: engine (left top), motor (centre), battery (left bottom), wheels (right).
-    var E = [40, 34], M = [120, 70], B = [40, 112], W = [205, 70];
-    function line(a, b, value, forward, back) {
+    var ORANGE = '#f08a3c', BLUE = '#3aa7e0', IDLE = 'rgba(255,255,255,.10)';
+    function flow(d, value, forward, back, color) {
       var active = value === forward || value === back;
-      var from = value === back ? b : a, to = value === back ? a : b;
-      var color = active ? on : value === 1 ? soft : idle;
-      var d = 'M' + from[0] + ' ' + from[1] + ' L' + to[0] + ' ' + to[1];
-      return '<path d="' + d + '" stroke="' + color + '" stroke-width="' + (active ? 4 : 2.5) + '" fill="none"' +
-        (active ? ' marker-end="url(#hf-arrow)" class="hf-flow"' : '') + '/>';
-    }
-    function node(p, label, state) {
-      var fill = state === 2 ? on : state === 1 ? '#eef3f9' : '#3a3f46';
-      var text = state === 2 ? '#1b1206' : state === 1 ? '#111' : '#cfd8e3';
-      return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="19" fill="' + fill + '"/>' +
-        '<text x="' + p[0] + '" y="' + (p[1] + 5) + '" text-anchor="middle" font-size="13" fill="' + text + '">' + label + '</text>';
+      return '<path d="' + d + '" fill="none" stroke="' + (active ? color : IDLE) + '" stroke-width="' + (active ? 4 : 2.5) +
+        '" stroke-linecap="round"' + (active ? ' class="hf-flow' + (value === back ? ' hf-rev' : '') + '"' : '') + '/>';
     }
     var soc = typeof info.soc === 'number' ? info.soc : -1;
     var segments = soc < 0 ? -1 : soc <= 8 ? soc : Math.round(Math.min(100, soc) / 12.5);
-    var bars = '';
+    var cells = '';
     for (var i = 0; i < 8; i++) {
-      bars += '<rect x="' + (14 + i * 7) + '" y="136" width="5" height="10" rx="1" fill="' +
-        (segments > i ? (row[6] ? on : '#53d7c0') : 'rgba(238,243,249,.2)') + '"/>';
+      cells += '<rect x="' + (167 + i * 6) + '" y="80" width="5" height="18" fill="' +
+        (segments > i ? '#1f8f86' : 'rgba(255,255,255,.08)') + '"/>';
     }
+    var engineOn = row[4] > 0, motorOn = row[5] > 0, batteryOn = row[6] > 0;
     return '<svg class="hybrid-flow" viewBox="0 0 240 150" role="img" aria-label="에너지 흐름">' +
-      '<defs><marker id="hf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
-      '<path d="M0 0 L10 5 L0 10z" fill="' + on + '"/></marker></defs>' +
-      line(E, W, row[0], 2, 3) + line(M, W, row[1], 3, 2) + line(E, M, row[2], 2, -1) + line(B, M, row[3], 3, 2) +
-      node(E, '엔진', row[4]) + node(M, '모터', row[5]) + node(B, '배터리', row[6] ? 1 : 0) + node(W, '바퀴', mode >= 2 && mode !== 5 ? 1 : 0) +
-      bars + '</svg>';
+      '<path d="M8 112c0-14 9-25 30-31l34-30c15-12 82-14 104-4l36 30c13 5 20 15 20 30v9H8z" fill="#1c1d1f" stroke="#45484d" stroke-width="1.5"/>' +
+      '<path d="M78 54h96l28 26H62z" fill="rgba(255,255,255,.04)" stroke="#3a3d42" stroke-width="1"/>' +
+      '<circle cx="52" cy="118" r="15" fill="#0d0d0e" stroke="#5a5d62" stroke-width="2"/><circle cx="52" cy="118" r="6" fill="#2a2b2e"/>' +
+      '<circle cx="192" cy="118" r="15" fill="#0d0d0e" stroke="#5a5d62" stroke-width="2"/><circle cx="192" cy="118" r="6" fill="#2a2b2e"/>' +
+      flow('M52 94V103', row[0], 2, 3, ORANGE) +
+      flow('M108 100V109H60', row[1], 3, 2, BLUE) +
+      flow('M68 84H98', row[2], 2, -1, ORANGE) +
+      flow('M163 89H120', row[3], 3, 2, BLUE) +
+      '<rect x="36" y="72" width="32" height="24" rx="6" fill="none" stroke="' + (engineOn ? '#f2f2f2' : '#6a6d72') + '" stroke-width="2.2"/>' +
+      '<path d="M42 78h20M42 84h20M42 90h20" stroke="' + (engineOn ? '#f2f2f2' : '#6a6d72') + '" stroke-width="1.3"/>' +
+      '<rect x="99" y="76" width="18" height="24" rx="8" fill="none" stroke="' + (motorOn ? '#f2f2f2' : '#6a6d72') + '" stroke-width="2.2"/>' +
+      '<rect x="163" y="76" width="56" height="26" rx="2" fill="#111214" stroke="' + (batteryOn ? '#f2f2f2' : '#8a8d92') + '" stroke-width="1.8"/>' + cells +
+      '<text x="52" y="63" text-anchor="middle" font-size="9" fill="#cfd3d8">엔진</text>' +
+      '<text x="108" y="70" text-anchor="middle" font-size="9" fill="#cfd3d8">모터</text>' +
+      '<text x="191" y="70" text-anchor="middle" font-size="9" fill="#cfd3d8">배터리</text>' +
+      '</svg>';
   }
   var dialNumber = '';
   var photo = { standby: '', split: '', profile0: '', profile1: '' };
@@ -2928,10 +2967,10 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
       return;
     }
     var typeSvgs = {
-      office: '<svg class="ico" style="width:20px;height:20px;color:#9a9a9a" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg>',
-      work:   '<svg class="ico" style="width:20px;height:20px;color:#9a9a9a" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="1"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 16h4v4h-4z"/></svg>',
-      mobile: '<svg class="ico" style="width:20px;height:20px;color:#9a9a9a" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>',
-      home:   '<svg class="ico" style="width:20px;height:20px;color:#9a9a9a" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v8H6v-8z"/></svg>'
+      office: '<svg class="ico ico-fill call-type" viewBox="0 0 24 24"><path d="M5 4h11v3h3v13H5z"/><path d="M8 8h5M8 11h8M8 14h8M8 17h5" style="fill:none;stroke:#1f1f20;stroke-width:1.4"/></svg>',
+      work:   '<svg class="ico ico-fill call-type" viewBox="0 0 24 24"><path d="M6 3h12v18h-4.5v-4h-3v4H6z"/><path d="M9 7h6M9 10h6M9 13h6" style="fill:none;stroke:#1f1f20;stroke-width:1.4"/></svg>',
+      mobile: '<svg class="ico call-type" viewBox="0 0 24 24" style="stroke-width:1.8"><rect x="7" y="2.8" width="10" height="18.4" rx="1.5"/></svg>',
+      home:   '<svg class="ico ico-fill call-type" viewBox="0 0 24 24"><path d="M12 3.5 2.8 11.5h2.7V20h4.6v-5h3.8v5h4.6v-8.5h2.7z"/></svg>'
     };
     state.calls.forEach(function (c) {
       var row = document.createElement('button');
@@ -2939,9 +2978,9 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
       row.className = 'phone-row';
       row.innerHTML =
         '<div class="phone-row-left">' +
-          '<svg class="ico" style="width:22px;height:22px;color:#9a9a9a" viewBox="0 0 24 24">' +
-            '<path d="M6.5 4.5 10 8l-2 2.5a11 11 0 0 0 5.5 5.5L16 14l3.5 3.5c-.5 2-2 3-4 3C8.5 19.5 4.5 15.5 3.5 8.5c0-2 1-3.5 3-4z"/>' +
-            '<path stroke="#5bb974" stroke-width="2.2" d="M14 6h6m-2.5-2.5L20 6l-2.5 2.5"/>' +
+          '<svg class="ico call-dir" viewBox="0 0 24 24">' +
+            '<path d="M6.6 3.2 9.9 7.6 8 10a12.6 12.6 0 0 0 6 6l2.4-1.9 4.4 3.3-1.6 2.6c-.5.7-1.3 1-2.1.9C10.6 20.1 3.9 13.4 3.1 6.9c-.1-.8.2-1.6.9-2.1z" style="fill:none;stroke:#a7c9b8;stroke-width:1.6"/>' +
+            '<path d="M13.5 6.5h7m-2.6-2.6 2.6 2.6-2.6 2.6" style="fill:none;stroke:#5bb974;stroke-width:1.9"/>' +
           '</svg>' +
           '<span class="call-name">' + c.name + '</span>' +
         '</div>' +
