@@ -231,9 +231,13 @@ def main():
         cmd = [sys.executable, str(script)] + targets
         if check == "legacy_clamp.py":
             cmd += ["--check"]
-        result = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
-        sys.stdout.write(result.stdout)
-        sys.stderr.write(result.stderr)
+        env = dict(os.environ, PYTHONIOENCODING="utf-8")  # 검사 출력이 한글이다(Windows 기본 코드페이지로는 못 읽는다)
+        result = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, env=env)
+        out = result.stdout.decode("utf-8", "replace")
+        err = result.stderr.decode("utf-8", "replace")
+        sys.stdout.buffer.write(out.encode("utf-8")) if hasattr(sys.stdout, "buffer") else sys.stdout.write(out)
+        sys.stdout.flush()
+        sys.stderr.write(err)
         if result.returncode != 0:
             sys.stderr.write("빌드를 멈춘다: %s 검사 실패\n" % check)
             sys.exit(1)

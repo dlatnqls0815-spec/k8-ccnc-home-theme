@@ -9,3 +9,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 /private/
+
+# 차 흉내 비교 사진(tools/c30_preview.cjs)
+captures/
