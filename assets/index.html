@@ -1548,6 +1548,9 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .legacy .hcard-circles > * + * { margin-left: 1.45vw; }
 .legacy .circle-btn { min-width: 0; max-width: none; padding: 0; box-sizing: border-box; }
 .bb-key .bb-icon { margin-left: auto; margin-right: auto; }
+/* 긴 글자 흐르기(marquee.js) 대상은 한 줄로 고정: 칸이 늘어나 옆 버튼을 밀지 않게. */
+.media-single-artist, .media-single-album { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bb-destination { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -5517,5 +5520,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   showPage('home');
 }());
 </script>
+<script>window.K8_MARQUEE = '.hcard-caption-main strong, .hcard-caption-main span, .app-tile-caption strong, .media-single-title, .media-single-artist, .media-single-album, .bb-destination, .bb-media-meta strong, .bb-media-meta span';</script>
+<script src="marquee.js"></script>
 </body>
 </html>

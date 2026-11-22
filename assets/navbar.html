@@ -125,7 +125,7 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 .bb-route-info .bb-metric { display: inline-block; height: 48px; }
 .bb-route-info .bb-metric > span { display: inline-block; vertical-align: baseline; }
 .bb-time { width: auto; line-height: 48px; }
-.bb-dest { line-height: 48px; max-width: 380px; }
+.bb-dest { line-height: 48px; max-width: 300px; }
 .bb-media-zone { left: 1428px; width: 492px; }
 .bb-media-play { position: absolute; left: 0; top: 0; display: block; }
 .bb-media-play .bb-media-off-icon, .bb-media-play img.bb-media-state { display: block; margin: 0 auto; }
@@ -157,6 +157,7 @@ button.bb-idle { line-height: 80px; }
 /* 깃발 31x30 #d6d6d6 (976~1007, 위 20), 목적지 25px (1032~, 글자 위 24). */
 .bb-route-info .bb-location { margin-left: 2px; fill: #d6d6d6; }
 .bb-route-info .bb-dest { margin-left: 23px; font-size: 25px; position: relative; top: 1px; color: #e4e2df; }
+#bb-idle-label { display: inline-block; max-width: 700px; overflow: hidden; white-space: nowrap; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -360,5 +361,7 @@ button.bb-idle { line-height: 80px; }
     }
   };
 </script>
+<script>window.K8_MARQUEE = '.bb-dest, .bb-media-meta strong, .bb-media-meta span, #bb-idle-label';</script>
+<script src="marquee.js"></script>
 </body>
 </html>
