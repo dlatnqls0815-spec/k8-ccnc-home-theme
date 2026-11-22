@@ -204,7 +204,8 @@ final class HeadUnitInfo {
             readStockString(resolver, info, "bluelightEnd", "bluelight_endtime", drv);
             readStockString(resolver, info, "languageType", "language_type", drv);
             // 고음/중음/저음: USER_ 접미사 키에 10을 0으로 저장한다(14 = +4)
-            String user = drv >= 0 ? "_USER_" + drv : "";
+            // 운전자 1·2는 _USER_1·_USER_2, 손님(0)은 _GUEST 로 저장된다(실차 설정 표).
+            String user = drv > 0 ? "_USER_" + drv : "_GUEST";
             readTone(resolver, info, "soundTreble", "hkmc_sndset_treble" + user);
             readTone(resolver, info, "soundMiddle", "hkmc_sndset_middle" + user);
             readTone(resolver, info, "soundBass", "hkmc_sndset_bass" + user);

@@ -3413,7 +3413,7 @@ var stockSub = '';
 
   /** 차량·공조·하이브리드 상태(읽기 전용). 차량 화면 아래에 둔다. */
   function vehicleStatusHtml() {
-    return 
+    return '' +
         '<div class="detail-settings-row" data-system-row="vehicleCode" hidden><span>차량 사양 코드</span><output data-system-value="vehicleCode"></output></div>' +
         '<div class="detail-settings-row" data-system-row="driveModeOption" hidden><span>드라이브 모드 사양 코드</span><output data-system-value="driveModeOption"></output></div>' +
         [['climateDriver','운전석 온도'],['climatePassenger','조수석 온도'],['climateOutside','외부 온도'],['climateAc','에어컨'],
@@ -3457,7 +3457,7 @@ var stockSub = '';
       updateSystemLabels();
       return;
     }
-    if (renderStockSettingScreen(pane, settingsSection)) return;
+    if (renderStockSettingScreen(pane, settingsSection)) { updateSystemLabels(); return; }
     var heading = { vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드',
       devices:'기기 연결', profile:'사용자 프로필', voice:'음성인식', display:'디스플레이' }[settingsSection];
     var start = '<button type="button" class="theme-control" data-local="settings-back">‹ 설정</button><h2>' + heading + '</h2>';
@@ -3672,19 +3672,21 @@ var stockSub = '';
     buttonMode: { '129': '자연의 소리' },
     buttonSeek: { '0': '프리셋 채널 변경' },
     bluelightMode: { '0': '자동' },
-    bluelightLevel: { '1': '덜 따뜻한 색감' },
     voiceType: { '85': '밝은 여성 음성' },
     timeFormat12: { '12': '12시간' },
-    navGuideMute: { '1': '켜짐' },
-    welcomeSound: { '1': '켜짐' },
-    gpsAutoTime: { '1': '켜짐' },
-    soundAutoVolume: { '1': '켜짐' },
+    // 순정 화면에서 체크박스 켬 = 1 로 확인된 켬/끔 항목은 0 = 꺼짐으로 본다.
+    navGuideMute: { '1': '켜짐', '0': '꺼짐' },
+    welcomeSound: { '1': '켜짐', '0': '꺼짐' },
+    gpsAutoTime: { '1': '켜짐', '0': '꺼짐' },
+    soundAutoVolume: { '1': '켜짐', '0': '꺼짐' },
     languageType: { 'ko_KR': '한국어' }
   };
 
   /** 값 하나를 화면 글자로 바꾼다. 근거가 없으면 "순정 값 N". */
   function stockValueText(field, value) {
     if (value === undefined || value === null || value === '') return '순정 연동 대기';
+    // 블루라이트 색감은 슬라이더 단계(순정 화면 숫자)다.
+    if (field === 'bluelightLevel' && /^\d+$/.test(String(value))) return value + '단계';
     var table = STOCK_VALUE_MEANING[field];
     if (table) {
       var hit = table[String(value)];
@@ -3775,6 +3777,10 @@ var stockSub = '';
       if (field === 'bluelightStart' || field === 'bluelightEnd') { readouts[field] = stockTimeText(value); return; }
       readouts[field] = stockValueText(field, value);
     });
+    // 오디오 음량 자동 줄이기는 순정 체크박스 켬 = 1 로 확인된 켬/끔 값이다.
+    if (typeof vehicleSettings.soundAutoVolume === 'number') {
+      readouts.soundAutoVolume = stockValueText('soundAutoVolume', vehicleSettings.soundAutoVolume);
+    }
     // 고음·중음·저음은 10을 0으로 저장한 값이라 10을 뺀 수(14 → +4)로 보여 준다.
     ['soundTreble', 'soundMiddle', 'soundBass'].forEach(function (field) {
       var value = vehicleSettings[field];
@@ -3854,12 +3860,12 @@ var stockSub = '';
         ['충돌 경고', '']] },
     'car-warning': { title: '경고 방식', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', parent: '운전자 보조',
       rows: [['경고 음량', ''], ['핸들 진동 경고', ''], ['주행 안전 우선', ''], ['주차 안전 우선', 'soundReverseDim']] },
-    'car-dm-custom': { title: 'CUSTOM · MY DRIVE MODE', desc: '시스템별 모드 선택을 통해 최적의 모드를 설정합니다.',
+    'car-dm-custom': { title: 'CUSTOM', desc: '시스템별 모드 선택을 통해 최적의 모드를 설정합니다.',
       parent: '드라이브 모드',
       rows: [['드라이브 모드 변경 알림', 'driveModeNotification'], ['MY DRIVE MODE', ''], ['SMART', '']] },
-    'car-coasting-sound': { title: '관성 주행 안내 · 사운드 켬', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 시점을 알려줍니다.',
+    'car-coasting-sound': { title: '관성 주행 안내', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 시점을 알려줍니다.',
       parent: '환경차',
-      rows: [['관성 주행 안내', ''], ['사운드 켬', ''], ['관성 주행 안내 시점', ''], ['그린존 드라이브 모드', '']] },
+      rows: [['관성 주행 안내 소리(사운드 켬/끔)', '']] },
     'car-coasting-timing': { title: '관성 주행 안내 시점', desc: '가속 페달에서 발을 떼는 제안 시점을 선택합니다.',
       parent: '환경차',
       rows: [['관성 주행 안내 시점', ''], ['그린존 드라이브 모드', '']] },
@@ -3913,7 +3919,7 @@ var stockSub = '';
       rows: [['디지털 키 정보', '']] },
     'conv-service': { title: '서비스 시기 알림', desc: '서비스 점검 시기까지 남은 거리와 기간을 확인합니다.', parent: '편의',
       rows: [['서비스 시기 알림 사용', ''], ['알림 거리', ''], ['알림 기간', ''], ['초기화', '']] },
-    'sound-advanced': { title: 'Meridian Intelli-Q · 강하게', desc: '차량의 속도에 따라 최적의 사운드를 제공합니다.', parent: '고급 음향',
+    'sound-advanced': { title: 'Meridian Intelli-Q', desc: '차량의 속도에 따라 최적의 사운드를 제공합니다.', parent: '고급 음향',
       rows: [['강하게', ''], ['보통', ''], ['약하게', ''], ['끄기', '']] },
     'sound-voicechange': { title: '음성 변경', desc: '내비게이션 안내·음성인식·문자 메시지를 읽어주는 음성을 설정합니다.',
       parent: '안내음',
@@ -3943,9 +3949,9 @@ var stockSub = '';
           { label: '경고 방식', nav: true, sub: 'car-warning' } ] },
         { name: '드라이브 모드', rows: [
           ['드라이브 모드 변경 알림', 'driveModeNotification'],
-          { label: 'CUSTOM · MY DRIVE MODE', nav: true, sub: 'car-dm-custom' } ] },
+          { label: 'CUSTOM', nav: true, sub: 'car-dm-custom' } ] },
         { name: '환경차', rows: [
-          { label: '관성 주행 안내 · 사운드 켬', nav: true, sub: 'car-coasting-sound' },
+          { label: '관성 주행 안내', nav: true, sub: 'car-coasting-sound' },
           { label: '관성 주행 안내 시점', nav: true, sub: 'car-coasting-timing' },
           ['그린존 드라이브 모드', ''] ] },
         { name: 'HUD', rows: [
@@ -4003,25 +4009,26 @@ var stockSub = '';
       title: '버튼', host: 'settings-buttons', hostLabel: '순정 버튼 설정 열기', fallback: 'settings-buttons',
       groups: [
         { name: '사용자 버튼 ☆ (내비게이션)', art: 'btnNavi', lines: ['사용자 버튼 ☆', '(내비게이션)'],
-          desc: '이 버튼으로 실행할 기능을 선택하십시오. (내비게이션)',
+          desc: '이 버튼으로 실행할 기능을 선택하십시오. (내비게이션)', valueKey: 'buttonNavi',
           choices: [
-            { label: '폰 프로젝션', current: true }, '프라이버시 모드', '하이브리드', '핸즈프리 기기 연결 변경', '홈',
+            { label: '폰 프로젝션', value: 'com.mobis.intent.action.CONNECTIVITY_SHORTCUT' }, '프라이버시 모드', '하이브리드', '핸즈프리 기기 연결 변경', '홈',
             '화면 켜기/끄기', '후석 취침 모드', 'DMB', 'Kia Connect', 'MAP', 'Radio/Media On/Off', '없음' ] },
         { name: '사용자 버튼 ★ (핸들)', art: 'btnHandle', desc: '이 버튼으로 실행할 기능을 선택하십시오. (핸들)',
-          choices: ['DMB', 'Kia Connect', { label: 'MAP', current: true }, 'Radio/Media On/Off', '없음'] },
+          valueKey: 'buttonHandle',
+          choices: ['DMB', 'Kia Connect', { label: 'MAP', value: 'com.hkmc.intent.action.MAP_SHORTCUT' }, 'Radio/Media On/Off', '없음'] },
         { name: 'MODE 버튼', art: 'btnMode', desc: 'MODE 버튼을 눌러 재생할 미디어를 선택합니다. 재생 가능한 미디어에 한하여 동작합니다.',
-          choices: ['블루투스 오디오', '지니 뮤직', '멜론', '폰 프로젝션', { label: '자연의 소리', current: true },
+          valueKey: 'buttonMode',
+          choices: ['블루투스 오디오', '지니 뮤직', '멜론', '폰 프로젝션', { label: '자연의 소리', value: '129' },
             'USB 음악', 'USB 비디오', 'FM', 'AM', 'DMB'] },
         { name: '[∧]/[∨] 버튼 (핸들)', art: 'btnUpDown',
           desc: '라디오 청취 중 핸들의 [∧]/[∨] 버튼으로 실행할 기능을 선택하십시오.',
-          rows: [['[∧]/[∨] 버튼', 'buttonSeek']],
-          choices: [{ label: '프리셋 채널 변경', current: true }, '방송 탐색 / 주파수 이동'] },
+          valueKey: 'buttonSeek',
+          choices: [{ label: '프리셋 채널 변경', value: '0' }, '방송 탐색 / 주파수 이동'] },
         { name: '후석 잠금', art: 'btnRearLock', desc: '후석 컨트롤러 잠금을 설정합니다.',
           rows: [['후석 잠금', '']] },
         { name: 'VOL/TUNE 노브', art: 'btnVolTune',
-          desc: 'VOL 노브에 적용된 기능을 변경합니다. 또는 VOL 노브와 TUNE 노브 기능의 위치를 서로 바꿉니다.',
-          rows: [['VOL/TUNE 노브 위치 바꾸기', 'volTuneSwap'], ['TUNE 노브 기능', 'tuneKnobFunction']],
-          choices: ['좌측', '우측', '음량/전원', '미디어 탐색', '지도 확대/축소'] }
+          desc: 'VOL 노브와 TUNE 노브 기능의 위치를 서로 바꿉니다. 기본은 좌측 음량/전원, 우측 미디어 탐색·지도 확대/축소입니다.',
+          rows: [['VOL/TUNE 노브 위치 바꾸기', 'volTuneSwap'], ['TUNE 노브 기능', 'tuneKnobFunction']] }
       ]
     }
   };
@@ -4082,6 +4089,29 @@ var stockSub = '';
    * 설정 줄 하나. 배열은 [이름, 키], 객체는 {label, nav, sub, note}.
    * nav 줄(›)은 누르면 하위 화면(sub)으로 가고, 하위 화면 근거가 없으면 순정 설정 화면을 연다.
    */
+  /**
+   * 선택 목록. 현재 선택은 순정에서 읽은 값(valueKey)과 선택지의 value 가 같을 때만 표시한다.
+   * value 가 없는 선택지(대응 미확인)는 표시하지 않고, 읽은 값이 어느 선택지와도 맞지 않으면
+   * 맨 위에 "현재 선택: 순정 값 N" 줄을 보여 준다. 수집 당시 선택을 고정으로 넣지 않는다.
+   */
+  function stockChoicesHtml(list, valueKey) {
+    if (!list || !list.length) return '';
+    var live = valueKey ? (vehicleSettings[valueKey] !== undefined ? vehicleSettings[valueKey] : vehicleInfo[valueKey]) : undefined;
+    var known = live !== undefined && live !== null && live !== '';
+    var matched = false;
+    var rows = list.map(function (item) {
+      var obj = typeof item === 'string' ? { label: item } : item;
+      var current = known && obj.value !== undefined && String(obj.value) === String(live);
+      if (current) matched = true;
+      return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
+        '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
+        '</span></span></div>';
+    }).join('');
+    var head = valueKey && !matched ? '<div class="detail-settings-row"><span>현재 선택</span><output>' +
+      escapeText(known ? stockValueText(valueKey, live) : '순정 연동 대기') + '</output></div>' : '';
+    return head + rows;
+  }
+
   function stockRowHtml(row, fallback) {
     var isArray = Array.isArray(row);
     var label = isArray ? row[0] : row.label;
@@ -4120,13 +4150,7 @@ var stockSub = '';
     var rows = (showSub ? sub.rows : (group.rows || [])).map(function (row) {
       return stockRowHtml(row, screen.fallback);
     }).join('');
-    var choices = (group.choices || []).map(function (item) {
-      var obj = typeof item === 'string' ? { label: item } : item;
-      var current = obj.current === true;
-      return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
-        '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
-        '</span></span>' + (current ? '<span class="stock-choice-mark">ccNC</span>' : '') + '</div>';
-    }).join('');
+    var choices = stockChoicesHtml(group.choices, group.valueKey);
     var switches = (group.switches || []).map(function (item) {
       var key = item[2];
       var value = key ? '<output data-system-value="' + key + '"></output>' :
@@ -4212,8 +4236,8 @@ var stockSub = '';
    */
   var SOUND_SCREENS = [
     { id: 'premium', name: '고급 음향', desc: '고급 음향 시스템을 제어합니다.', art: 'soundSpeaker',
-      rows: [['Meridian Horizon 커스텀', ''], ['Meridian Intelli-Q', ''],
-        { label: 'Meridian Intelli-Q · 강하게', nav: true, sub: 'sound-advanced' },
+      rows: [['Meridian Horizon 커스텀', ''],
+        { label: 'Meridian Intelli-Q', nav: true, sub: 'sound-advanced' },
         ['오디오 음량 자동 줄이기', 'soundAutoVolume']] },
     { id: 'balance', name: '전후/좌우', desc: '좌석 위치에 맞춰 소리를 조절할 수 있습니다. 전후, 좌우 버튼으로 상세 조정이 가능합니다.',
       art: 'soundCabin',
@@ -4260,13 +4284,7 @@ var stockSub = '';
         return stockRowHtml(row, 'settings-sound');
       }).join('');
       var choiceList = showSub ? (sub.choices || []) : (selected.choices || []);
-      main += choiceList.map(function (item) {
-        var obj = typeof item === 'string' ? { label: item } : item;
-        var current = obj.current === true;
-        return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
-          '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
-          '</span></span>' + (current ? '<span class="stock-choice-mark">ccNC</span>' : '') + '</div>';
-      }).join('');
+      main += stockChoicesHtml(choiceList, showSub ? sub.valueKey : selected.valueKey);
     }
     main += '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>' + stockWriteSwitch();
