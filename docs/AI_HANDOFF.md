@@ -1,4 +1,69 @@
 # K8 Gen5W 홈
+## 0.5.0-test12 미니맥스: 순정 내비 하단바(오버레이) 5가지 문제 수정 (2026-11-22)
+
+브랜치 `minimax/ccnc-settings`. 0.5.0-test11(차량 설정) 뒤에 이어서 한다. **차에 명령은 보내지 않았다.**
+
+### 1번 — 미디어 칸을 누르면 재생목록 팝업이 뜨는 것
+
+- 원인: 하단바 HTML 의 미디어 칸 클릭이 `playlist` 동작을 보내고, `NavBarService` 가 `playback_panel.html` 창을 띄웠다.
+- 고친 것: 클릭 동작을 `media` 로 바꾸고, `NavBarService.openThemeMedia()` 가 `HomeActivity` 를
+  `EXTRA_OPEN_MEDIA` 로 연다(추가로 `EXTRA_OPEN_MEDIA_SOURCE` 로 지금 소스를 넘겨 블루투스면 블루투스 음원으로 열린다).
+  테마를 열 수 없을 때만 순정 플레이어(`StockApps.openPlayer`)를 연다.
+- `playback_panel.html` 과 "playlist" 동작, 팝업 창 관련 코드를 지웠다(재생목록 팝업이 남지 않게).
+
+### 2번 — 미디어 칸의 재생/정지 아이콘
+
+- 원인: `I-media_play_new.png` / `I-media_pause_new.png` 를 `bb-media-icon` 으로 바꿔 가며 표시했다.
+- 고친 것: 아이콘을 없애고 앨범 그림(`bb-media-cover`)만 둔다. 그림이 없으면 기본 앨범 그림(음악표 SVG)을 보여 준다.
+
+### 3번 — 미디어 진행 막대가 안 보이는 것
+
+- 원인: 하단바 오버레이에 진행 막대 자체가 없었다(테마 본체 홈 하단바에만 있었다).
+- 고친 것: `bb-media-progress` 를 추가. 설명서 `D-media_bluetooth_main.png` 실측(1920 기준)에 맞춰
+  앨범 그림 오른쪽(x1509)부터 화면 끝(1920)까지, 높이 2px, 재생 부분 `#d28a5c`, 남은 부분 회색.
+- 값은 `StockMedia` 의 position/duration 을 `NavBarService.pushMedia()` → `K8NavBarView.media(..., pos, dur)` 로 넘겨 갱신하고,
+  재생 중이면 1초마다 조금씩 전진한다.
+
+### 4번 — 좌우 스와이프가 안 되는 것
+
+- 원인 후보 두 가지: ① Chrome 30 은 `touch-action` 을 모르고, `touchmove` 를 막지 않으면 WebView 가 터치를 가져가
+  `touchend` 가 오지 않는다(touchcancel). ② 오버레이 창 플래그.
+- 고친 것: 미디어 영역에 `touchmove` 핸들러를 넣고 `preventDefault()` 하도록 했다(첫 touchmove 부터).
+  기준은 60px 이상, 세로 이동이 더 크면 무시. 왼쪽=다음 곡, 오른쪽=이전 곡.
+- 창 플래그는 그대로 두었다(FLAG_NOT_FOCUSABLE | FLAG_NOT_TOUCH_MODAL). 좌표를 재서 옆으로 밀면
+  오버레이가 먼저 터치를 받는 구조라 창을 바꾸지 않는다.
+
+### 5번 — 경로 알약 오른쪽(깃발·목적지 이름)이 깨진 것
+
+- 두 가지를 함께 고쳤다.
+  (가) 전달 경로: `StockRoute` 가 목적지 이름(`poi`, 없으면 주소)을 주므로 값 전달은 된다. 화면에서
+      목적지가 없으면 깃발·목적지·구분선을 **모두 숨겨** 빈 회색 칸이 남지 않게 했다.
+  (나) CSS: 깃발에 `width:31px;height:30px;display:inline-block` 를 주어 0 폭으로 접히지 않게 하고,
+      목적지 글자를 `span.bb-dest-text` 안에 넣어(글자 흐름 marquee 가 버튼이 아니라 글자_span 을 움직이게)
+      버튼 자체의 `text-overflow:clip` 로 글자가 사라지지 않게 했다. marquee 선택자도 바꿨다.
+- 측정: 설명서 기준 깃발 x976 / 목적지 x1032 / 구분선 x942 → 테마 깃발 x975, 목적지 x1029, 구분선 x942(차이 1~3px).
+
+### 6번 — 테마 본체(index.html) 홈 하단바 미디어 칸
+
+- 이미 앨범 그림(canvas)과 진행 막대(`.bb-media-topline`)가 있어形은 ccNC 와 같았다. 스와이프만 빠져 있어서
+  좌우 60px 이상 스와이프로 다음 곡/이전 곡을 보내도록 했다(기존 미디어 키 방식 사용).
+- 누르면 미디어 화면으로 가는 동작은 그대로다.
+
+### 확인
+
+- PC(차 흉내 1280×63 CSS·1.5배·`CSS.supports=()=>false`·간격 0·flex 버튼 block)로 하단바를 띄워
+  경로 있음/없음·목적지 짧음/김/없음·재생 중을 모두 찍었다. **화면 오류 0개.**
+- 터치 시험(합성 TouchEvent, hasTouch): 왼쪽 스와이프 → `next`, 오른쪽 스와이프 → `previous`,
+  짧게 누르기/클릭 → `media`. `touchmove` 의 `defaultPrevented` 가 true 로 나오는 것도 확인했다.
+  로그: `deliverables/검수전/navbar-fix/터치시험.log`
+- 비교 그림: `deliverables/검수전/navbar-fix/` (위=ccNC 설명서, 아래=테마 차 흉내).
+
+### 추정인 것 · 못 한 것
+
+- 차에서는 터치를 직접 만질 수 없어 **스스로 preventDefault 가 되는지만** 확인했다. 실제로 곡이 바뀌는지는 차 시험이 필요하다.
+- 설명서 그림이 945×354(1920 설계의 축소본)라 1920 수치는 환산값이다.
+- 오른쪽 차량 렌더링 그림(사진형)은 선 그림으로 그리지 않는다(보류, 앞선 결정과 같다).
+
 ## 0.5.0-test11 미니맥스: 차량 값 읽기 경로 조사 + 차량 화면을 ccNC 설명서 모양으로 (2026-11-22)
 
 브랜치 `minimax/ccnc-settings`. Claude 의 0.5.0-test10(c19f2f4) 뒤에 이어서 4개 할 일을 처리했다.
