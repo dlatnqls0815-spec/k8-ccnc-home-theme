@@ -194,6 +194,74 @@ lock = ('<g fill="none" stroke="%s" stroke-width="1.4"><rect x="70" y="80" width
         '<path d="M73 80v-4a4.5 4.5 0 0 1 9 0v4M77.5 84.5v3"/></g>'
         '<text x="77.5" y="100" font-size="4.5" text-anchor="middle" fill="%s" font-family="sans-serif">LOCK</text>') % (D, D)
 A['micLock'] = lock + mic(D, False, '#0d0d0d')
+# ---------------------------------------------------------------- 사운드 화면 그림(0.5.0-test7)
+def wave(x0, y0, x1, y1, bulge):
+    # 설명서의 파문: 위/아래 끝점이 같고 오른쪽으로 bulge 만큼 부푼 곡선
+    cx = 2 * bulge - (x0 + x1) / 2
+    return 'M%s %sQ%s %s %s %s' % (f(x0), f(y0), f(cx), f((y0 + y1) / 2), f(x1), f(y1))
+
+
+# 스피커 + 청록 파문 (D-settings_sound_position.png / _guide.png 오른쪽 칸)
+cone = ('<g transform="rotate(-32 108 148)">'
+        '<ellipse cx="108" cy="148" rx="41" ry="45"/>'
+        '<ellipse cx="111" cy="145" rx="28" ry="34"/>'
+        '<ellipse cx="108" cy="158" rx="12" ry="15"/></g>'
+        '<path d="M79 143c-9 4-13 12-12 21 1 10 7 17 15 19"/>')
+waves = (path(wave(140, 68, 142, 175, 163), stroke=T, stroke_width='2.2') +
+         path(wave(140, 68, 142, 175, 187), stroke=T, stroke_width='2.2') +
+         path(wave(140, 68, 142, 175, 210), stroke=T, stroke_width='2.2'))
+A['soundSpeaker'] = g(cone, 1.6) + g(waves, 2.2, T)
+
+# 차 실내 위치(전후/좌우 화면의 본문 그림)
+cabin = ('<path d="M60 40h140v150H60z"/>'
+         '<path d="M60 40c14 6 126 6 140 0M60 190c14-6 126-6 140 0"/>'
+         '<path d="M60 40v150M200 40v150"/>'
+         '<circle cx="130" cy="115" r="21" stroke="%s"/>'
+         '<circle cx="130" cy="115" r="11" fill="%s"/>'
+         '<path d="M130 60v100M75 115h110"/>') % (T, T)
+A['soundCabin'] = g(cabin, 1.6)
+
+# 고음/중음/저음
+A['soundTone'] = g('<path d="M78 46v180M128 46v180M178 46v180"/>'
+                   '<rect x="66" y="90" width="24" height="16" rx="4"/>'
+                   '<rect x="116" y="140" width="24" height="16" rx="4"/>'
+                   '<rect x="166" y="112" width="24" height="16" rx="4"/>', 1.8)
+
+# 운전자 보조(방패)
+A['soundShield'] = g('<path d="M130 42L188 66v46C188 142 170 166 130 186 90 166 72 142 72 112V66z"/>'
+                      '<path d="M130 108v34M130 166v3"/>', 1.8)
+
+# 라디오 음질(안테나+파문)
+A['soundRadio'] = g('<rect x="92" y="120" width="76" height="64" rx="8"/>'
+                     '<path d="M110 120l16-58M150 120l-16-58"/>'
+                     '<path d="M186 104a44 44 0 0 1 0 40M196 92a60 60 0 0 1 0 64"/>', 1.8)
+
+# 후석 취침(침대)
+A['soundRear'] = g('<path d="M64 200v-40a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v40z"/>'
+                    '<path d="M64 176h128M80 200v22M180 200v22"/>', 1.8)
+
+# ---------------------------------------------------------------- 클러스터/HUD (0.5.0-test7)
+# 설명서 그림은 음영 있는 렌더링이다. 선으로 그릴 수 있는 부분만 옮기고 음영은 생략했다.
+dial = []
+for cx in (72, 188):
+    dial.append('<circle cx="%d" cy="150" r="42"/>' % cx)
+    for k in range(13):
+        a = math.radians(150 + k * 20)
+        dial.append('<path d="M%s %sl4.4 4.4"/>' % (f(cx + 34 * math.cos(a)), f(150 + 34 * math.sin(a))))
+dial.append('<circle cx="72" cy="150" r="5" fill="%s"/>' % D)
+dial.append('<circle cx="188" cy="150" r="5" fill="%s"/>' % D)
+dial.append('<path d="M72 150l22-18M188 150l-20-22"/>')
+dial.append('<path d="M96 196c6 14 16 24 34 30 18-6 28-16 34-30"/>')
+A['cluster'] = (g(path(earc(130, 196, 104, 104, 0, 208, 332) + earc(130, 196, 74, 74, 0, 208, 332)), 1.7) +
+                g(''.join(dial), 1.6))
+
+hud = ('<rect x="104" y="52" width="52" height="30" rx="6"/>'
+       '<path d="M104 68h-60M156 68h60"/>'
+       '<text x="112" y="134" font-size="28" text-anchor="middle" fill="%s" font-family="sans-serif">100</text>'
+       '<text x="156" y="136" font-size="12" text-anchor="middle" fill="%s" font-family="sans-serif">km/h</text>') % (G, G)
+hud += path(earc(130, 246, 92, 92, 0, 205, 335) + earc(130, 246, 66, 66, 0, 205, 335))
+A['hud'] = g(hud, 1.7)
+
 open('ccnc-art.json', 'w', encoding='utf-8').write(json.dumps(A, ensure_ascii=False))
 html = '<html><body style="margin:0;background:#000">' + ''.join(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 255 276" width="510" height="552" style="background:#000">%s</svg>' % v
