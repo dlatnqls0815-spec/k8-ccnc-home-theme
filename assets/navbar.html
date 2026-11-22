@@ -8,6 +8,9 @@
 /* ccNC 길안내 하단바. 1920×720에서 왼쪽 세 키의 피치는 152px이다. */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
+/* Chrome 30: 누른 미디어 칸에 주황 초점 테두리가 남았다(실차 캡처). */
+button:focus { outline: none; }
+html { -webkit-tap-highlight-color: rgba(0,0,0,0); }
 html, body {
   margin: 0; width: 100%; height: 100%; overflow: hidden;
   background: #686765; color: #f4f2ef;

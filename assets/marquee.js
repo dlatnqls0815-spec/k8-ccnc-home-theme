@@ -101,7 +101,9 @@
           if (records[i].type === 'childList' && records[i].addedNodes.length === 1 &&
               records[i].addedNodes[0].className === 'mq') continue;
         }
-        later();
+        // 글자가 다시 쓰이면 흐르기 틀이 벗겨진다. 0.25초 뒤가 아니라 그리기 전에(지금) 다시 감싸야
+        // 굵기가 바뀌어 보이거나 처음 위치로 튀는 깜빡임이 없다(차 Chrome 30 에서 보임).
+        scan();
         return;
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true,

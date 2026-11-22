@@ -181,6 +181,9 @@ public final class HomeActivity extends Activity {
         settings.setBlockNetworkLoads(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
+        // 차 시스템 글꼴 크기가 WebView 글자 배율로 들어가 본체 글자만 작아지고 하단바(배율 100 고정)와 어긋났다.
+        // 하단바·모서리 WebView 처럼 100 으로 고정한다(2026-11-22 실차 캡처 비교).
+        settings.setTextZoom(100);
         web.setBackgroundColor(0xff0c121b);
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
         // KitKat WebView: a 1 s press starts the native long-press (selection) and cancels the page's touch,
