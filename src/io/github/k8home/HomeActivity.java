@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.View;
@@ -47,6 +49,7 @@ public final class HomeActivity extends Activity {
     static final String EXTRA_OPEN_APPS = "io.github.k8home.extra.OPEN_APPS";
     static final String EXTRA_OPEN_MEDIA = "io.github.k8home.extra.OPEN_MEDIA";
     private static final String STOCK_PHONE = "com.hkmc.bluetooth";
+    private static final String TAG_SETTINGS = "K8Settings";
     private static final int STANDBY_PHOTO = 21;
     private static final int SPLIT_PHOTO = 22;
     private static final int DRIVER_ONE_PHOTO = 23;
@@ -504,7 +507,69 @@ public final class HomeActivity extends Activity {
         if (!pageReady) return;
         web.evaluateJavascript("window.K8Home.systemFlagsChanged("
             + ThemePrefs.autoStart(this) + "," + ThemePrefs.navBar(this) + "," + ThemePrefs.corners(this) + ","
-            + ThemePrefs.naviSkin(this) + ")", null);
+            + ThemePrefs.naviSkin(this) + "," + ThemePrefs.stockWrite(this) + ")", null);
+    }
+
+    /** Tells the page whether a stock setting write worked, so it can show the reason. */
+    private void reportSettingResult(String key, boolean ok, String message) {
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.stockSettingResult(" + javascriptString(key) + ","
+            + ok + "," + javascriptString(message) + ")", null);
+    }
+
+    /**
+     * Writes one stock (5W) setting value. The theme's test switch has to be on, and the head unit
+     * usually refuses the write because a normal app has no WRITE_SETTINGS. Both the reason and the
+     * key go to the log so the car test can tell "not allowed" from "wrong key".
+     */
+    private void writeStockSetting(String key, String value) {
+        if (!ThemePrefs.stockWrite(this)) {
+            reportSettingResult(key, false, "순정 설정 직접 변경 스위치가 꺼져 있습니다.");
+            return;
+        }
+        ContentResolver resolver = getContentResolver();
+        Integer number;
+        try {
+            number = Integer.valueOf(value);
+        } catch (NumberFormatException ignored) {
+            number = null;
+        }
+        SecurityException denied = null;
+        for (String space : new String[] {"system", "global", "secure"}) {
+            try {
+                if ("screen_brightness".equals(key)) {
+                    if (!"system".equals(space) || number == null) continue;
+                    Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, number);
+                } else if ("auto_time".equals(key)) {
+                    if (!"system".equals(space) || number == null) continue;
+                    Settings.System.putInt(resolver, Settings.System.AUTO_TIME, number);
+                } else if ("time_12_24".equals(key)) {
+                    if (!"system".equals(space)) continue;
+                    Settings.System.putString(resolver, Settings.System.TIME_12_24, value);
+                } else if (number != null) {
+                    if ("global".equals(space)) {
+                        Settings.Global.putInt(resolver, key, number);
+                    } else if ("secure".equals(space)) {
+                        Settings.Secure.putInt(resolver, key, number);
+                    } else {
+                        Settings.System.putInt(resolver, key, number);
+                    }
+                } else {
+                    continue;
+                }
+                Log.i(TAG_SETTINGS, "wrote " + space + " " + key + "=" + value);
+                reportSettingResult(key, true, space + " 저장에 성공했습니다.");
+                return;
+            } catch (SecurityException failure) {
+                denied = failure;
+            } catch (IllegalArgumentException failure) {
+                Log.w(TAG_SETTINGS, "bad value for " + key, failure);
+                reportSettingResult(key, false, "이 키는 이 방식으로 저장할 수 없습니다.");
+                return;
+            }
+        }
+        Log.w(TAG_SETTINGS, "denied writing " + key + " (WRITE_SETTINGS 없음)", denied);
+        reportSettingResult(key, false, "차량이 이 앱의 쓰기를 막았습니다(WRITE_SETTINGS 없음).");
     }
 
     private void choosePhoto(int request) {
@@ -634,6 +699,17 @@ public final class HomeActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
                     if (!isFinishing() && !isDestroyed()) handleAction(action);
+                }
+            });
+        }
+
+        /** Writes one stock (5W) setting value. Only used while the theme's test switch is on. */
+        @JavascriptInterface public void setStockSetting(final String key, final String value) {
+            if (key == null || value == null) return;
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed()) return;
+                    writeStockSetting(key, value);
                 }
             });
         }
@@ -808,6 +884,15 @@ public final class HomeActivity extends Activity {
             CornerService.sync(this);
             syncFlags();
             toast(on ? "순정 화면에도 하단 버튼을 띄웁니다." : "순정 화면의 하단 버튼을 껐습니다.");
+        } else if ("stock-settings-write-toggle".equals(action)) {
+            boolean on = !ThemePrefs.stockWrite(this);
+            ThemePrefs.setStockWrite(this, on);
+            syncFlags();
+            if (pageReady) {
+                web.evaluateJavascript("window.K8Home.stockWriteChanged(" + on + ")", null);
+            }
+            toast(on ? "순정 설정을 테마에서 직접 바꿉니다. 되돌리려면 순정 설정 화면을 쓰세요."
+                    : "순정 설정은 읽기만 합니다. 바꾸려면 순정 설정 화면을 여세요.");
         } else if ("home-settings".equals(action)) {
             if (!open(new Intent("android.settings.HOME_SETTINGS"))) {
                 toast("이 기기에서 홈 화면 설정을 열 수 없습니다.");
@@ -866,6 +951,13 @@ public final class HomeActivity extends Activity {
                 showSettingsFallback(label);
                 return true;
             case "settings-voice":
+                showSettingsFallback(label);
+                return true;
+            case "settings-buttons":
+                if (openPackage("com.android.buttonsettings")) return true;
+                showSettingsFallback(label);
+                return true;
+            case "settings-cluster":
                 showSettingsFallback(label);
                 return true;
             case "source-fm":

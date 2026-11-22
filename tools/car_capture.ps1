@@ -53,7 +53,7 @@ Save '24-activity-top.txt' 'dumpsys activity activities' | Out-Null
 Save '25-windows.txt' 'dumpsys window windows' | Out-Null
 Save '26-media.txt' 'dumpsys media_session; dumpsys audio' | Out-Null
 Save '27-theme-mem.txt' 'dumpsys meminfo io.github.k8home' | Out-Null
-Save '28-settings.txt' 'settings list system; echo ---; settings list global; echo ---; settings list secure' | Out-Null
+Save '28-settings.txt' 'content query --uri content://settings/system 2>/dev/null | head -120; echo ---; content query --uri content://settings/global 2>/dev/null | head -80; echo ---; content query --uri content://settings/secure 2>/dev/null | head -80' | Out-Null
 
 # 3) 테마 화면 캡처 (홈, 전체 메뉴, 미디어)
 $shots = @(
@@ -71,6 +71,42 @@ foreach ($s in $shots) {
 }
 & $adb -s $Serial shell 'rm /sdcard/k8cap.png' | Out-Null
 Say '화면 캡처 4장 (테마 3, 순정 내비 1)'
+
+# 3-2) 순정 5W 설정 화면 캡처 (읽기만. 화면을 열기만 하고 값은 바꾸지 않는다)
+$stockShots = @(
+  @('34-stock-settings-main', 'am start -W -n com.android.settings/.Settings'),
+  @('35-stock-settings-vehicle', 'am start -W -n com.android.vehiclesettings/.VehicleSetting'),
+  @('36-stock-settings-sound', 'am start -W -n com.android.soundsettings/.SoundSettings'),
+  @('37-stock-settings-display', 'am start -W -n com.android.displaysettings/.DisplaySettings'),
+  @('38-stock-settings-buttons', 'am start -W -n com.android.buttonsettings/.CustomButtonSetting'),
+  @('39-stock-settings-profile', 'am start -W -n com.hkmc.system.app.userprofile/.UserProfileMainActivity'),
+  @('40-stock-settings-general', 'am start -W -n com.android.generalsettings/.GeneralSettings')
+)
+foreach ($s in $stockShots) {
+  & $adb -s $Serial shell $s[1] | Out-Null
+  Start-Sleep -Seconds 4
+  & $adb -s $Serial shell 'screencap -p /sdcard/k8cap.png' | Out-Null
+  & $adb -s $Serial pull /sdcard/k8cap.png (Join-Path $out ($s[0] + '.png')) 2>&1 | Out-Null
+}
+& $adb -s $Serial shell 'rm /sdcard/k8cap.png' | Out-Null
+Say ("순정 설정 화면 캡처 " + $stockShots.Count + "장 (열리지 않은 항목은 캡처 없음)")
+
+# 3-3) 우리가 읽으려는 설정 키를 그대로 읽어 본다 (읽기만)
+$keys = @('btn_n_left','btn_n_right','btn_n_left_dr1','btn_n_right_dr1','button_settings_seek','tune_knob_function',
+  'phoneprojection_setting_enable_usb_cable','phoneprojection_setting_enable_wireless','auto_time','time_12_24',
+  'screen_brightness','screen_brightness_mode')
+$lines = @()
+foreach ($k in $keys) {
+  foreach ($ns in @('system','global','secure')) {
+    $v = (& $adb -s $Serial shell "settings get $ns $k" 2>&1 | Out-String) -replace "`r", ''
+    $v = $v.Trim()
+    if ($v -and $v -ne 'null' -and $v -notmatch 'usage|Exception|Error') {
+      $lines += ("{0,-8} {1,-40} = {2}" -f $ns, $k, $v)
+    }
+  }
+}
+$lines | Set-Content (Join-Path $out '29-stock-setting-values.txt') -Encoding UTF8
+Say ("읽힌 설정 값 " + @($lines).Count + "개 (29-stock-setting-values.txt)")
 
 # 4) 로그: 테마를 연 뒤 잠시 모은 다음 전체 로그 덤프
 if ($LiveSeconds -gt 0) { Say "로그 $LiveSeconds 초 대기 (이 동안 미디어·내비·전화를 써 보면 값이 더 들어옴)"; Start-Sleep -Seconds $LiveSeconds }

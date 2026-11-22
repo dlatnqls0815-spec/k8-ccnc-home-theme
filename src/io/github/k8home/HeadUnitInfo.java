@@ -66,8 +66,61 @@ final class HeadUnitInfo {
             int user = profile(context, info);
             readProjectionSetting(context, info, "projectionUsb", "phoneprojection_setting_enable_usb_cable", user);
             readProjectionSetting(context, info, "projectionWireless", "phoneprojection_setting_enable_wireless", user);
+            JSONObject stock = stockSettings(context, user);
+            java.util.Iterator<String> keys = stock.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                info.put(key, stock.get(key));
+            }
         } catch (Exception ignored) { }
         return info;
+    }
+
+    /**
+     * Stock (5W) setting values the theme can read without any permission. The namespaces of these
+     * keys are not documented, so system, global and secure are tried in turn.
+     */
+    static JSONObject stockSettings(Context context, int driver) {
+        JSONObject info = new JSONObject();
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            readStockInt(resolver, info, "buttonNavLeft", "btn_n_left", driver);
+            readStockInt(resolver, info, "buttonNavRight", "btn_n_right", driver);
+            readStockInt(resolver, info, "buttonSeek", "button_settings_seek", driver);
+            readStockInt(resolver, info, "tuneKnob", "tune_knob_function", driver);
+            readStockInt(resolver, info, "autoTime", Settings.System.AUTO_TIME, driver);
+            String clock = null;
+            try {
+                clock = Settings.System.getString(resolver, Settings.System.TIME_12_24);
+            } catch (Exception ignored) { }
+            if (clock != null && !clock.isEmpty()) {
+                info.put("timeFormat", "24".equals(clock) ? "24시간" : "12시간");
+            }
+        } catch (Exception ignored) { }
+        return info;
+    }
+
+    private static void readStockInt(ContentResolver resolver, JSONObject info, String field, String key,
+                                     int driver) {
+        String[] keys = driver > 0 ? new String[] {key + "_dr" + driver, key} : new String[] {key};
+        for (String name : keys) {
+            for (int space = 0; space < 3; space++) {
+                try {
+                    int value;
+                    if (space == 0) {
+                        value = Settings.System.getInt(resolver, name, -1);
+                    } else if (space == 1) {
+                        value = Settings.Global.getInt(resolver, name, -1);
+                    } else {
+                        value = Settings.Secure.getInt(resolver, name, -1);
+                    }
+                    if (value >= 0) {
+                        info.put(field, value);
+                        return;
+                    }
+                } catch (Exception ignored) { }
+            }
+        }
     }
 
     private static int profile(Context context, JSONObject info) {

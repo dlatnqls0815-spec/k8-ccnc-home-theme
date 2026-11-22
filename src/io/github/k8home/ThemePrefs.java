@@ -13,6 +13,7 @@ final class ThemePrefs {
     private static final String NAV_BAR = "stock-nav-bar-preview";
     private static final String CORNERS = "stock-corner-buttons";
     private static final String NAVI_SKIN = "stock-navi-ccnc-buttons";
+    private static final String STOCK_WRITE = "stock-settings-write";
 
     private ThemePrefs() { }
 
@@ -54,5 +55,17 @@ final class ThemePrefs {
 
     static void setNaviSkin(Context context, boolean value) {
         of(context).edit().putBoolean(NAVI_SKIN, value).apply();
+    }
+
+    /**
+     * Write stock (5W) setting values from the theme. Off by default: with it off the theme only
+     * shows the values and opens the stock screen instead of writing anything.
+     */
+    static boolean stockWrite(Context context) {
+        return of(context).getBoolean(STOCK_WRITE, false);
+    }
+
+    static void setStockWrite(Context context, boolean value) {
+        of(context).edit().putBoolean(STOCK_WRITE, value).commit();
     }
 }

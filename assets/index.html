@@ -1085,7 +1085,16 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .detail-settings-row .sl-seg-group { width: 48%; margin: 0; }
 .detail-settings-row output { margin: 0 8px; }
 .detail-settings-actions { margin-top: auto; padding: 12px 0 0; display: flex; }
-.detail-settings-actions button, .qc-edit-actions button { flex: 1; min-height: 44px; margin: 0 4px; background: #2a2d32; border-radius: 4px; }
+/* 0.5.0-test1 순정 설정 연동(시험) 안내문과 소제목 */
+.settings-write-note { margin: 6px 0 0; color: #8b94a0; font-size: 1.15vw; line-height: 1.35; }
+.settings-sub-title { margin: 18px 0 4px; font-size: 1.46vw; color: #eef3f9; font-weight: 600; }
+/* 0.5.0-test1 ccNC 모양 선택 목록(라디오)과 스위치 줄 */
+.detail-settings-main .sl-radio-left { margin-left: 2.5vw; }
+.detail-settings-main .sl-radio-left span + span { margin-left: 1.4vw; }
+.detail-settings-main .sl-switch-text { display: block; }
+.detail-settings-main .sl-switch-text small { display: block; margin-top: 4px; color: #8b94a0; font-size: .82em; }
+/* 왼쪽 메뉴의 긴 항목은 설명서처럼 줄을 바꾸어 보여 준다 */
+.detail-settings-layout.stock-settings-layout .sl-tab { white-space: normal; line-height: 3.2vw; }.detail-settings-actions button, .qc-edit-actions button { flex: 1; min-height: 44px; margin: 0 4px; background: #2a2d32; border-radius: 4px; }
 .detail-settings-actions button[disabled] { opacity: .4; }
 .detail-settings-art { width: 24.8%; flex-shrink: 0; padding: 16px 10px; text-align: center; align-self: center; }
 .detail-settings-art img { width: 55%; max-width: 168px; height: auto; border-radius: 10px; }
@@ -2311,6 +2320,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   var inVehicle = !!window.K8Host;
   var livePreview = inVehicle || /(?:^|[?&])vehicle=1(?:&|$)/.test(location.search);
   var settingsSection = '';
+var stockScreenGroup = '';
   var deviceSection = 'bluetooth';
   var displaySection = 'brightness';
   var pairedDevices = null;
@@ -3261,8 +3271,8 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     ];
     var openCard = function (id) {
       if (id === 'screenlayout') { navigateTo('screenlayout'); return; }
-      if (id === 'cluster') { state.slTab = 'cluster'; navigateTo('screenlayout'); return; }
-      if (id === 'buttons') { host('settings'); return; }
+      if (id === 'cluster') { settingsSection = 'cluster'; stockScreenGroup = ''; navigateTo('settings'); renderSettingsStage(); return; }
+      if (id === 'buttons') { settingsSection = 'buttons'; stockScreenGroup = ''; navigateTo('settings'); renderSettingsStage(); return; }
       if (id === 'connect') { host('connect'); return; }
       openSettingsSection(id);
     };
@@ -3295,6 +3305,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
       renderSoundControls(pane);
       return;
     }
+    if (renderStockSettingScreen(pane, settingsSection)) return;
     var heading = { vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드',
       devices:'기기 연결', profile:'사용자 프로필', voice:'음성인식', display:'디스플레이' }[settingsSection];
     var start = '<button type="button" class="theme-control" data-local="settings-back">‹ 설정</button><h2>' + heading + '</h2>';
@@ -3348,7 +3359,16 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
         '<output id="theme-brightness"></output></div></div><div class="detail-settings-actions">' +
         external('brightness-reset', '초기값') + '</div>' +
         '<div class="detail-settings-row" data-system-row="brightness" hidden><span>기기 밝기</span><output data-system-value="brightness"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="night" hidden><span>시스템 화면 모드</span><output data-system-value="night"></output></div>' :
+        '<div class="detail-settings-row" data-system-row="night" hidden><span>시스템 화면 모드</span><output data-system-value="night"></output></div>' +
+        '<h3 class="settings-sub-title">순정 설정 연동(시험)</h3>' +
+        '<div class="detail-settings-row"><span>순정 시간 자동 설정</span><output data-system-value="autoTime"></output></div>' +
+        '<div class="detail-settings-row"><span>순정 시간 표기 방식</span><output data-system-value="timeFormat"></output></div>' +
+        '<div class="detail-settings-actions">' +
+        '<button type="button" class="theme-control" data-stock-write="auto_time|1">순정 시간 자동 켜기</button>' +
+        '<button type="button" class="theme-control" data-stock-write="auto_time|0">순정 시간 자동 끄기</button>' +
+        '<button type="button" class="theme-control" data-stock-write="time_12_24|24">순정 24시간</button>' +
+        '<button type="button" class="theme-control" data-stock-write="time_12_24|12">순정 12시간</button>' +
+        '</div>' + stockWriteSwitch() :
         '<p class="sl-desc">지정한 시간 동안 테마 화면에 따뜻한 색을 적용합니다.</p>' +
         '<button type="button" class="detail-settings-row" data-local="toggle-warmth" aria-pressed="' + state.warmth.enabled +
         '"><span>블루라이트 차단</span><output>' + (state.warmth.enabled ? '켜짐' : '꺼짐') + '</output></button>' +
@@ -3434,6 +3454,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   }
 
   function updateSystemLabels() {
+    var stockValue = function (value) {
+      return typeof value === 'number' ? value + ' (값 번호)' : '';
+    };
     var readouts = {
       language:systemSettings.language, keyboard:systemSettings.keyboard,
       navigationAppVersion:systemSettings.navigationAppVersion,
@@ -3443,7 +3466,11 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
         systemSettings.brightnessMode].filter(Boolean).join(' · '),
       night:systemSettings.night, vehicleCode:vehicleSettings.vehicleCode, driveModeOption:vehicleSettings.driveModeOption,
       clusterTheme:vehicleSettings.clusterTheme, profileName:vehicleSettings.profileName,
-      projectionUsb:vehicleSettings.projectionUsb, projectionWireless:vehicleSettings.projectionWireless
+      projectionUsb:vehicleSettings.projectionUsb, projectionWireless:vehicleSettings.projectionWireless,
+      buttonNavLeft:stockValue(vehicleSettings.buttonNavLeft), buttonNavRight:stockValue(vehicleSettings.buttonNavRight),
+      buttonSeek:stockValue(vehicleSettings.buttonSeek), tuneKnob:stockValue(vehicleSettings.tuneKnob),
+      autoTime:vehicleSettings.autoTime === 1 ? '켜짐' : vehicleSettings.autoTime === 0 ? '꺼짐' : '',
+      timeFormat:vehicleSettings.timeFormat
     };
     var climateText = climateLabels(climateInfo);
     Object.keys(climateText).forEach(function (key) { readouts[key] = climateText[key]; });
@@ -3499,6 +3526,125 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     };
     labels.climateNote = Object.keys(labels).some(function (key) { return labels[key]; }) ? '1' : '';
     return labels;
+  }
+
+  /**
+   * ccNC 모양 설정 화면 데이터. 값 자리(두 번째 칸)에 키를 넣으면 읽어 온 값을 보여 주고,
+   * 비워 두면 "순정 연동 대기" 로 둔다. 분류와 항목 이름은 기아 ccNC 설명서 기준이다.
+   * 근거와 상태는 docs/설정-연동표.md 를 본다.
+   */
+  var STOCK_SETTING_SCREENS = {
+    vehicle: {
+      title: '차량', host: 'settings-car', hostLabel: '순정 차량 설정 열기',
+      groups: [
+        { name: '운전자 보조', rows: [
+          ['경고 음량', ''], ['핸들 진동 경고', ''], ['전방 주시 경고음', ''],
+          ['부주의 운전 경고음', ''], ['차로 안전 경고음', ''], ['후측방 안전 경고음', ''],
+          ['후방 교차 안전 경고음', ''], ['주행 안전 우선', ''], ['주차 안전 우선', ''] ] },
+        { name: '주행 편의', rows: [
+          ['스마트 크루즈 컨트롤', ''], ['고속도로 주행 보조', ''], ['고속도로 차로변경 보조', ''],
+          ['고속도로 주행속도 자동 조절', ''] ] },
+        { name: '속도 제한', rows: [
+          ['속도 제한 보조', ''], ['속도 제한 경고', ''], ['속도 제한 정보', ''], ['속도 오프셋 설정', ''] ] },
+        { name: '공조', rows: [
+          ['외부 공기 차단', ''], ['자동 환기', ''], ['창문 습기 방지', ''] ] },
+        { name: '편의', rows: [
+          ['드라이브 모드', 'driveModeOption'], ['클러스터 테마', 'clusterTheme'] ] }
+      ]
+    },
+    voice: {
+      title: '음성인식', host: 'settings-voice', hostLabel: '순정 음성인식 설정 열기',
+      groups: [
+        { name: '음성인식', rows: [
+          ['안내 방식', ''], ['카카오 프렌즈', ''], ['후석 음성인식', ''] ] }
+      ]
+    },
+    buttons: {
+      title: '버튼', host: 'settings-buttons', hostLabel: '순정 버튼 설정 열기',
+      groups: [
+        { name: '사용자 버튼 ☆ (내비게이션)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (내비게이션)',
+          choices: ['경로 취소', '내자 위치 공유', '날씨', '라디오'] },
+        { name: '사용자 버튼 ★ (핸들)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (핸들)',
+          choices: ['경로 취소', '내자 위치 공유', '날씨', '라디오'] },
+        { name: 'MODE 버튼', desc: '이 버튼으로 실행할 기능을 선택하십시오. (모드 버튼)',
+          choices: ['라디오', '미디어', '네비게이션'] },
+        { name: '[∧]/[∨] 버튼 (핸들)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (상·하 버튼)',
+          rows: [['[∧]/[∨] 버튼', 'buttonSeek']] },
+        { name: 'VOL/TUNE 노브', desc: '이 노브의 기능을 선택하십시오. (볼륨·튜닝 노브)',
+          rows: [['VOL/TUNE 노브', 'tuneKnob']] }
+      ]
+    },
+    cluster: {
+      title: '클러스터/HUD', host: 'settings-cluster', hostLabel: '순정 클러스터 설정 열기',
+      groups: [
+        { name: '클러스터', rows: [
+          ['클러스터 테마 선택', 'clusterTheme'], ['표시 정보', ''] ],
+          switches: [['웰컴 사운드', '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.']] },
+        { name: 'HUD', rows: [
+          ['HUD 사용', ''], ['디스플레이 모드', ''], ['표시 정보', ''] ] }
+      ]
+    }
+  };
+
+  function stockWriteSwitch() {
+    return '<button type="button" class="detail-settings-row switch-row" data-host="stock-settings-write-toggle" data-on="' +
+      (flags.stockWrite ? 'true' : 'false') + '"><span>순정 설정 직접 변경(시험)</span>' +
+      '<output>' + (flags.stockWrite ? '켜짐' : '꺼짐') + '</output></button>' +
+      '<p class="settings-write-note" id="stock-write-note">' + (flags.stockWrite
+        ? '켜짐: 순정 설정 값을 이 화면에서 바로 씁니다. 시험 끝나면 끄세요.'
+        : '꺼짐: 값은 읽기만 합니다. 바꾸려면 순정 설정 화면을 여세요.') + '</p>';
+  }
+
+  function updateStockWriteUi(on) {
+    flags.stockWrite = on === true;
+    var row = document.querySelector('[data-host="stock-settings-write-toggle"]');
+    if (row) {
+      row.setAttribute('data-on', flags.stockWrite ? 'true' : 'false');
+      var out = row.querySelector('output');
+      if (out) out.textContent = flags.stockWrite ? '켜짐' : '꺼짐';
+    }
+    var note = document.getElementById('stock-write-note');
+    if (note) {
+      note.textContent = flags.stockWrite
+        ? '켜짐: 순정 설정 값을 이 화면에서 바로 씁니다. 시험 끝나면 끄세요.'
+        : '꺼짐: 값은 읽기만 합니다. 바꾸려면 순정 설정 화면을 여세요.';
+    }
+  }
+
+  function renderStockSettingScreen(pane, section) {
+    var screen = STOCK_SETTING_SCREENS[section];
+    if (!screen) return false;
+    var groups = screen.groups;
+    var index = 0;
+    groups.forEach(function (group, i) { if (group.name === stockScreenGroup) index = i; });
+    var group = groups[index];
+    var nav = '<button type="button" class="sl-tab" data-local="settings-back">‹ 설정</button>';
+    groups.forEach(function (item, i) {
+      nav += '<button type="button" class="sl-tab" data-stock-group="' + escapeText(item.name) + '" aria-selected="' +
+        (i === index) + '">' + escapeText(item.name) + '</button>';
+    });
+    var rows = (group.rows || []).map(function (row) {
+      var value = row[1] ? '<output data-system-value="' + row[1] + '"></output>' : '<output>순정 연동 대기</output>';
+      return '<div class="detail-settings-row"><span>' + escapeText(row[0]) + '</span>' + value + '</div>';
+    }).join('');
+    var choices = (group.choices || []).map(function (label) {
+      return '<div class="detail-settings-row"><span class="sl-radio-left"><span class="radio-circle"></span>' +
+        '<span>' + escapeText(label) + '</span></span></div>';
+    }).join('');
+    var switches = (group.switches || []).map(function (item) {
+      return '<div class="detail-settings-row"><span class="sl-switch-text"><span>' + escapeText(item[0]) + '</span>' +
+        '<small>' + escapeText(item[1]) + '</small></span><output>순정 연동 대기</output></div>';
+    }).join('');
+    var main = '<h2>' + escapeText(group.name) + '</h2>' +
+      (group.desc ? '<p class="sl-desc">' + escapeText(group.desc) + '</p>' : '') +
+      rows + choices + switches +
+      '<div class="detail-settings-actions">' +
+      '<button type="button" class="theme-control" data-host="' + screen.host + '">' + escapeText(screen.hostLabel) + '</button>' +
+      '</div>' + stockWriteSwitch();
+    detailSettings(pane, screen.title + ' 메뉴', nav, main, '');
+    var layout = pane.querySelector('.detail-settings-layout');
+    if (layout) layout.className += ' stock-settings-layout';
+    return true;
   }
 
   function detailSettings(pane, label, navigation, main, art) {
@@ -4464,8 +4610,18 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
       if (state.page === page) return;
       navigateTo(page);
     },
-    systemFlagsChanged: function (autoStart, navBar, corners, naviSkin) {
-      flags = { autoStart:autoStart === true, navBar:navBar === true, corners:corners === true, naviSkin:naviSkin === true };
+    stockSettingResult: function (key, ok, message) {
+      var note = document.getElementById('stock-write-note');
+      if (!note) return;
+      note.textContent = (ok ? '저장됨: ' : '저장 안 됨: ') + (message || '') + (key ? ' (' + key + ')' : '');
+    },
+    stockWriteChanged: function (on) {
+      updateStockWriteUi(on === true);
+    },
+    systemFlagsChanged: function (autoStart, navBar, corners, naviSkin, stockWrite) {
+      flags = { autoStart:autoStart === true, navBar:navBar === true, corners:corners === true, naviSkin:naviSkin === true,
+        stockWrite:stockWrite === true };
+      updateStockWriteUi(flags.stockWrite);
       var skinOut = document.getElementById('theme-navi-skin');
       if (skinOut) skinOut.textContent = flags.naviSkin ? '켜짐' : '꺼짐';
       var cornerOut = document.getElementById('theme-corners');
@@ -5237,7 +5393,14 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     if (button === event.currentTarget) return;
     var action = button.getAttribute('data-host');
     if (action) host(action);
-    else if (button.hasAttribute('data-clock')) {
+    else if (button.hasAttribute('data-stock-group')) {
+      stockScreenGroup = button.getAttribute('data-stock-group');
+      renderSettingsControls();
+    } else if (button.hasAttribute('data-stock-write')) {
+      var write = button.getAttribute('data-stock-write').split('|');
+      if (!flags.stockWrite) { host('settings-general'); return; }
+      if (window.K8Host) window.K8Host.setStockSetting(write[0], write[1]);
+    } else if (button.hasAttribute('data-clock')) {
       var selectedClock = button.getAttribute('data-clock');
       state.clock24 = selectedClock === 'system' ? null : selectedClock === '24';
       saveDisplay();
