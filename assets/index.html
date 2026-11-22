@@ -1798,6 +1798,38 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 /* 0.5.0-test9: 일반·디스플레이·기기 연결·음성인식 화면도 같은 틀로(설명 줄과 값). */
 .detail-settings-layout.stock-settings-layout .stock-switch-on { color: #1f9c81; }
 .detail-settings-layout.stock-settings-layout .stock-value-wait { color: #8c96a3; }
+/* 0.5.0-test11 차량 화면: 설명서 규격.
+   줄 높이 6.4vw(=124/1920)는 그대로 두고, 설명 글은 줄 안쪽(아래)에 넣는다.
+   토글은 ccNC 만(좌측), 슬라이더는 우측. */
+.detail-settings-layout.stock-settings-layout .stock-row-text { display: block; flex: 1 1 auto; min-width: 0; }
+.detail-settings-layout.stock-settings-layout .stock-row-text .stock-row-label { display: block; }
+.detail-settings-layout.stock-settings-layout .stock-row-note {
+  display: block; margin-top: .4vw; font-size: 1.16vw; font-weight: 400; color: #8c96a3; line-height: 1.35;
+  white-space: normal; max-width: 38vw;
+}
+/* 0.5.0-test11: 설명 글 있는 줄이 본문 높이 때문에 눌리지 않게(줄이 겹치던 것). */
+.detail-settings-layout.stock-settings-layout .detail-settings-row { flex: none; }
+.detail-settings-layout.stock-settings-layout .stock-switch-row > output { align-self: flex-start; margin-top: .3vw; }
+.detail-settings-layout.stock-settings-layout .stock-toggle { align-self: flex-start; margin-top: .45vw; }
+.detail-settings-layout.stock-settings-layout .stock-row-note-row { align-items: flex-start; }
+.detail-settings-layout.stock-settings-layout .stock-toggle {
+  position: relative; display: inline-block; width: 6.15vw; height: 1.95vw; border-radius: .98vw;
+  background: #3c424a; flex: none; margin-right: 1.2vw; top: -.3vw;
+}
+.detail-settings-layout.stock-settings-layout .stock-toggle-on { background: #1f9c81; }
+.detail-settings-layout.stock-settings-layout .stock-toggle-knob {
+  position: absolute; top: .08vw; left: .08vw; width: 1.8vw; height: 1.8vw; border-radius: 50%; background: #fff;
+}
+.detail-settings-layout.stock-settings-layout .stock-toggle-on .stock-toggle-knob { left: 4.25vw; }
+.detail-settings-layout.stock-settings-layout .stock-switch-row { justify-content: flex-start; }
+.detail-settings-layout.stock-settings-layout .stock-slider-row { justify-content: flex-start; }
+.detail-settings-layout.stock-settings-layout .stock-slider {
+  position: relative; flex: none; width: 16vw; height: .5vw; margin: 0 1.2vw; background: #3c424a; border-radius: .25vw;
+}
+.detail-settings-layout.stock-settings-layout .stock-slider-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #1f9c81; border-radius: .25vw; }
+.detail-settings-layout.stock-settings-layout .stock-slider-knob {
+  position: absolute; top: -.65vw; width: 1.8vw; height: 1.8vw; border-radius: 50%; background: #fff;
+}
 </style>
 </head>
 <body>
@@ -3835,103 +3867,155 @@ var stockSub = '';
    */
   var STOCK_SETTING_SUBS = {
     'car-convenience': { title: '주행 편의', desc: '주행 편의 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['주행 편의', ''], ['속도 제한', ''], ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''],
-        ['운전자 주의 경고', ''], ['고속도로 주행 보조', ''], ['고속도로 차로변경 보조', ''],
-        ['고속도로 주행속도 자동 조절', '']] },
+      toggles: [
+        { label: '고속도로 주행 보조', note: '고속도로에서 설정속도와 차간거리에 맞춰 차로를 유지하며 주행하도록 도와줍니다.' },
+        { label: '고속도로 차로변경 보조', note: '고속도로 주행 보조 작동 중 방향지시등 스위치를 움직이면 자동으로 차로를 변경합니다.' },
+        { label: '고속도로 주행속도 자동 조절', note: '고속도로에서 내비게이션 정보에 맞춰 자동으로 주행속도를 조절합니다.' } ] },
     'car-frontsafe': { title: '전방 안전', desc: '전방 안전 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['전방 안전', ''], ['충돌방지 보조', ''], ['차로 안전', ''], ['이탈방지 보조', ''], ['후측방 안전', ''],
-        ['주차 안전', ''], ['후방 충돌방지 보조', ''], ['전방 교차 안전', '']] },
+      choices: [
+        { label: '전방 교차 안전', note: '전방 교차 충돌 위험 시 경고와 차량 제어로 충돌하지 않도록 도와줍니다.' },
+        { label: '충돌방지 보조', note: '전방 충돌 위험 시 경고와 차량 제어로 충돌하지 않도록 도와줍니다.' },
+        { label: '충돌 경고', note: '전방 충돌 위험 시 경고합니다.' },
+        { label: '끄기', note: '전방 안전 기능을 끕니다.' } ] },
     'car-scc': { title: '스마트 크루즈 컨트롤', desc: '스마트 크루즈 컨트롤 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['스마트 크루즈 컨트롤', ''], ['운전 스타일 연동', ''], ['주행 편의', ''], ['속도 제한', ''],
-        ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''], ['드라이브 모드 연동', ''],
-        ['운전 스타일 설정', '']] },
+      choices: [
+        { label: '드라이브 모드 연동', note: '드라이브 모드에 맞춰 스마트 크루즈 컨트롤 시스템의 가속 강도와 반응 속도를 조절합니다.' },
+        { label: '운전 스타일 연동', note: '운전 스타일에 맞춰 자동으로 스마트 크루즈 컨트롤 시스템의 차간거리, 가속 강도와 반응 속도를 조절합니다.' } ],
+      rows: [['운전 스타일 설정', '']] },
     'car-speedlimit': { title: '속도 제한', desc: '속도 제한 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['속도 제한', ''], ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''],
-        ['운전자 주의 경고', ''], ['속도 제한 경고', ''], ['속도 오프셋 설정', '']] },
+      choices: [
+        { label: '속도 제한 보조', note: '설정속도 변경 안내에 따라 +/- 스위치를 조작하면, 도로의 제한속도에 맞춰 주행속도를 조절합니다.' },
+        { label: '속도 제한 경고', note: '도로의 제한속도보다 빠르게 주행 시 경고합니다.' },
+        { label: '끄기', note: '도로의 제한속도에 맞춰 작동하는 주행속도 조절 기능을 끕니다.' } ],
+      rows: [['속도 오프셋 설정', '']] },
     'car-lanesafe': { title: '차로 안전', desc: '차로 안전 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['차로 안전', ''], ['이탈방지 보조', ''], ['이탈 경고', '']] },
+      choices: [
+        { label: '이탈방지 보조', note: '차로 이탈 위험 시 자동으로 핸들을 조작하여 차로를 이탈하지 않도록 도와줍니다.' },
+        { label: '이탈 경고', note: '차로 이탈 시 경고합니다.' },
+        { label: '끄기', note: '차로 안전 기능을 끕니다.' } ] },
     'car-driverwarn': { title: '운전자 주의 경고', desc: '운전자 주의 경고 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['운전자 주의 경고', ''], ['전방 차량 출발 알림', ''], ['부주의 운전 경고', '']] },
+      toggles: [
+        { label: '전방 차량 출발 알림', note: '전방 차량 출발 시 알려줍니다.' },
+        { label: '부주의 운전 경고', note: '부주의하게 운전하면 경고하고, 필요 시 휴식을 권유합니다.' } ] },
     'car-parksafe': { title: '주차 안전', desc: '주차 안전 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['주차 안전', ''], ['서라운드 뷰 모니터 자동 켜짐', ''], ['주차 거리 경고 자동 켜짐', ''],
-        ['후방 충돌방지 보조', ''], ['후방 충차 경고', ''], ['후방 교차 안전', ''], ['카메라 설정', '']] },
+      rows: [{ label: '카메라 설정', nav: true, host: 'settings-display' }],
+      toggles: [
+        { label: '서라운드 뷰 모니터 자동 켜짐', note: '주차 거리 경고 시 자동으로 서라운드 뷰 모니터가 켜집니다.' },
+        { label: '주차 거리 경고 자동 켜짐', note: '저속 주행 시 자동으로 주차 거리 경고 기능이 켜집니다.' } ],
+      choices: [
+        { label: '후방 교차 안전', note: '후진 중 후방 교차 충돌 위험 시 경고와 차량 제어로 충돌하지 않도록 도와줍니다.' },
+        { label: '후방 충돌방지 보조', note: '후진 중 충돌 위험 시 경고와 차량 제어로 충돌하지 않도록 도와줍니다.' },
+        { label: '후방 충차 경고', note: '후진 중 충돌 위험 시 경고합니다.' },
+        { label: '끄기', note: '주차 안전 기능을 끕니다.' } ] },
     'car-rearsafe': { title: '후측방 안전', desc: '후측방 안전 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['후측방 안전', ''], ['후측방 모니터', ''], ['안전 하차 보조', ''], ['충돌방지 보조', ''],
-        ['충돌 경고', '']] },
-    'car-warning': { title: '경고 방식', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', parent: '운전자 보조',
-      rows: [['경고 음량', ''], ['핸들 진동 경고', ''], ['주행 안전 우선', ''], ['주차 안전 우선', 'soundReverseDim']] },
-    'car-dm-custom': { title: 'CUSTOM', desc: '시스템별 모드 선택을 통해 최적의 모드를 설정합니다.',
+      choices: [
+        { label: '후측방 모니터', note: '방향지시등 스위치를 작동하면 후측방 영상을 클러스터에 표시합니다.' },
+        { label: '안전 하차 보조', note: '하차 중 후측방 차량과 충돌 위험 시 경고와 도어 제어로 안전하게 하차하도록 도와줍니다.' },
+        { label: '충돌방지 보조', note: '후측방 차량과 충돌 위험 시 경고와 차량 제어로 충돌하지 않도록 도와줍니다.' },
+        { label: '충돌 경고', note: '후측방 차량과 충돌 위험 시 경고합니다.' },
+        { label: '끄기', note: '후측방 안전 기능을 끕니다.' } ] },
+    'car-dm-custom': { title: 'CUSTOM · MY DRIVE MODE', desc: '시스템별 모드 선택을 통해 최적의 모드를 설정합니다.',
       parent: '드라이브 모드',
-      rows: [['드라이브 모드 변경 알림', 'driveModeNotification'], ['MY DRIVE MODE', ''], ['SMART', '']] },
-    'car-coasting-sound': { title: '관성 주행 안내', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 시점을 알려줍니다.',
+      choices: [
+        { label: 'MY DRIVE MODE', note: '운전자가 개별 시스템의 모드를 조합하여 구성한 드라이브 모드' },
+        { label: 'SMART', note: '운전 스타일에 맞춰 자동으로 최적화된 모드' } ] },
+    'car-coasting-sound': { title: '관성 주행 안내 · 사운드 켬', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 시점을 알려줍니다.',
       parent: '환경차',
-      rows: [['관성 주행 안내 소리(사운드 켬/끔)', '']] },
-    'car-coasting-timing': { title: '관성 주행 안내 시점', desc: '가속 페달에서 발을 떼는 제안 시점을 선택합니다.',
+      toggles: [{ label: '관성 주행 안내' }],
+      choices: [{ label: '사운드 켬' }, { label: '사운드 끔' }] },
+    'car-coasting-timing': { title: '관성 주행 안내 시점', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 제안 시점을 선택합니다.',
       parent: '환경차',
-      rows: [['관성 주행 안내 시점', ''], ['그린존 드라이브 모드', '']] },
+      choices: [
+        { label: '빠르게' }, { label: '보통' }, { label: '느리게' } ] },
+    'hud-use': { title: 'HUD 사용', desc: 'HUD를 앞유리에 표시합니다.', parent: 'HUD',
+      toggles: [{ label: 'HUD 사용', note: 'HUD를 앞유리에 표시합니다.' }] },
     'hud-video': { title: 'HUD 영상 조정', desc: 'HUD 영상의 높이·기울기와 밝기를 조정합니다.', parent: 'HUD',
-      rows: [['높이 / 기울기', ''], ['밝기', '']] },
+      sliders: [
+        { label: '높이 / 기울기', valueKey: 'hudHeight', min: -10, max: 10 },
+        { label: '밝기', valueKey: 'hudBrightness', min: 0, max: 100 } ] },
     'hud-info': { title: 'HUD 표시 정보', desc: 'HUD에 표시할 정보를 선택합니다.', parent: 'HUD',
-      rows: [['주행 경로 안내', ''], ['주행 편의 정보', ''], ['후측방 안전 정보', ''], ['라디오/미디어 정보', '']] },
-    'cluster-bright': { title: '클러스터 화면 밝기', desc: '클러스터 화면 밝기를 조절합니다.', parent: '클러스터',
-      rows: [['화면 밝기', ''], ['자동 밝기', ''], ['초기화', '']] },
+      toggles: [
+        { label: '주행 경로 안내', note: '주행 경로 안내를 HUD에 표시합니다.' },
+        { label: '주행 편의 정보', note: '경고 및 차량 제어 등 주행 편의 정보를 HUD에 표시합니다.' },
+        { label: '후측방 안전 정보', note: '후측방 차량에 대한 정보를 HUD에 표시합니다.' },
+        { label: '라디오/미디어 정보', note: '라디오와 미디어 정보를 HUD에 표시합니다.' } ] },
+    'cluster-bright': { title: '클러스터 화면 밝기', desc: '화면 밝기가 자동으로 조절되도록 설정하거나, 일정한 밝기로 유지되도록 수동 설정할 수 있습니다.',
+      parent: '클러스터',
+      toggles: [{ label: '자동 밝기', note: '주변 밝기에 따라 화면 밝기가 자동으로 조절됩니다.' }],
+      rows: [['초기화', '']] },
     'cluster-theme': { title: '클러스터 테마 선택', desc: '선택된 테마로 표시합니다.', parent: '클러스터',
-      rows: [['클러스터 테마', 'clusterTheme'], ['Classic C', ''], ['Classic A', ''], ['Classic B', ''],
-        ['Dynamic 테마', '']] },
+      valueKey: 'clusterTheme',
+      rows: [['Dynamic 테마', ''], ['Classic 테마', '']],
+      choices: [
+        { label: '시간 및 날씨 연동', note: '시간, 주위 날씨에 따라 자동으로 변경됩니다.' },
+        { label: '드라이브 모드 연동', note: '드라이브 모드에 따라 자동으로 변경됩니다.' },
+        { label: 'Classic A' }, { label: 'Classic B' }, { label: 'Classic C' } ] },
     'cluster-eco': { title: '평균연비 표시', desc: '클러스터에 표시되는 평균연비를 선택합니다.', parent: '클러스터',
-      rows: [['평균연비 표시', ''], ['재시동 후 연비', ''], ['주유 후 연비', ''], ['누적 연비', ''],
-        ['엔진 회전 속도계', '']] },
+      choices: [{ label: '재시동 후 연비' }, { label: '주유 후 연비' }, { label: '누적 연비' }] },
     'cluster-info': { title: '클러스터 표시 정보', desc: '클러스터에 표시할 정보를 선택합니다.', parent: '클러스터',
-      rows: [['표시 정보', ''], ['와이퍼/라이트 모드 표시', ''], ['후측방 모니터', ''], ['도로 결빙 알림', '']] },
-    'cluster-voice': { title: '클러스터 음성 안내 음량', desc: '안내음의 음량을 조절할 수 있습니다.', parent: '클러스터',
-      rows: [['클러스터 음성 안내 음량', '']] },
-    'hvac-intake': { title: '외부 공기 차단', desc: '외부공기의 유입을 차단하기 위한 기능을 설정합니다.', parent: '공조',
-      rows: [['외부 공기 차단', ''], ['와셔액 연동', ''], ['터널 구간', ''], ['기타 차단 구간', '']] },
+      toggles: [
+        { label: '와이퍼/라이트 모드 표시', note: '와이퍼 및 라이트 레버를 조작할 때 작동 모드를 표시합니다.' },
+        { label: '후측방 모니터', note: '방향지시등 스위치를 작동하면 후측방 영상을 클러스터에 표시합니다.' },
+        { label: '도로 결빙 알림', note: '외기온이 약 4℃(39℉) 이하일 시 도로 결빙 가능성을 알려줍니다.' } ] },
+    'cluster-voice': { title: '클러스터 음성 안내 음량', desc: '클러스터 음성 안내 음량을 조절합니다.', parent: '클러스터',
+      sliders: [{ label: '클러스터 음성 안내 음량', valueKey: 'clusterVoiceVolume', min: 0, max: 5 }] },
+    'hvac-intake': { title: '외부 공기 차단', desc: '외부공기의 유입을 차단하기 위한 기능을 설정합니다. 창문이 닫힐 때 신체의 일부가 끼이지 않도록 주의하십시오.',
+      parent: '공조',
+      toggles: [
+        { label: '와셔액 연동', note: '와셔액을 분사할 경우, 내부 공기 순환 모드로 전환해 냄새 유입을 줄입니다.' },
+        { label: '터널 구간', note: '터널 진입 시, 창문을 자동으로 닫고 외부 공기를 차단합니다.', valueKey: 'climateTunnel' },
+        { label: '기타 차단 구간', note: '공기 유입 차단 필요 시, 창문을 자동으로 닫고 외부 공기를 차단합니다.', valueKey: 'climateOther' } ] },
     'hvac-vent': { title: '자동 환기', desc: '차량의 환기를 위한 기능을 설정합니다.', parent: '공조',
-      rows: [['자동 환기', ''], ['습기 발생 저감', '']] },
+      toggles: [{ label: '습기 발생 저감', note: '긴 시간 내부 공기 순환 모드를 유지한 경우, 차량 내 습도가 높아지지 않게 외부 공기 유입 모드로 전환합니다.', valueKey: 'climateRecMode' }] },
     'hvac-defog': { title: '창문 습기 방지', desc: '유리창의 습기 발생을 줄이거나 제거하는 기능을 설정합니다.', parent: '공조',
-      rows: [['창문 습기 방지', ''], ['앞유리 습기 신속 제거', ''], ['앞유리 습기 발생 방지', '']] },
+      toggles: [
+        { label: '앞유리 습기 신속 제거', note: '앞유리 습기 제거 버튼을 선택하면, 외부 공기 유입 모드 전환과 에어컨 작동을 통해 유리창 습기를 신속하게 제거합니다.' },
+        { label: '앞유리 습기 발생 방지', note: '앞유리 김서림을 방지하기 위하여 공조 장치를 자동으로 작동합니다.' } ] },
     'hvac-comfort': { title: '열선/통풍 편의', desc: '열선과 통풍의 편의 기능을 설정합니다.', parent: '공조',
-      rows: [['열선/통풍 편의', ''], ['공조 연동 자동 제어', '']] },
-    'seat-posture': { title: '스마트 자세 제어', desc: '신체 정보를 입력하면 시트 위치를 추천 자세에 맞춰 조절합니다.', parent: '시트',
-      rows: [['스마트 자세 제어', ''], ['승하차 편의', ''], ['스마트 서포트', ''], ['에르고 모션 시트', ''],
-        ['신체 정보 입력', '']] },
+      toggles: [{ label: '공조 연동 자동 제어' }] },
+    'seat-posture': { title: '스마트 자세 제어', desc: '운전자의 신체 정보를 입력하면 운전자가 앉아있는 시트의 상태를 고려해 자세를 분석하고, 추천 자세에 맞춰 시트의 위치를 조절합니다.',
+      parent: '시트',
+      toggles: [
+        { label: '승하차 편의' }, { label: '스마트 서포트' }, { label: '에르고 모션 시트' } ],
+      rows: [['신체 정보 입력', '']] },
     'seat-comfort': { title: '열선/통풍 편의', desc: '열선과 통풍의 편의 기능을 설정합니다.', parent: '시트',
-      rows: [['열선/통풍 편의', ''], ['승하차 편의', ''], ['스마트 서포트', ''], ['에르고 모션 시트', ''],
-        ['공조 연동 자동 제어', '']] },
+      toggles: [
+        { label: '승하차 편의' }, { label: '스마트 서포트' }, { label: '에르고 모션 시트' },
+        { label: '공조 연동 자동 제어' } ] },
     'light-mood': { title: '실내 무드 조명', desc: '실내 무드 조명을 설정합니다.', parent: '라이트',
-      rows: [['실내 무드 조명', ''], ['밝기', ''], ['색상', ''], ['사용자 색상', ''], ['드라이브 모드 연동', ''],
-        ['어두운 곳 주행 시 밝기 낮춤', ''], ['과속 안내 연동', '']] },
-    'light-blink': { title: '원터치 방향지시등', desc: '방향지시등 레버를 살짝 움직일 때 깜빡이는 횟수를 선택합니다.', parent: '라이트',
-      rows: [['원터치 방향지시등', ''], ['7회 깜빡임', ''], ['5회 깜빡임', ''], ['3회 깜빡임', ''], ['끄기', '']] },
-    'light-welcome': { title: '웰컴 미러/라이트', desc: '미러가 펴지는 시점과 램프가 켜지는 시점을 선택합니다.', parent: '라이트',
-      rows: [['웰컴 미러/라이트', ''], ['도어 잠금 해제 시', ''], ['운전자 접근 시', '']] },
+      rows: [{ label: '밝기', nav: true, host: 'settings-display' },
+        { label: '색상', nav: true, host: 'settings-display' }],
+      toggles: [
+        { label: '드라이브 모드 연동', note: '무드 조명 색상이 드라이브 모드에 따라 바뀝니다.' },
+        { label: '어두운 곳 주행 시 밝기 낮춤', note: '주행 중 어두운 곳에 진입하면 실내 무드 조명 밝기를 자동으로 낮춥니다.', valueKey: 'ambientLight' },
+        { label: '과속 안내 연동', note: '내비게이션에서 과속 안내가 제공될 경우 실내 무드 조명이 깜박이며 이를 알려줍니다.' } ] },
+    'light-blink': { title: '원터치 방향지시등', desc: '방향지시등 레버를 살짝 움직일 때 방향지시등이 깜빡이는 횟수를 선택합니다.',
+      parent: '라이트',
+      choices: [{ label: '7회 깜빡임' }, { label: '5회 깜빡임' }, { label: '3회 깜빡임' }, { label: '끄기' }] },
+    'light-welcome': { title: '웰컴 미러/라이트', desc: '사이드 미러가 펴지는 시점과 퍼들 램프 혹은 도어 핸들 램프가 켜지는 시점을 선택합니다.',
+      parent: '라이트',
+      choices: [{ label: '도어 잠금 해제 시' }, { label: '운전자 접근 시' }] },
     'door-lock': { title: '자동 잠금', desc: '모든 도어가 자동으로 잠기는 시점을 선택합니다.', parent: '도어',
-      rows: [['자동 잠금', ''], ['주행할 때', ''], ['R, N, D단으로 이동할 때', ''], ['P단 이동할 때', ''],
-        ['끄기', '']] },
+      choices: [
+        { label: '주행할 때' }, { label: 'R, N, D단으로 이동할 때' }, { label: '자동 잠금 해제' },
+        { label: 'P단 이동할 때' }, { label: '끄기' } ] },
+    'door-unlock': { title: '자동 잠금 해제', desc: '자동 잠금이 해제되는 시점을 선택합니다.', parent: '도어',
+      rows: [['자동 잠금 해제', '']] },
     'door-trunk': { title: '파워 트렁크 열림 높이', desc: '파워 트렁크의 열림 높이를 선택합니다.', parent: '도어',
-      rows: [['파워 트렁크 열림 높이', ''], ['완전 열림', ''], ['절반 열림', '']] },
+      choices: [{ label: '완전 열림' }, { label: '절반 열림' }] },
+    'key-use': { title: '디지털 키 사용', desc: '디지털 키를 이용하여 도어를 잠금/해제하거나 시동을 겁니다.', parent: '디지털 키',
+      rows: [['디지털 키 사용', '']] },
     'key-phone': { title: '스마트폰 키', desc: '스마트폰 키를 등록 또는 삭제합니다.', parent: '디지털 키',
-      rows: [['스마트폰 키', ''], ['등록', ''], ['삭제', '']] },
+      rows: [['등록', ''], ['삭제', '']] },
     'key-nfc': { title: 'NFC 카드 키', desc: '카드 키를 등록 또는 삭제합니다.', parent: '디지털 키',
-      rows: [['NFC 카드 키', ''], ['등록', ''], ['삭제', '']] },
+      rows: [['등록', ''], ['삭제', '']] },
     'key-info': { title: '디지털 키 정보', desc: '등록된 디지털 키 정보를 보여 줍니다.', parent: '디지털 키',
-      rows: [['디지털 키 정보', '']] },
-    'conv-service': { title: '서비스 시기 알림', desc: '서비스 점검 시기까지 남은 거리와 기간을 확인합니다.', parent: '편의',
-      rows: [['서비스 시기 알림 사용', ''], ['알림 거리', ''], ['알림 기간', ''], ['초기화', '']] },
-    'sound-advanced': { title: 'Meridian Intelli-Q', desc: '차량의 속도에 따라 최적의 사운드를 제공합니다.', parent: '고급 음향',
-      rows: [['강하게', ''], ['보통', ''], ['약하게', ''], ['끄기', '']] },
-    'sound-voicechange': { title: '음성 변경', desc: '내비게이션 안내·음성인식·문자 메시지를 읽어주는 음성을 설정합니다.',
-      parent: '안내음',
-      rows: [['밝은 여성 음성', 'voiceType'], ['부드러운 남성 음성', '']] },
-    'sound-tone-init': { title: '초기값', desc: '고음·중음·저음을 초기값으로 되돌립니다.', parent: '고음/중음/저음',
-      rows: [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass']] },
-    'sound-radio': { title: '라디오 음질', desc: '라디오 노이즈 조절 방식을 설정합니다.', parent: '라디오 음질',
-      rows: [['원음 강조', ''], ['원음/노이즈 균형', ''], ['노이즈 최소화', '']] },
-    'sound-devices': { title: '연결 기기', desc: '연결 기기의 기능별 음량을 설정합니다.', parent: '연결 기기',
-      rows: [['Android Auto', ''], ['Apple CarPlay', '']] }
+      rows: [['일련번호', '']] },
+    'conv-service': { title: '서비스 시기 알림', desc: '설정한 서비스 점검 시기까지 남은 거리와 기간을 확인할 수 있으며 점검 받을 때가 되면 알려줍니다.',
+      parent: '편의',
+      toggles: [{ label: '서비스 시기 알림 사용' }],
+      rows: [['알림 거리', ''], ['알림 기간', ''], ['초기화', '']] }
   };
-
   var STOCK_SETTING_SCREENS = {
     vehicle: {
       title: '차량', host: 'settings-car', hostLabel: '순정 차량 설정 열기', fallback: 'settings-car',
@@ -3939,60 +4023,66 @@ var stockSub = '';
       groups: [
         { name: '운전자 보조', rows: [
           { label: '주행 편의', nav: true, sub: 'car-convenience' },
-          { label: '속도 제한', nav: true, sub: 'car-speedlimit' },
           { label: '전방 안전', nav: true, sub: 'car-frontsafe' },
           { label: '스마트 크루즈 컨트롤', nav: true, sub: 'car-scc' },
-          { label: '후측방 안전', nav: true, sub: 'car-rearsafe' },
-          { label: '주차 안전', nav: true, sub: 'car-parksafe' },
+          { label: '속도 제한', nav: true, sub: 'car-speedlimit' },
           { label: '차로 안전', nav: true, sub: 'car-lanesafe' },
           { label: '운전자 주의 경고', nav: true, sub: 'car-driverwarn' },
-          { label: '경고 방식', nav: true, sub: 'car-warning' } ] },
+          { label: '주차 안전', nav: true, sub: 'car-parksafe' },
+          { label: '후측방 안전', nav: true, sub: 'car-rearsafe' } ] },
         { name: '드라이브 모드', rows: [
-          ['드라이브 모드 변경 알림', 'driveModeNotification'],
-          { label: 'CUSTOM', nav: true, sub: 'car-dm-custom' } ] },
+          { label: 'CUSTOM · MY DRIVE MODE', nav: true, sub: 'car-dm-custom' } ],
+          toggles: [{ label: '드라이브 모드 변경 알림', note: '변경된 드라이브 모드 정보를 차량 이미지와 함께 자세히 표시합니다.', valueKey: 'driveModeNotification', onOff: true }] },
         { name: '환경차', rows: [
-          { label: '관성 주행 안내', nav: true, sub: 'car-coasting-sound' },
-          { label: '관성 주행 안내 시점', nav: true, sub: 'car-coasting-timing' },
-          ['그린존 드라이브 모드', ''] ] },
-        { name: 'HUD', rows: [
-          ['HUD 사용', ''],
+          { label: '관성 주행 안내 · 사운드 켬', nav: true, sub: 'car-coasting-sound' },
+          { label: '관성 주행 안내 시점', nav: true, sub: 'car-coasting-timing' } ],
+          toggles: [{ label: '그린존 드라이브 모드', note: '탑승자 및 보행자의 대기 환경 개선이 필요한 지역에서 EV 주행을 확대합니다.' }] },
+        { name: 'HUD', art: 'hud', rows: [
           { label: '영상 조정', nav: true, sub: 'hud-video' },
-          { label: '표시 정보', nav: true, sub: 'hud-info' } ] },
-        { name: '클러스터', rows: [
-          { label: '화면 밝기', nav: true, sub: 'cluster-bright' },
+          { label: '표시 정보', nav: true, sub: 'hud-info' } ],
+          toggles: [{ label: 'HUD 사용', note: 'HUD를 앞유리에 표시합니다.' }] },
+        { name: '클러스터', art: 'cluster', rows: [
+          { label: '화면 밝기', nav: true, host: 'settings-display' },
           { label: '클러스터 테마 선택', nav: true, sub: 'cluster-theme' },
           { label: '평균연비 표시', nav: true, sub: 'cluster-eco' },
           { label: '표시 정보', nav: true, sub: 'cluster-info' },
           { label: '클러스터 음성 안내 음량', nav: true, sub: 'cluster-voice' } ],
-          switches: [['웰컴 사운드', '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.', 'welcomeSound']] },
+          toggles: [{ label: '웰컴 사운드', note: '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.', valueKey: 'welcomeSound', onOff: true }] },
         { name: '공조', art: 'fan', rows: [
           { label: '외부 공기 차단', nav: true, sub: 'hvac-intake' },
           { label: '자동 환기', nav: true, sub: 'hvac-vent' },
           { label: '창문 습기 방지', nav: true, sub: 'hvac-defog' },
           { label: '열선/통풍 편의', nav: true, sub: 'hvac-comfort' } ] },
         { name: '시트', rows: [
-          ['시트 위치 변경 알림', 'seatPositionAlert'],
-          ['에르고 모션 동작 알림', ''],
           { label: '스마트 자세 제어', nav: true, sub: 'seat-posture' },
-          { label: '열선/통풍 편의', nav: true, sub: 'seat-comfort' } ] },
+          { label: '열선/통풍 편의', nav: true, sub: 'seat-comfort' } ],
+          toggles: [
+            { label: '시트 위치 변경 알림', note: '변경된 시트 위치 정보를 시트 이미지와 함께 표시합니다.', valueKey: 'seatPositionAlert', onOff: true },
+            { label: '에르고 모션 동작 알림', note: '에르고 모션을 동작하면 작동 정보가 시트 이미지와 함께 표시됩니다.' } ] },
         { name: '라이트', rows: [
           { label: '실내 무드 조명', nav: true, sub: 'light-mood' },
           { label: '원터치 방향지시등', nav: true, sub: 'light-blink' },
-          { label: '웰컴 미러/라이트', nav: true, sub: 'light-welcome' },
-          ['헤드램프 에스코트', ''], ['하이빔 보조', ''] ] },
+          { label: '웰컴 미러/라이트', nav: true, sub: 'light-welcome' } ],
+          toggles: [
+            { label: '헤드램프 에스코트', note: '시동을 끄고 하차한 후 도어를 닫으면, 미등과 전조등이 즉시 꺼지지 않고 약 15초간 켜져 있습니다.' },
+            { label: '하이빔 보조' } ] },
         { name: '도어', rows: [
           { label: '자동 잠금', nav: true, sub: 'door-lock' },
-          { label: '파워 트렁크 열림 높이', nav: true, sub: 'door-trunk' },
-          ['스마트 트렁크', ''], ['원격 창문 제어', ''] ] },
+          { label: '자동 잠금 해제', nav: true, sub: 'door-unlock' },
+          { label: '파워 트렁크 열림 높이', nav: true, sub: 'door-trunk' } ],
+          toggles: [
+            { label: '스마트 트렁크', note: '스마트 키를 소지하고 트렁크에 접근하면 자동으로 트렁크가 열립니다.' },
+            { label: '원격 창문 제어' } ] },
         { name: '디지털 키', rows: [
-          ['디지털 키 사용', ''],
           { label: '스마트폰 키', nav: true, sub: 'key-phone' },
           { label: 'NFC 카드 키', nav: true, sub: 'key-nfc' },
-          { label: '디지털 키 정보', nav: true, sub: 'key-info' } ] },
+          { label: '디지털 키 정보', nav: true, sub: 'key-info' } ],
+          toggles: [{ label: '디지털 키 사용', note: '디지털 키를 이용하여 도어를 잠금/해제하거나 시동을 겁니다.' }] },
         { name: '편의', rows: [
-          ['후석 승객 알림', ''],
-          { label: '서비스 시기 알림', nav: true, sub: 'conv-service' },
-          ['휴대기기용 무선 충전 시스템', ''] ] }
+          { label: '서비스 시기 알림', nav: true, sub: 'conv-service' } ],
+          toggles: [
+            { label: '후석 승객 알림', note: '뒷좌석에 탑승자를 두고 내리는 것을 방지하기 위해 알림을 줍니다.' },
+            { label: '휴대기기용 무선 충전 시스템', note: '무선 충전을 지원하는 휴대폰을 케이블 연결없이 충전할 수 있습니다.' } ] }
       ]
     },
     voice: {
@@ -4103,13 +4193,55 @@ var stockSub = '';
       var obj = typeof item === 'string' ? { label: item } : item;
       var current = known && obj.value !== undefined && String(obj.value) === String(live);
       if (current) matched = true;
+      var label = obj.note
+        ? '<span class="stock-row-text"><span class="stock-row-label">' + escapeText(obj.label) + '</span>' +
+          '<small class="stock-row-note">' + escapeText(obj.note) + '</small></span>'
+        : '<span>' + escapeText(obj.label) + '</span>';
       return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
-        '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
+        (obj.note ? ' stock-row-note-row' : '') +
+        '"><span class="sl-radio-left"><span class="radio-circle"></span>' + label +
         '</span></span></div>';
     }).join('');
     var head = valueKey && !matched ? '<div class="detail-settings-row"><span>현재 선택</span><output>' +
       escapeText(known ? stockValueText(valueKey, live) : '순정 연동 대기') + '</output></div>' : '';
     return head + rows;
+  }
+
+  /**
+   * 켜짐/꺼짐 줄(토글). 켜진 상태는 읽은 값으로만 정한다(수집 당시 값을 고정으로 넣지 않는다).
+   * 못 읽으면 "순정 연동 대기" 상태로 둔다.
+   */
+  function stockSwitchHtml(list) {
+    return (list || []).map(function (item) {
+      var key = item.valueKey || '';
+      var live = key ? (vehicleSettings[key] !== undefined ? vehicleSettings[key] : vehicleInfo[key]) : undefined;
+      var known = live !== undefined && live !== null && live !== '';
+      var on = known && (String(live) === '1' || String(live) === 'true' || String(live) === '켜짐');
+      var text = '<span class="stock-row-text"><span class="stock-row-label">' + escapeText(item.label) + '</span>' +
+        (item.note ? '<small class="stock-row-note">' + escapeText(item.note) + '</small>' : '') + '</span>';
+      // onOff 는 "1=켜짐"이 확인된 항목에만 쓴다. 나머지는 값을 그대로 보여 준다.
+      var shown = !known ? '순정 연동 대기' : (item.onOff ? (on ? '켜짐' : '꺼짐') : ('순정 값 ' + live));
+      return '<div class="detail-settings-row stock-switch-row"><span class="stock-toggle' + (on ? ' stock-toggle-on' : '') +
+        '"><span class="stock-toggle-knob"></span></span>' + text +
+        '<output class="stock-value-wait">' + escapeText(shown) + '</output></div>';
+    }).join('');
+  }
+
+  /** 슬라이더 줄. 값은 읽은 값으로만 정한다. 못 읽으면 "순정 연동 대기". */
+  function stockSliderHtml(list) {
+    return (list || []).map(function (item) {
+      var key = item.valueKey || '';
+      var live = key ? (vehicleSettings[key] !== undefined ? vehicleSettings[key] : vehicleInfo[key]) : undefined;
+      var known = typeof live === 'number';
+      var min = item.min === undefined ? 0 : item.min;
+      var max = item.max === undefined ? 100 : item.max;
+      var ratio = known ? Math.max(0, Math.min(1, (live - min) / (max - min))) : 0;
+      var knob = known ? (ratio * 100) : 0;
+      return '<div class="detail-settings-row stock-slider-row"><span class="stock-row-label">' + escapeText(item.label) +
+        '</span><span class="stock-slider"><span class="stock-slider-fill" style="width:' + (known ? ratio * 100 : 0) +
+        '%"></span><span class="stock-slider-knob" style="left:' + (known ? knob : 0) + '%"></span></span>' +
+        '<output>' + (known ? String(live) : '순정 연동 대기') + '</output></div>';
+    }).join('');
   }
 
   function stockRowHtml(row, fallback) {
@@ -4121,14 +4253,18 @@ var stockSub = '';
       '<output>순정 연동 대기</output>');
     var chevron = nav ? '<svg class="stock-chevron" viewBox="0 0 12 24" aria-hidden="true">' +
       '<path d="m2 3 8 9-8 9"/></svg>' : '';
-    var body = '<span>' + escapeText(label) + '</span>' + value + chevron;
+    var note = (!isArray && row.note) ? row.note : '';
+    var text = note
+      ? '<span class="stock-row-text"><span class="stock-row-label">' + escapeText(label) + '</span>' +
+        '<small class="stock-row-note">' + escapeText(note) + '</small></span>'
+      : '<span>' + escapeText(label) + '</span>';
+    var body = text + value + chevron;
     if (nav) {
       var action = (!isArray && row.sub) ? 'data-stock-sub="' + escapeText(row.sub) + '"' :
-        'data-host="' + escapeText(fallback || '') + '"';
+        'data-host="' + escapeText((!isArray && row.host) ? row.host : (fallback || '')) + '"';
       return '<button type="button" class="detail-settings-row stock-row-nav" ' + action + '>' + body + '</button>';
     }
-    return '<div class="detail-settings-row">' + body +
-      (!isArray && row.note ? '</div><p class="stock-row-note">' + escapeText(row.note) + '</p>' : '</div>');
+    return '<div class="detail-settings-row' + (note ? ' stock-row-note-row' : '') + '">' + body + '</div>';
   }
 
   function renderStockSettingScreen(pane, section) {
@@ -4147,21 +4283,23 @@ var stockSub = '';
     });
     var sub = STOCK_SETTING_SUBS[stockSub];
     var showSub = !!(sub && sub.parent === group.name);
-    var rows = (showSub ? sub.rows : (group.rows || [])).map(function (row) {
+    var rows = (showSub ? (sub.rows || []) : (group.rows || [])).map(function (row) {
       return stockRowHtml(row, screen.fallback);
     }).join('');
-    var choices = stockChoicesHtml(group.choices, group.valueKey);
-    var switches = (group.switches || []).map(function (item) {
+    var choices = stockChoicesHtml(showSub ? sub.choices : group.choices, showSub ? sub.valueKey : group.valueKey);
+    var switches = (showSub ? (sub.switches || []) : (group.switches || [])).map(function (item) {
       var key = item[2];
       var value = key ? '<output data-system-value="' + key + '"></output>' :
         '<output class="stock-value-wait">순정 연동 대기</output>';
       return '<div class="detail-settings-row"><span class="sl-switch-text"><span>' + escapeText(item[0]) + '</span>' +
         '<small>' + escapeText(item[1]) + '</small></span>' + value + '</div>';
     }).join('');
+    var toggles = stockSwitchHtml(showSub ? (sub.toggles || []) : (group.toggles || []));
+    var sliders = stockSliderHtml(showSub ? (sub.sliders || []) : (group.sliders || []));
     // 본문: 설명이 있으면 맨 위. 본문 제목(h2)은 설명서에 없어 넣지 않는다.
     var main = ((showSub ? sub.desc : group.desc) ?
       '<p class="sl-desc">' + escapeText((showSub ? sub.desc : group.desc)) + '</p>' : '') +
-      rows + choices + switches + (screen.extra || '') +
+      rows + choices + switches + toggles + sliders + (screen.extra || '') +
       '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="' + screen.host + '">' + escapeText(screen.hostLabel) + '</button>' +
       '</div>' + stockWriteSwitch();
