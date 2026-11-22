@@ -1740,7 +1740,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .detail-settings-layout.stock-settings-layout .sl-tab[aria-selected="true"] { color: #1f9c81; }
 .detail-settings-layout.stock-settings-layout .sl-tab[aria-selected="true"]::before {
   left: 0; top: 50%; width: 1.1vw; height: 1.85vw; background: #2bb79b;
-  transform: translateY(-50%) skewX(-42deg);
+  -webkit-transform: translateY(-50%) skewX(-42deg); transform: translateY(-50%) skewX(-42deg);
 }
 .detail-settings-layout.stock-settings-layout .detail-settings-main {
   width: 47.5vw; flex: none; padding: 0 0 0 3.7vw; position: relative;
@@ -1763,6 +1763,14 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .detail-settings-layout.stock-settings-layout .stock-choice .sl-radio-left { margin-left: 2.2vw; }
 .detail-settings-layout.stock-settings-layout .stock-choice .sl-radio-left span + span { margin-left: 4.5vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-actions { margin-top: 1.6vw; }
+/* 0.5.0-test3 검수 보정(Claude): 오른쪽 그림이 아래로 밀려 잘리던 것, 차 화면에서 ›가 글자 옆이나 다음 줄로
+   붙던 것, 긴 값이 두 줄로 꺾이던 것. */
+.detail-settings-layout.stock-settings-layout .detail-settings-art { padding-top: 4vw; align-self: flex-start; }
+.detail-settings-layout.stock-settings-layout .detail-settings-row > output { white-space: nowrap; }
+.legacy .stock-settings-layout button.detail-settings-row { position: relative; padding-right: 2.6vw; }
+.legacy .stock-settings-layout button.detail-settings-row:after { position: absolute; right: 1.2vw; top: 50%; margin-top: -1vw;
+  line-height: 2vw; padding: 0; }
+.legacy .stock-settings-layout button.detail-settings-row.switch-row:after { content: none; }
 </style>
 </head>
 <body>
@@ -3467,7 +3475,7 @@ var stockScreenGroup = '';
         external('projection', '폰 프로젝션 설정 열기', 'detail-settings-row') :
         '<p class="sl-desc">이 항목은 순정 기기 연결 설정에서 변경할 수 있습니다.</p>' +
         '<div class="detail-settings-row"><span>' + deviceName + '</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-actions">' + external('settings-connect', '순정 기기 연결 설정 열기') + '</div>';
+        '<div class="detail-settings-actions">' + external('settings-devices', '순정 기기 연결 설정 열기') + '</div>';
       detailSettings(pane, '기기 연결 메뉴', deviceNavHtml, deviceBody,
         '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="19" y="5" width="26" height="54" rx="7"/>' +
         '<path d="M29 11h6m-8 40h10m-8-31 9 9-7 7V18l7 7-10 10"/></svg>', ' stock-settings-layout');
@@ -3608,9 +3616,7 @@ var stockScreenGroup = '';
           { label: '주행 편의', nav: true }, { label: '속도 제한', nav: true },
           { label: '운전자 주의 경고', nav: true } ] },
         { name: '드라이브 모드', rows: [
-          ['드라이브 모드', 'driveModeOption'], ['공조 에코 모드', ''], ['중립 주행', ''],
-          ['관성 주행 안내', ''], ['스마트 회생 제동', ''], ['충전 음성 안내', ''],
-          ['트레일러 중량 설정', ''] ] },
+          ['드라이브 모드', 'driveModeOption'] ] },
         { name: '액티브 사운드 디자인', rows: [['실내 엔진 사운드 음량', 'soundAsd']] },
         { name: '공조', rows: [
           ['외부 공기 차단', ''], ['자동 환기', ''], ['창문 습기 방지', ''], ['공조 편의', ''] ] }
@@ -3619,10 +3625,10 @@ var stockScreenGroup = '';
     voice: {
       title: '음성인식', host: 'settings-voice', hostLabel: '순정 음성인식 설정 열기',
       groups: [
-        { name: '호출어', rows: [['호출어 사용', ''], ['호출어 민감도', '']] },
-        { name: '안내 속도', rows: [['안내 속도', '']] },
         { name: '안내 방식', rows: [['안내 방식', '']] },
-        { name: '후석 음성인식', rows: [['후석 음성인식 잠금', '']] }
+        { name: '안내 속도', rows: [['안내 속도', '']] },
+        { name: '카카오 프렌즈', rows: [['카카오 프렌즈', '']] },
+        { name: '후석 음성인식', rows: [['후석 음성인식', '']] }
       ]
     },
     buttons: {
