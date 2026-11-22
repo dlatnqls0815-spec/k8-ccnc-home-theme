@@ -77,7 +77,9 @@ public final class NavBarService extends Service {
      * Stock guidance-list button stand-in (the stock one is under this row). 1920×720 positions of the
      * turn-box corner: list closed → top-right corner of the simple guidance box, list open → left of the
      * list's top tab (same spots another Gen5W theme uses). Open/closed is our own guess: the stock state
-     * is not readable from outside the navi app, so each tap flips it.
+     * is not readable from outside the navi app, so each tap flips it (the helper's "ok" is the only
+     * evidence that a tap landed). The button draws itself on the pixel grid, so the 48 unit window keeps
+     * the same look on every screen scale.
      */
     private static final int GUIDE_SIZE = 48, GUIDE_CLOSED_X = 1864, GUIDE_CLOSED_Y = 94,
         GUIDE_OPEN_X = 1348, GUIDE_OPEN_Y = 18;
@@ -569,9 +571,12 @@ public final class NavBarService extends Service {
                 guide = null;
                 return;
             }
-        } else if (guideParams.x != x || guideParams.y != y) {
+        } else if (guideParams.x != x || guideParams.y != y
+                || guideParams.width != px || guideParams.height != px) {
             guideParams.x = x;
             guideParams.y = y;
+            guideParams.width = px;   // the screen scale may have changed: keep the same logical size
+            guideParams.height = px;
             windows.updateViewLayout(guide, guideParams);
         }
         guide.setExpanded(guideExpanded);
@@ -587,7 +592,8 @@ public final class NavBarService extends Service {
 
     /**
      * Taps the stock guidance-list button through the NEMESIS helper. The theme row lies over that button,
-     * so the row stops taking touches for the moment of the tap.
+     * so the row stops taking touches for the moment of the tap. The helper only taps while the stock navi
+     * is in front and answers "not-navi" otherwise; the button stays (the navi can come back) and says so.
      */
     private void toggleGuide() {
         if (guideBusy || !attached || rowParams == null) return;
@@ -603,6 +609,9 @@ public final class NavBarService extends Service {
                         if ("ok".equals(reply)) {
                             guideExpanded = !guideExpanded;
                             syncGuide(route.snapshot().active);
+                        } else if ("not-navi".equals(reply)) {
+                            // Another app is in front for now; the button works again once the navi is back.
+                            toast("순정 길안내 화면에서만 목록을 펼칠 수 있습니다.");
                         } else if (reply.isEmpty()) {
                             toast("길안내 목록 버튼은 NEMESIS 도우미가 필요합니다.");
                         }
