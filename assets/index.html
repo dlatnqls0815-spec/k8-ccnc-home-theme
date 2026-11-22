@@ -1006,7 +1006,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .legacy .screenlayout-stage > .sl-preview, .legacy .bb-media-box { width: 24.8%; }
 .legacy .qc-grid > * { width: 32%; padding-right: 1%; }
 .legacy .sl-main, #theme-settings-detail { overflow: auto; }
-.legacy .hcard, .legacy .set-card, .legacy .app-tile { border-radius: 12px; }
+.legacy .hcard, .legacy .set-card, .legacy .app-tile { border-radius: 4px; }
 .deck { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
 .home-view, .apps-view, .standby-view { touch-action: none; }
 .deck.is-sliding { overflow: hidden; }
@@ -1556,6 +1556,112 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .hcard > *, .app-tile > *, .hcard-caption-main > * { min-width: 0; }
 /* 낮은 PC 창(가로로 긴 비율)에서 제목·부제가 눌려 겹치지 않게: 줄 높이는 줄이지 않는다. */
 .hcard-caption-main > strong, .hcard-caption-main > span { flex-shrink: 0; }
+/* 0.4.57 기아 K8 설명서 D-systemoverview_home_main.png(1920×720 환산)와 겹쳐 맞춤. 차 WebView는 gap을 못 써서
+   간격은 margin으로만 준다. 메뉴 아이콘 줄 50~83·33~60, 이름 글자 109부터, 시계 숫자 높이 38(밑 66),
+   페이지 막대 36×5·간격 10·가운데 692, 켜진 막대 #bdbdbd·꺼진 막대 #454747, 카드 테두리 #3f4143. */
+/* 잘린 모서리: 설명서 기준 한 변 40px(1920 기준 = 2.1vw), 잘린 선에도 테두리선을 긋는다. */
+.chamfer-br { -webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); }
+.chamfer-both { -webkit-clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); }
+.hcard.chamfer-br::after, .hcard.chamfer-both::after, .app-tile.chamfer-both::after, .hcard.chamfer-both::before, .app-tile.chamfer-both::before {
+  content: ""; position: absolute; z-index: 3; width: 2.1vw; height: 2.1vw; pointer-events: none;
+}
+.hcard.chamfer-br::after, .hcard.chamfer-both::after, .app-tile.chamfer-both::after {
+  right: 0; bottom: 0; background: linear-gradient(to bottom right, transparent 44%, #464748 44%, #464748 50%, transparent 50%);
+}
+.hcard.chamfer-both::before, .app-tile.chamfer-both::before {
+  left: 0; top: 0; background: linear-gradient(to bottom right, transparent 50%, #464748 50%, #464748 56%, transparent 56%);
+}
+.profile-btn { gap: 0; }
+.profile-btn { font-size: 0; }
+#profile-btn #driver-name { font-size: 1.77vw; }
+.profile-btn .ico { width: 2.37vw; height: 2.37vw; margin: 0 .94vw 0 -.26vw; vertical-align: middle; }
+.profile-btn #driver-name { vertical-align: middle; }
+.legacy .profile-btn > * + * { margin-left: 0; }
+.profile-btn { position: relative; top: .21vw; }
+.profile-btn .ico { position: relative; top: .1vw; }
+.clock { font-size: 2.64vw; }
+.pager-bars { gap: 0; }
+.pager-bar, .pager-bar[aria-current="true"] { width: 1.875vw; height: 3px; border-radius: 2px; margin: 0 .26vw; background: #454747; }
+.pager-bar[aria-current="true"] { background: #bdbdbd; }
+.pager-bar { position: relative; top: .31vw; }
+.clock small { margin-left: .68vw; }
+.clock { position: relative; top: .21vw; }
+.hcard { border-color: #464748; }
+/* 원형 버튼: 속은 카드색 그대로, 테두리 2px. 미디어 아이콘 #dcdcdc, 지도 아이콘 #787978(설명서 색). */
+.circle-btn { background: transparent; border: 2px solid #474848; color: #dcdcdc; }
+.circle-btn.warm-ring { border-color: #8a7360; }
+.circle-btn .ico-grey { color: #dcdcdc; }
+.circle-btn.warm-ring .ico-grey { color: #787978; }
+.circle-btn .ico-cut { stroke: #1d1e20; }
+.circle-btn .ico-cut-fill { fill: #1d1e20; }
+/* 0.4.57 D-media_bluetooth_main2.png(1920×720) 겹침: 기기 이름 글자 위 123, 제목 187~251, 가수 277~310,
+   앨범 340~365, 재생 버튼 450~487(이전 48·일시정지 43·다음 48 폭), 진행 막대 539~543(538~1400), 시간 557~579.
+   차 WebView에선 ".legacy … > * + *" 여백 규칙이 위 간격을 덮어써서 id로 고정한다. */
+#media-single-pane, #media-single-pane .media-scrubber { gap: 0; }
+html:not(.legacy) #media-single-pane .media-transport-btns { position: relative; top: .63vw; }
+#media-single-pane > .media-single-title { font-size: 3.55vw; margin-top: .55vw; }
+#media-single-pane > .media-single-artist { margin-top: .42vw; }
+#media-single-pane > .media-single-album { margin-top: 0; }
+#media-single-pane > .media-controls-row { margin-top: 2.2vw; }
+#media-single-pane > .media-scrubber { margin-top: 1.8vw; padding-left: 1.04vw; }
+#media-single-pane .media-progress-bar { height: 3px; }
+#media-single-pane .media-time-pair { font-size: 1.71vw; }
+#media-single-pane .media-transport-btns { margin-left: .27vw; }
+#media-cur-time { color: #f0f0f0; }
+#media-dur-time { color: #575757; }
+#media-single-pane .media-progress-bar { background: #393838; }
+#media-single-pane > .media-single-album { color: #5a5a5a; }
+/* 하단 오른쪽 미디어 칸: 차 WebView는 버튼 안 flex가 안 돼 글자가 그림 아래(화면 밖)로 떨어졌다. 그림 옆에
+   절대 위치로 고정. 설명서(D-media_bluetooth_main2.png): 글자 왼쪽 1558, 제목 645~669 #d7d7d7, 가수 682~704 #939494. */
+.bb-media-box .bb-media-thumb { position: absolute; left: 0; top: 0; bottom: 0; height: auto; }
+.bb-media-box .bb-media-meta { position: absolute; left: 5.94vw; right: 0; top: .5vw; padding-right: .8vw; text-align: left; }
+.bb-media-box .bb-media-meta strong { font-size: 1.46vw; line-height: 1.3; color: #d7d7d7; }
+.bb-media-box .bb-media-meta span { font-size: 1.4vw; line-height: 1.3; color: #939494; margin-top: 0; }
+.bb-media-box { background: #1b1a1b; }
+.bb-media-box.media-off .bb-media-meta { top: 1.4vw; }
+.media-right-box .media-album-art { position: relative; top: -.68vw; }
+/* 미디어 위 탭(설명서): 글자 33~61, 탭 가운데 857·1051, 밑줄 785~933 y89~95 #33baa6, 꺼진 탭 #858585,
+   탭 아래 옅은 줄 514~1407 #161616. 상세 화면 검색 아이콘 52~84, 기기 전환 아이콘 37px. */
+.top-tabs { gap: 0; }
+.top-tabs > * + *, .legacy .top-tabs > * + * { margin-left: 1.56vw; }
+.top-tab { position: relative; top: .26vw; color: #858585; }
+.top-tab[aria-selected="true"]::after { bottom: -.36vw; height: .26vw; background: #33baa6; }
+.top-tabs::before { content: ""; position: absolute; left: 50%; width: 46.5vw; margin-left: -23.25vw; bottom: -.52vw; height: 2px; background: #161616; }
+#detail-search-btn { position: relative; left: .57vw; }
+#device-switch-btn { width: 3.13vw; height: 3.13vw; margin-left: .26vw; }
+.top-title-wrap { gap: 0; }
+#detail-heading-text { margin-left: 1.25vw; }
+#device-switch-btn .ico { width: 2.66vw !important; height: 2.66vw !important; }
+/* 화면 아래 줄(설명서 D-media_bluetooth_main2.png): 뒤로 72~91·홈 222~251·메뉴 370~402, 아이콘 #f0f0f0 선 3px.
+   가운데 칸이 있을 때 줄 바탕 #1b1a1b·알약 #131313. 소스 아이콘 40px #a0a0a0, 켜진 칸 746~865. */
+.bb-nav-keys .bb-icon { stroke-width: 2.2; }
+.bb-key { color: #f0f0f0; }
+.bottom-bar:not(.no-center) { background: #1b1a1b; }
+.bb-nav-keys, .bb-media-box { background: #1b1a1b; }
+.bb-icon-tabs, .bb-pill { background: #131313; }
+.bb-tab-btn { color: #a0a0a0; }
+.bb-tab-btn svg { width: 3.07vw !important; height: 3.07vw !important; }
+.bb-icon-tabs { position: relative; left: .26vw; }
+/* 전화 오른쪽 그림(D-phone_calllist_main.png): 기울어진 폰 222×281, 위 149·왼쪽 1563, 선 #838383. */
+.phone-device-art { position: relative; left: 1.43vw; top: -1.41vw; stroke: #838383 !important; stroke-width: 2.6 !important; }
+/* 설정 첫 화면(기아 D-settings_main.png): 카드 292×250, 간격 17(1920 기준), 위 94~아래 609, 바탕 #101010,
+   테두리 없음, 아이콘 #9e9e9e. 차 WebView 줄 배치는 CSS px가 아니라 vw로 계산한다. */
+.settings-stage { padding-top: .57vw; padding-bottom: 1.09vw; }
+.settings-grid { gap: .885vw; }
+.set-card { background: #101010; border: 0; }
+.set-card:hover { background: #1c1c1c; }
+.set-card-icon { color: #9e9e9e; }
+.set-card-icon .ico { width: 3.9vw; height: 3.9vw; }
+.set-card { padding: 1.66vw .78vw .88vw 1.5vw; }
+.legacy .set-card > div { top: 1.66vw; left: 1.5vw; right: .78vw; }
+.legacy .set-card-icon { right: .78vw; bottom: .88vw; }
+.legacy .settings-grid .set-card { width: calc((100% - 5 * .885vw) / 6); height: calc((100% - .885vw) / 2); }
+.legacy .settings-grid .set-card:nth-child(6n + 2) { left: calc((100% - 5 * .885vw) / 6 + .885vw); }
+.legacy .settings-grid .set-card:nth-child(6n + 3) { left: calc((100% - 5 * .885vw) / 3 + 2 * .885vw); }
+.legacy .settings-grid .set-card:nth-child(6n + 4) { left: calc((100% - 5 * .885vw) / 2 + 3 * .885vw); }
+.legacy .settings-grid .set-card:nth-child(6n + 5) { left: calc((100% - 5 * .885vw) * 2 / 3 + 4 * .885vw); }
+.legacy .settings-grid .set-card:nth-child(6n + 6) { left: calc((100% - 5 * .885vw) * 5 / 6 + 5 * .885vw); }
+.legacy .settings-grid .set-card:nth-child(n + 7) { top: calc((100% - .885vw) / 2 + .885vw); }
 </style>
 </head>
 <body>
@@ -1683,7 +1789,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
           </button>
           <div class="hcard-circles" aria-label="미디어 제어">
             <button type="button" class="circle-btn" id="home-play-btn" title="재생 / 일시정지" aria-label="재생 또는 일시정지">
-              <svg class="ico ico-fill" id="home-play-ico" viewBox="0 0 24 24"><rect x="7.2" y="5.5" width="2.6" height="13" rx="1.3"/><rect x="14.2" y="5.5" width="2.6" height="13" rx="1.3"/></svg>
+              <svg class="ico ico-fill" id="home-play-ico" viewBox="0 0 24 24"><rect x="5.15" y="3.7" width="3.4" height="16.6" rx=".6"/><rect x="15.45" y="3.7" width="3.4" height="16.6" rx=".6"/></svg>
             </button>
             <button type="button" class="circle-btn" id="home-source-btn" title="미디어 소스 전환 (블루투스 / 자연의 소리 / FM)" aria-label="미디어 소스 전환">
               <svg class="ico ico-fill ico-grey" viewBox="0 0 24 24"><path d="M5.5 4.5h13v2h-13zM4.6 7.6h14.8V9H4.6z"/><path d="M3.5 10h17v10.5h-17z"/><path class="ico-cut-fill" d="M13.8 11.8v5.2a1.9 1.9 0 1 1-1.2-1.8v-2.6l-3 .7v4.2a1.9 1.9 0 1 1-1.2-1.8v-3.4z"/></svg>
@@ -1809,11 +1915,11 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
               <div class="media-controls-row">
                 <div class="media-transport-btns">
                   <button type="button" class="transport-icon-btn" id="media-prev-btn" aria-label="이전 곡">
-                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M3.65 5.55h3.13v12.9H3.65zM20.35 5.55v12.9L9.21 12z"/></svg>
                   </button>
                   <button type="button" class="transport-icon-btn" id="media-play-btn" aria-label="재생/일시정지">⏸</button>
                   <button type="button" class="transport-icon-btn" id="media-next-btn" aria-label="다음 곡">
-                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+                    <svg class="ico" style="width:26px;height:26px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M17.22 5.55h3.13v12.9h-3.13zM3.65 5.55l11.14 6.45-11.14 6.45z"/></svg>
                   </button>
                 </div>
               </div>
@@ -1833,11 +1939,11 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
             <div class="media-album-art"><canvas id="detail-album-canvas"></canvas></div>
             <div class="media-transport-btns" id="list-mini-transport">
               <button type="button" class="transport-icon-btn" id="list-prev-btn" style="width:38px;height:38px" aria-label="이전 곡">
-                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M3.65 5.55h3.13v12.9H3.65zM20.35 5.55v12.9L9.21 12z"/></svg>
               </button>
               <button type="button" class="transport-icon-btn" id="list-play-btn" style="width:38px;height:38px" aria-label="재생/일시정지">⏸</button>
               <button type="button" class="transport-icon-btn" id="list-next-btn" style="width:38px;height:38px" aria-label="다음 곡">
-                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+                <svg class="ico" style="width:22px;height:22px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M17.22 5.55h3.13v12.9h-3.13zM3.65 5.55l11.14 6.45-11.14 6.45z"/></svg>
               </button>
             </div>
           </div>
@@ -1847,10 +1953,10 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
         <div id="stage-phone" class="phone-stage" hidden>
           <div class="phone-list-box" id="phone-call-list"></div>
           <aside class="phone-device-pane">
-            <svg class="phone-device-art" viewBox="0 0 120 180" style="width:95px;height:140px;fill:none;stroke:#8b94a0;stroke-width:2">
-              <g transform="rotate(18 60 90)">
-                <rect x="28" y="14" width="64" height="152" rx="12"/>
-                <line x1="50" y1="24" x2="70" y2="24"/>
+            <svg class="phone-device-art" viewBox="0 0 270 300" style="width:95px;height:140px;fill:none;stroke:#8b94a0;stroke-width:2">
+              <g transform="rotate(22 135 150)">
+                <rect x="63.5" y="17.5" width="143" height="265" rx="23"/>
+                <line x1="120" y1="34" x2="150" y2="34"/>
               </g>
             </svg>
             <strong class="phone-device-label" style="font-size:clamp(15px,1.35vw,23px);color:#e4ebf3" id="phone-device-label">Phone Name</strong>
@@ -1964,13 +2070,13 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   <footer class="bottom-bar" id="detail-bottom-bar" hidden>
     <div class="bb-nav-keys">
       <button type="button" class="bb-key" id="bb-back-btn" aria-label="뒤로">
-        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M20 9l-7 7 7 7"/></svg>
+        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M24.3 5.45 12.7 14.2l11.6 8.75"/></svg>
       </button>
       <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
-        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 14L16 3l13 11v12H3z"/></svg>
+        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M8.35 14.2 17.8 6.2l9.45 8v8.7H8.35z"/></svg>
       </button>
       <button type="button" class="bb-key" id="bb-menu-btn" aria-label="전체 메뉴">
-        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 5h28M2 16h28M2 27h28"/></svg>
+        <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2.6 5.8h21M2.6 13.8h21M2.6 21.8h21"/></svg>
       </button>
     </div>
 
@@ -2935,8 +3041,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
     document.getElementById('media-scrub-fill').style.width = curTrack.pct + '%';
 
     var playSvg = state.playing
-      ? '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14"/><rect x="13.5" y="5" width="3.5" height="14"/></svg>'
-      : '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg>';
+      ? '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><rect x="4.52" y="5.55" width="3.13" height="12.9"/><rect x="16.35" y="5.55" width="3.13" height="12.9"/></svg>'
+      : '<svg class="ico" style="width:24px;height:24px;fill:currentColor;stroke:none" viewBox="0 0 24 24"><path d="M7 5.55 18.2 12 7 18.45z"/></svg>';
     document.getElementById('media-play-btn').innerHTML = playSvg;
     document.getElementById('list-play-btn').innerHTML = playSvg;
 
@@ -4043,7 +4149,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
     document.getElementById('standby-track').textContent = tr.title;
     document.getElementById('standby-artist').textContent = tr.artist + (tr.album ? ' · ' + tr.album : '');
     document.getElementById('home-play-ico').innerHTML = state.playing
-      ? '<rect x="7.2" y="5.5" width="2.6" height="13" rx="1.3"/><rect x="14.2" y="5.5" width="2.6" height="13" rx="1.3"/>'
+      ? '<rect x="5.15" y="3.7" width="3.4" height="16.6" rx=".6"/><rect x="15.45" y="3.7" width="3.4" height="16.6" rx=".6"/>'
       : '<path d="M8 5.2 19 12 8 18.8z"/>';
 
     document.getElementById('navi-compass-label').textContent = state.naviViewMode;
