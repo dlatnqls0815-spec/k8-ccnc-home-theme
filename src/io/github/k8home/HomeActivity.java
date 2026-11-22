@@ -527,6 +527,14 @@ public final class HomeActivity extends Activity {
             reportSettingResult(key, false, "순정 설정 직접 변경 스위치가 꺼져 있습니다.");
             return;
         }
+        // 화면에 버튼이 있는 키와 값만 받는다. 페이지가 아무 키나 쓰게 두지 않는다.
+        boolean allowed = ("auto_time".equals(key) && ("0".equals(value) || "1".equals(value)))
+            || ("time_12_24".equals(key) && ("12".equals(value) || "24".equals(value)));
+        if (!allowed) {
+            Log.w(TAG_SETTINGS, "refused " + key + "=" + value);
+            reportSettingResult(key, false, "허용 목록에 없는 설정입니다.");
+            return;
+        }
         ContentResolver resolver = getContentResolver();
         Integer number;
         try {
@@ -546,14 +554,6 @@ public final class HomeActivity extends Activity {
                 } else if ("time_12_24".equals(key)) {
                     if (!"system".equals(space)) continue;
                     Settings.System.putString(resolver, Settings.System.TIME_12_24, value);
-                } else if (number != null) {
-                    if ("global".equals(space)) {
-                        Settings.Global.putInt(resolver, key, number);
-                    } else if ("secure".equals(space)) {
-                        Settings.Secure.putInt(resolver, key, number);
-                    } else {
-                        Settings.System.putInt(resolver, key, number);
-                    }
                 } else {
                     continue;
                 }

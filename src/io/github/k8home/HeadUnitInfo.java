@@ -160,7 +160,7 @@ final class HeadUnitInfo {
                 {"soundVariableEq", "mVariableEqMode"}, {"soundRearSleep", "mIsRearSleepOn"},
                 {"soundPowerTreble", "mPowerTreble"}, {"soundVolume", "mVolume"},
                 {"soundVuiVolume", "mVuiVolume"}, {"soundMicVolume", "mMicVolume"},
-                {"soundUvoVolume", "mUvoBlueVolume"}, {"soundAsl", "mAsl"}
+                {"soundUvoVolume", "mUvoBlueVolume"}, {"soundAsl", "mAsl"}, {"soundAsd", "mAsdMode"}
             };
             for (String[] field : fields) {
                 try {

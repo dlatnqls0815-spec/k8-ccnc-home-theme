@@ -3563,11 +3563,11 @@ var stockScreenGroup = '';
       title: '버튼', host: 'settings-buttons', hostLabel: '순정 버튼 설정 열기',
       groups: [
         { name: '사용자 버튼 ☆ (내비게이션)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (내비게이션)',
-          choices: ['경로 취소', '내자 위치 공유', '날씨', '라디오'] },
+          choices: ['경로 취소', '내 차 위치 공유', '날씨', '라디오'] },
         { name: '사용자 버튼 ★ (핸들)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (핸들)',
-          choices: ['경로 취소', '내자 위치 공유', '날씨', '라디오'] },
+          choices: ['경로 취소', '내 차 위치 공유', '날씨', '라디오'] },
         { name: 'MODE 버튼', desc: '이 버튼으로 실행할 기능을 선택하십시오. (모드 버튼)',
-          choices: ['라디오', '미디어', '네비게이션'] },
+          choices: ['라디오', '미디어', '내비게이션'] },
         { name: '[∧]/[∨] 버튼 (핸들)', desc: '이 버튼으로 실행할 기능을 선택하십시오. (상·하 버튼)',
           rows: [['[∧]/[∨] 버튼', 'buttonSeek']] },
         { name: 'VOL/TUNE 노브', desc: '이 노브의 기능을 선택하십시오. (볼륨·튜닝 노브)',
@@ -3763,10 +3763,10 @@ var stockScreenGroup = '';
         '후석 취침 모드':'soundRearSleep', '후진 시 음량 줄임':'soundReverseDim',
         '주행·주차 안전 우선':'soundReverseDim', '안내 음량':'soundVolume', '화면 터치음':'soundBeepMode',
         '서라운드':'soundSurround', '파워 트레블':'soundPowerTreble', '음장 효과':'soundEqMode',
-        '능동 사운드 디자인':'soundAsl'};
+        '능동 사운드 디자인':'soundAsd'};
       // 0/1 로만 오는 항목은 켜짐/꺼짐으로 읽는다(단위는 차에서 확인 중).
       var soundOnOff = { soundAutoVolume:1, soundReverseDim:1, soundNaviDuringCall:1, soundRearSleep:1,
-        soundPriority:1, soundBeepMode:1, soundSurround:1, soundSdvc:1, soundPowerTreble:1, soundAsl:1 };
+        soundBeepMode:1, soundSurround:1 };
       // Amplifier reads from StockVehicle (MicomAudioManager) sit in vehicleInfo; older ones in vehicleSettings.
       var soundValue = function (label) {
         var key = soundKeys[label];

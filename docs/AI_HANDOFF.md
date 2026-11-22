@@ -1,5 +1,23 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test2 미니맥스 0.5.0-test1 검수 (2026-11-22, Claude)
+
+브랜치 `minimax/ccnc-settings`. **main 병합 보류.** 안전 규칙(쓰기 스위치 기본 꺼짐, 차에 명령 안 보냄, 비공개 파일 커밋 없음)은 지켰다.
+- 근거 대조: 연동표의 앰프 메서드 13개(setVariableEq·setSoundPriority·setSurroundOn/Off·setRearSleepMode·setDiPOCallVolume·setUvoBlueLinkVolume·getUserSettingName·setParameters·setVolume(III)·getVolume(II)·getActiveSoundDesign·getStreamTypeParameter)와 `MicomAudioStatus` 필드는 smali에 실제로 있다. 순정 설정 패키지 이름(`com.android.buttonsettings`·`vehiclesettings`·`soundsettings`·`displaysettings`·`generalsettings`)은 차 패키지 목록과 맞다. `UserProfileMainActivity`는 APK 매니페스트에 있다. `.SoundSettings`·`.DisplaySettings`·`.GeneralSettings`·`.CustomButtonSetting` 활동 이름은 **미확인**(틀려도 캡처만 빠지고 해는 없음).
+- 고친 것:
+  - 쓰기 연결이 페이지가 보낸 **아무 키나** system/global/secure에 쓰려 했다 → `auto_time`(0/1)·`time_12_24`(12/24)만 받게 허용 목록으로 막음.
+  - "능동 사운드 디자인"을 `mAsl`에 연결했다 → 필드 `mAsdMode`(ASD)를 새로 읽어 `soundAsd`로 연결.
+  - 속도 연동 음량(`mSDVC`)·내비 안내 우선·파워 트레블·`mAsl`을 0/1이면 켜짐/꺼짐으로 표시하던 것 → 단계 값일 수 있어 숫자 그대로 표시.
+  - 버튼 선택지 오타 "내자 위치 공유"→"내 차 위치 공유", "네비게이션"→"내비게이션".
+  - 수집 스크립트 28번의 `| head`는 4.4 기본 셸에 없을 수 있어 뺌(앞선 `settings list`는 4.4에 없어 실패하던 것이 맞다).
+  - versionCode가 0.4.61과 같은 62였다 → 63.
+  - 연동표: 4.4에서 `WRITE_SETTINGS`는 서명 권한이 아니라 설치 시 권한이다(매니페스트에 넣으면 System 쓰기가 될 가능성). 지금은 넣지 않음.
+- 남은 문제(다음 작업):
+  - 화면이 설명서와 다르다: 왼쪽 메뉴 글자가 작고 줄이 바뀜, 설명서에 없는 "‹ 설정" 줄과 본문 제목, 위쪽 제목이 "설정"으로 나옴(설명서는 분류 이름), 차량 화면에 › 이동 줄 대신 값 줄, 오른쪽 그림 없음.
+  - 차량 화면 분류가 설명서(운전자 보조·드라이브 모드·액티브 사운드 디자인·하이패스·빌트인 캠·공조…)와 다르다.
+  - 기기 연결·사용자 프로필·디스플레이·일반은 ccNC 모양으로 바뀌지 않았다.
+  - 버튼 선택지는 현재 값을 표시하지 않는다(키 값 번호와 선택지 대응 미확인).
+
 ## 0.5.0-test1 순정 5W 설정을 ccNC 모양 테마 화면으로 옮기기 1~4단계 (2026-11-22, 미니맥스)
 
 작업 브랜치 `minimax/ccnc-settings` (main 은 건드리지 않음). 목표: 설정 카드를 누르면 순정 5W 설정 화면으로

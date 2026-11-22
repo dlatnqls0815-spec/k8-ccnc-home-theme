@@ -53,7 +53,7 @@ Save '24-activity-top.txt' 'dumpsys activity activities' | Out-Null
 Save '25-windows.txt' 'dumpsys window windows' | Out-Null
 Save '26-media.txt' 'dumpsys media_session; dumpsys audio' | Out-Null
 Save '27-theme-mem.txt' 'dumpsys meminfo io.github.k8home' | Out-Null
-Save '28-settings.txt' 'content query --uri content://settings/system 2>/dev/null | head -120; echo ---; content query --uri content://settings/global 2>/dev/null | head -80; echo ---; content query --uri content://settings/secure 2>/dev/null | head -80' | Out-Null
+Save '28-settings.txt' 'content query --uri content://settings/system; echo ---; content query --uri content://settings/global; echo ---; content query --uri content://settings/secure' | Out-Null
 
 # 3) 테마 화면 캡처 (홈, 전체 메뉴, 미디어)
 $shots = @(
