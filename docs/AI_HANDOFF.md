@@ -1,4 +1,64 @@
 # K8 Gen5W 홈
+## 0.5.0-test11 미니맥스: 차량 값 읽기 경로 조사 + 차량 화면을 ccNC 설명서 모양으로 (2026-11-22)
+
+브랜치 `minimax/ccnc-settings`. Claude 의 0.5.0-test10(c19f2f4) 뒤에 이어서 4개 할 일을 처리했다.
+**차에 명령은 한 번도 보내지 않았다.** 쓰기 코드·새 권한은 없다.
+
+### 1번 — 값 읽는 경로 조사(코드 변경 없음)
+
+`docs/차량설정-연동조사.md` 를 새로 만들었다.
+
+- 순정 차량 설정 앱 dex 를 뒤져 **항목·설명은 제공자 DB**(`content://com.android.vehiclesettings.provider.VehicleSettingsProvider/VehicleSettingsDB.db/VehicleSettings`,
+  표 `VehicleSettings`: no/major/minor/parentid, ko_KR, ko_KR_desc …)에 들어 있음을 확인했다.
+  검색 앱(com.hkmc.ssearch)도 같은 DB를 본다.
+- **시스템 속성 15개**는 읽을 수 있다(테마가 이미 쓰는 `android.os.SystemProperties` 리플렉션 경로).
+  `persist.sys.usmAmbientLight` `persist.sys.climate.tunnelsect/othersect/recmodeplus` `persist.sys.seatPositioning` `persist.sys.seatWheelHeat`
+  `persist.sys.VSDriverAssistance` `persist.sys.showVehicleSetting` `persist.sys.usmMoodLamp` `persist.sys.usmASDsetting`
+  `persist.sys.showSWRCFrontSeat` `persist.sys.showSeatMemoryt` `persist.sys.smartImsOption` `persist.sys.performancegauge` 등.
+- **차량 버스(BCM) 쪽 값은 불가**(공개 getter 없음, 부르면 차량에 명령이 나감).
+- 항목마다 "읽는 방법·일반 앱 가능 여부·상태(확인됨/추정/불가)" 를 표로 남겼다.
+
+### 2번 — 읽기 연결
+
+- `HeadUnitInfo.vehicleProps()` 를 추가해 위 시스템 속성 15개를 읽는다(읽기 전용).
+- 이미 읽던 `drivemode_notification`(드라이브 모드 변경 알림), `seat_position_alert`(시트 위치 변경 알림),
+  `persist.sys.setting.cluster`(클러스터 테마), `use_welcome_message`(웰컴 사운드)와 함께 화면에 붙인다.
+- 화면 표시 규칙: **켜짐/꺼짐으로 확인된 항목**(드라이브 모드 변경 알림·시트 위치 변경 알림·웰컴 사운드)만 켜짐/꺼짐,
+  나머지는 "순정 값 N", 못 읽으면 "순정 연동 대기". 수집 당시 값을 고정으로 넣지 않는다.
+
+### 3번 — 차량 화면을 ccNC 설명서 모양으로
+
+- 분류 11개(운전자 보조·드라이브 모드·환경차·HUD·클러스터·공조·시트·라이트·도어·디지털 키·편의)와 하위 화면 32개를
+  **실차 캡처**(`crawl-vehicle/*.xml`, PNG)에서 뽑아 그대로 넣었다.
+- 줄 종류를 구분해 그린다: **라디오 선택지**(전방 안전 = 충돌방지 보조/충돌 경고/끄기), **켜짐/꺼짐 토글**(주행 편의 3개),
+  **값 표시**(속도 오프셋 0 km/h), **하위 화면 이동**(›), **설명 글**(줄 아래 회색 글).
+- ccNC 설명서 규격으로 고친 것: 설명 글은 줄 안쪽(아래)에 넣고, 토글은 왼쪽(알약 6.15vw × 1.95vw, 손잡이 1.8vw),
+  본문 첫 줄 글자 x 560, 줄 피치 123(6.4vw), 글자 1.72vw 는 그대로.
+  → ccNC 설명서(945×354) 기준 본문 글자 x 556~558 / 줄 피치 122 / 글자 높이 28 과 **차이 1~3px**.
+- 오른쪽 그림: ccNC 설명서의 차량 화면은 **사진형**(실물 렌더링)이라 선 그림으로 그리지 않는다(보류).
+  클러스터·HUD 는 선 그림이라 기존 선 그림을 쓴다.
+- ccNC 에만 있고 이 차에 없는 항목(액티브 사운드 디자인·하이패스·빌트인 캠·EV)은 넣지 않았다.
+
+### 4번 — 차 시험 준비
+
+- `tools/car_capture.ps1` 에 3-4절(차량 값 읽기 경로 확인)을 추가했다.
+  `content query`(제공자), `getprop`(차량 속성), `settings get`(차량 키)만 읽는다. setprop·settings put·content update 는 쓰지 않는다.
+- `docs/설정-차시험.md` 에 2-2절(차량 화면 읽기 확인)을 추가했다.
+- `docs/설정-연동표.md` 7절에 7-1절(조사 결과)을 추가했다.
+
+### 확인
+
+- PC(차 흉내 1280×480·1.5배·`CSS.supports=()=>false`·간격 0·flex 버튼 block)로 차량 11개 분류와 하위 화면을 돌려 봤다. **화면 오류 0개.**
+- 비교 그림: `deliverables/검수전/compare-vehicle/` (분류마다 1장: 위=ccNC 설명서, 가운데=순정 5W 캡처, 아래=테마 차 흉내) + `측정값.txt`.
+
+### 추정인 것 · 못 한 것
+
+- 속성 이름과 항목의 대응(예: `persist.sys.climate.tunnelsect` 이 "터널 구간" 항목인지)은 **추정**이다. 값의 뜻도 아직 모른다.
+- 차량 설정 DB 를 일반 앱에서 읽을 수 있는지는 **미확인**(차 시험에서 `content query` 로 확인).
+- 도어 > 자동 잠금 해제 화면은 수집이 안 돼서(수집 로그에 건너뜀 기록) 항목을 넣지 못했다.
+- 라이트 > 실내 무드 조명의 밝기·색상은 하위 화면을 못 봐서 순정 디스플레이 설정으로 여는 버튼만 뒀다.
+- CCM(EV) 전용 분류는 넣지 않았다.
+
 ## 0.5.0-test9 미니맥스: 값 읽기(읽기 전용)·값의 뜻 표·화면 목록 교체·순정 활동 이름 (2026-11-22)
 
 브랜치 `minimax/ccnc-settings`. Claude 의 실차 수집(37d835a) 결과를 근거로 4개 할 일을 처리했다.
