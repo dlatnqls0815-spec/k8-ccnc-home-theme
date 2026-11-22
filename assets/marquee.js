@@ -13,6 +13,9 @@
     '.mq-on > .mq { display: inline-block !important; position: static !important; float: none !important; ' +
     'width: auto !important; max-width: none !important; min-width: 0 !important; margin: 0 !important; ' +
     'padding: 0 !important; overflow: visible !important; white-space: nowrap !important; vertical-align: top; ' +
+    // 글자 모양은 원래 글자와 똑같이(굵기 하나). 감싸는 틀이 생겼다고 굵기가 바뀌면 안 된다.
+    'font-weight: inherit !important; font-style: inherit !important; font-family: inherit !important; ' +
+    'font-size: inherit !important; line-height: inherit !important; letter-spacing: inherit !important; ' +
     '-webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); }';
   document.head.appendChild(style);
 

@@ -13,10 +13,7 @@ html, body {
   font: 500 16px/1.38 "Malgun Gothic", "Apple SD Gothic Neo", Roboto, sans-serif;
   user-select: none; -webkit-user-select: none;
 }
-button, input { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
-button:focus-visible { outline: 2px solid #53d7c0; outline-offset: -2px; }
-/* Chrome 30 은 :focus-visible 을 몰라 누른 버튼에 주황 기본 초점 테두리가 남았다. */
-.legacy button:focus, .legacy [tabindex]:focus { outline: none; }
+button, input { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }/* :focus-visible 는 Chrome 30 에서 지원하지 않는다. button:focus{outline:none} 를 쓴다. *//* :focus-visible 는 Chrome 30 에서 지원하지 않는다. button:focus{outline:none} 를 쓴다. */ 를 쓴다. */
 html { -webkit-tap-highlight-color: rgba(0,0,0,0); }
 button:active { opacity: .82; }
 h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
@@ -62,13 +59,15 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   border: 1px solid rgba(255,255,255,.12);
 }
 
-.top-left, .top-right { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.top-left, .top-right { display: flex; align-items: center;; min-width: 0; }
+.top-left, .top-right > * + * { margin-left: 12px; }
 .profile-btn, .top-title-wrap {
-  display: inline-flex; align-items: center; gap: 11px;
+  display: inline-flex; align-items: center;;
   padding: 6px 10px; border-radius: 6px;
   font-size: 16px; font-size: 19.84px; /*c30*/ font-size: clamp(16px, 1.55vw, 27px); font-weight: 500; color: #f4f8ff;
   text-shadow: 0 1px 4px rgba(0,0,0,.45);
 }
+.profile-btn, .top-title-wrap > * + * { margin-left: 11px; }
 .profile-btn:hover { background: rgba(255,255,255,.08); }
 .device-switch-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -80,8 +79,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 /* Media top center tabs (재생 목록 | 라이브러리) */
 .top-tabs {
   position: absolute; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 32px; height: 100%;
+  display: flex; align-items: center;; height: 100%;
 }
+/* Media top center tabs (재생 목록 | 라이브러리) */
+.top-tabs > * + * { margin-left: 32px; }
 .top-tab {
   position: relative; height: 100%; padding: 0 10px;
   display: inline-flex; align-items: center;
@@ -109,9 +110,13 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 
 /* Clock & top status */
 .bt-badge {
-  display: inline-flex; align-items: center; gap: 4px;
+  display: inline-flex; align-items: center;;
   font-size: 11px; font-size: 11px; /*c30*/ font-size: clamp(11px, .85vw, 15px); color: rgba(240,247,255,.78);
 }
+/* ccNC shows no handle: the top edge stays a pull/tap zone only. */
+
+/* Clock & top status */
+.bt-badge > * + * { margin-left: 4px; }
 .shell.in-detail .bt-badge { display: none; }
 .clock {
   font-size: 18px; font-size: 23.68px; /*c30*/ font-size: clamp(18px, 1.85vw, 33px); font-weight: 500;
@@ -133,10 +138,12 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   top: 11.5%; left: 2.2%; right: 2.2%; bottom: 9.5%;
 }
 .shell.in-detail .deck {
-  top: 11.5%; left: 0; right: 0; bottom: 12.5%;
+  top: 11.5%; left: 0; right: 0;
+  bottom: 62.6667px; /*c30*/ bottom: 4.8958vw;
 }
 .shell.in-navi .deck {
-  top: 0; left: 0; right: 0; bottom: 12.5%;
+  top: 0; left: 0; right: 0;
+  bottom: 62.6667px; /*c30*/ bottom: 4.8958vw;
 }
 
 /* Chamfered card common style (ccNC signature cut corners) */
@@ -163,10 +170,12 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .standby-clock small { font-size: 0.34em; font-weight: 500; margin-left: 8px; }
 .standby-weather {
-  margin-top: 14px; display: flex; flex-direction: column; gap: 4px;
+  margin-top: 14px; display: flex; flex-direction: column;;
   font-size: 13px; font-size: 14.08px; /*c30*/ font-size: clamp(13px, 1.1vw, 19px); color: rgba(240,247,255,.92);
 }
-.standby-temp-row { display: flex; align-items: center; gap: 10px; }
+.standby-weather > * + * { margin-top: 4px; }
+.standby-temp-row { display: flex; align-items: center;; }
+.standby-temp-row > * + * { margin-left: 10px; }
 .standby-temp { font-size: 24px; font-size: 30.72px; /*c30*/ font-size: clamp(24px, 2.4vw, 40px); font-weight: 400; }
 .standby-air { color: #7ce89e; font-weight: 500; }
 .standby-media {
@@ -231,14 +240,17 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   color: #f5f8fc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .hcard-caption-main span {
-  display: flex; align-items: center; gap: 6px; margin-top: 5px;
+  display: flex; align-items: center;; margin-top: 5px;
   font-size: 12px; font-size: 12.8px; /*c30*/ font-size: clamp(12px, 1.0vw, 17px); color: #9aa5b4;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.hcard-caption-main span > * + * { margin-left: 6px; }
 .hcard-circles {
-  display: flex; align-items: center; gap: 8px; gap: 10.24px; /*c30*/ gap: clamp(8px, .8vw, 14px);
+  display: flex; align-items: center;;; /*c30*/ gap: clamp(8px, .8vw, 14px);
   margin-left: 10px; flex-shrink: 0;
 }
+.hcard-circles > * + * { margin-left: 10.24px; }
+.hcard-circles > * + * { margin-left: 8px; }
 .circle-btn {
   width: 38px; width: 42.24px; /*c30*/ width: clamp(38px, 3.3vw, 56px); height: 38px; height: 42.24px; /*c30*/ height: clamp(38px, 3.3vw, 56px);
   border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
@@ -258,8 +270,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .apps-view {
   position: relative; width: 100%; height: 100%;
   display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 1.15%;
+ ;
 }
+/* All Apps 6-Tile Grid (5W mod video 6.2s, 14.2s, 16.5s & Systemoverview_home_5/6.gif) */
+.apps-view > * + * { margin-left: 1.15%; }
 .app-tile {
   position: relative; height: 100%; overflow: hidden;
   display: grid;
@@ -286,11 +300,12 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .app-badge { display: none !important; }
 .app-badge-unused {
   position: absolute; top: 12px; right: 12px; z-index: 2;
-  display: inline-flex; align-items: center; gap: 5px;
+  display: inline-flex; align-items: center;;
   padding: 3px 10px; border-radius: 12px;
   background: #4cd080; color: #082313;
   font-size: 10px; font-size: 10.24px; /*c30*/ font-size: clamp(10px, .8vw, 13px); font-weight: 500;
 }
+.app-badge-unused > * + * { margin-left: 5px; }
 .app-badge::before {
   content: ""; width: 6px; height: 6px; border-radius: 50%; background: #082313;
 }
@@ -304,8 +319,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .reorder-arrows {
-  display: none; gap: 4px;
+  display: none;;
 }
+.reorder-arrows > * + * { margin-left: 4px; }
 .apps-view.reordering .reorder-arrows { display: inline-flex; }
 .reorder-btn {
   width: 26px; height: 26px; border-radius: 4px;
@@ -316,8 +332,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 /* Home bottom pager bar (Systemoverview_home_2.png 4 bars + 5W mod video labels) */
 .home-pager {
   position: absolute; z-index: 9; left: 2.2%; right: 2.2%; bottom: 0; height: 9.5%;
-  display: flex; align-items: center; justify-content: center; gap: 18px;
+  display: flex; align-items: center; justify-content: center;;
 }
+/* Home bottom pager bar (Systemoverview_home_2.png 4 bars + 5W mod video labels) */
+.home-pager > * + * { margin-left: 18px; }
 .pager-nav-btn {
   font-size: 11px; font-size: 11.52px; /*c30*/ font-size: clamp(11px, .9vw, 15px); color: rgba(235,244,255,.78);
   padding: 5px 10px; border-radius: 6px;
@@ -325,8 +343,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .pager-nav-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
 .pager-bars {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center;;
 }
+.pager-bars > * + * { margin-left: 8px; }
 .pager-bar {
   width: 22px; width: 26.88px; /*c30*/ width: clamp(22px, 2.1vw, 36px); height: 4px; border-radius: 2px;
   background: rgba(255,255,255,.28); padding: 0;
@@ -337,8 +356,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .pager-nav-btn, .pager-bar[data-page="standby"], .pager-tools > .pager-tool-btn:not(#reorder-toggle-btn) { display: none; }
 .pager-tools {
-  position: absolute; right: 0; display: flex; align-items: center; gap: 6px; opacity: .78;
+  position: absolute; right: 0; display: flex; align-items: center;; opacity: .78;
 }
+.pager-tools > * + * { margin-left: 6px; }
 .pager-tools:hover { opacity: 1; }
 .pager-tool-btn {
   padding: 4px 10px; border-radius: 5px;
@@ -388,10 +408,12 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   padding: 14px; padding: 17.92px; /*c30*/ padding: clamp(14px, 1.4vw, 22px); overflow: hidden;
 }
 .split-header {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;; z-index: 2;
 }
+.split-header > * + * { margin-left: 8px; }
 .split-header strong { font-size: 15px; font-size: 16px; /*c30*/ font-size: clamp(15px, 1.25vw, 21px); color: #f3f6fb; }
-.split-vert-btns { display: flex; gap: 4px; }
+.split-vert-btns { display: flex;; }
+.split-vert-btns > * + * { margin-left: 4px; }
 .split-mini-btn {
   width: 28px; height: 28px; border-radius: 6px;
   background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
@@ -417,11 +439,13 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .split-card.touching .split-page-arrow { opacity: 1; }
 .split-content-box {
   width: 100%; height: 100%; padding: 0 32px;
-  display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  display: flex; flex-direction: column; justify-content: center;;
 }
+.split-content-box > * + * { margin-top: 8px; }
 .split-dots {
-  display: flex; align-items: center; justify-content: center; gap: 7px; z-index: 2;
+  display: flex; align-items: center; justify-content: center;; z-index: 2;
 }
+.split-dots > * + * { margin-left: 7px; }
 .split-dot {
   width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.3); padding: 0;
 }
@@ -432,8 +456,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .navi-stage canvas { width: 100%; height: 100%; display: block; }
 .navi-left-floating {
   position: absolute; left: 14px; top: 14px; bottom: 14px; z-index: 4;
-  display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
+  display: flex; flex-direction: column; justify-content: space-between;;
 }
+.navi-left-floating > * + * { margin-top: 6px; }
 .navi-tool-btn {
   width: 46px; width: 52.48px; /*c30*/ width: clamp(46px, 4.1vw, 66px); flex: 1; max-height: 70px;
   border-radius: 6px; background: rgba(28, 33, 40, 0.84);
@@ -447,8 +472,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .navi-speed-overlay {
   position: absolute; left: 72px; left: 79.36px; /*c30*/ left: clamp(72px, 6.2vw, 102px); top: 14px; z-index: 4;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: column; align-items: center;;
 }
+.navi-speed-overlay > * + * { margin-top: 4px; }
 .navi-speed-num {
   font-size: 22px; font-size: 29.44px; /*c30*/ font-size: clamp(22px, 2.3vw, 38px); font-weight: 500; color: #fff;
   text-shadow: 0 2px 6px rgba(0,0,0,.8);
@@ -466,9 +492,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .navi-tbt-stack {
   position: absolute; right: 18px; top: 48px; z-index: 4;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+  display: flex; flex-direction: column; align-items: flex-end;;
   width: 190px; width: 268.8px; /*c30*/ width: clamp(190px, 21vw, 330px);
 }
+.navi-tbt-stack > * + * { margin-top: 6px; }
 .navi-tbt-sub {
   width: 88%; padding: 7px 14px; border-radius: 8px;
   background: rgba(42, 49, 60, 0.88); border: 1px solid rgba(255,255,255,.15);
@@ -478,9 +505,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .navi-tbt-main {
   width: 100%; padding: 12px 16px; border-radius: 10px;
   background: rgba(48, 56, 68, 0.94); border: 1px solid rgba(255,255,255,.2);
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center;;
   box-shadow: 0 8px 20px rgba(0,0,0,.45);
 }
+.navi-tbt-main > * + * { margin-left: 14px; }
 .navi-tbt-turn-icon {
   font-size: 28px; font-size: 35.84px; /*c30*/ font-size: clamp(28px, 2.8vw, 46px); color: #27c2a4; font-weight: 500; line-height: 1;
 }
@@ -488,11 +516,12 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .navi-tbt-label { font-size: 12px; font-size: 12.8px; /*c30*/ font-size: clamp(12px, 1vw, 17px); color: #cfd8e4; margin-top: 3px; }
 .navi-lane-bar {
   position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 4;
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center;;
   padding: 6px 14px; border-radius: 8px;
   background: rgba(26, 32, 40, 0.92); border: 1px solid rgba(255,255,255,.2);
   font-size: 13px; font-size: 14.08px; /*c30*/ font-size: clamp(13px, 1.1vw, 18px); font-weight: 500;
 }
+.navi-lane-bar > * + * { margin-left: 10px; }
 .lane-arrow {
   padding: 2px 8px; border-right: 1px dashed rgba(255,255,255,.25); color: #d5dfe9;
 }
@@ -501,8 +530,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 /* 2) Media (Bluetooth Audio) Detail View (Media_btmusic_3/4/5.png) */
 .media-stage {
   width: 100%; height: 100%; padding: 10px 2.2%;
-  display: flex; align-items: stretch; gap: 1.8%;
+  display: flex; align-items: stretch;;
 }
+/* 2) Media (Bluetooth Audio) Detail View (Media_btmusic_3/4/5.png) */
+.media-stage > * + * { margin-left: 1.8%; }
 .media-device-box {
   position: relative; width: 23%; min-width: 150px;
   background: #1f1f20; border-radius: 6px;
@@ -538,8 +569,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   color: #6ec49c; font-weight: 500; background: rgba(43,183,155,.08);
 }
 .eq-bars {
-  display: inline-flex; align-items: flex-end; gap: 3px; height: 18px;
+  display: inline-flex; align-items: flex-end;; height: 18px;
 }
+.eq-bars > * + * { margin-left: 3px; }
 .eq-bars i {
   width: 3px; background: #6ec49c; display: inline-block;
 }
@@ -549,8 +581,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .eq-bars i:nth-child(4) { height: 80%; }
 
 .media-single-info {
-  padding: 6px 14px; display: flex; flex-direction: column; gap: 8px;
+  padding: 6px 14px; display: flex; flex-direction: column;;
 }
+.media-single-info > * + * { margin-top: 8px; }
 .media-single-header {
   display: flex; align-items: center; justify-content: space-between;
 }
@@ -566,8 +599,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   margin-top: 10px;
 }
 .media-transport-btns {
-  display: flex; align-items: center; gap: 18px; gap: 30.72px; /*c30*/ gap: clamp(18px, 2.4vw, 42px);
+  display: flex; align-items: center;;; /*c30*/ gap: clamp(18px, 2.4vw, 42px);
 }
+.media-transport-btns > * + * { margin-left: 30.72px; }
+.media-transport-btns > * + * { margin-left: 18px; }
 .transport-icon-btn {
   width: 48px; height: 48px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
@@ -575,8 +610,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .transport-icon-btn:hover { background: rgba(255,255,255,.12); }
 .media-scrubber {
-  margin-top: 10px; display: flex; flex-direction: column; gap: 6px;
+  margin-top: 10px; display: flex; flex-direction: column;;
 }
+.media-scrubber > * + * { margin-top: 6px; }
 .media-progress-bar {
   position: relative; width: 100%; height: 4px; background: rgba(255,255,255,.2);
   border-radius: 2px; cursor: pointer;
@@ -592,8 +628,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .media-right-box {
   width: 24%; min-width: 155px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;;
 }
+.media-right-box > * + * { margin-top: 12px; }
 .media-album-art {
   width: 130px; width: 217.6px; /*c30*/ width: clamp(130px, 17vw, 330px); height: 130px; height: 217.6px; /*c30*/ height: clamp(130px, 17vw, 330px);
   border-radius: 6px; overflow: hidden;
@@ -607,8 +644,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 #list-mini-transport .transport-icon-btn { width: 56px !important; height: 56px !important; font-size: 26px; }
 #list-mini-transport .ico { width: 30px !important; height: 30px !important; }
 .media-view-switcher {
-  display: flex; gap: 6px;
+  display: flex;;
 }
+.media-view-switcher > * + * { margin-left: 6px; }
 .view-chip {
   padding: 4px 10px; border-radius: 5px;
   background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.18);
@@ -621,8 +659,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 /* 3) Phone (Call History) Detail View (Phone_callhistory_3.png) */
 .phone-stage {
   width: 100%; height: 100%; padding: 10px 2.2%;
-  display: flex; align-items: stretch; gap: 2%;
+  display: flex; align-items: stretch;;
 }
+/* 3) Phone (Call History) Detail View (Phone_callhistory_3.png) */
+.phone-stage > * + * { margin-left: 2%; }
 .phone-list-box {
   flex: 1; background: #1f1f20; border-radius: 8px;
   border: 1px solid rgba(255,255,255,.14);
@@ -635,28 +675,34 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   text-align: left;
 }
 .phone-row:hover { background: rgba(255,255,255,.06); }
-.phone-row-left { display: flex; align-items: center; gap: 16px; }
+.phone-row-left { display: flex; align-items: center;; }
+.phone-row-left > * + * { margin-left: 16px; }
 .call-name { font-size: 15px; font-size: 16.64px; /*c30*/ font-size: clamp(15px, 1.3vw, 22px); color: #eeeeee; font-weight: 500; }
 .phone-row-right {
-  display: flex; align-items: center; gap: 20px;
+  display: flex; align-items: center;;
   color: #9a9a9a; font-size: 13px; font-size: 14.08px; /*c30*/ font-size: clamp(13px, 1.1vw, 18px);
 }
+.phone-row-right > * + * { margin-left: 20px; }
 .phone-device-pane {
   width: 25%; min-width: 160px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;;
 }
+.phone-device-pane > * + * { margin-top: 14px; }
 
 /* 4) Settings Main Grid (5W mod video 22s/26s) & Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
 .settings-stage {
   width: 100%; height: 100%; padding: 8px 2.2%;
-  display: flex; flex-direction: column; gap: 10px;
+  display: flex; flex-direction: column;;
 }
+/* 4) Settings Main Grid (5W mod video 22s/26s) & Screen Layout Settings (Settings_screenlayout_2/3/4/7.png) */
+.settings-stage > * + * { margin-top: 10px; }
 .settings-grid {
   flex: 1; display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+ ;
 }
+.settings-grid > * + * { margin-left: 10px; }
 .settings-grid.mode-6x1 {
   grid-template-columns: repeat(6, minmax(0, 1fr));
   grid-template-rows: 1fr;
@@ -684,9 +730,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   align-items: stretch;
 }
 .sl-nav {
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex-direction: column;;
   padding-right: 16px; border-right: 1px solid rgba(255,255,255,.08);
 }
+.sl-nav > * + * { margin-top: 4px; }
 .sl-tab {
   position: relative; padding: 14px 16px 14px 22px;
   text-align: left; font-size: 16px; font-size: 19.2px; /*c30*/ font-size: clamp(16px, 1.5vw, 26px);
@@ -701,9 +748,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   transform: translateY(-50%) skewX(-22deg);
 }
 .sl-main {
-  padding: 8px 26px; display: flex; flex-direction: column; gap: 12px;
+  padding: 8px 26px; display: flex; flex-direction: column;;
   overflow-y: auto;
 }
+.sl-main > * + * { margin-top: 12px; }
 .sl-desc {
   padding-left: 12px; border-left: 2px solid #555e6a;
   font-size: 13px; font-size: 13.44px; /*c30*/ font-size: clamp(13px, 1.05vw, 18px); color: #8c96a3;
@@ -727,8 +775,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   background: #279480; color: #fff; font-weight: 500;
 }
 .sl-radio-left, .sl-check-left {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center;;
 }
+.sl-radio-left, .sl-check-left > * + * { margin-left: 14px; }
 .radio-circle {
   width: 24px; height: 24px; border-radius: 50%;
   border: 2px solid #757f8c; display: inline-flex; align-items: center; justify-content: center;
@@ -754,8 +803,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .sl-preview canvas { width: 100%; max-width: 240px; height: 170px; }
 
 /* Bottom Menu Bar in Detail Screens (Map_1.png, online_navi.jpeg, Media_btmusic_3.png, Phone_callhistory_3.png) */
+/* 하단바 높이는 순정 내비 오버레이 하단바(NavBarService: 화면 높이의 94/720 = 94px)와 정확히 같게 맞춘다.
+   94px 를 1920 기준으로 4.8958vw 로 두고, Chrome 30 용 px 대체 값을 앞에 둔다. */
 .bottom-bar {
-  position: absolute; z-index: 12; left: 0; right: 0; bottom: 0; height: 12.5%;
+  position: absolute; z-index: 12; left: 0; right: 0; bottom: 0;
+  height: 62.6667px; /*c30*/ height: 4.8958vw;
   background: #1d1e21; border-top: 1px solid rgba(255,255,255,.1);
   display: grid; grid-template-columns: 24.4% 50.8% 24.8%;
   align-items: stretch;
@@ -781,8 +833,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   width: 100%; height: 84%; border-radius: 999px;
   background: #141619; border: 1px solid rgba(255,255,255,.08);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; gap: 10px; overflow: hidden;
+  padding: 0 16px;; overflow: hidden;
 }
+.bb-pill > * + * { margin-left: 10px; }
 .bb-route-cancel {
   width: 32px; width: 32px; /*c30*/ width: clamp(32px, 2.5vw, 48px);
   height: 32px; height: 32px; /*c30*/ height: clamp(32px, 2.5vw, 48px); padding: 0; border-radius: 50%;
@@ -815,13 +868,15 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .bb-icon-tabs {
   width: 100%; height: 84%; border-radius: 999px;
   background: #131518; padding: 3px 12px;
-  display: flex; align-items: stretch; justify-content: space-around; gap: 8px;
+  display: flex; align-items: stretch; justify-content: space-around;;
 }
+.bb-icon-tabs > * + * { margin-left: 8px; }
 .bb-tab-btn {
   flex: 1; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center;;
   color: #8e96a2; font-size: 11px; font-size: 12.16px; /*c30*/ font-size: clamp(11px, .95vw, 15px); font-weight: 500;
 }
+.bb-tab-btn > * + * { margin-left: 6px; }
 .bb-tab-btn[aria-selected="true"] {
   background: #279480; color: #fff;
 }
@@ -890,14 +945,18 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .hybrid-flow .hf-flow { stroke-dasharray: 8 6; animation: hf-move .8s linear infinite; }
 @keyframes hf-move { to { stroke-dashoffset: -14; } }
 /* ccNC status glyphs left of the clock (photos of the stock ccNC settings screens): icon only. */
-.top-status { display: inline-flex; align-items: center; gap: 10px; margin-right: 18px; color: #eef3f9; }
+.top-status { display: inline-flex; align-items: center;; margin-right: 18px; color: #eef3f9; }
+/* ccNC status glyphs left of the clock (photos of the stock ccNC settings screens): icon only. */
+.top-status > * + * { margin-left: 10px; }
 .top-status:empty { display: none; }
 .top-status svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .top-status .is-call { color: #53d7c0; }
 .top-status .is-warn { color: #f0a33c; }
 /* ccNC-style low fuel notice: dark pill under the status bar with a nearby gas station shortcut. */
-.fuel-notice { position: fixed; left: 50%; top: 9.5vh; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 16px;
+.fuel-notice { position: fixed; left: 50%; top: 9.5vh; transform: translateX(-50%); z-index: 60; display: flex; align-items: center;;
   padding: 12px 14px 12px 22px; border-radius: 14px; background: rgba(28,31,36,.96); box-shadow: 0 6px 24px rgba(0,0,0,.45); color: #eef3f9; font-size: 19px; }
+/* ccNC-style low fuel notice: dark pill under the status bar with a nearby gas station shortcut. */
+.fuel-notice > * + * { margin-left: 16px; }
 .fuel-notice[hidden] { display: none; }
 .fuel-notice svg { width: 24px; height: 24px; fill: none; stroke: #f0a33c; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .fuel-notice button { border: 0; border-radius: 10px; padding: 10px 18px; font: inherit; font-size: 17px; color: #eef3f9; background: rgba(238,243,249,.12); }
@@ -927,9 +986,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .qc-icon-btn:hover { background: rgba(255,255,255,.16); }
 .qc-grid {
   flex: 1; margin: 12px 0;
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;;
 }
-.qc-col { display: flex; flex-direction: column; gap: 12px; }
+.qc-grid > * + * { margin-left: 14px; }
+.qc-col { display: flex; flex-direction: column;; }
+.qc-col > * + * { margin-top: 12px; }
 .qc-tile {
   flex: 1; border-radius: 8px;
   background: #23201e; border: 1px solid rgba(255,255,255,.12);
@@ -971,7 +1032,8 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 
 @media (max-width: 820px) {
-  .hcard-circles { gap: 5px; }
+  .hcard-circles {; }
+.hcard-circles > * + * { margin-left: 5px; }
   .circle-btn { width: 34px; height: 34px; }
   .pager-tools { display: none; }
   .split-widget { width: 36%; min-width: 180px; }
@@ -1225,7 +1287,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .memo-side { width: 22%; width: 22.2vw; max-width: none; flex-shrink: 0; }
 .search-side { flex: 1; padding-right: 1.2vw; }
 .search-results { flex: none; width: 23%; width: 22.6vw; }
-.settings-grid { grid-template-columns: calc(22.2vw - 5px) minmax(0, 1fr) minmax(0, 1fr) calc(22.6vw - 5px); }
+.settings-grid { grid-template-columns: calc(22.2vw - 5px) minmax(0, 1fr) minmax(0, 1fr) calc(22.6vw - 5px); /*c30-ok: .legacy 규칙이 대체한다*/ } /*c30-ok: .legacy 규칙이 대체한다(Chrome 30 은 grid 를 못 쓴다)*/
 .settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .media-stage, .phone-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
 .settings-stage, .aux-stage { padding-left: 2.2vw; padding-right: 2.2vw; }
@@ -1238,7 +1300,12 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
    ccNC photo, all mapped to 1920x720): header title 34px, clock 49px, side menu 36px with 95px pitch,
    list rows 124px with 28px labels and 41px check boxes, description 24px, home caption 35% of the card.
    vw values are 1920-based so 1280x480 heads scale the same way. */
-.profile-btn, .top-title-wrap { font-size: 1.77vw; gap: .7vw; }
+.profile-btn, .top-title-wrap { font-size: 1.77vw;; }
+/* ccNC scale (measured on D-settings_theme_widget.png, D-systemoverview_home_main.png and the owner's
+   ccNC photo, all mapped to 1920x720): header title 34px, clock 49px, side menu 36px with 95px pitch,
+   list rows 124px with 28px labels and 41px check boxes, description 24px, home caption 35% of the card.
+   vw values are 1920-based so 1280x480 heads scale the same way. */
+.profile-btn, .top-title-wrap > * + * { margin-left: .7vw; }
 .profile-btn .ico, #detail-search-btn .ico { width: 2.3vw; height: 2.3vw; }
 .device-switch-btn { width: 2.6vw; height: 2.6vw; }
 .device-switch-btn .ico { width: 1.25vw !important; height: 1.25vw !important; }
@@ -1251,7 +1318,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .sl-nav { gap: 0; }
 .sl-desc { font-size: 1.25vw; max-width: 36vw; line-height: 1.35; }
 .sl-row-link, .sl-radio-row, .sl-check-row { font-size: 1.46vw; min-height: 5.8vw; padding: 0 1.2vw 0 2vw; }
-.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left { gap: 1.4vw; font-weight: 600; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left {; font-weight: 600; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left > * + * { margin-left: 1.4vw; }
 .check-box, .radio-circle { width: 2.15vw; height: 2.15vw; font-size: 1.9vw; font-weight: 700; border-radius: 3px; }
 .sl-radio-row[aria-checked="true"] .radio-circle::after { width: .7vw; height: .7vw; }
 [data-standby-options] { font-size: 2.3vw; }
@@ -1294,7 +1362,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .hcard-caption-main span { font-size: 1.3vw; margin-top: .6vw; }
 .circle-btn { width: 5vw; height: 5vw; }
 .circle-btn .ico { width: 1.9vw; height: 1.9vw; }
-.hcard-circles { gap: 1.2vw; }
+.hcard-circles {; }
+.hcard-circles > * + * { margin-left: 1.2vw; }
 .media-device-name { font-size: 2vw; }
 .call-name { font-size: 1.46vw; }
 .phone-row-right { font-size: 1.35vw; }
@@ -1310,8 +1379,10 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .sl-panel-content { padding: 1.15vw 2.3vw 0 2.2vw; }
 .sl-desc { margin: 1.15vw 0 1.1vw 3.15vw; }
 .sl-row-link, .sl-radio-row, .sl-check-row { padding: 0 2.5vw 0 3.7vw; }
-.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left { gap: 2vw; }
-.profile-btn, .top-title-wrap { gap: 1.25vw; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left {; }
+.sl-check-row .sl-check-left, .sl-radio-row .sl-radio-left > * + * { margin-left: 2vw; }
+.profile-btn, .top-title-wrap {; }
+.profile-btn, .top-title-wrap > * + * { margin-left: 1.25vw; }
 .sl-preview canvas { margin-top: 2.9vw; }
 .deck { top: 13.1%; bottom: 7.9%; }
 .hcard-caption { align-items: flex-end; padding: 0 1.55vw .95vw; }
@@ -1319,7 +1390,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .hcard-caption-main span { margin-top: 0; }
 .hcard-caption-main span .ico { width: 2vw !important; height: 2vw !important; }
 .circle-btn { width: 5.2vw; height: 5.2vw; }
-.hcard-circles { gap: 1.45vw; }
+.hcard-circles {; }
+.hcard-circles > * + * { margin-left: 1.45vw; }
 .sl-row-link { padding-left: 2.15vw; }
 .sl-chevron { margin-right: 2.2vw; display: inline-flex; }
 .sl-chevron svg { width: 1vw; height: 2vw; fill: none; stroke: #9aa1a9; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -1370,7 +1442,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 /* D-settings_main.png (1920x720): cards 45-1875 x 93-608, 6x2, 17px gaps, #1b1b1b, bold 28px titles,
    ~64px outline icons bottom-right. */
 .settings-stage { padding: 10px 2.35vw 22px; gap: 0; }
-.settings-grid, .settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.settings-grid, .settings-grid.mode-6x1 { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr));; }
+.settings-grid, .settings-grid.mode-6x1 > * + * { margin-left: 17px; }
 .set-card { background: #1b1b1b; border-radius: 4px; padding: 1.5vw 1.3vw 1.3vw 1.3vw; clip-path: none; }
 .set-card:hover { background: #262626; }
 .set-card strong { font-size: 1.56vw; font-weight: 600; color: #f2f2f2; }
@@ -1392,8 +1465,7 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .sound-info-row { margin-left: 2.35vw; padding: 1.5vw .3vw; font-weight: 600; border-bottom-color: rgba(255,255,255,.08); }
 .sound-info-row span { font-weight: 400; color: #9aa1a9; }
 .sound-illustration span { display: none; }
-.sound-illustration svg { width: 19vw; max-width: none; height: 15vw; }
-.sl-tab:focus-visible, .sound-nav button:focus-visible { outline: none; }
+.sound-illustration svg { width: 19vw; max-width: none; height: 15vw; }/* :focus-visible 는 Chrome 30 에서 지원하지 않는다. button:focus{outline:none} 를 쓴다. */ 를 쓴다. */
 .detail-settings-layout .sl-nav { margin-left: 0; width: 24.4vw; padding-left: 0; }
 .shell.sound-mode .settings-stage, .shell.detail-settings .settings-stage { padding-left: 0; }
 .detail-settings-layout .sl-tab { padding-left: 2.65vw; border: 0 !important; background: none !important; box-shadow: none !important; }
@@ -1447,7 +1519,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   height: 4px; border-radius: 2px; background: #4c4e52;
 }
 #theme-settings-detail input[type=range]::-webkit-slider-thumb, .sound-panel input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 2.3vw; height: 2.3vw; margin-top: calc(2px - 1.15vw); border-radius: 50%; background: #e9e9e9; border: 0;
+  -webkit-appearance: none; width: 2.3vw; height: 2.3vw; margin-top: calc(2px - 1.15vw); border-radius: 50%; background: #e9e9e9; border: 0; /*c30-ok: .legacy 규칙이 대체한다(Chrome 30 은 grid 를 못 쓴다)*/
 }
 #theme-settings-detail .theme-control[data-host="brightness-down"], #theme-settings-detail .theme-control[data-host="brightness-up"],
 .sound-panel .sound-step {
@@ -1467,8 +1539,10 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 
 .phone-row .call-dir { width: 2.4vw; height: 2.4vw; }
 .phone-row .call-type { width: 2vw; height: 2vw; color: #9a9a9a; }
-.phone-row-left { gap: 1.4vw; }
-.phone-row-right { gap: 2.4vw; color: #9a9a9a; }
+.phone-row-left {; }
+.phone-row-left > * + * { margin-left: 1.4vw; }
+.phone-row-right {; color: #9a9a9a; }
+.phone-row-right > * + * { margin-left: 2.4vw; }
 .call-name { font-weight: 600; }
 #list-mini-transport .ico { width: 2vw !important; height: 2vw !important; }
 #list-mini-transport .transport-icon-btn { width: 3.6vw !important; height: 3.6vw !important; }
@@ -1476,10 +1550,12 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 /* D-media_bluetooth_main2.png single-song view: top-aligned block from x=519, device 31px, title 60px,
    artist/album 36px (album grey), transport ~50px glyphs 158px apart, thin full-width progress, 27px times. */
 .media-center-box { justify-content: flex-start; }
-.media-single-info { padding: .35vw 0 0 2.2vw; gap: .35vw; }
+.media-single-info { padding: .35vw 0 0 2.2vw;; }
+.media-single-info > * + * { margin-left: .35vw; }
 .media-single-title { margin-top: .8vw; }
 .media-single-album { min-height: 2.5vw; }
-.media-scrubber { gap: .9vw; }
+.media-scrubber {; }
+.media-scrubber > * + * { margin-left: .9vw; }
 .bb-icon-tabs .bb-tab-btn[data-msrc]:first-child { margin-right: 1.5vw; }
 .media-single-phone { font-size: 1.6vw; color: #cfcfcf; }
 .media-single-title { font-size: 3.1vw; }
@@ -1487,7 +1563,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .media-single-album { font-size: 1.85vw; color: #6a6a6a; }
 #back-to-list-btn, #single-track-index { display: none !important; }
 .media-controls-row { margin-top: 2.6vw; }
-.media-transport-btns { gap: 3.3vw; }
+.media-transport-btns {; }
+.media-transport-btns > * + * { margin-left: 3.3vw; }
 .media-single-info .transport-icon-btn { width: 5vw; height: 5vw; font-size: 3vw; }
 .media-single-info .transport-icon-btn svg, .media-single-info .transport-icon-btn .ico { width: 3.6vw !important; height: 3.6vw !important; }
 .media-single-info .transport-icon-btn { font-size: 3.6vw; }
@@ -1576,8 +1653,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
    간격은 margin으로만 준다. 메뉴 아이콘 줄 50~83·33~60, 이름 글자 109부터, 시계 숫자 높이 38(밑 66),
    페이지 막대 36×5·간격 10·가운데 692, 켜진 막대 #bdbdbd·꺼진 막대 #454747, 카드 테두리 #3f4143. */
 /* 잘린 모서리: 설명서 기준 한 변 40px(1920 기준 = 2.1vw), 잘린 선에도 테두리선을 긋는다. */
-.chamfer-br { -webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); }
-.chamfer-both { -webkit-clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); }
+.chamfer-br { -webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%); } /*c30-ok: .legacy 규칙이 대체한다(Chrome 30 은 grid 를 못 쓴다)*/
+.chamfer-both { -webkit-clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); clip-path: polygon(2.1vw 0, 100% 0, 100% calc(100% - 2.1vw), calc(100% - 2.1vw) 100%, 0 100%, 0 2.1vw); } /*c30-ok: .legacy 규칙이 대체한다(Chrome 30 은 grid 를 못 쓴다)*/
 .hcard.chamfer-br::after, .hcard.chamfer-both::after, .app-tile.chamfer-both::after, .hcard.chamfer-both::before, .app-tile.chamfer-both::before {
   content: ""; position: absolute; z-index: 3; width: 2.1vw; height: 2.1vw; pointer-events: none;
 }
@@ -1668,7 +1745,8 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 /* 설정 첫 화면(기아 D-settings_main.png): 카드 292×250, 간격 17(1920 기준), 위 94~아래 609, 바탕 #101010,
    테두리 없음, 아이콘 #9e9e9e. 차 WebView 줄 배치는 CSS px가 아니라 vw로 계산한다. */
 .settings-stage { padding-top: .57vw; padding-bottom: 1.09vw; }
-.settings-grid { gap: .885vw; }
+.settings-grid {; }
+.settings-grid > * + * { margin-left: 11.3333px; }
 .set-card { background: #101010; border: 0; }
 .set-card:hover { background: #1c1c1c; }
 .set-card-icon { color: #9e9e9e; }
@@ -1676,13 +1754,13 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .set-card { padding: 1.66vw .78vw .88vw 1.5vw; }
 .legacy .set-card > div { top: 1.66vw; left: 1.5vw; right: .78vw; }
 .legacy .set-card-icon { right: .78vw; bottom: .88vw; }
-.legacy .settings-grid .set-card { width: calc((100% - 5 * .885vw) / 6); height: calc((100% - .885vw) / 2); }
-.legacy .settings-grid .set-card:nth-child(6n + 2) { left: calc((100% - 5 * .885vw) / 6 + .885vw); }
-.legacy .settings-grid .set-card:nth-child(6n + 3) { left: calc((100% - 5 * .885vw) / 3 + 2 * .885vw); }
-.legacy .settings-grid .set-card:nth-child(6n + 4) { left: calc((100% - 5 * .885vw) / 2 + 3 * .885vw); }
-.legacy .settings-grid .set-card:nth-child(6n + 5) { left: calc((100% - 5 * .885vw) * 2 / 3 + 4 * .885vw); }
-.legacy .settings-grid .set-card:nth-child(6n + 6) { left: calc((100% - 5 * .885vw) * 5 / 6 + 5 * .885vw); }
-.legacy .settings-grid .set-card:nth-child(n + 7) { top: calc((100% - .885vw) / 2 + .885vw); }
+.legacy .settings-grid .set-card { width: calc((100% - 5 * 11.3333px) / 6); height: calc((100% - 11.3333px) / 2); }
+.legacy .settings-grid .set-card:nth-child(6n + 2) { left: calc((100% - 5 * 11.3333px) / 6 + 11.3333px); }
+.legacy .settings-grid .set-card:nth-child(6n + 3) { left: calc((100% - 5 * 11.3333px) / 3 + 2 * 11.3333px); }
+.legacy .settings-grid .set-card:nth-child(6n + 4) { left: calc((100% - 5 * 11.3333px) / 2 + 3 * 11.3333px); }
+.legacy .settings-grid .set-card:nth-child(6n + 5) { left: calc((100% - 5 * 11.3333px) * 2 / 3 + 4 * 11.3333px); }
+.legacy .settings-grid .set-card:nth-child(6n + 6) { left: calc((100% - 5 * 11.3333px) * 5 / 6 + 5 * 11.3333px); }
+.legacy .settings-grid .set-card:nth-child(n + 7) { top: calc((100% - 11.3333px) / 2 + 11.3333px); }
 /* 미디어 목록 보기(기아 D-media_bluetooth_main.png): 곡 줄은 왼쪽 정렬, 번호 519·재생 표시 1290(1920 기준),
    줄 높이 123. 차 WebView는 버튼 안 flex·flex-basis를 무시해 글자가 가운데로 몰렸다. 앨범 그림은 한 곡 보기와 같은
    자리(183~502), 작은 이전/일시정지/다음은 그림 아래 가운데 558, 간격 127.5. */
@@ -1714,7 +1792,8 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
    설명문 글자 576, 라디오 원 575~615·글자 656, 기어 1330~1362,
    클러스터 내용 시작 556, 제목 558~730(y221), 세그먼트 바 556~1082(y327,h60)·556~1249(y556,h60). */
 .screenlayout-stage .sl-radio-row { padding-left: 3.5vw; }
-.screenlayout-stage .sl-radio-left { gap: 2.14vw; }
+.screenlayout-stage .sl-radio-left {; }
+.screenlayout-stage .sl-radio-left > * + * { margin-left: 2.14vw; }
 .screenlayout-stage .sl-desc + .standby-option { margin-top: .31vw; }
 .screenlayout-stage .standby-option > [data-standby-options] { padding-right: 2.03vw; }
 .screenlayout-stage .standby-option > [data-standby-options] svg { width: 2.05vw; height: 2.05vw; fill: none; stroke: #88939e; stroke-width: 1.6; }
@@ -1834,13 +1913,118 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .detail-settings-layout.stock-settings-layout .stock-toggle-on .stock-toggle-knob { left: 4.25vw; }
 .detail-settings-layout.stock-settings-layout .stock-switch-row { justify-content: flex-start; }
 .detail-settings-layout.stock-settings-layout .stock-slider-row { justify-content: flex-start; }
+/* ccNC 슬라이더: 트랙 2px(1920 기준), 채운 쪽 초록, 손잡이는 흰 원(지름 57px).
+   - / + 버튼은 값을 바꾸는 기능이라(읽기 전용) 넣지 않는다. */
 .detail-settings-layout.stock-settings-layout .stock-slider {
-  position: relative; flex: none; width: 16vw; height: .5vw; margin: 0 1.2vw; background: #3c424a; border-radius: .25vw;
+  position: relative; flex: none; width: 34.9vw; height: 1.3333px; /*c30*/ height: .1042vw;
+  margin: 0 1.2vw; background: #4a4d52;
 }
-.detail-settings-layout.stock-settings-layout .stock-slider-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #1f9c81; border-radius: .25vw; }
+.detail-settings-layout.stock-settings-layout .stock-slider-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; background: #1f9c81;
+}
 .detail-settings-layout.stock-settings-layout .stock-slider-knob {
-  position: absolute; top: -.65vw; width: 1.8vw; height: 1.8vw; border-radius: 50%; background: #fff;
+  position: absolute; top: -1.4vw; margin-left: -1.485vw; width: 2.97vw; height: 2.97vw;
+  border-radius: 50%; background: #fff;
+}/* :focus-visible 는 Chrome 30 에서 지원하지 않는다. button:focus{outline:none} 를 쓴다. */ 를 쓴다. */
+.ccnc-canvas {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 720px;
+  -webkit-transform-origin: 0 0; transform-origin: 0 0;
 }
+.ccnc-canvas button { display: block; padding: 0; }
+.ccnc-canvas button:focus { outline: none; }
+.ccnc-pos { position: absolute; }
+.ccnc-txt { white-space: nowrap; }
+.ccnc-key { border: 6px solid #dcdcdc; border-radius: 16px; background: rgba(255,255,255,.05); }
+.ccnc-ico { fill: none; stroke: #e8e8e8; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 라디오(FM/AM) */
+.ccnc-radio-back { left: 96px; top: 104px; width: 34px; height: 34px; }
+.ccnc-radio-back svg { position: absolute; left: 0; top: 0; width: 30px; height: 30px; }
+.ccnc-radio-sub { left: 165px; top: 104px; font-size: 30px; color: #f0f0f0; line-height: 1.3; }
+.ccnc-radio-freq { left: 175px; top: 218px; font-size: 46px; color: #f6f6f6; line-height: 1.25; }
+.ccnc-radio-station { left: 177px; top: 292px; font-size: 26px; color: #b6b6b6; line-height: 1.3; }
+.ccnc-radio-ant { left: 176px; top: 470px; width: 8px; height: 32px; background: #46c295; }
+.ccnc-radio-tower { left: 188px; top: 462px; width: 34px; height: 46px; stroke: #7f9c8e; }
+.ccnc-radio-prev { left: 283px; top: 448px; width: 79px; height: 88px; }
+.ccnc-radio-next { left: 455px; top: 448px; width: 81px; height: 88px; }
+.ccnc-radio-chev { left: 305px; top: 468px; width: 32px; height: 46px; }
+.ccnc-radio-chev2 { left: 480px; top: 468px; width: 32px; height: 46px; }
+.ccnc-radio-star { left: 378px; top: 450px; width: 36px; height: 42px; }
+.ccnc-radio-star-am { left: 244px; top: 466px; width: 40px; height: 46px; }
+.ccnc-radio-note { left: 1076px; top: 460px; width: 34px; height: 44px; fill: #d8b33c; stroke: #d8b33c; }
+.ccnc-radio-favtext { left: 1055px; top: 506px; font-size: 16px; color: #c8a83a; }
+.ccnc-radio-list { left: 1178px; top: 460px; width: 36px; height: 44px; }
+.ccnc-radio-logo { left: 1385px; top: 165px; width: 456px; height: 457px; background: #ffffff; }
+.ccnc-radio-logo-kbs { left: 1400px; top: 288px; width: 426px; font-size: 52px; font-weight: 700; color: #1b2a63; text-align: center; }
+.ccnc-radio-logo-cool { left: 1400px; top: 356px; width: 426px; font-size: 46px; font-weight: 700; color: #1e88c8; text-align: center; }
+.ccnc-radio-photo { left: 1382px; top: 165px; width: 459px; height: 448px; }
+
+/* 자연의 소리 */
+.ccnc-nature-back { left: 96px; top: 104px; width: 34px; height: 34px; }
+.ccnc-nature-back svg { position: absolute; left: 0; top: 0; width: 30px; height: 30px; }
+.ccnc-nature-sub { left: 165px; top: 104px; font-size: 30px; color: #f0f0f0; line-height: 1.3; }
+.ccnc-nature-title { left: 175px; top: 228px; font-size: 56px; color: #f4f4f4; line-height: 1.25; }
+.ccnc-nature-prev { left: 194px; top: 462px; width: 58px; height: 70px; }
+.ccnc-nature-pause { left: 350px; top: 462px; width: 46px; height: 70px; }
+.ccnc-nature-next { left: 496px; top: 462px; width: 58px; height: 70px; }
+.ccnc-nature-line { left: 171px; top: 617px; width: 1054px; height: 3px; background: #4d4d4d; }
+.ccnc-nature-line-fill { left: 0; top: 0; width: 530px; height: 3px; background: #c98a4b; }
+.ccnc-nature-list { left: 1184px; top: 444px; width: 46px; height: 46px; }
+.ccnc-nature-photo { left: 1382px; top: 165px; width: 459px; height: 448px; }
+
+/* 날씨 */
+.ccnc-weather-loc { left: 22px; top: 100px; width: 22px; height: 30px; fill: #d8d8d8; stroke: none; }
+.ccnc-weather-loc-text { left: 44px; top: 98px; font-size: 24px; color: #dcdcdc; }
+.ccnc-weather-brand { left: 1620px; top: 100px; width: 270px; font-size: 22px; color: #4f4f4f; text-align: right; letter-spacing: 3px; }
+.ccnc-wcol-day { font-size: 28px; color: #e8e8e8; }
+.ccnc-wcol-icon { top: 244px; width: 120px; height: 100px; }
+.ccnc-wcol-cond { top: 392px; width: 300px; font-size: 30px; color: #e8e8e8; text-align: center; }
+.ccnc-wcol-temp { top: 468px; width: 300px; font-size: 36px; color: #f2f2f2; text-align: center; }
+.ccnc-wcol-rain { top: 530px; width: 300px; font-size: 26px; color: #c9c9c9; text-align: center; }
+.ccnc-wcol-rain svg { position: absolute; left: 58px; top: 2px; width: 30px; height: 30px; fill: #b9b9b9; stroke: none; }
+
+/* 하이브리드 */
+.ccnc-hev-panel { border: 4px solid #d5d5d5; border-radius: 20px; background: rgba(255,255,255,.04); }
+.ccnc-hev-left { left: 32px; top: 85px; width: 941px; height: 521px; }
+.ccnc-hev-right { left: 1007px; top: 85px; width: 884px; height: 521px; }
+.ccnc-hev-label { font-size: 26px; color: #e4e4e4; }
+.ccnc-hev-graph { left: 55px; width: 590px; height: 150px; }
+.ccnc-hev-value { font-size: 56px; color: #f4f4f4; text-align: right; }
+.ccnc-hev-unit { font-size: 26px; color: #d8d8d8; }
+.ccnc-hev-sub { font-size: 22px; color: #c6c6c6; }
+.ccnc-hev-mode { left: 1007px; top: 98px; width: 884px; font-size: 28px; color: #e8e8e8; text-align: center; }
+.ccnc-hev-car { left: 1060px; top: 160px; width: 780px; height: 360px; }
+.ccnc-hev-tag { font-size: 26px; color: #ececec; }
+
+/* 설명서 안 아이콘·그림 크기(SVG 크기는 CSS 한 곳에서만 지정) */
+.ccnc-pos > svg { display: block; width: 100%; height: 100%; }
+.ccnc-radio-antenna { left: 158px; top: 448px; width: 100px; height: 88px; }
+.ccnc-radio-prev-am { left: 153px; top: 448px; width: 81px; height: 88px; }
+.ccnc-radio-next-am { left: 325px; top: 448px; width: 80px; height: 88px; }
+.ccnc-radio-chev-am { left: 176px; top: 468px; width: 32px; height: 46px; }
+.ccnc-radio-chev2-am { left: 348px; top: 468px; width: 32px; height: 46px; }
+.ccnc-w-ico { width: 120px; height: 100px; }
+.ccnc-photo-svg { width: 459px; height: 448px; }
+.ccnc-hev-car-svg { width: 780px; height: 360px; }
+.ccnc-hev-graph-svg { width: 590px; height: 150px; }
+
+/* ccNC 앱 화면 하단 바(설명서 D-weather_main.png / D-hev_main.png) */
+.ccnc-appbar { position: absolute; left: 0; top: 588px; width: 1920px; height: 112px; background: #131313; }
+.ccnc-appbar-key { top: 646px; width: 44px; height: 44px; }
+.ccnc-appbar-back { left: 60px; }
+.ccnc-appbar-home { left: 210px; }
+.ccnc-appbar-menu { left: 360px; }
+.ccnc-appbar-key svg { width: 40px; height: 40px; }
+.ccnc-appbar-seg { left: 701px; top: 593px; width: 488px; height: 57px; border: 3px solid #d8d8d8; border-radius: 29px; }
+.ccnc-appbar-seg-a { left: 729px; top: 606px; font-size: 26px; color: #3fd0b4; }
+.ccnc-appbar-seg-b { left: 951px; top: 606px; font-size: 26px; color: #e8e8e8; }
+.ccnc-appbar-green { left: 701px; top: 634px; width: 195px; height: 50px; background: #2bb79b; }
+.ccnc-appbar-gear { left: 1040px; top: 640px; width: 40px; height: 40px; }
+.ccnc-appbar-gear svg { width: 40px; height: 40px; }
+.ccnc-appbar-thumb { left: 1420px; top: 630px; width: 82px; height: 56px; background: #1d2a1f; }
+.ccnc-appbar-title { left: 1518px; top: 640px; font-size: 28px; color: #e8e8e8; }
+/* 강수율 앞 작은 구름(전체 폭을 덮지 않도록 크기를 다시 지정) */
+.ccnc-wcol-rain svg { width: 30px; height: 30px; vertical-align: -7px; margin-right: 10px; }
 </style>
 </head>
 <body>
@@ -2273,6 +2457,12 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     </button>
   </footer>
 
+  <!-- ccNC 라디오·자연의 소리·날씨·하이브리드 화면 (0.5.0-test18)
+       설명서 그림을 1920x720 도판에 그려 통째로 줄여 보여 준다. -->
+  <section id="view-ccnc" class="ccnc-view" aria-label="ccNC 기능 화면" hidden>
+    <div class="ccnc-canvas" id="ccnc-canvas"></div>
+  </section>
+
   <!-- Top Quick Control Overlay Drawer (Systemoverview_quickcontrol_2.gif) -->
   <section class="qc-drawer" id="qc-drawer" aria-label="퀵 컨트롤" hidden>
     <div class="qc-top-bar">
@@ -2358,6 +2548,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     // Media state
     playing: true,
     mediaSource: 'bt',     // 'nature' | 'bt' | 'fm' | 'am' | 'usb'
+    radioBand: 'fm',       // ccNC 라디오 화면 대역: 'fm' | 'am'
     mediaView: 'list',     // 'list' (Media_btmusic_3) | 'single' (Media_btmusic_4) | 'full' (Media_btmusic_5)
     mediaTab: 'playlist',  // 'playlist' | 'library'
     trackIndex: 0,
@@ -2396,13 +2587,15 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
       { id: 'youtube', label: '유튜브', color: '#704d54', action: 'nemesis-youtube' },
       // Stock apps installed on the K8 (hmgapi app list) that the theme had no tile for.
       { id: 'dvrs', label: '빌트인 캠', color: '#555', action: 'pkg:com.daudio.app.dvrs' },
-      { id: 'hev', label: '하이브리드', color: '#555', action: 'pkg:com.hkmc.daudio.app.hev2' },
+      { id: 'hev', label: '하이브리드', color: '#555', action: 'hybrid' },
       { id: 'dmb', label: 'DMB', color: '#555', action: 'pkg:com.daudio.av.app.dmb' },
       { id: 'usbvideo', label: 'USB 동영상', color: '#555', action: 'pkg:com.daudio.av.app.usbvideo' },
       { id: 'streaming', label: '음악 스트리밍', color: '#555', action: 'pkg:com.daudio.app.musicstreaming' },
       { id: 'rearcare', label: '후석 케어', color: '#555', action: 'pkg:com.android.rear_care' },
       { id: 'findcar', label: '주차 위치', color: '#555', action: 'pkg:com.daudio.app.findmyvehicle' },
-      { id: 'theme', label: '테마', color: '#555', action: 'pkg:com.android.themesettings' }
+      { id: 'theme', label: '테마', color: '#555', action: 'pkg:com.android.themesettings' },
+      // 0.5.0-test18: ccNC 설명서 모양의 날씨 화면(D-weather_main.png).
+      { id: 'weather', label: '날씨', color: '#555', action: 'weather' }
     ],
 
     // Settings & Split-screen Widget state (Settings_screenlayout_7.png)
@@ -3116,6 +3309,18 @@ var stockSub = '';
       ctx.moveTo(27, 29); ctx.lineTo(20, 35); ctx.lineTo(27, 41);
       ctx.moveTo(43, 29); ctx.lineTo(50, 35); ctx.lineTo(43, 41);
       ctx.moveTo(37, 27); ctx.lineTo(33, 43);
+    } else if (id === 'weather') {
+      ctx.arc(24, 22, 9, 0, Math.PI * 2);
+      ctx.moveTo(24, 7); ctx.lineTo(24, 11);
+      ctx.moveTo(9, 22); ctx.lineTo(13, 22);
+      ctx.moveTo(13, 11); ctx.lineTo(16, 14);
+      ctx.moveTo(35, 11); ctx.lineTo(32, 14);
+      ctx.moveTo(26, 46); ctx.quadraticCurveTo(16, 46, 16, 38);
+      ctx.quadraticCurveTo(16, 31, 24, 31);
+      ctx.quadraticCurveTo(33, 31, 33, 38);
+      ctx.quadraticCurveTo(40, 37, 40, 43);
+      ctx.quadraticCurveTo(40, 48, 34, 48);
+      ctx.closePath();
     } else {
       ctx.moveTo(35, 13); ctx.lineTo(53, 24); ctx.lineTo(53, 46);
       ctx.lineTo(35, 57); ctx.lineTo(17, 46); ctx.lineTo(17, 24); ctx.closePath();
@@ -3223,7 +3428,8 @@ var stockSub = '';
   function handleTileAction(tile) {
     if (inVehicle && tile.action === 'search') { host('nav-search'); return; }
     if (tile.action === 'navi' || tile.action === 'media' || tile.action === 'phone' ||
-        tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo') {
+        tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo' ||
+        tile.action === 'radio' || tile.action === 'nature' || tile.action === 'weather' || tile.action === 'hybrid') {
       navigateTo(tile.action === 'voicememo' ? 'memo' : tile.action);
       return;
     }
@@ -3393,6 +3599,257 @@ var stockSub = '';
         showNotice(c.name + ' 통화 발신 연결 예시');
       });
       list.appendChild(row);
+    });
+  }
+
+  /* ===== 0.5.0-test18: ccNC 라디오·자연의 소리·날씨·하이브리드 화면 =====
+     설명서 그림(D-media_fmradio_main.png, D-media_amradio_main.png,
+     D-media_sounds_nature_main.png, D-weather_main.png, D-hev_main.png)을
+     1920x720 좌표(px 고정값) 도판에 그리고 화면 폭에 맞춰 통째로 줄여 그린다. */
+  var CCNC_PAGES = ['radio', 'nature', 'weather', 'hybrid'];
+
+  function isCcncPage(page) { return CCNC_PAGES.indexOf(page) >= 0; }
+
+  function fitCcncCanvas() {
+    var view = document.getElementById('view-ccnc');
+    var canvas = document.getElementById('ccnc-canvas');
+    if (!view || !canvas) return;
+    var s = (view.clientWidth || 1920) / 1920;
+    canvas.style.webkitTransform = 'scale(' + s + ')';
+    canvas.style.transform = 'scale(' + s + ')';
+  }
+
+  function ccncSvgChevron() {
+    return '<svg class="ccnc-ico" viewBox="0 0 32 46"><path d="M25 4 7 23l18 19"/></svg>';
+  }
+  function ccncSvgStar() {
+    return '<svg class="ccnc-ico" viewBox="0 0 36 42"><path d="M18 2 22.8 11.7 33.5 13.3 25.8 20.9 27.6 31.6 18 26.4 8.4 31.6 10.2 20.9 2.5 13.3 13.2 11.7Z" style="fill:#4cc08c;stroke:none"/></svg>';
+  }
+  function ccncSvgList() {
+    return '<svg class="ccnc-ico" viewBox="0 0 36 44"><path d="M8 11h24M8 22h24M8 33h24"/></svg>';
+  }
+  function ccncSvgNote() {
+    return '<svg class="ccnc-ico" viewBox="0 0 34 44"><path d="M12 36V10l18-4v26" style="fill:none;stroke:#d8b33c;stroke-width:3"/><circle cx="8" cy="37" r="5" style="fill:#d8b33c;stroke:none"/><circle cx="26" cy="33" r="5" style="fill:#d8b33c;stroke:none"/></svg>';
+  }
+  function ccncSvgTower() {
+    return '<svg class="ccnc-ico" viewBox="0 0 34 46"><path d="M17 8v34M9 44h16" style="fill:none;stroke:#7f9c8e;stroke-width:2.4"/><circle cx="17" cy="6" r="3" style="fill:#7f9c8e;stroke:none"/><path d="M9 20a11 11 0 0 1 16 0M5 27a17 17 0 0 1 24 0" style="fill:none;stroke:#7f9c8e;stroke-width:2.4"/></svg>';
+  }
+  function ccncSvgBack() {
+    return '<svg class="ccnc-ico" viewBox="0 0 30 30"><path d="M7 11l8 8 8-8"/></svg>';
+  }
+  function ccncSvgCloud(rain) {
+    var body = '<path d="M12 34a10 10 0 0 1 1-20 14 14 0 0 1 26-2 9 9 0 0 1-1 18z" style="fill:none;stroke:#d8d8d8;stroke-width:3"/>';
+    if (!rain) return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' + body + '</svg>';
+    return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' + body +
+      '<path d="M34 46l-8 18M56 46l-8 18M78 46l-8 18" style="fill:none;stroke:#9fc4de;stroke-width:4"/></svg>';
+  }
+  function ccncSvgSun() {
+    return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' +
+      '<circle cx="60" cy="50" r="22" style="fill:none;stroke:#e2b43a;stroke-width:3"/>' +
+      '<path d="M60 12v12M60 76v12M22 50h12M86 50h12M33 23l8 8M79 69l8 8M87 23l-8 8M41 69l-8 8" style="fill:none;stroke:#e2b43a;stroke-width:3"/></svg>';
+  }
+  function ccncSvgRainDrop() {
+    return '<svg class="ccnc-w-rain-ico" viewBox="0 0 30 30"><path d="M10 8a7 7 0 0 1 1-14 10 10 0 0 1 18-2 7 7 0 0 1-1 13z" style="fill:#b9b9b9;stroke:none"/><path d="M9 17l-4 9M17 17l-4 9M25 17l-4 9" style="fill:none;stroke:#b9b9b9;stroke-width:2"/></svg>';
+  }
+  function ccncSvgMountain() {
+    return '<svg class="ccnc-photo-svg" viewBox="0 0 459 448" preserveAspectRatio="none">' +
+      '<defs><linearGradient id="ccncMtnSky" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#123a5e"/><stop offset="1" stop-color="#2b6a8c"/></linearGradient></defs>' +
+      '<rect width="459" height="448" fill="url(#ccncMtnSky)"/>' +
+      '<path d="M0 250 90 120l60 90 70-120 90 150 60-80 89 110v178H0z" fill="#2b3038"/>' +
+      '<path d="M90 120l60 90 70-120 40 66-50-14-30 42-40-30z" fill="#4a515c"/>' +
+      '<path d="M170 90l20 34-16 12-14-16z" fill="#e8eef4"/>' +
+      '<rect y="300" width="459" height="148" fill="#16324a"/>' +
+      '<path d="M0 300h459" stroke="#3d6f92" stroke-width="3" fill="none"/>' +
+      '<path d="M60 330h70M150 350h60M240 330h90M330 360h70M20 370h60" stroke="#2a5a7d" stroke-width="6" fill="none"/></svg>';
+  }
+  function ccncSvgForest() {
+    return '<svg class="ccnc-photo-svg" viewBox="0 0 459 448" preserveAspectRatio="none">' +
+      '<defs><linearGradient id="ccncForestBg" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#d7e8c4"/><stop offset="1" stop-color="#4e7a3a"/></linearGradient></defs>' +
+      '<rect width="459" height="448" fill="url(#ccncForestBg)"/>' +
+      '<path d="M0 0h459v140L0 190z" fill="#9dc06e"/>' +
+      '<path d="M40 0 70 0 52 448H24zM150 0h24l-8 448h-30zM300 0h22l4 448h-26zM400 0h20l10 448h-30z" fill="#3c2c1c"/>' +
+      '<path d="M0 300 459 250v198H0z" fill="#3f6a2f"/>' +
+      '<path d="M0 360 459 320v128H0z" fill="#2f5224"/></svg>';
+  }
+  function ccncSvgCar() {
+    return '<svg class="ccnc-hev-car-svg" viewBox="0 0 780 360">' +
+      '<path d="M40 232c0-34 10-52 34-64l84-40c22-10 46-16 72-16h150c46 0 86 10 122 30l72 40c26 14 42 32 46 56l4 24v18H40z" ' +
+      'style="fill:#6d6f74;stroke:#c9ccd2;stroke-width:3"/>' +
+      '<path d="M150 116h96v-38h-40c-22 0-40 14-56 38zM262 78h132c34 0 62 8 88 26l44 30H262z" style="fill:#8d9099;stroke:#c9ccd2;stroke-width:2"/>' +
+      '<circle cx="140" cy="252" r="54" style="fill:#23252a;stroke:#c9ccd2;stroke-width:3"/>' +
+      '<circle cx="140" cy="252" r="26" style="fill:#4a4d55;stroke:#c9ccd2;stroke-width:2"/>' +
+      '<circle cx="640" cy="252" r="54" style="fill:#23252a;stroke:#c9ccd2;stroke-width:3"/>' +
+      '<circle cx="640" cy="252" r="26" style="fill:#4a4d55;stroke:#c9ccd2;stroke-width:2"/>' +
+      '<rect x="470" y="180" width="150" height="70" rx="6" style="fill:#2f3238;stroke:#c9ccd2;stroke-width:3"/>' +
+      '<rect x="478" y="188" width="26" height="54" rx="3" style="fill:#7fd6a4;stroke:none"/>' +
+      '<path d="M520 196v40l16-10 16 10v-40z" style="fill:#e8eef4;stroke:none"/></svg>';
+  }
+  function ccncSvgGraph(kind) {
+    if (kind === 'fuel') {
+      return '<svg class="ccnc-hev-graph-svg" viewBox="0 0 590 150" preserveAspectRatio="none">' +
+        '<path d="M0 150 40 118 80 126 120 96 160 104 200 78 240 86 280 66 320 74 360 58 400 70 440 52 480 62 520 46 560 56 590 48V150Z" style="fill:#9d9a2e;stroke:none" opacity=".85"/>' +
+        '<path d="M0 150 40 118 80 126 120 96 160 104 200 78 240 86 280 66 320 74 360 58 400 70 440 52 480 62 520 46 560 56 590 48" style="fill:none;stroke:#d6d24a;stroke-width:3"/>' +
+        '<path d="M0 20h590M0 60h590M0 100h590M0 140h590" style="fill:none;stroke:#3a3a3a;stroke-width:1"/>' +
+        '</svg>';
+    }
+    return '<svg class="ccnc-hev-graph-svg" viewBox="0 0 590 150" preserveAspectRatio="none">' +
+      '<path d="M0 150 40 60 80 96 120 52 160 104 200 70 240 108 280 64 320 96 360 48 400 88 440 66 480 100 520 58 560 82 590 72V150Z" style="fill:#5f9c9a;stroke:none" opacity=".8"/>' +
+      '<path d="M0 150 40 60 80 96 120 52 160 104 200 70 240 108 280 64 320 96 360 48 400 88 440 66 480 100 520 58 560 82 590 72" style="fill:none;stroke:#7fd0cb;stroke-width:3"/>' +
+      '<path d="M0 20h590M0 60h590M0 100h590M0 140h590" style="fill:none;stroke:#3a3a3a;stroke-width:1"/>' +
+      '</svg>';
+  }
+
+  /* ccNC 앱 화면 하단 바(설명서 그림의 뒤로/홈/메뉴 + 앱 가운데 + 미디어) */
+  function ccncAppBar(extra) {
+    var tr = state.tracks[state.trackIndex];
+    var h = '<div class="ccnc-appbar"></div>';
+    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-back" data-ccnc-back aria-label="뒤로">' +
+      '<svg viewBox="0 0 40 40"><path d="M30 6 12 20l18 14" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-home" data-ccnc-home aria-label="홈">' +
+      '<svg viewBox="0 0 40 40"><path d="M8 19 20 8l12 11v12H8z" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linejoin="round"/></svg></button>';
+    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-menu" data-ccnc-menu aria-label="전체 메뉴">' +
+      '<svg viewBox="0 0 40 40"><path d="M6 12h28M6 20h28M6 28h28" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linecap="round"/></svg></button>';
+    h += extra || '';
+    h += '<span class="ccnc-pos ccnc-appbar-thumb"></span>';
+    h += '<span class="ccnc-pos ccnc-appbar-title ccnc-txt">' + escapeText(tr.title) + '</span>';
+    return h;
+  }
+
+  function renderCcncRadio() {
+    var am = state.radioBand === 'am';
+    var h = '';
+    h += '<button type="button" class="ccnc-pos ccnc-radio-back" data-ccnc-back aria-label="뒤로">' + ccncSvgBack() + '</button>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-radio-sub">라디오</span>';
+    if (am) {
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-freq">AM 531</span>';
+      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-prev-am" data-radio="prev" aria-label="이전 채널"></button>';
+      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-next-am" data-radio="next" aria-label="다음 채널"></button>';
+      h += '<span class="ccnc-pos ccnc-radio-chev-am">' + ccncSvgChevron() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-chev2-am">' + ccncSvgChevron() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-star-am">' + ccncSvgStar() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-list">' + ccncSvgList() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-photo">' + ccncSvgMountain() + '</span>';
+    } else {
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-freq">FM 89.1</span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-station">I FM) [수도권] KBS 2FM (</span>';
+      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-antenna" data-radio="antenna" aria-label="방송 모드"></button>';
+      h += '<span class="ccnc-pos ccnc-radio-ant"></span>';
+      h += '<span class="ccnc-pos ccnc-radio-tower">' + ccncSvgTower() + '</span>';
+      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-prev" data-radio="prev" aria-label="이전 채널"></button>';
+      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-next" data-radio="next" aria-label="다음 채널"></button>';
+      h += '<span class="ccnc-pos ccnc-radio-chev">' + ccncSvgChevron() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-chev2">' + ccncSvgChevron() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-star">' + ccncSvgStar() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-note">' + ccncSvgNote() + '</span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-favtext">즐겨찾기</span>';
+      h += '<span class="ccnc-pos ccnc-radio-list">' + ccncSvgList() + '</span>';
+      h += '<span class="ccnc-pos ccnc-radio-logo"></span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-logo-kbs">KBS RADIO</span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-logo-cool">Cool FM</span>';
+    }
+    return h;
+  }
+
+  function renderCcncNature() {
+    var h = '';
+    h += '<button type="button" class="ccnc-pos ccnc-nature-back" data-ccnc-back aria-label="뒤로">' + ccncSvgBack() + '</button>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-nature-sub">자연의 소리</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-nature-title">생기 넘치는 숲</span>';
+    h += '<button type="button" class="ccnc-pos ccnc-nature-prev" data-nature="prev" aria-label="이전 곡">' +
+      '<svg class="ccnc-ico" viewBox="0 0 58 70"><path d="M14 8v54" style="fill:none;stroke:#e8e8e8;stroke-width:7"/><path d="M54 8 22 35l32 27z" style="fill:#e8e8e8;stroke:none"/></svg></button>';
+    h += '<button type="button" class="ccnc-pos ccnc-nature-pause" data-nature="pause" aria-label="일시정지">' +
+      '<svg class="ccnc-ico" viewBox="0 0 46 70"><path d="M12 6v58M34 6v58" style="fill:none;stroke:#e8e8e8;stroke-width:8"/></svg></button>';
+    h += '<button type="button" class="ccnc-pos ccnc-nature-next" data-nature="next" aria-label="다음 곡">' +
+      '<svg class="ccnc-ico" viewBox="0 0 58 70"><path d="M44 8v54" style="fill:none;stroke:#e8e8e8;stroke-width:7"/><path d="M4 8l32 27L4 62z" style="fill:#e8e8e8;stroke:none"/></svg></button>';
+    h += '<span class="ccnc-pos ccnc-nature-line"><span class="ccnc-nature-line-fill"></span></span>';
+    h += '<button type="button" class="ccnc-pos ccnc-nature-list" data-nature="list" aria-label=" natur 목록">' + ccncSvgList() + '</button>';
+    h += '<span class="ccnc-pos ccnc-nature-photo">' + ccncSvgForest() + '</span>';
+    return h;
+  }
+
+  function renderCcncWeather() {
+    var days = [
+      { d: '오늘 (금)', icon: 'rain', cond: '비', temp: '18°C', low: ' / 8°C', rain: '60%' },
+      { d: '내일 (토)', icon: 'rain', cond: '비', temp: '19°C', low: ' / 10°C', rain: '60%' },
+      { d: '모레 (일)', icon: 'sun', cond: '맑음', temp: '19°C', low: ' / 7°C', rain: '0%' },
+      { d: '10월 19일 (월)', icon: 'cloud', cond: '구름 많음', temp: '20°C', low: ' / 8°C', rain: '20%' },
+      { d: '10월 20일 (화)', icon: 'sun', cond: '맑음', temp: '21°C', low: ' / 8°C', rain: '0%' },
+      { d: '10월 21일 (수)', icon: 'cloud', cond: '구름 많음', temp: '19°C', low: ' / 10°C', rain: '30%' }
+    ];
+    var centers = [190, 497, 804, 1112, 1421, 1728];
+    var h = '';
+    h += '<span class="ccnc-pos ccnc-weather-loc"><svg viewBox="0 0 22 30"><path d="M11 1a10 10 0 0 1 10 10c0 7-10 18-10 18S1 18 1 11A10 10 0 0 1 11 1z" style="fill:#d8d8d8;stroke:none"/><circle cx="11" cy="11" r="4" style="fill:#1a1a1a;stroke:none"/></svg></span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-weather-loc-text">서울시 서초구</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-weather-brand">K O WEATHER</span>';
+    days.forEach(function (item, i) {
+      var left = centers[i] - 150;
+      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-day" style="left:' + left + 'px;top:165px;width:300px;text-align:center">' + item.d + '</span>';
+      var ico = item.icon === 'sun' ? ccncSvgSun() : ccncSvgCloud(item.icon === 'rain');
+      h += '<span class="ccnc-pos ccnc-wcol-icon" style="left:' + (centers[i] - 60) + 'px">' + ico + '</span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-cond" style="left:' + left + 'px">' + item.cond + '</span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-temp" style="left:' + left + 'px">' + item.temp +
+        '<span style="color:#9a9a9a">' + item.low + '</span></span>';
+      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-rain" style="left:' + left + 'px">' + ccncSvgRainDrop() + item.rain + '</span>';
+    });
+    var seg = '<span class="ccnc-pos ccnc-appbar-seg"></span>' +
+      '<span class="ccnc-pos ccnc-txt ccnc-appbar-seg-a">일기 예보</span>' +
+      '<span class="ccnc-pos ccnc-txt ccnc-appbar-seg-b">오늘 날씨</span>';
+    h += ccncAppBar(seg);
+    return h;
+  }
+
+  function renderCcncHybrid() {
+    var h = '';
+    h += '<span class="ccnc-pos ccnc-hev-panel ccnc-hev-left"></span>';
+    h += '<span class="ccnc-pos ccnc-hev-panel ccnc-hev-right"></span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-label" style="left:55px;top:108px">하이브리드 연비</span>';
+    h += '<span class="ccnc-pos ccnc-hev-graph" style="top:170px">' + ccncSvgGraph('fuel') + '</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-value" style="left:640px;top:186px;width:270px">20.5</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-unit" style="left:800px;top:212px;width:110px">km/L</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-sub" style="left:700px;top:258px;width:210px;text-align:right">주유 후 연비</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-label" style="left:55px;top:374px">전기가 모터 사용량</span>';
+    h += '<span class="ccnc-pos ccnc-hev-graph" style="top:418px">' + ccncSvgGraph('power') + '</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-value" style="left:640px;top:492px;width:270px">13.4</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-unit" style="left:800px;top:518px;width:110px">kW</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-mode">대기 모드</span>';
+    h += '<span class="ccnc-pos ccnc-hev-car">' + ccncSvgCar() + '</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1060px;top:288px">엔진</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1292px;top:266px">모터</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1590px;top:278px">배터리</span>';
+    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1160px;top:528px">휠</span>';
+    var extra = '<span class="ccnc-pos ccnc-appbar-green"></span>' +
+      '<span class="ccnc-pos ccnc-appbar-gear"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7" style="fill:none;stroke:#e8e8e8;stroke-width:3.4"/>' +
+      '<path d="M20 3v6M20 31v6M3 20h6M31 20h6M8 8l4 4M28 28l4 4M32 8l-4 4M12 28l-4 4" style="fill:none;stroke:#e8e8e8;stroke-width:3.4"/></svg></span>';
+    h += ccncAppBar(extra);
+    return h;
+  }
+
+  function renderCcncScreen() {
+    var canvas = document.getElementById('ccnc-canvas');
+    if (!canvas) return;
+    var html = '';
+    if (state.page === 'radio') html = renderCcncRadio();
+    else if (state.page === 'nature') html = renderCcncNature();
+    else if (state.page === 'weather') html = renderCcncWeather();
+    else if (state.page === 'hybrid') html = renderCcncHybrid();
+    canvas.innerHTML = html;
+    fitCcncCanvas();
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-back]'), function (b) {
+      b.addEventListener('click', function () { window.K8Home.back(); });
+    });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-home]'), function (b) {
+      b.addEventListener('click', function () { state.history.length = 0; showPage('home'); });
+    });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-menu]'), function (b) {
+      b.addEventListener('click', function () { navigateTo('apps1'); });
+    });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-radio]'), function (b) {
+      b.addEventListener('click', function () { host('radio-' + b.getAttribute('data-radio')); });
+    });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-nature]'), function (b) {
+      b.addEventListener('click', function () { host('nature-' + b.getAttribute('data-nature')); });
     });
   }
 
@@ -4964,13 +5421,24 @@ var stockSub = '';
       slot.innerHTML = shtml;
       Array.prototype.forEach.call(slot.querySelectorAll('[data-msrc]'), function (b) {
         b.addEventListener('click', function () {
+          var id = b.getAttribute('data-msrc');
           if (livePreview) {
-            host('source-' + b.getAttribute('data-msrc'));
+            host('source-' + id);
+          } else {
+            state.mediaSource = id;
+            state.trackIndex = parseInt(b.getAttribute('data-tidx'), 10);
+            state.playing = true;
+          }
+          /* 0.5.0-test18: FM/AM·자연의 소리는 ccNC 설명서 모양의 자체 화면으로 연다. */
+          if (id === 'fm' || id === 'am') {
+            state.radioBand = id === 'am' ? 'am' : 'fm';
+            navigateTo('radio');
             return;
           }
-          state.mediaSource = b.getAttribute('data-msrc');
-          state.trackIndex = parseInt(b.getAttribute('data-tidx'), 10);
-          state.playing = true;
+          if (id === 'nature') {
+            navigateTo('nature');
+            return;
+          }
           updateAllStatuses();
         });
       });
@@ -5059,6 +5527,8 @@ var stockSub = '';
       renderSettingsStage();
     } else if (state.page === 'screenlayout') {
       renderScreenLayoutStage();
+    } else if (isCcncPage(state.page)) {
+      renderCcncScreen();
     }
 
     if (isDetailPage(state.page)) {
@@ -5086,7 +5556,9 @@ var stockSub = '';
     if (next !== 'settings' && next !== 'search') settingsSection = '';
     state.page = next;
     if (next === 'home') layoutHomeCards();
-    var detail = isDetailPage(next);
+    /* 0.5.0-test18: ccNC 앱 화면(라디오·자연의 소리·날씨·하이브리드)도 상단 머리글을 쓰는 전체 화면이라
+       in-detail 로 둔다(배경·머리글 규격은 다른 상세 화면과 같다). */
+    var detail = isDetailPage(next) || isCcncPage(next);
     setClass(shell, 'in-detail', detail);
     setClass(shell, 'in-navi', next === 'navi');
     setClass(shell, 'aux-mode', next === 'search' || next === 'memo');
@@ -5105,13 +5577,15 @@ var stockSub = '';
     document.getElementById('view-standby').hidden = next !== 'standby';
     document.getElementById('view-home').hidden = next !== 'home';
     document.getElementById('view-apps').hidden = !isAppsPage(next);
-    document.getElementById('view-detail').hidden = !detail;
+    var ccnc = isCcncPage(next);
+    document.getElementById('view-detail').hidden = !detail || ccnc;
+    document.getElementById('view-ccnc').hidden = !ccnc;
 
-    document.getElementById('home-pager').hidden = detail;
-    document.getElementById('detail-bottom-bar').hidden = !detail;
+    document.getElementById('home-pager').hidden = detail || ccnc;
+    document.getElementById('detail-bottom-bar').hidden = !detail || ccnc;
 
-    var showTopSearch = detail && next !== 'navi' && next !== 'search';
-    document.getElementById('profile-btn').hidden = detail;
+    var showTopSearch = (detail && next !== 'navi' && next !== 'search') || ccnc;
+    document.getElementById('profile-btn').hidden = detail || ccnc;
     document.getElementById('detail-top-title').hidden = !showTopSearch;
     document.getElementById('media-top-tabs').hidden = next !== 'media';
     document.getElementById('settings-grid-toggle').hidden = next !== 'settings';
@@ -5122,7 +5596,11 @@ var stockSub = '';
       phone: '전화',
       settings: '설정',
       screenlayout: '화면구성',
-      memo: '음성 메모'
+      memo: '음성 메모',
+      radio: '라디오',
+      nature: '자연의 소리',
+      weather: '날씨',
+      hybrid: '하이브리드'
     };
     if (titles[next]) {
       document.getElementById('detail-heading-text').textContent = titles[next];
@@ -6523,6 +7001,7 @@ var stockSub = '';
     cancelGesture();
     layoutHomeCards();
     drawWallpaper();
+    fitCcncCanvas();
     updateAllStatuses();
   });
 
