@@ -34,7 +34,6 @@ public final class NavBarService extends Service {
     static final String SEARCHING_MAP = "io.github.k8home.action.SEARCHING_MAP";
     private static final String TAG = "K8HomeNavBar";
     private static final String PAGE = "file:///android_asset/navbar.html";
-    private static final String PLAYLIST_PAGE = "file:///android_asset/playback_panel.html";
     private static final String ROUTE_PAGE = "file:///android_asset/route_panel.html";
     private static final String SKIN_PAGE = "file:///android_asset/naviskin.html";
     // Navigation IInterfaceService call 5 = isMapView_State() (vtable order of com.mnsoft.navi.g, 2026-11-22).
@@ -343,11 +342,11 @@ public final class NavBarService extends Service {
             } else {
                 endSession();
             }
-        } else if ("playlist".equals(action)) {
-            togglePanel(PLAYLIST_PAGE, 492, 290);
+        } else if ("media".equals(action)) {
+            openThemeMedia();
         } else if ("route-details".equals(action) && route.snapshot().active) {
             togglePanel(ROUTE_PAGE, 432, 166);
-        } else if ("playlist-close".equals(action) || "route-close".equals(action)) {
+        } else if ("route-close".equals(action)) {
             dismissPanel();
         } else if ("media-player".equals(action)) {
             if (StockApps.openPlayer(this, media.source)) endSession();
@@ -364,6 +363,21 @@ public final class NavBarService extends Service {
                 }
             }, 700);
         }
+    }
+
+    /** Opens the theme media screen for the source that is playing. Falls back to the stock player. */
+    private void openThemeMedia() {
+        endSession();
+        boolean opened = false;
+        try {
+            startActivity(new Intent(this, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(HomeActivity.EXTRA_OPEN_MEDIA, true)
+                .putExtra(HomeActivity.EXTRA_OPEN_MEDIA_SOURCE, media.source));
+            opened = true;
+        } catch (RuntimeException failure) {
+            Log.w(TAG, "Theme media screen unavailable", failure);
+        }
+        if (!opened && !StockApps.openPlayer(this, media.source)) toast("미디어 화면을 열 수 없습니다.");
     }
 
     private void togglePanel(final String page, int width, int height) {
@@ -385,8 +399,7 @@ public final class NavBarService extends Service {
 
             @Override public void onPageFinished(WebView loaded, String url) {
                 if (panel != loaded || !page.equals(url)) return;
-                if (PLAYLIST_PAGE.equals(page)) pushPlaylist();
-                else pushRoute();
+                pushRoute();
             }
         });
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -396,7 +409,7 @@ public final class NavBarService extends Service {
         params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
         params.y = Math.round((ROW_HEIGHT + 8) * scale);
         params.x = Math.round(8 * scale);
-        params.setTitle(PLAYLIST_PAGE.equals(page) ? "K8HomePlaybackPanel" : "K8HomeRoutePanel");
+        params.setTitle("K8HomeRoutePanel");
         try {
             windows.addView(view, params);
             panel = view;
@@ -491,14 +504,7 @@ public final class NavBarService extends Service {
     private void pushMedia() {
         if (pageReady && attached) web.evaluateJavascript("window.K8NavBarView.media(" + quote(media.title) + ","
             + quote(media.artist.isEmpty() ? media.settings : media.artist) + "," + Boolean.TRUE.equals(media.playing)
-            + ")", null);
-        pushPlaylist();
-    }
-
-    private void pushPlaylist() {
-        if (PLAYLIST_PAGE.equals(panelPage)) panel.evaluateJavascript("window.K8Playback && window.K8Playback.update("
-            + quote(media.title) + "," + quote(media.artist) + "," + Boolean.TRUE.equals(media.playing)
-            + "," + quote(media.source) + "," + quote(media.settings) + ")", null);
+            + "," + media.position + "," + media.duration + ")", null);
     }
 
     private void pushCover() {

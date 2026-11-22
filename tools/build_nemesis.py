@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "private" / "nemesis"
 PACKAGE_ID = "k8home.shortcuts"
 PACKAGE_VERSION = "0.4.13"
-HOME_PACKAGE_VERSION = "0.5.0-test11"
+HOME_PACKAGE_VERSION = "0.5.0-test12"
 HOME_PACKAGE_ID = "k8home.install"
 HOME_APP_ID = "io.github.k8home"
 ZIP_TIME = (2026, 11, 21, 0, 0, 0)
@@ -172,7 +172,7 @@ def main():
         with zipfile.ZipFile(args.home_apk) as apk:
             required = {
                 "AndroidManifest.xml", "classes.dex", "assets/index.html", "assets/navbar.html",
-                "assets/playback_panel.html", "assets/route_panel.html", "assets/corners.html",
+                "assets/route_panel.html", "assets/corners.html",
             }
             if not required.issubset(apk.namelist()) or apk.testzip() is not None:
                 parser.error("--home-apk is missing K8 Home contents or is corrupted")

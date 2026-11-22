@@ -48,6 +48,8 @@ public final class HomeActivity extends Activity {
     private static final String PAGE = "file:///android_asset/index.html";
     static final String EXTRA_OPEN_APPS = "io.github.k8home.extra.OPEN_APPS";
     static final String EXTRA_OPEN_MEDIA = "io.github.k8home.extra.OPEN_MEDIA";
+    /** Which source the media screen should open on ("bt", "usb", "fm", ...). */
+    static final String EXTRA_OPEN_MEDIA_SOURCE = "io.github.k8home.extra.OPEN_MEDIA_SOURCE";
     private static final String STOCK_PHONE = "com.hkmc.bluetooth";
     private static final String TAG_SETTINGS = "K8Settings";
     private static final int STANDBY_PHOTO = 21;
@@ -82,6 +84,7 @@ public final class HomeActivity extends Activity {
     private int unmutedVolume = -1;
     private boolean pendingHome;
     private boolean pendingApps, pendingMedia;
+    private String pendingMediaSource = "";
     private StockRoute route;
     private StockPhone phone;
     private StockTransport transport;
@@ -143,6 +146,8 @@ public final class HomeActivity extends Activity {
         });
         pendingApps = getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_APPS, false);
         pendingMedia = getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_MEDIA, false);
+        pendingMediaSource = getIntent() != null ? getIntent().getStringExtra(EXTRA_OPEN_MEDIA_SOURCE) : null;
+        if (pendingMediaSource == null) pendingMediaSource = "";
         pendingHome = pendingApps || pendingMedia;
         shortcuts = getSharedPreferences("shortcuts", MODE_PRIVATE);
         brightness = shortcuts.getInt("theme-brightness", -1);
@@ -261,11 +266,18 @@ public final class HomeActivity extends Activity {
     private void openPendingHome() {
         if (!pageReady || !pendingHome) return;
         pendingHome = false;
-        String script = pendingApps ? "window.K8Home.openHome(); window.K8Home.showPage('apps1')"
-            : pendingMedia ? "window.K8Home.openHome(); window.K8Home.showPage('media')"
-            : "window.K8Home.openHome()";
+        String script;
+        if (pendingApps) {
+            script = "window.K8Home.openHome(); window.K8Home.showPage('apps1')";
+        } else if (pendingMedia) {
+            script = "window.K8Home.setMediaSource(" + javascriptString(pendingMediaSource)
+                + "); window.K8Home.openHome(); window.K8Home.showPage('media')";
+        } else {
+            script = "window.K8Home.openHome()";
+        }
         pendingApps = false;
         pendingMedia = false;
+        pendingMediaSource = "";
         web.evaluateJavascript(script, null);
     }
 
@@ -275,6 +287,8 @@ public final class HomeActivity extends Activity {
         pendingHome = true;
         pendingApps = intent != null && intent.getBooleanExtra(EXTRA_OPEN_APPS, false);
         pendingMedia = intent != null && intent.getBooleanExtra(EXTRA_OPEN_MEDIA, false);
+        pendingMediaSource = intent != null ? intent.getStringExtra(EXTRA_OPEN_MEDIA_SOURCE) : null;
+        if (pendingMediaSource == null) pendingMediaSource = "";
         openPendingHome();
     }
 
