@@ -5247,6 +5247,12 @@ var stockSub = '';
   }
 
   window.K8Home = {
+    /** Opens the media screen on a given source ("bt", "usb", "fm", ...). */
+    setMediaSource: function (source) {
+      if (!source) return;
+      state.mediaSource = source;
+      if (typeof updateAllStatuses === 'function') updateAllStatuses();
+    },
     openHome: function () {
       if (qcDraft) closeQuickEditor();
       document.getElementById('qc-drawer').hidden = true;
@@ -6393,6 +6399,11 @@ var stockSub = '';
     if (!qcDrawer.hidden && dy < -45 && Math.abs(dy) > Math.abs(dx)) {
       closeQuickEditor();
       qcDrawer.hidden = true;
+      return true;
+    }
+    // 하단 미디어 칸의 좌우 스와이프: 왼쪽=다음 곡, 오른쪽=이전 곡(60px 이상).
+    if (g.inMediaBox && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      host(dx < 0 ? 'media-next' : 'media-prev');
       return true;
     }
     if (g.inMediaBox && isDetailPage(state.page) && dy < -36 && Math.abs(dy) > Math.abs(dx)) {
