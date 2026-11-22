@@ -24,6 +24,7 @@ VALUE_RULES = [
     (re.compile(r'(?<![\w-])(min|max)\('), 'min()/max() 는 무시된다'),
     (re.compile(r'calc\([^;]*?\d(vw|vh|vmin|vmax)'), 'calc() 안의 vw/vh 는 무시된다'),
     (re.compile(r'\bvar\(--'), 'CSS 변수(var) 는 무시된다'),
+    (re.compile(r'polygon\([^;]*calc\('), 'clip-path 다각형 안의 calc() 는 차에서 다각형을 깨뜨린다(실차 test18 타일 잘림)'),
 ]
 # 이 속성은 Chrome 30 이 모른다.
 PROP_RULES = {
@@ -133,6 +134,8 @@ def check_decls(path, src, start, body, findings, raw_lines, selector=None):
             continue
         if prop in PREFIX_PROPS and ('-webkit-' + prop) in props:
             continue  # 차는 접두어 없는 이 선언을 원래 버리고 -webkit- 쪽을 쓴다
+        if prop == 'clip-path' and 'calc(' in value:
+            continue  # 차는 접두어 없는 clip-path 를 버린다. -webkit- 짝을 달면 calc 때문에 다각형이 깨진다
         bad = [why for rx, why in VALUE_RULES if rx.search(value)]
         if prop in PROP_RULES and not re.fullmatch(r'0(px)?', value):
             bad.append(PROP_RULES[prop])
