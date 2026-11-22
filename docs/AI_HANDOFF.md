@@ -1,5 +1,11 @@
 # K8 Gen5W 홈
 
+## 0.4.54 스와이프 버벅임·카드 옮기기 (2026-11-22, Claude)
+
+- 버벅임: Chrome 30에는 `touch-action`이 없어, 첫 `touchmove`를 막지 않으면 WebView가 스크롤로 가져가고 이후 `touchmove`를 약 200ms마다만 보낸다. 스크롤 없는 화면(홈 넘김 페이지·앱 타일)·카드·위 끌기·분할·미디어 상자에서 시작한 터치는 모든 `touchmove`를 막는다(`gesture.noScroll`). 버튼 누름은 기존처럼 `touchend`에서 `click()`으로 처리.
+- 카드 옮기기: KitKat WebView는 1초 누름에서 자체 길게 누르기(선택)를 시작하며 페이지 터치를 취소(`touchcancel`)한다 → `HomeActivity`에서 WebView 길게 누르기를 끔(`setLongClickable(false)`, 빈 `OnLongClickListener`). 놓을 자리는 끄는 동안 표시한 카드를 우선 쓴다(손 뗀 좌표가 0,0인 WebView 대비).
+- PC 터치 흉내(CDP)로 확인: 홈 → 앱 페이지 넘김, 지도 카드를 1초 누른 뒤 전화 자리로 끌어 순서 저장(`media,phone,map`). 실차 확인 전.
+
 ## 0.4.53 순정 내비 왼쪽 버튼 ccNC 덮개 시험 (2026-11-22, Claude)
 
 - `assets/naviskin.html` + `NavBarService.syncSkin()`: 하단바 시험 중, 순정 내비 왼쪽 버튼 줄 위에 ccNC 모양 덮개 창(`K8HomeNaviSkin`, 140×632, `FLAG_NOT_TOUCHABLE`·투명)을 띄운다. 누르면 아래 순정 버튼이 그대로 동작.

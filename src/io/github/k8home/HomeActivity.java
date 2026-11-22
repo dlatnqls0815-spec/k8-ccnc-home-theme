@@ -171,6 +171,15 @@ public final class HomeActivity extends Activity {
         settings.setLoadWithOverviewMode(true);
         web.setBackgroundColor(0xff0c121b);
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        // KitKat WebView: a 1 s press starts the native long-press (selection) and cancels the page's touch,
+        // so holding a card to move it never finished. The page handles long presses itself.
+        web.setLongClickable(false);
+        web.setHapticFeedbackEnabled(false);
+        web.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override public boolean onLongClick(View view) {
+                return true;
+            }
+        });
         web.addJavascriptInterface(new HomeBridge(), "K8Host");
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {

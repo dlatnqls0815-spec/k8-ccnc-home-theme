@@ -2272,7 +2272,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   }
   function closestMove(node) {
     while (node && node.nodeType === 1) {
-      if (node.hasAttribute('data-move')) return node;
+      if (node.hasAttribute('data-move') || /(^|\s)(circle-btn|reorder-btn)(\s|$)/.test(node.className || '')) return node;
       node = node.parentNode;
     }
     return null;
@@ -5147,7 +5147,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
     if (g.copy) document.body.removeChild(g.copy);
     if (g.targetCard) g.targetCard.classList.remove('card-target');
     if (!g.held) return false;
-    var target = ev && cardAt(document.elementFromPoint(ev.clientX, ev.clientY));
+    // The card under the finger while dragging; the lift-off point is a fallback (some WebViews report 0,0).
+    var target = ev && (g.targetCard || cardAt(document.elementFromPoint(ev.clientX, ev.clientY)));
     g.card.classList.remove('card-held');
     var quickId = g.card.getAttribute('data-qc');
     var widgetId = g.card.getAttribute('data-widget-card');
@@ -5297,6 +5298,11 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
       speed: 0
     };
     var g = gesture;
+    // Chrome 30 has no touch-action: unless every touchmove is cancelled from the first one, the
+    // WebView starts its own scroll and then delivers touchmove only every ~200 ms (choppy swipes).
+    // Pages that never scroll (home pager, app tiles) and held cards cancel all moves.
+    g.noScroll = (g.deck && homeOrder.indexOf(state.page) >= 0) || !!cardAt(ev.target) ||
+      g.fromTop || g.inSplit || g.inMediaBox;
     if (g.inSplit) {
       var splitCard = document.getElementById('split-card');
       splitCard.classList.add('touching');
@@ -5410,7 +5416,9 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
     else cancelGesture();
   });
   document.addEventListener('touchmove', function (ev) {
+    var noScroll = gesture && gesture.noScroll;
     if (ev.touches.length === 1 && moveGesture(ev.touches[0])) ev.preventDefault();
+    else if (noScroll) ev.preventDefault();
   }, { passive:false });
   document.addEventListener('touchend', function (ev) {
     var start = gesture;
