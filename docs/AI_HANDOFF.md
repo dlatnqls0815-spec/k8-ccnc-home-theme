@@ -1,4 +1,70 @@
 # K8 Gen5W 홈
+## 0.5.0-test18 미니맥스: Chrome 30 호환 검사 도구 + 하단 간격 px 고정 + 길안내 목록 버튼 (2026-11-22)
+
+브랜치 `minimax/ccnc-settings`. 0.5.0-test17(28b5bd0) 뒤에 이어서 한다. **차에 접속하지 않았다. adb 도 쓰지 않았다.**
+
+### 1) Chrome 30 호환 검사 도구(신규)
+
+- `tools/c30_check.py`(신규): `assets/*.html`, `assets/*.css`, `assets/*.js` 를 뒤져
+  `clamp()`·`min()`·`max()`(대체 값 없음), flex `gap`, `calc()` 안의 `vw`, `button` 안쪽 `inline-flex`,
+  `:focus-visible`, SVG 크기 이중 지정(인라인 + CSS), SVG `.hidden` 을 **파일:줄** 로 보여 주고,
+  하나라도 있으면 **종료 코드 1**, 없으면 0.
+  `clamp()`·`min()`·`max()`·`gap` 은 같은 줄에 `/*c30*/` px 대체 값이 있으면 통과(`tools/legacy_clamp.py --check` 와 같은 규칙).
+  근거가 있는 예외는 CSS 주석 `/*c30-ok: 사유*/` 로 표시하면 통과한다.
+- `tools/build_nemesis.py`: APK 를 만들기 **전에** `legacy_clamp.py --check` 와 `c30_check.py` 를 돌리고,
+  실패하면 **빌드를 멈춘다**(이번 빌드에서 실제로 동작 확인).
+- `tools/c30_preview.cjs`(신규): playwright-core + Edge 로 차 흉내를 만들어
+  `clamp/min/max/calc(vw)/gap` 선언을 지운 상태(차의 Chrome 30 과 같은 조건)로 1920×720 화면과 하단바 1920×95 를 찍는다.
+  원본과 흉내 사진을 `captures/c30/` 에 나란히 저장하고(커밋 안 함), **4px 넘게 다른 요소**를 목록으로 낸다.
+  (한 페이지를 두 번 여는 방식이라, 같은 이름의 요소가 여러 개일 때 짝이 어긋날 수 있다.)
+
+### 2) 지금 걸리는 곳을 고친 것
+
+- flex `gap` 63곳 → 자식 `margin-left`/`margin-top` 규칙으로 바꿨다(방향은 `flex-direction` 으로 판단).
+- `.legacy .settings-grid .set-card` 의 `calc((100% - 5 * .885vw) / 6)` → **vw 를 px 로 바꿨다**(`.885vw` = 1920 기준 17px = 차 CSS px 11.3333px).
+  이 계산은 Chrome 30 에서 `calc` 안의 vw 가 먹지 않아 **설정 카드 폭이 사라질 수 있었다.**
+- `:focus-visible` 규칙 4개 → 지우고 `button:focus{outline:none}` 안내로 바꿨다.
+- `clamp()`·`min()`·`max()` 에 `/*c30*/` px 대체 값 추가(legacy_clamp.py 규칙과 같은 계산, 1280 CSS px 기준).
+- **하단 간격**: 하단바 높이·본문 여백을 `12.5%`(=90px)에서 **순정 내비 오버레이 하단바와 같은 94px** 로 고정했다.
+  `height: 62.6667px; /*c30*/ height: 4.8958vw;` (1920 기준 4.8958vw = 94px).
+  홈·미디어 화면의 아래 여백도 같은 값으로 맞췄다.
+- **긴 제목(흐르는 글자)**: `assets/marquee.js` 의 `.mq` 규칙에 `font-weight/font-style/font-family/font-size/line-height/letter-spacing: inherit !important` 를 넣었다.
+  감싸는 틀이 생겨도 **굵기가 바뀌지 않는다**.
+
+### 3) 길안내 목록 버튼(0.5.0-test17 후속)
+
+- `src/io/github/k8home/GuideButton.java`: 48px 버튼을 그릴 때 선 두께와 좌표가 분수(2.6배)라 배율 1(48px)에서
+  목록 줄이 4행에 걸쳐 흐리게 퍼졌다. **정수 픽셀 격자**에 맞춰 그리도록 고쳤다(0.75/1/1.5 배율 전부 부분 픽셀 0개, 잘림 없음).
+- `src/io/github/k8home/NavBarService.java`: 도우미 응답 `not-navi`(순정 내비가 아닐 때)를 받으면 **버튼을 숨기도록** 추가했다.
+  기존엔 `ok` 와 `""` 만 처리해 버튼이 그대로 남았다. `guideExpanded` 방향은 여전히 추정이라 바꾸지 않았다(문서에 그대로 적혀 있다).
+- `helper/KeyHelper.java` 의 명령 목록(166, 167, 91, guide)과 좌표(1850, 675)는 **바꾸지 않았다.**
+
+### 4) 설정 화면 입력 모양
+
+- 슬라이더를 ccNC 로 바꿨다(`D-settings_display_Illumination.png` 실측 1920 기준): 트랙 2px, 채운 쪽 초록, 손잡이 흰 원 지름 57px.
+  트랙 폭 34.9vw. `−`/`+` 버튼은 값을 바꾸는 기능이라(읽기 전용) 넣지 않았다.
+- 켜기/끄기 토글(알약 6.15vw×1.95vw, 손잡이 1.8vw)과 라디오 버튼(지름 2.15vw)은 이미 ccNC 실측값과 맞아 그대로 뒀다.
+
+### 5) 문서
+
+- `docs/설정-차시험.md` 에 **2-7절(0.5.0-test18 한 번 방문 확인 목록)** 추가: 도우미 소켓, 블루투스 스와이프로 곡 넘기기,
+  순정 곡 팝업 닫힘, 하단 간격, 긴 제목, 길안내 목록 버튼 위치, WebView 원격 디버깅으로 남은 스타일 차이 읽기.
+
+### 확인
+
+- `python tools/c30_check.py` → **0건(종료 코드 0)**. `legacy_clamp.py --check` → 0건.
+- `tools/c30_preview.cjs` 실행: **화면 오류(pageerror) 0개**. 사진은 `captures/c30/`(커밋 안 함).
+- APK·NEMESIS 빌드 성공(빌드 전에 검사 게이트가 실제로 동작함).
+
+### 못 한 것 · 다음에 할 것
+
+- **라디오·자연의 소리·날씨·하이브리드 화면을 설명서와 맞추는 일은 이번에 못 했다.**(시험 자료를 읽는 동안 시간이 지나 유예했다. 다음 회차 1순위)
+- 전화 기록 줄 아이콘을 ccNC 크기로 맞추는 일도 이번에 못 했다.
+- `c30_preview.cjs` 의 요소 짝짓기는 이름 기준이라, 같은 이름의 요소가 여럿 있으면 짝이 어긋날 수 있다(순서 기준 비교로 바꾸면 정확해진다).
+- PC 흉내에서 settings 화면의 페이지 표시(pager)가 원본보다 18px 아래로 내려가 있었다(하단바 90px→94px 변경의 영향).
+  다음에 흉내 사진끼리 겹쳐 위치를 다시 잰다.
+- 실제 차량에서의 최종 확인은 사용자가 한다(차 확인 목록 2-7절).
+
 ## 0.5.0-test17 순정 길안내 목록 펼치기/접기 버튼을 회전 안내 칸 모서리로 (2026-11-22)
 
 - 사용자 요청: 순정 내비 아래 줄 오른쪽 끝의 안내 목록 펼치기/접기(→) 버튼이 우리 하단바에 가려진다. 다른 5W 테마처럼 회전 안내 칸 모서리에 작게.
