@@ -8,7 +8,7 @@
   (앞선 "adb 87 로 넘어감"은 곡이 끝나는 때와 겹친 착각이었다). 일반 앱 uid 는 INJECT_EVENTS 가 없어 모드 관리자가 버린다(나우플레잉 기록).
 - 순정 블루투스 음악 원격 서비스(`btaudio.service.IMusicService`)는 명령 5개뿐(길이·상태 조회 등)이라 곡 넘김 불가.
 - 그래서 `MediaKeys` 가 다음/이전/재생을 **NEMESIS 도우미 소켓 `k8home.keys`(system uid, `helper/KeyHelper.java`)** 에 166/167/91 로 보내고,
-  도우미가 없으면 예전처럼 AudioManager 로 물러난다. **도우미는 지금 차에 없다(0.4.8 에서 패키지에서 빠짐).** 설치는 사용자 승인 대기.
+  도우미가 없으면 예전처럼 AudioManager 로 물러난다. **도우미는 지금 차에 없다(0.4.8 에서 패키지에서 빠짐).** 사용자 승인(2026-11-22)으로 `tools/build_nemesis.py` 가 `k8home.install` 패키지에 다시 넣는다(`type=application,service`, `[service.0] keys` system uid restart, `bin/k8home-keys.dex`, postinstall). 차 설치·확인은 다음 방문(`docs/설정-차시험.md` 2-4).
 - **순정 곡 팝업 닫기**: 곡이 바뀔 때(블루투스)와 키를 보낸 뒤 `ACTION_SPLITSCREEN_CONTROL` + `EXTRA_SPLITSCREEN_CONTROL_CANCEL_OSD=true`
   방송을 150/600/1200ms 에 보낸다(K8 Now Playing 과 같은 방법, 일반 앱 방송). 차 확인 전.
 - 참고로 받은 외부 테마(ccnc-theme-for-5w)는 "모든 권리 보유" 라이선스라 코드는 쓰지 않는다.

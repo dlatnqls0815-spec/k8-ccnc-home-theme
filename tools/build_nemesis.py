@@ -3,7 +3,11 @@
 import argparse
 import hashlib
 import io
+import os
 from pathlib import Path
+import shutil
+import subprocess
+import tempfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +18,13 @@ HOME_PACKAGE_VERSION = "0.5.0-test15"
 HOME_PACKAGE_ID = "k8home.install"
 HOME_APP_ID = "io.github.k8home"
 ZIP_TIME = (2026, 11, 21, 0, 0, 0)
+# 곡 넘김 도우미(system uid NEMESIS 서비스). 일반 앱은 핸들 키(166/167/91)를 순정 모드 관리자에 넣을 수 없어
+# 도우미가 대신 보낸다. K8 Now Playing 의 k8np.keys 와 같은 코드(2026-11-16 이 차에서 확인).
+HELPER_SRC = ROOT / "helper" / "src"
+HELPER_MAIN = b"Lio/github/k8home/helper/KeyHelper;"
+NEMESIS_DIR = ROOT / "nemesis"
+DEFAULT_ANDROID_JAR = ROOT.parent / "k8-ambient-sync" / ".tools" / "android19" / "android-4.4.2" / "android.jar"
+DEFAULT_D8 = Path.home() / ".local/share/android-sdk/build-tools/35.0.1/lib/d8.jar"
 
 # Launcher components observed on the K8 head unit.
 SHORTCUTS = (
@@ -93,7 +104,38 @@ def package_bytes(package_id, key, label, component):
     return buffer.getvalue()
 
 
-def build_home(out, apk):
+def shell_script(path):
+    text = path.read_bytes().decode("utf-8")
+    if not text.startswith("#!/system/bin/sh\n") or "\r" in text:
+        raise ValueError(f"{path}: must be an LF-only /system/bin/sh script")
+    return text
+
+
+def compile_helper(jdk, d8_jar, android_jar):
+    """helper/src → API 19 DEX (javac 8 → D8 --min-api 19)."""
+    suffix = ".exe" if os.name == "nt" else ""
+    javac = str(Path(jdk) / "bin" / ("javac" + suffix))
+    java = str(Path(jdk) / "bin" / ("java" + suffix))
+    sources = sorted(str(p) for p in HELPER_SRC.rglob("*.java"))
+    with tempfile.TemporaryDirectory(prefix="k8home-keys-") as stage:
+        stage = Path(stage)
+        classes, dex_dir = stage / "classes", stage / "dex"
+        classes.mkdir()
+        dex_dir.mkdir()
+        jar = stage / "android.jar"
+        shutil.copyfile(android_jar, jar)
+        subprocess.run([javac, "-encoding", "UTF-8", "-source", "8", "-target", "8", "-Xlint:-options",
+                        "-bootclasspath", str(jar), "-d", str(classes)] + sources, check=True)
+        class_files = sorted(str(p) for p in classes.rglob("*.class"))
+        subprocess.run([java, "-cp", str(d8_jar), "com.android.tools.r8.D8", "--min-api", "19",
+                        "--lib", str(jar), "--output", str(dex_dir)] + class_files, check=True)
+        data = (dex_dir / "classes.dex").read_bytes()
+    if not data.startswith(b"dex\n035\x00") or HELPER_MAIN not in data:
+        raise SystemExit("unexpected helper DEX output")
+    return data
+
+
+def build_home(out, apk, helper_dex):
     apk_path = "app/k8-home.apk"
     package_name = f"{HOME_PACKAGE_ID}-{HOME_PACKAGE_VERSION}.zip"
     usb_path = f"packages/{package_name}"
@@ -102,11 +144,12 @@ def build_home(out, apk):
         "version=1.1",
         f"id={HOME_PACKAGE_ID}",
         "name=K8 ccNC Home Theme",
-        "type=application",
+        "type=application,service",
         f"package-version={HOME_PACKAGE_VERSION}",
         "short-desc=K8 ccNC home with stock navigation",
         "os=any",
         "models=any",
+        "postinstall=scripts/postinstall.sh",
         "",
         "[app.0]",
         "kind=apk",
@@ -114,11 +157,22 @@ def build_home(out, apk):
         f"package={HOME_APP_ID}",
         f"component={HOME_APP_ID}/.HomeActivity",
         "",
+        "[service.0]",
+        "name=keys",
+        "kind=sh",
+        "path=svc/keys.sh",
+        "uid=system",
+        "mode=restart",
+        "",
     ])
     package = io.BytesIO()
     with zipfile.ZipFile(package, "w", allowZip64=False) as archive:
         archive.writestr(entry("NEMESIS.data"), package_descriptor)
         archive.writestr(entry(apk_path, compress=zipfile.ZIP_STORED), apk.read_bytes())
+        archive.writestr(entry("svc/keys.sh", 0o755), shell_script(NEMESIS_DIR / "svc" / "keys.sh"))
+        archive.writestr(entry("scripts/postinstall.sh", 0o755),
+                         shell_script(NEMESIS_DIR / "scripts" / "postinstall.sh"))
+        archive.writestr(entry("bin/k8home-keys.dex"), helper_dex)
     usb_descriptor = "\n".join([
         "[nemesis]",
         "version=1.1",
@@ -165,6 +219,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=OUT)
     parser.add_argument("--home-apk", type=Path, help="Signed K8 Home APK to package instead of shortcuts")
+    parser.add_argument("--jdk", default=os.environ.get("JAVA_HOME"), help="JDK for the key helper DEX")
+    parser.add_argument("--d8", type=Path, default=DEFAULT_D8)
+    parser.add_argument("--android-jar", type=Path, default=DEFAULT_ANDROID_JAR)
     args = parser.parse_args()
     if args.home_apk:
         if not args.home_apk.is_file() or not zipfile.is_zipfile(args.home_apk):
@@ -177,7 +234,12 @@ def main():
             if not required.issubset(apk.namelist()) or apk.testzip() is not None:
                 parser.error("--home-apk is missing K8 Home contents or is corrupted")
     args.out.mkdir(parents=True, exist_ok=True)
-    usb = build_home(args.out, args.home_apk) if args.home_apk else build_shortcuts(args.out)
+    if args.home_apk:
+        if not args.jdk:
+            parser.error("--jdk (or JAVA_HOME) is needed to build the key helper")
+        usb = build_home(args.out, args.home_apk, compile_helper(args.jdk, args.d8, args.android_jar))
+    else:
+        usb = build_shortcuts(args.out)
     print(f"usb={usb}")
     print(f"sha256={hashlib.sha256(usb.read_bytes()).hexdigest()}")
 
