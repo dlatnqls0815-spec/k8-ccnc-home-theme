@@ -1726,10 +1726,14 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .screenlayout-stage .sl-frame-block > .sl-row-link { width: 100%; box-sizing: border-box; text-align: left; position: relative; padding-left: 1.41vw; }
 .legacy .screenlayout-stage .sl-frame-block > .sl-row-link { display: block; height: 6.45vw; line-height: 6.45vw; }
 .legacy .screenlayout-stage .sl-frame-block .sl-chevron { position: absolute; right: 1.6vw; top: 50%; height: 2vw; margin: -1vw 2.2vw 0 0; line-height: 0; }
+/* 0.5.0-test7: › 줄은 버튼이라 .legacy button{text-align:center} 를 더 강한 선택자로 되돌린다. */
+.detail-settings-layout.stock-settings-layout button.detail-settings-row { text-align: left; }
+.detail-settings-layout.stock-settings-layout button.detail-settings-row > span:first-child { text-align: left; }
 /* 0.5.0-test3 설정 상세 화면 = 기아 ccNC 설명서 D-settings_*.png 기준(1920×720).
    왼쪽 메뉴: 글자 x54, 줄 간격 96(5vw), 글자 2.05vw, 선택 글자색 #1f9c81, 선택 표시 사선(0,159)-(38,123).
    본문: 좌측 세로선 x485, 우측 x1398, 줄 글자 x560, › x1354, 줄 간격 123(6.4vw), 글자 1.72vw. */
-.detail-settings-layout.stock-settings-layout { margin-left: 0; width: 100%; }
+.detail-settings-layout.stock-settings-layout { margin-left: 0; width: 100%; height: 100%; overflow: hidden; }
+.detail-settings-layout.stock-settings-layout .detail-settings-main { overflow: auto; }
 .detail-settings-layout.stock-settings-layout .sl-nav { width: 25.3vw; padding: 0; margin-top: -0.52vw; }
 .detail-settings-layout.stock-settings-layout .sl-tab {
   padding: 0 1vw 0 2.81vw; min-height: 5vw; font-size: 2.05vw; line-height: 5vw; color: #7b7b7b;
@@ -1743,7 +1747,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   -webkit-transform: translateY(-50%) skewX(-42deg); transform: translateY(-50%) skewX(-42deg);
 }
 .detail-settings-layout.stock-settings-layout .detail-settings-main {
-  width: 47.5vw; flex: none; padding: 0 0 0 3.7vw; position: relative;
+  width: 47.5vw; flex: none; padding: 0 1.6vw 0 3.7vw; position: relative;
   border-left: 1px solid #1b1f25; border-right: 1px solid #1b1f25;
 }
 .detail-settings-layout.stock-settings-layout .detail-settings-row { padding-left: 0; padding-right: 0; }
@@ -1757,7 +1761,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 }
 .detail-settings-layout.stock-settings-layout .stock-row-nav { position: relative; }
 .detail-settings-layout.stock-settings-layout .stock-chevron {
-  position: absolute; right: 1.55vw; top: 50%; margin-top: -0.65vw; width: 0.62vw; height: 1.3vw;
+  position: absolute; right: 0; top: 50%; margin-top: -0.65vw; width: 0.62vw; height: 1.3vw;
   fill: none; stroke: #7d8794; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 .detail-settings-layout.stock-settings-layout .stock-choice .sl-radio-left { margin-left: 2.2vw; }
@@ -2374,6 +2378,7 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   var livePreview = inVehicle || /(?:^|[?&])vehicle=1(?:&|$)/.test(location.search);
   var settingsSection = '';
 var stockScreenGroup = '';
+var stockSub = '';
   var deviceSection = 'bluetooth';
   var displaySection = 'brightness';
   var pairedDevices = null;
@@ -3567,6 +3572,18 @@ var stockScreenGroup = '';
       ? (blueOn ? '켜짐 · ' + (vehicleInfo.blueMode === 1 ? '예약 ' + [vehicleInfo.blueStart, vehicleInfo.blueEnd].filter(Boolean).join('~')
         : '자동') + (typeof vehicleInfo.blueLevel === 'number' ? ' · ' + vehicleInfo.blueLevel + '단계' : '') : '꺼짐') : '';
     readouts.blueOverlap = blueOn ? '1' : '';
+    // 사운드 값은 숫자(단계)를 그대로 보여 준다. 켜짐/꺼짐으로 바꾸지 않는다.
+    var soundPick = function (key) {
+      var value = typeof vehicleSettings[key] === 'number' ? vehicleSettings[key] : vehicleInfo[key];
+      if (typeof value === 'number') return String(value);
+      if (typeof value === 'boolean') return value ? '켜짐' : '꺼짐';
+      return '순정 연동 대기';
+    };
+    ['soundTreble', 'soundMiddle', 'soundBass', 'soundFade', 'soundBalance', 'soundSdvc', 'soundPriority',
+     'soundAutoVolume', 'soundNaviDuringCall', 'soundRearSleep', 'soundReverseDim', 'soundVolume',
+     'soundBeepMode', 'soundSurround', 'soundPowerTreble', 'soundEqMode', 'soundAsd'].forEach(function (key) {
+      readouts[key] = soundPick(key);
+    });
     var car = vehicleLabels(vehicleInfo);
     Object.keys(car).forEach(function (key) { readouts[key] = car[key]; });
     readouts.carNote = Object.keys(car).some(function (key) { return car[key]; }) ? '1' : '';
@@ -3610,14 +3627,47 @@ var stockScreenGroup = '';
    * 키가 없으면 "순정 연동 대기" 로 보여 준다. 근거와 상태는 docs/설정-연동표.md 를 본다.
    * 5W 에 없는 ccNC 항목(하이패스·빌트인 캠 등)은 넣지 않았다.
    */
+  /**
+   * › 줄이 들어가는 하위 화면. 5W 설명서에 그 하위 항목이 있을 때만 만든다.
+   * (docs/설정-연동표.md 2·7절 근거) 없으면 해당 순정 설정 화면을 연다.
+   */
+  var STOCK_SETTING_SUBS = {
+    'car-warning': { title: '경고 방식', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', parent: '운전자 보조',
+      rows: [['경고 음량', ''], ['핸들 진동 경고', ''], ['차로 안전 경고음 끄기', ''],
+        ['주행 안전 우선', ''], ['주차 안전 우선', 'soundReverseDim']] },
+    'car-scc': { title: '스마트 크루즈 컨트롤', desc: '스마트 크루즈 컨트롤 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['스마트 크루즈 응답성', '']] },
+    'car-convenience': { title: '주행 편의', desc: '주행 편의 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['스마트 크루즈 컨트롤', ''], ['차로 유지 보조', ''], ['고속도로 주행 보조', ''],
+        ['고속도로 차로변경 보조', ''], ['고속도로 안전구간 자동감속', ''],
+        ['고속도로 곡선구간 자동감속', ''], ['고속도로 주행속도 자동 조절', '']] },
+    'car-speedlimit': { title: '속도 제한', desc: '속도 제한 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['속도 제한 보조', ''], ['속도 제한 경고', ''], ['속도 오프셋 설정', '']] },
+    'car-driverwarn': { title: '운전자 주의 경고', desc: '운전자 주의 경고 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['전방 차량 출발 알림', '']] },
+    'cluster-theme': { title: '클러스터 테마 선택', desc: '선택된 테마로 표시합니다.', parent: '클러스터',
+      rows: [['게이지 스타일', 'clusterTheme'], ['그래픽 스타일', 'clusterTheme']] },
+    'cluster-info': { title: '표시 정보', desc: '클러스터에 표시할 정보를 선택합니다.', parent: '클러스터',
+      rows: [['기어 변속 알림', ''], ['와이퍼/라이트 모드 표시', ''], ['도로 교통표지판 안내', ''],
+        ['후측방 모니터', ''], ['도로 결빙 알림', '']] },
+    'cluster-voice': { title: '클러스터 음성 안내 음량', desc: '안내음의 음량을 조절할 수 있습니다.', parent: '클러스터',
+      rows: [['클러스터 음성 안내 음량', '']] },
+    'hud-video': { title: '영상 조정', desc: '영상을 조정합니다.', parent: 'HUD',
+      rows: [['증강현실 매칭 조정', '']] },
+    'hud-info': { title: '표시 정보', desc: 'HUD에 표시할 정보를 선택합니다.', parent: 'HUD',
+      rows: [['속도계', ''], ['SPORT 모드 디스플레이', '']] }
+  };
+
   var STOCK_SETTING_SCREENS = {
     vehicle: {
-      title: '차량', host: 'settings-car', hostLabel: '순정 차량 설정 열기',
+      title: '차량', host: 'settings-car', hostLabel: '순정 차량 설정 열기', fallback: 'settings-car',
       groups: [
         { name: '운전자 보조', rows: [
-          { label: '경고 방식', nav: true }, { label: '스마트 크루즈 컨트롤', nav: true },
-          { label: '주행 편의', nav: true }, { label: '속도 제한', nav: true },
-          { label: '운전자 주의 경고', nav: true } ] },
+          { label: '경고 방식', nav: true, sub: 'car-warning' },
+          { label: '스마트 크루즈 컨트롤', nav: true, sub: 'car-scc' },
+          { label: '주행 편의', nav: true, sub: 'car-convenience' },
+          { label: '속도 제한', nav: true, sub: 'car-speedlimit' },
+          { label: '운전자 주의 경고', nav: true, sub: 'car-driverwarn' } ] },
         { name: '드라이브 모드', rows: [
           ['드라이브 모드', 'driveModeOption'] ] },
         { name: '액티브 사운드 디자인', rows: [['실내 엔진 사운드 음량', 'soundAsd']] },
@@ -3651,15 +3701,17 @@ var stockScreenGroup = '';
       ]
     },
     cluster: {
-      title: '클러스터/HUD', host: 'settings-cluster', hostLabel: '순정 클러스터 설정 열기',
+      title: '클러스터/HUD', host: 'settings-cluster', hostLabel: '순정 클러스터 설정 열기', fallback: 'settings-cluster',
       groups: [
         { name: '클러스터', rows: [
-          { label: '클러스터 테마 선택', nav: true }, { label: '표시 정보', nav: true },
-          { label: '클러스터 음성 안내 음량', nav: true } ],
+          { label: '클러스터 테마 선택', nav: true, sub: 'cluster-theme' },
+          { label: '표시 정보', nav: true, sub: 'cluster-info' },
+          { label: '클러스터 음성 안내 음량', nav: true, sub: 'cluster-voice' } ],
           switches: [['웰컴 사운드', '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.']] },
         { name: 'HUD', rows: [
           { label: 'HUD 사용', nav: true }, { label: '디스플레이 모드', nav: true },
-          { label: '영상 조정', nav: true }, { label: '표시 정보', nav: true } ] }
+          { label: '영상 조정', nav: true, sub: 'hud-video' },
+          { label: '표시 정보', nav: true, sub: 'hud-info' } ] }
       ]
     }
   };
@@ -3672,7 +3724,7 @@ var stockScreenGroup = '';
    * ccNC 설명서 오른쪽 선 그림을 다시 그린 것(설명서 그림 파일은 쓰지 않는다).
    * 좌표는 설명서 그림(945×354)의 오른쪽 칸 (690,28)~(945,304) 기준이라, 그 칸과 같은 자리·크기에 그리면 겹친다.
    */
-  var CCNC_ART = {"btnNavi": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M73 122.5Q73 114.5 81 114.5L187 114.5Q195 114.5 195 122.5L195 164Q195 172 187 172L81 172Q73 172 73 164Z\"/><path d=\"M80.5 124Q80.5 120 84.5 120L184.5 120Q188.5 120 188.5 124L188.5 161Q188.5 165 184.5 165L84.5 165Q80.5 165 80.5 161Z\" fill=\"#1d1d1d\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M134 132L136.9 140L145.4 140.3L138.8 145.5L141.1 153.7L134 149L126.9 153.7L129.2 145.5L122.6 140.3L131.1 140Z\"/></g>", "btnHandle": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M73 122.5Q73 114.5 81 114.5L187 114.5Q195 114.5 195 122.5L195 164Q195 172 187 172L81 172Q73 172 73 164Z\"/><path d=\"M80.5 124Q80.5 120 84.5 120L184.5 120Q188.5 120 188.5 124L188.5 161Q188.5 165 184.5 165L84.5 165Q80.5 165 80.5 161Z\" fill=\"#1d1d1d\"/></g><path d=\"M134 132L136.9 140L145.4 140.3L138.8 145.5L141.1 153.7L134 149L126.9 153.7L129.2 145.5L122.6 140.3L131.1 140Z\" fill=\"#8e8e8e\"/>", "btnMode": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M54 157.5V129l11.5 24 11.5-24v28.5M95 129a14.25 14.25 0 1 0 .1 0zM115 129v28.5h6a14.25 14.25 0 0 0 0-28.5zM144 129v28.5h16M144 129h16M144 143h14\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M198.7 128.2A15.5 15.5 0 0 1 211 147.5M215.2 143.5L211 147.5L209.4 141.9M207.9 153.5A15.5 15.5 0 0 1 185 154.5M186.5 160.1L185 154.5L190.7 155.9M181.4 148.8A15.5 15.5 0 0 1 192 128.5M186.4 126.9L192 128.5L187.9 132.7\"/></g>", "btnUpDown": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M78 157 99.7 129l21.8 28M145 129l21.7 28 21.8-28\"/></g>", "btnVolTune": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M72 134h9l14-7.5v33.5l-14-7.5h-9z\"/><path d=\"M100.9 138.9A6 6 0 0 1 100.9 148.1M104.1 135.1A11 11 0 0 1 104.1 151.9M107.3 131.2A16 16 0 0 1 107.3 155.8\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M134 122.5v40\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M177.8 128.8A17.5 17.5 0 1 1 160.2 128.8M169 123v22\"/></g>", "phone": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M125.6 82.6Q130 72.5 140.8 74.7L180.7 82.8Q191.5 85 187.6 95.3L143.9 212.2Q140 222.5 129.6 218.9L85.4 203.6Q75 200 79.4 189.9Z\"/><path d=\"M126.6 83.8Q130.2 75.5 139 77.2L180.6 85.4Q189.4 87.2 186.3 95.6L142.9 211.1Q139.8 219.5 131.3 216.6L85.7 200.9Q77.2 198 80.8 189.7Z\" stroke-width=\"0.9\"/><path d=\"M152.5 79.5l15 2.5\"/></g>", "brightness": "<path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" fill=\"#141414\"/><path d=\"M74 108L193 88V104L74 160Z\" fill=\"#2a2a2a\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M68.5 106.5Q68.5 102.5 72.4 101.8L195.1 80.7Q199 80 199 84L199 201Q199 205 195 204.6L72.5 191.9Q68.5 191.5 68.5 187.5Z\"/><path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" stroke-width=\"0.8\"/><path d=\"M195.5 81v123.5\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M143 144L152 144M137.7 156.7L144.1 163.1M125 162L125 171M112.3 156.7L105.9 163.1M107 144L98 144M112.3 131.3L105.9 124.9M125 126L125 117M137.7 131.3L144.1 124.9\"/><path d=\"M125 130.5a13.5 13.5 0 0 0 0 27z\"/></g><path d=\"M125 130.5a13.5 13.5 0 0 1 0 27z\" fill=\"#1fae9b\"/>", "bluelight": "<path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" fill=\"#141414\"/><path d=\"M74 108L193 88V104L74 160Z\" fill=\"#2a2a2a\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M68.5 106.5Q68.5 102.5 72.4 101.8L195.1 80.7Q199 80 199 84L199 201Q199 205 195 204.6L72.5 191.9Q68.5 191.5 68.5 187.5Z\"/><path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" stroke-width=\"0.8\"/><path d=\"M195.5 81v123.5\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M101.5 143Q129 115.5 156.5 143Q129 170.5 101.5 143Z\"/></g><circle cx=\"129\" cy=\"143\" r=\"10\" fill=\"#1fae9b\"/>", "camera": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M167 131.1L168.5 136.9L176.1 137.3L176.1 149.7L168.5 150.1L167 155.9L164.8 161.4L170.8 166.1L163.4 176.2L157.1 172L152.5 175.9L147.4 179L149.5 186.4L137.6 190.2L134.9 183.1L129 183.5L123.1 183.1L120.4 190.2L108.5 186.4L110.6 179L105.5 175.9L100.9 172L94.6 176.2L87.2 166.1L93.2 161.4L91 155.9L89.5 150.1L81.9 149.7L81.9 137.3L89.5 136.9L91 131.1L93.2 125.6L87.2 120.9L94.6 110.8L100.9 115L105.5 111.1L110.6 108L108.5 100.6L120.4 96.8L123.1 103.9L129 103.5L134.9 103.9L137.6 96.8L149.5 100.6L147.4 108L152.5 111.1L157.1 115L163.4 110.8L170.8 120.9L164.8 125.6Z\"/><circle cx=\"129\" cy=\"143.5\" r=\"29\"/><ellipse cx=\"135\" cy=\"143.5\" rx=\"13\" ry=\"20\"/><path d=\"M192.9 167.3L194 171.6L199.7 171.8L199.7 181.2L194 181.4L192.9 185.7L191 189.8L195.2 193.5L189.1 200.8L184.7 197.3L181 199.9L177 201.8L177.8 207.3L168.4 209L167.3 203.5L162.8 203.1L158.5 202L155.5 206.7L147.3 202L150 197L146.8 193.9L144.2 190.2L138.9 192L135.7 183L140.9 181L140.5 176.5L140.9 172L135.7 170L138.9 161L144.2 162.8L146.8 159.1L150 156L147.3 151L155.5 146.3L158.5 151L162.8 149.9L167.3 149.5L168.4 144L177.8 145.7L177 151.2L181 153.1L184.7 155.7L189.1 152.2L195.2 159.5L191 163.2Z\" fill=\"#000\"/><circle cx=\"167.5\" cy=\"176.5\" r=\"15\"/><ellipse cx=\"170\" cy=\"176.5\" rx=\"7\" ry=\"10\"/></g>", "calendar": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M89.6 98Q90 95 93 94.7L179.5 86.3Q182.5 86 182.8 89L192.2 191Q192.5 194 189.5 193.8L80.5 185.2Q77.5 185 77.9 182Z\"/><path d=\"M87 98 180 89.5 189 191\"/><path d=\"M85.5 117 184 108\"/><path d=\"M98 133h8v7h-8zM116.5 131.7h8v7h-8zM135 130.4h8v7h-8zM153.5 129.1h8v7h-8zM97 149h8v7h-8zM115.5 147.7h8v7h-8zM134 146.4h8v7h-8zM152.5 145.1h8v7h-8zM96 165h8v7h-8zM114.5 163.7h8v7h-8zM133 162.4h8v7h-8zM151.5 161.1h8v7h-8z\" stroke-width=\"1\"/><path d=\"M104 100v-13a8 8 0 1 1 13 6\"/><path d=\"M148 96v-13a8 8 0 1 1 13 6\"/><circle cx=\"159\" cy=\"182.5\" r=\"26\" fill=\"#000\"/><circle cx=\"161\" cy=\"182.5\" r=\"25\"/><path d=\"M146 175.5l13 7 16-8\" stroke-width=\"2\"/></g>", "globe": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"135\" cy=\"132.5\" r=\"56\"/><path d=\"M118 92c6 2 10 8 18 7 6 3 3 9 9 12 4 6-2 10-8 9-5 4-2 11-8 12-5 2-9-5-13-8-4-6-11-6-12-12 1-7 6-14 14-20zM150 152c7 0 12 5 13 11 2 7-4 12-6 19-4 4-9-1-10-7-3-7-4-15 3-23zM160 105c6 0 10 4 15 9 2 6-3 9-8 7-5-3-9-9-7-16z\" stroke-width=\"1\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M88.6 179.2L84.9 178.8L81.6 178.1L78.7 177.1L76.2 175.7L74.1 174L72.5 172L71.3 169.8L70.5 167.3L70.3 164.5L70.5 161.5L71.1 158.2L72.3 154.8L73.8 151.3L75.9 147.5L78.3 143.7L81.2 139.8L84.4 135.9L88.1 131.9L92 127.9L96.3 124L100.8 120.1L105.6 116.3L110.7 112.7L115.8 109.1L121.2 105.8L126.6 102.6L132.1 99.7L137.6 97L143.1 94.5L148.5 92.3L153.8 90.5L159 88.9L164 87.6L168.9 86.7L173.4 86L177.7 85.8L181.7 85.8L185.3 86.2L188.6 87L191.5 88M77.1 96.8L76.7 94.2L76.8 91.9L77.3 89.9L78.3 88.2L79.7 86.8L81.5 85.8L83.7 85.2L86.3 84.9L89.3 85L92.6 85.4L96.3 86.2L100.2 87.4L104.5 88.9L108.9 90.7L113.6 92.9L118.4 95.3L123.3 98.1L128.3 101L133.4 104.3L138.5 107.7L143.5 111.4L148.5 115.2L153.4 119.1L158.2 123.1L162.8 127.2L167.1 131.4L171.3 135.5L175.1 139.7L178.6 143.7L181.8 147.7L184.7 151.6L187.2 155.3L189.2 158.9L190.9 162.2L192.1 165.3L192.9 168.2L193.3 170.8L193.2 173.1L192.7 175.1L191.7 176.8M117.6 65.7L118.9 64.6L120.4 64L121.9 64L123.6 64.4L125.3 65.2L127.1 66.6L128.9 68.5L130.8 70.8L132.7 73.6L134.7 76.8L136.6 80.4L138.5 84.3L140.4 88.6L142.3 93.3L144.1 98.2L145.9 103.4L147.5 108.8L149.1 114.3L150.6 120L152 125.8L153.2 131.6L154.3 137.4L155.3 143.2L156.1 148.9L156.8 154.5L157.3 160L157.6 165.2L157.8 170.2L157.8 174.9L157.7 179.4L157.4 183.5L156.9 187.2L156.3 190.5L155.5 193.4L154.6 195.9L153.5 197.9L152.3 199.4L151 200.4L149.5 201L148 201\"/></g>", "chip": "<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M66.3 147.9Q64 146 66.9 145.3L149.1 124.7Q152 124 154.5 125.7L204.5 160.3Q207 162 204.1 162.9L120.9 189.1Q118 190 115.7 188.1Z\"/><path d=\"M70.6 147.9Q69 146.7 70.9 146.2L147.7 128.9Q149.7 128.4 151.3 129.5L200.3 160.5Q202 161.5 200.1 162.1L122.2 185Q120.2 185.5 118.6 184.3Z\" stroke-width=\"0.9\"/><path d=\"M64 146v8l54 45 89-29v-8\"/><path d=\"M63 152l-6 4v8M69.8 157.5l-6 4v8M76.5 163l-6 4v8M83.2 168.5l-6 4v8M90 174l-6 4v8M96.8 179.5l-6 4v8M103.5 185l-6 4v8M110.2 190.5l-6 4v8M117 196l-6 4v8M119 197v10M127.9 194.2v10M136.8 191.4v10M145.7 188.6v10M154.6 185.8v10M163.5 183v10M172.4 180.2v10M181.3 177.4v10M190.2 174.6v10M199.1 171.8v10M208 169v10\" stroke-width=\"1\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"132.5\" cy=\"151.5\" rx=\"30\" ry=\"13\"/></g><path d=\"M132 146v12\" stroke=\"#1fae9b\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><circle cx=\"132\" cy=\"141.5\" r=\"2\" fill=\"#1fae9b\"/>", "fan": "<g fill=\"none\" stroke=\"#5a5a5a\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M131 151C132 153.5 136.5 160.8 137 166C137.5 171.2 135.8 178.2 134 182C132.2 185.8 127.3 187.8 126 189M84 152C86 152.8 92 156.8 96 157C100 157.2 106 153.7 108 153M106 117C106.7 118.5 108.7 123.3 110 126C111.3 128.7 113.3 131.8 114 133\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M114 133C113 131.7 109.7 128.3 108 125C106.3 121.7 104.5 117 104 113C103.5 109 104 104.3 105 101C106 97.7 106.8 95 110 93C113.2 91 119.2 89.3 124 89C128.8 88.7 134.8 89.7 139 91C143.2 92.3 147.2 94.5 149 97C150.8 99.5 150.7 103.3 150 106C149.3 108.7 147.3 111 145 113C142.7 115 138.5 115.8 136 118C133.5 120.2 131.7 123.2 130 126C128.3 128.8 126.7 133.5 126 135M126 135C126.8 133.7 129 129.2 131 127C133 124.8 135 123.2 138 122C141 120.8 145.2 120 149 120C152.8 120 157.5 120.7 161 122C164.5 123.3 167.7 125.5 170 128C172.3 130.5 173.8 133.7 175 137C176.2 140.3 176.7 146.2 177 148M145 157C143.7 156.3 140 154.7 137 153C134 151.3 128.7 148 127 147M127 147C128.2 148.2 132 150.5 134 154C136 157.5 138.8 163.2 139 168C139.2 172.8 137.5 179.3 135 183C132.5 186.7 128 189.2 124 190C120 190.8 114.3 190.2 111 188C107.7 185.8 104.8 181 104 177C103.2 173 104.5 167.7 106 164C107.5 160.3 111.5 158 113 155C114.5 152 114.7 147.5 115 146M115 146C114.2 146.8 112.5 149.5 110 151C107.5 152.5 103.7 154.3 100 155C96.3 155.7 91.2 156.2 88 155C84.8 153.8 82.5 150.8 81 148C79.5 145.2 78.7 141.8 79 138C79.3 134.2 80.8 128.7 83 125C85.2 121.3 89.2 118 92 116C94.8 114 97.8 112.8 100 113C102.2 113.2 103.7 115 105 117C106.3 119 106.5 122.3 108 125C109.5 127.7 113 131.7 114 133\"/></g><path d=\"M185.5 159L186.2 161.5L190.7 161.5L190.7 168.5L186.2 168.5L185.5 171L184.6 173.4L188.2 176.2L184.2 181.8L180.5 179.1L178.5 180.8L176.3 182.2L177.6 186.5L171.1 188.7L169.6 184.3L167 184.5L164.4 184.3L162.9 188.7L156.4 186.5L157.7 182.2L155.5 180.8L153.5 179.1L149.8 181.8L145.8 176.2L149.4 173.4L148.5 171L147.8 168.5L143.3 168.5L143.3 161.5L147.8 161.5L148.5 159L149.4 156.6L145.8 153.8L149.8 148.2L153.5 150.9L155.5 149.2L157.7 147.8L156.4 143.5L162.9 141.3L164.4 145.7L167 145.5L169.6 145.7L171.1 141.3L177.6 143.5L176.3 147.8L178.5 149.2L180.5 150.9L184.2 148.2L188.2 153.8L184.6 156.6Z\" fill=\"#000\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M185.5 159L186.2 161.5L190.7 161.5L190.7 168.5L186.2 168.5L185.5 171L184.6 173.4L188.2 176.2L184.2 181.8L180.5 179.1L178.5 180.8L176.3 182.2L177.6 186.5L171.1 188.7L169.6 184.3L167 184.5L164.4 184.3L162.9 188.7L156.4 186.5L157.7 182.2L155.5 180.8L153.5 179.1L149.8 181.8L145.8 176.2L149.4 173.4L148.5 171L147.8 168.5L143.3 168.5L143.3 161.5L147.8 161.5L148.5 159L149.4 156.6L145.8 153.8L149.8 148.2L153.5 150.9L155.5 149.2L157.7 147.8L156.4 143.5L162.9 141.3L164.4 145.7L167 145.5L169.6 145.7L171.1 141.3L177.6 143.5L176.3 147.8L178.5 149.2L180.5 150.9L184.2 148.2L188.2 153.8L184.6 156.6Z\"/><circle cx=\"167\" cy=\"165\" r=\"12\" stroke=\"#4a4a4a\"/><ellipse cx=\"168\" cy=\"164\" rx=\"5.5\" ry=\"8\"/><path d=\"M162 158a8 8 0 0 0 0 13\"/></g>", "mic": "<g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22.5 130L24.5 130.6L26.5 131.1L28.5 131.7L30.5 132.2L32.5 132.7L34.5 133.3L36.5 133.8L38.5 134.3L40.5 134.8L42.5 135.3L44.5 135.7L46.5 136.2L48.5 136.6L50.5 137L52.5 137.4L54.5 137.8L56.5 138.1L58.5 138.4L60.5 138.7L62.5 139L64.5 139.2L66.5 139.4L68.5 139.6L70.5 139.7L72.5 139.8L74.5 139.9L76.5 140L78.5 140L80.5 140L82.5 140L84.5 139.9L86.5 139.8L88.5 139.7L90.5 139.5L92.5 139.3L94.5 139.1L96.5 138.8L98.5 138.6L100.5 138.3L102.5 138L104.5 137.6L106.5 137.2L108.5 136.8L110.5 136.4L112.5 136L114.5 135.5L116.5 135.1L118.5 134.6L120.5 134.1L122.5 133.6L124.5 133L126.5 132.5L128.5 132L130.5 131.4L132.5 130.9L134.5 130.3L136.5 129.7L138.5 129.2L140.5 128.6L142.5 128.1L144.5 127.6L146.5 127L148.5 126.5L150.5 126L152.5 125.5L154.5 125L156.5 124.5L158.5 124.1L160.5 123.6L162.5 123.2L164.5 122.8L166.5 122.4L168.5 122.1L170.5 121.8L172.5 121.5L174.5 121.2L176.5 120.9L178.5 120.7L180.5 120.5L182.5 120.4L184.5 120.2L186.5 120.1L188.5 120.1L190.5 120L192.5 120L194.5 120L196.5 120.1L198.5 120.2L200.5 120.3L202.5 120.4L204.5 120.6L206.5 120.8L208.5 121L210.5 121.3L212.5 121.6L214.5 121.9L216.5 122.2L218.5 122.6L220.5 122.9L222.5 123.3L224.5 123.8L226.5 124.2L228.5 124.7L230.5 125.2L232.5 125.7L234.5 126.2L236.5 126.7L238.5 127.2L240.5 127.7L242.5 128.3M22.5 142L24.5 142L26.5 141.9L28.5 141.8L30.5 141.6L32.5 141.4L34.5 141.2L36.5 141L38.5 140.7L40.5 140.4L42.5 140L44.5 139.6L46.5 139.2L48.5 138.8L50.5 138.3L52.5 137.8L54.5 137.3L56.5 136.7L58.5 136.2L60.5 135.6L62.5 135L64.5 134.4L66.5 133.8L68.5 133.1L70.5 132.5L72.5 131.8L74.5 131.2L76.5 130.5L78.5 129.8L80.5 129.2L82.5 128.5L84.5 127.8L86.5 127.2L88.5 126.5L90.5 125.9L92.5 125.3L94.5 124.7L96.5 124.1L98.5 123.5L100.5 123L102.5 122.4L104.5 121.9L106.5 121.5L108.5 121L110.5 120.6L112.5 120.2L114.5 119.8L116.5 119.5L118.5 119.2L120.5 118.9L122.5 118.7L124.5 118.5L126.5 118.3L128.5 118.2L130.5 118.1L132.5 118L134.5 118L136.5 118L138.5 118.1L140.5 118.2L142.5 118.3L144.5 118.5L146.5 118.7L148.5 118.9L150.5 119.2L152.5 119.5L154.5 119.8L156.5 120.2L158.5 120.6L160.5 121L162.5 121.4L164.5 121.9L166.5 122.4L168.5 123L170.5 123.5L172.5 124.1L174.5 124.7L176.5 125.3L178.5 125.9L180.5 126.5L182.5 127.2L184.5 127.8L186.5 128.5L188.5 129.1L190.5 129.8L192.5 130.5L194.5 131.1L196.5 131.8L198.5 132.5L200.5 133.1L202.5 133.7L204.5 134.4L206.5 135L208.5 135.6L210.5 136.2L212.5 136.7L214.5 137.3L216.5 137.8L218.5 138.3L220.5 138.7L222.5 139.2L224.5 139.6L226.5 140L228.5 140.3L230.5 140.7L232.5 141L234.5 141.2L236.5 141.4L238.5 141.6L240.5 141.8L242.5 141.9M22.5 129.5L24.5 129.1L26.5 128.7L28.5 128.2L30.5 127.8L32.5 127.4L34.5 126.9L36.5 126.5L38.5 126.1L40.5 125.8L42.5 125.4L44.5 125L46.5 124.7L48.5 124.4L50.5 124.1L52.5 123.8L54.5 123.5L56.5 123.3L58.5 123L60.5 122.8L62.5 122.6L64.5 122.5L66.5 122.3L68.5 122.2L70.5 122.1L72.5 122.1L74.5 122L76.5 122L78.5 122L80.5 122L82.5 122.1L84.5 122.2L86.5 122.3L88.5 122.4L90.5 122.6L92.5 122.7L94.5 122.9L96.5 123.2L98.5 123.4L100.5 123.7L102.5 123.9L104.5 124.2L106.5 124.5L108.5 124.9L110.5 125.2L112.5 125.6L114.5 126L116.5 126.4L118.5 126.8L120.5 127.2L122.5 127.6L124.5 128L126.5 128.5L128.5 128.9L130.5 129.3L132.5 129.8L134.5 130.2L136.5 130.7L138.5 131.1L140.5 131.5L142.5 132L144.5 132.4L146.5 132.8L148.5 133.2L150.5 133.6L152.5 134L154.5 134.4L156.5 134.8L158.5 135.1L160.5 135.5L162.5 135.8L164.5 136.1L166.5 136.3L168.5 136.6L170.5 136.8L172.5 137.1L174.5 137.3L176.5 137.4L178.5 137.6L180.5 137.7L182.5 137.8L184.5 137.9L186.5 138L188.5 138L190.5 138L192.5 138L194.5 137.9L196.5 137.9L198.5 137.8L200.5 137.7L202.5 137.5L204.5 137.4L206.5 137.2L208.5 137L210.5 136.7L212.5 136.5L214.5 136.2L216.5 135.9L218.5 135.6L220.5 135.3L222.5 135L224.5 134.6L226.5 134.2L228.5 133.9L230.5 133.5L232.5 133.1L234.5 132.6L236.5 132.2L238.5 131.8L240.5 131.3L242.5 130.9\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g transform=\"rotate(-9 140 120)\"><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\" fill=\"#151515\"/><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\"/><path d=\"M117 116h42\"/><path d=\"M110 120v14a28 26 0 0 0 56 0v-14\"/><circle cx=\"110\" cy=\"122\" r=\"3.5\"/><circle cx=\"166\" cy=\"122\" r=\"3.5\"/></g><path d=\"M131 172v28h14v-28\"/><ellipse cx=\"137.5\" cy=\"203\" rx=\"35\" ry=\"11\"/><path d=\"M102.5 203v6a35 11 0 0 0 70 0v-6\"/></g>", "micLock": "<g fill=\"none\" stroke=\"#3c3c3c\" stroke-width=\"1.4\"><rect x=\"70\" y=\"80\" width=\"15\" height=\"12\" rx=\"2\"/><path d=\"M73 80v-4a4.5 4.5 0 0 1 9 0v4M77.5 84.5v3\"/></g><text x=\"77.5\" y=\"100\" font-size=\"4.5\" text-anchor=\"middle\" fill=\"#3c3c3c\" font-family=\"sans-serif\">LOCK</text><g fill=\"none\" stroke=\"#3c3c3c\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g transform=\"rotate(-9 140 120)\"><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\" fill=\"#0d0d0d\"/><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\"/><path d=\"M117 116h42\"/><path d=\"M110 120v14a28 26 0 0 0 56 0v-14\"/><circle cx=\"110\" cy=\"122\" r=\"3.5\"/><circle cx=\"166\" cy=\"122\" r=\"3.5\"/></g><path d=\"M131 172v28h14v-28\"/><ellipse cx=\"137.5\" cy=\"203\" rx=\"35\" ry=\"11\"/><path d=\"M102.5 203v6a35 11 0 0 0 70 0v-6\"/></g>"};
+  var CCNC_ART = {"btnNavi":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M73 122.5Q73 114.5 81 114.5L187 114.5Q195 114.5 195 122.5L195 164Q195 172 187 172L81 172Q73 172 73 164Z\"/><path d=\"M80.5 124Q80.5 120 84.5 120L184.5 120Q188.5 120 188.5 124L188.5 161Q188.5 165 184.5 165L84.5 165Q80.5 165 80.5 161Z\" fill=\"#1d1d1d\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M134 132L136.9 140L145.4 140.3L138.8 145.5L141.1 153.7L134 149L126.9 153.7L129.2 145.5L122.6 140.3L131.1 140Z\"/></g>","btnHandle":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M73 122.5Q73 114.5 81 114.5L187 114.5Q195 114.5 195 122.5L195 164Q195 172 187 172L81 172Q73 172 73 164Z\"/><path d=\"M80.5 124Q80.5 120 84.5 120L184.5 120Q188.5 120 188.5 124L188.5 161Q188.5 165 184.5 165L84.5 165Q80.5 165 80.5 161Z\" fill=\"#1d1d1d\"/></g><path d=\"M134 132L136.9 140L145.4 140.3L138.8 145.5L141.1 153.7L134 149L126.9 153.7L129.2 145.5L122.6 140.3L131.1 140Z\" fill=\"#8e8e8e\"/>","btnMode":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M54 157.5V129l11.5 24 11.5-24v28.5M95 129a14.25 14.25 0 1 0 .1 0zM115 129v28.5h6a14.25 14.25 0 0 0 0-28.5zM144 129v28.5h16M144 129h16M144 143h14\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M198.7 128.2A15.5 15.5 0 0 1 211 147.5M215.2 143.5L211 147.5L209.4 141.9M207.9 153.5A15.5 15.5 0 0 1 185 154.5M186.5 160.1L185 154.5L190.7 155.9M181.4 148.8A15.5 15.5 0 0 1 192 128.5M186.4 126.9L192 128.5L187.9 132.7\"/></g>","btnUpDown":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M78 157 99.7 129l21.8 28M145 129l21.7 28 21.8-28\"/></g>","btnVolTune":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M72 134h9l14-7.5v33.5l-14-7.5h-9z\"/><path d=\"M100.9 138.9A6 6 0 0 1 100.9 148.1M104.1 135.1A11 11 0 0 1 104.1 151.9M107.3 131.2A16 16 0 0 1 107.3 155.8\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M134 122.5v40\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M177.8 128.8A17.5 17.5 0 1 1 160.2 128.8M169 123v22\"/></g>","phone":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M125.6 82.6Q130 72.5 140.8 74.7L180.7 82.8Q191.5 85 187.6 95.3L143.9 212.2Q140 222.5 129.6 218.9L85.4 203.6Q75 200 79.4 189.9Z\"/><path d=\"M126.6 83.8Q130.2 75.5 139 77.2L180.6 85.4Q189.4 87.2 186.3 95.6L142.9 211.1Q139.8 219.5 131.3 216.6L85.7 200.9Q77.2 198 80.8 189.7Z\" stroke-width=\"0.9\"/><path d=\"M152.5 79.5l15 2.5\"/></g>","brightness":"<path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" fill=\"#141414\"/><path d=\"M74 108L193 88V104L74 160Z\" fill=\"#2a2a2a\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M68.5 106.5Q68.5 102.5 72.4 101.8L195.1 80.7Q199 80 199 84L199 201Q199 205 195 204.6L72.5 191.9Q68.5 191.5 68.5 187.5Z\"/><path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" stroke-width=\"0.8\"/><path d=\"M195.5 81v123.5\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M143 144L152 144M137.7 156.7L144.1 163.1M125 162L125 171M112.3 156.7L105.9 163.1M107 144L98 144M112.3 131.3L105.9 124.9M125 126L125 117M137.7 131.3L144.1 124.9\"/><path d=\"M125 130.5a13.5 13.5 0 0 0 0 27z\"/></g><path d=\"M125 130.5a13.5 13.5 0 0 1 0 27z\" fill=\"#1fae9b\"/>","bluelight":"<path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" fill=\"#141414\"/><path d=\"M74 108L193 88V104L74 160Z\" fill=\"#2a2a2a\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M68.5 106.5Q68.5 102.5 72.4 101.8L195.1 80.7Q199 80 199 84L199 201Q199 205 195 204.6L72.5 191.9Q68.5 191.5 68.5 187.5Z\"/><path d=\"M74 110Q74 108 76 107.7L191 88.3Q193 88 193 90L193 195Q193 197 191 196.8L76 186.7Q74 186.5 74 184.5Z\" stroke-width=\"0.8\"/><path d=\"M195.5 81v123.5\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M101.5 143Q129 115.5 156.5 143Q129 170.5 101.5 143Z\"/></g><circle cx=\"129\" cy=\"143\" r=\"10\" fill=\"#1fae9b\"/>","camera":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M167 131.1L168.5 136.9L176.1 137.3L176.1 149.7L168.5 150.1L167 155.9L164.8 161.4L170.8 166.1L163.4 176.2L157.1 172L152.5 175.9L147.4 179L149.5 186.4L137.6 190.2L134.9 183.1L129 183.5L123.1 183.1L120.4 190.2L108.5 186.4L110.6 179L105.5 175.9L100.9 172L94.6 176.2L87.2 166.1L93.2 161.4L91 155.9L89.5 150.1L81.9 149.7L81.9 137.3L89.5 136.9L91 131.1L93.2 125.6L87.2 120.9L94.6 110.8L100.9 115L105.5 111.1L110.6 108L108.5 100.6L120.4 96.8L123.1 103.9L129 103.5L134.9 103.9L137.6 96.8L149.5 100.6L147.4 108L152.5 111.1L157.1 115L163.4 110.8L170.8 120.9L164.8 125.6Z\"/><circle cx=\"129\" cy=\"143.5\" r=\"29\"/><ellipse cx=\"135\" cy=\"143.5\" rx=\"13\" ry=\"20\"/><path d=\"M192.9 167.3L194 171.6L199.7 171.8L199.7 181.2L194 181.4L192.9 185.7L191 189.8L195.2 193.5L189.1 200.8L184.7 197.3L181 199.9L177 201.8L177.8 207.3L168.4 209L167.3 203.5L162.8 203.1L158.5 202L155.5 206.7L147.3 202L150 197L146.8 193.9L144.2 190.2L138.9 192L135.7 183L140.9 181L140.5 176.5L140.9 172L135.7 170L138.9 161L144.2 162.8L146.8 159.1L150 156L147.3 151L155.5 146.3L158.5 151L162.8 149.9L167.3 149.5L168.4 144L177.8 145.7L177 151.2L181 153.1L184.7 155.7L189.1 152.2L195.2 159.5L191 163.2Z\" fill=\"#000\"/><circle cx=\"167.5\" cy=\"176.5\" r=\"15\"/><ellipse cx=\"170\" cy=\"176.5\" rx=\"7\" ry=\"10\"/></g>","calendar":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M89.6 98Q90 95 93 94.7L179.5 86.3Q182.5 86 182.8 89L192.2 191Q192.5 194 189.5 193.8L80.5 185.2Q77.5 185 77.9 182Z\"/><path d=\"M87 98 180 89.5 189 191\"/><path d=\"M85.5 117 184 108\"/><path d=\"M98 133h8v7h-8zM116.5 131.7h8v7h-8zM135 130.4h8v7h-8zM153.5 129.1h8v7h-8zM97 149h8v7h-8zM115.5 147.7h8v7h-8zM134 146.4h8v7h-8zM152.5 145.1h8v7h-8zM96 165h8v7h-8zM114.5 163.7h8v7h-8zM133 162.4h8v7h-8zM151.5 161.1h8v7h-8z\" stroke-width=\"1\"/><path d=\"M104 100v-13a8 8 0 1 1 13 6\"/><path d=\"M148 96v-13a8 8 0 1 1 13 6\"/><circle cx=\"159\" cy=\"182.5\" r=\"26\" fill=\"#000\"/><circle cx=\"161\" cy=\"182.5\" r=\"25\"/><path d=\"M146 175.5l13 7 16-8\" stroke-width=\"2\"/></g>","globe":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"135\" cy=\"132.5\" r=\"56\"/><path d=\"M118 92c6 2 10 8 18 7 6 3 3 9 9 12 4 6-2 10-8 9-5 4-2 11-8 12-5 2-9-5-13-8-4-6-11-6-12-12 1-7 6-14 14-20zM150 152c7 0 12 5 13 11 2 7-4 12-6 19-4 4-9-1-10-7-3-7-4-15 3-23zM160 105c6 0 10 4 15 9 2 6-3 9-8 7-5-3-9-9-7-16z\" stroke-width=\"1\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M88.6 179.2L84.9 178.8L81.6 178.1L78.7 177.1L76.2 175.7L74.1 174L72.5 172L71.3 169.8L70.5 167.3L70.3 164.5L70.5 161.5L71.1 158.2L72.3 154.8L73.8 151.3L75.9 147.5L78.3 143.7L81.2 139.8L84.4 135.9L88.1 131.9L92 127.9L96.3 124L100.8 120.1L105.6 116.3L110.7 112.7L115.8 109.1L121.2 105.8L126.6 102.6L132.1 99.7L137.6 97L143.1 94.5L148.5 92.3L153.8 90.5L159 88.9L164 87.6L168.9 86.7L173.4 86L177.7 85.8L181.7 85.8L185.3 86.2L188.6 87L191.5 88M77.1 96.8L76.7 94.2L76.8 91.9L77.3 89.9L78.3 88.2L79.7 86.8L81.5 85.8L83.7 85.2L86.3 84.9L89.3 85L92.6 85.4L96.3 86.2L100.2 87.4L104.5 88.9L108.9 90.7L113.6 92.9L118.4 95.3L123.3 98.1L128.3 101L133.4 104.3L138.5 107.7L143.5 111.4L148.5 115.2L153.4 119.1L158.2 123.1L162.8 127.2L167.1 131.4L171.3 135.5L175.1 139.7L178.6 143.7L181.8 147.7L184.7 151.6L187.2 155.3L189.2 158.9L190.9 162.2L192.1 165.3L192.9 168.2L193.3 170.8L193.2 173.1L192.7 175.1L191.7 176.8M117.6 65.7L118.9 64.6L120.4 64L121.9 64L123.6 64.4L125.3 65.2L127.1 66.6L128.9 68.5L130.8 70.8L132.7 73.6L134.7 76.8L136.6 80.4L138.5 84.3L140.4 88.6L142.3 93.3L144.1 98.2L145.9 103.4L147.5 108.8L149.1 114.3L150.6 120L152 125.8L153.2 131.6L154.3 137.4L155.3 143.2L156.1 148.9L156.8 154.5L157.3 160L157.6 165.2L157.8 170.2L157.8 174.9L157.7 179.4L157.4 183.5L156.9 187.2L156.3 190.5L155.5 193.4L154.6 195.9L153.5 197.9L152.3 199.4L151 200.4L149.5 201L148 201\"/></g>","chip":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M66.3 147.9Q64 146 66.9 145.3L149.1 124.7Q152 124 154.5 125.7L204.5 160.3Q207 162 204.1 162.9L120.9 189.1Q118 190 115.7 188.1Z\"/><path d=\"M70.6 147.9Q69 146.7 70.9 146.2L147.7 128.9Q149.7 128.4 151.3 129.5L200.3 160.5Q202 161.5 200.1 162.1L122.2 185Q120.2 185.5 118.6 184.3Z\" stroke-width=\"0.9\"/><path d=\"M64 146v8l54 45 89-29v-8\"/><path d=\"M63 152l-6 4v8M69.8 157.5l-6 4v8M76.5 163l-6 4v8M83.2 168.5l-6 4v8M90 174l-6 4v8M96.8 179.5l-6 4v8M103.5 185l-6 4v8M110.2 190.5l-6 4v8M117 196l-6 4v8M119 197v10M127.9 194.2v10M136.8 191.4v10M145.7 188.6v10M154.6 185.8v10M163.5 183v10M172.4 180.2v10M181.3 177.4v10M190.2 174.6v10M199.1 171.8v10M208 169v10\" stroke-width=\"1\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"132.5\" cy=\"151.5\" rx=\"30\" ry=\"13\"/></g><path d=\"M132 146v12\" stroke=\"#1fae9b\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><circle cx=\"132\" cy=\"141.5\" r=\"2\" fill=\"#1fae9b\"/>","fan":"<g fill=\"none\" stroke=\"#5a5a5a\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M131 151C132 153.5 136.5 160.8 137 166C137.5 171.2 135.8 178.2 134 182C132.2 185.8 127.3 187.8 126 189M84 152C86 152.8 92 156.8 96 157C100 157.2 106 153.7 108 153M106 117C106.7 118.5 108.7 123.3 110 126C111.3 128.7 113.3 131.8 114 133\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M114 133C113 131.7 109.7 128.3 108 125C106.3 121.7 104.5 117 104 113C103.5 109 104 104.3 105 101C106 97.7 106.8 95 110 93C113.2 91 119.2 89.3 124 89C128.8 88.7 134.8 89.7 139 91C143.2 92.3 147.2 94.5 149 97C150.8 99.5 150.7 103.3 150 106C149.3 108.7 147.3 111 145 113C142.7 115 138.5 115.8 136 118C133.5 120.2 131.7 123.2 130 126C128.3 128.8 126.7 133.5 126 135M126 135C126.8 133.7 129 129.2 131 127C133 124.8 135 123.2 138 122C141 120.8 145.2 120 149 120C152.8 120 157.5 120.7 161 122C164.5 123.3 167.7 125.5 170 128C172.3 130.5 173.8 133.7 175 137C176.2 140.3 176.7 146.2 177 148M145 157C143.7 156.3 140 154.7 137 153C134 151.3 128.7 148 127 147M127 147C128.2 148.2 132 150.5 134 154C136 157.5 138.8 163.2 139 168C139.2 172.8 137.5 179.3 135 183C132.5 186.7 128 189.2 124 190C120 190.8 114.3 190.2 111 188C107.7 185.8 104.8 181 104 177C103.2 173 104.5 167.7 106 164C107.5 160.3 111.5 158 113 155C114.5 152 114.7 147.5 115 146M115 146C114.2 146.8 112.5 149.5 110 151C107.5 152.5 103.7 154.3 100 155C96.3 155.7 91.2 156.2 88 155C84.8 153.8 82.5 150.8 81 148C79.5 145.2 78.7 141.8 79 138C79.3 134.2 80.8 128.7 83 125C85.2 121.3 89.2 118 92 116C94.8 114 97.8 112.8 100 113C102.2 113.2 103.7 115 105 117C106.3 119 106.5 122.3 108 125C109.5 127.7 113 131.7 114 133\"/></g><path d=\"M185.5 159L186.2 161.5L190.7 161.5L190.7 168.5L186.2 168.5L185.5 171L184.6 173.4L188.2 176.2L184.2 181.8L180.5 179.1L178.5 180.8L176.3 182.2L177.6 186.5L171.1 188.7L169.6 184.3L167 184.5L164.4 184.3L162.9 188.7L156.4 186.5L157.7 182.2L155.5 180.8L153.5 179.1L149.8 181.8L145.8 176.2L149.4 173.4L148.5 171L147.8 168.5L143.3 168.5L143.3 161.5L147.8 161.5L148.5 159L149.4 156.6L145.8 153.8L149.8 148.2L153.5 150.9L155.5 149.2L157.7 147.8L156.4 143.5L162.9 141.3L164.4 145.7L167 145.5L169.6 145.7L171.1 141.3L177.6 143.5L176.3 147.8L178.5 149.2L180.5 150.9L184.2 148.2L188.2 153.8L184.6 156.6Z\" fill=\"#000\"/><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M185.5 159L186.2 161.5L190.7 161.5L190.7 168.5L186.2 168.5L185.5 171L184.6 173.4L188.2 176.2L184.2 181.8L180.5 179.1L178.5 180.8L176.3 182.2L177.6 186.5L171.1 188.7L169.6 184.3L167 184.5L164.4 184.3L162.9 188.7L156.4 186.5L157.7 182.2L155.5 180.8L153.5 179.1L149.8 181.8L145.8 176.2L149.4 173.4L148.5 171L147.8 168.5L143.3 168.5L143.3 161.5L147.8 161.5L148.5 159L149.4 156.6L145.8 153.8L149.8 148.2L153.5 150.9L155.5 149.2L157.7 147.8L156.4 143.5L162.9 141.3L164.4 145.7L167 145.5L169.6 145.7L171.1 141.3L177.6 143.5L176.3 147.8L178.5 149.2L180.5 150.9L184.2 148.2L188.2 153.8L184.6 156.6Z\"/><circle cx=\"167\" cy=\"165\" r=\"12\" stroke=\"#4a4a4a\"/><ellipse cx=\"168\" cy=\"164\" rx=\"5.5\" ry=\"8\"/><path d=\"M162 158a8 8 0 0 0 0 13\"/></g>","mic":"<g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22.5 130L24.5 130.6L26.5 131.1L28.5 131.7L30.5 132.2L32.5 132.7L34.5 133.3L36.5 133.8L38.5 134.3L40.5 134.8L42.5 135.3L44.5 135.7L46.5 136.2L48.5 136.6L50.5 137L52.5 137.4L54.5 137.8L56.5 138.1L58.5 138.4L60.5 138.7L62.5 139L64.5 139.2L66.5 139.4L68.5 139.6L70.5 139.7L72.5 139.8L74.5 139.9L76.5 140L78.5 140L80.5 140L82.5 140L84.5 139.9L86.5 139.8L88.5 139.7L90.5 139.5L92.5 139.3L94.5 139.1L96.5 138.8L98.5 138.6L100.5 138.3L102.5 138L104.5 137.6L106.5 137.2L108.5 136.8L110.5 136.4L112.5 136L114.5 135.5L116.5 135.1L118.5 134.6L120.5 134.1L122.5 133.6L124.5 133L126.5 132.5L128.5 132L130.5 131.4L132.5 130.9L134.5 130.3L136.5 129.7L138.5 129.2L140.5 128.6L142.5 128.1L144.5 127.6L146.5 127L148.5 126.5L150.5 126L152.5 125.5L154.5 125L156.5 124.5L158.5 124.1L160.5 123.6L162.5 123.2L164.5 122.8L166.5 122.4L168.5 122.1L170.5 121.8L172.5 121.5L174.5 121.2L176.5 120.9L178.5 120.7L180.5 120.5L182.5 120.4L184.5 120.2L186.5 120.1L188.5 120.1L190.5 120L192.5 120L194.5 120L196.5 120.1L198.5 120.2L200.5 120.3L202.5 120.4L204.5 120.6L206.5 120.8L208.5 121L210.5 121.3L212.5 121.6L214.5 121.9L216.5 122.2L218.5 122.6L220.5 122.9L222.5 123.3L224.5 123.8L226.5 124.2L228.5 124.7L230.5 125.2L232.5 125.7L234.5 126.2L236.5 126.7L238.5 127.2L240.5 127.7L242.5 128.3M22.5 142L24.5 142L26.5 141.9L28.5 141.8L30.5 141.6L32.5 141.4L34.5 141.2L36.5 141L38.5 140.7L40.5 140.4L42.5 140L44.5 139.6L46.5 139.2L48.5 138.8L50.5 138.3L52.5 137.8L54.5 137.3L56.5 136.7L58.5 136.2L60.5 135.6L62.5 135L64.5 134.4L66.5 133.8L68.5 133.1L70.5 132.5L72.5 131.8L74.5 131.2L76.5 130.5L78.5 129.8L80.5 129.2L82.5 128.5L84.5 127.8L86.5 127.2L88.5 126.5L90.5 125.9L92.5 125.3L94.5 124.7L96.5 124.1L98.5 123.5L100.5 123L102.5 122.4L104.5 121.9L106.5 121.5L108.5 121L110.5 120.6L112.5 120.2L114.5 119.8L116.5 119.5L118.5 119.2L120.5 118.9L122.5 118.7L124.5 118.5L126.5 118.3L128.5 118.2L130.5 118.1L132.5 118L134.5 118L136.5 118L138.5 118.1L140.5 118.2L142.5 118.3L144.5 118.5L146.5 118.7L148.5 118.9L150.5 119.2L152.5 119.5L154.5 119.8L156.5 120.2L158.5 120.6L160.5 121L162.5 121.4L164.5 121.9L166.5 122.4L168.5 123L170.5 123.5L172.5 124.1L174.5 124.7L176.5 125.3L178.5 125.9L180.5 126.5L182.5 127.2L184.5 127.8L186.5 128.5L188.5 129.1L190.5 129.8L192.5 130.5L194.5 131.1L196.5 131.8L198.5 132.5L200.5 133.1L202.5 133.7L204.5 134.4L206.5 135L208.5 135.6L210.5 136.2L212.5 136.7L214.5 137.3L216.5 137.8L218.5 138.3L220.5 138.7L222.5 139.2L224.5 139.6L226.5 140L228.5 140.3L230.5 140.7L232.5 141L234.5 141.2L236.5 141.4L238.5 141.6L240.5 141.8L242.5 141.9M22.5 129.5L24.5 129.1L26.5 128.7L28.5 128.2L30.5 127.8L32.5 127.4L34.5 126.9L36.5 126.5L38.5 126.1L40.5 125.8L42.5 125.4L44.5 125L46.5 124.7L48.5 124.4L50.5 124.1L52.5 123.8L54.5 123.5L56.5 123.3L58.5 123L60.5 122.8L62.5 122.6L64.5 122.5L66.5 122.3L68.5 122.2L70.5 122.1L72.5 122.1L74.5 122L76.5 122L78.5 122L80.5 122L82.5 122.1L84.5 122.2L86.5 122.3L88.5 122.4L90.5 122.6L92.5 122.7L94.5 122.9L96.5 123.2L98.5 123.4L100.5 123.7L102.5 123.9L104.5 124.2L106.5 124.5L108.5 124.9L110.5 125.2L112.5 125.6L114.5 126L116.5 126.4L118.5 126.8L120.5 127.2L122.5 127.6L124.5 128L126.5 128.5L128.5 128.9L130.5 129.3L132.5 129.8L134.5 130.2L136.5 130.7L138.5 131.1L140.5 131.5L142.5 132L144.5 132.4L146.5 132.8L148.5 133.2L150.5 133.6L152.5 134L154.5 134.4L156.5 134.8L158.5 135.1L160.5 135.5L162.5 135.8L164.5 136.1L166.5 136.3L168.5 136.6L170.5 136.8L172.5 137.1L174.5 137.3L176.5 137.4L178.5 137.6L180.5 137.7L182.5 137.8L184.5 137.9L186.5 138L188.5 138L190.5 138L192.5 138L194.5 137.9L196.5 137.9L198.5 137.8L200.5 137.7L202.5 137.5L204.5 137.4L206.5 137.2L208.5 137L210.5 136.7L212.5 136.5L214.5 136.2L216.5 135.9L218.5 135.6L220.5 135.3L222.5 135L224.5 134.6L226.5 134.2L228.5 133.9L230.5 133.5L232.5 133.1L234.5 132.6L236.5 132.2L238.5 131.8L240.5 131.3L242.5 130.9\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g transform=\"rotate(-9 140 120)\"><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\" fill=\"#151515\"/><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\"/><path d=\"M117 116h42\"/><path d=\"M110 120v14a28 26 0 0 0 56 0v-14\"/><circle cx=\"110\" cy=\"122\" r=\"3.5\"/><circle cx=\"166\" cy=\"122\" r=\"3.5\"/></g><path d=\"M131 172v28h14v-28\"/><ellipse cx=\"137.5\" cy=\"203\" rx=\"35\" ry=\"11\"/><path d=\"M102.5 203v6a35 11 0 0 0 70 0v-6\"/></g>","micLock":"<g fill=\"none\" stroke=\"#3c3c3c\" stroke-width=\"1.4\"><rect x=\"70\" y=\"80\" width=\"15\" height=\"12\" rx=\"2\"/><path d=\"M73 80v-4a4.5 4.5 0 0 1 9 0v4M77.5 84.5v3\"/></g><text x=\"77.5\" y=\"100\" font-size=\"4.5\" text-anchor=\"middle\" fill=\"#3c3c3c\" font-family=\"sans-serif\">LOCK</text><g fill=\"none\" stroke=\"#3c3c3c\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g transform=\"rotate(-9 140 120)\"><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\" fill=\"#0d0d0d\"/><rect x=\"117\" y=\"66\" width=\"42\" height=\"98\" rx=\"21\"/><path d=\"M117 116h42\"/><path d=\"M110 120v14a28 26 0 0 0 56 0v-14\"/><circle cx=\"110\" cy=\"122\" r=\"3.5\"/><circle cx=\"166\" cy=\"122\" r=\"3.5\"/></g><path d=\"M131 172v28h14v-28\"/><ellipse cx=\"137.5\" cy=\"203\" rx=\"35\" ry=\"11\"/><path d=\"M102.5 203v6a35 11 0 0 0 70 0v-6\"/></g>","soundSpeaker":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g transform=\"rotate(-32 108 148)\"><ellipse cx=\"108\" cy=\"148\" rx=\"41\" ry=\"45\"/><ellipse cx=\"111\" cy=\"145\" rx=\"28\" ry=\"34\"/><ellipse cx=\"108\" cy=\"158\" rx=\"12\" ry=\"15\"/></g><path d=\"M79 143c-9 4-13 12-12 21 1 10 7 17 15 19\"/></g><g fill=\"none\" stroke=\"#1fae9b\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M140 68Q185 121.5 142 175\" stroke=\"#1fae9b\" stroke-width=\"2.2\"/><path d=\"M140 68Q233 121.5 142 175\" stroke=\"#1fae9b\" stroke-width=\"2.2\"/><path d=\"M140 68Q279 121.5 142 175\" stroke=\"#1fae9b\" stroke-width=\"2.2\"/></g>","soundCabin":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M60 40h140v150H60z\"/><path d=\"M60 40c14 6 126 6 140 0M60 190c14-6 126-6 140 0\"/><path d=\"M60 40v150M200 40v150\"/><circle cx=\"130\" cy=\"115\" r=\"21\" stroke=\"#1fae9b\"/><circle cx=\"130\" cy=\"115\" r=\"11\" fill=\"#1fae9b\"/><path d=\"M130 60v100M75 115h110\"/></g>","soundTone":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M78 46v180M128 46v180M178 46v180\"/><rect x=\"66\" y=\"90\" width=\"24\" height=\"16\" rx=\"4\"/><rect x=\"116\" y=\"140\" width=\"24\" height=\"16\" rx=\"4\"/><rect x=\"166\" y=\"112\" width=\"24\" height=\"16\" rx=\"4\"/></g>","soundShield":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M130 42L188 66v46C188 142 170 166 130 186 90 166 72 142 72 112V66z\"/><path d=\"M130 108v34M130 166v3\"/></g>","soundRadio":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"92\" y=\"120\" width=\"76\" height=\"64\" rx=\"8\"/><path d=\"M110 120l16-58M150 120l-16-58\"/><path d=\"M186 104a44 44 0 0 1 0 40M196 92a60 60 0 0 1 0 64\"/></g>","soundRear":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M64 200v-40a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v40z\"/><path d=\"M64 176h128M80 200v22M180 200v22\"/></g>","cluster":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M38.2 147.2L40.9 142.3L44 137.5L47.3 133L50.8 128.6L54.6 124.4L58.5 120.4L62.7 116.7L67.1 113.2L71.7 109.9L76.4 106.9L81.3 104.1L86.4 101.6L91.5 99.4L96.8 97.4L102.2 95.8L107.7 94.4L113.2 93.4L118.8 92.6L124.4 92.2L130 92L135.6 92.2L141.2 92.6L146.8 93.4L152.3 94.4L157.8 95.8L163.2 97.4L168.5 99.4L173.6 101.6L178.7 104.1L183.6 106.9L188.3 109.9L192.9 113.2L197.3 116.7L201.5 120.4L205.4 124.4L209.2 128.6L212.7 133L216 137.5L219.1 142.3L221.8 147.2M64.7 161.3L66.6 157.8L68.8 154.4L71.1 151.2L73.6 148L76.3 145.1L79.2 142.2L82.1 139.6L85.3 137.1L88.5 134.7L91.9 132.6L95.4 130.6L99 128.8L102.6 127.2L106.4 125.9L110.2 124.7L114.1 123.7L118 123L122 122.4L126 122.1L130 122L134 122.1L138 122.4L142 123L145.9 123.7L149.8 124.7L153.6 125.9L157.4 127.2L161 128.8L164.6 130.6L168.1 132.6L171.5 134.7L174.7 137.1L177.9 139.6L180.8 142.2L183.7 145.1L186.4 148L188.9 151.2L191.2 154.4L193.4 157.8L195.3 161.3\"/></g><g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"72\" cy=\"150\" r=\"42\"/><path d=\"M42.6 167l4.4 4.4\"/><path d=\"M38.5 155.9l4.4 4.4\"/><path d=\"M38.5 144.1l4.4 4.4\"/><path d=\"M42.6 133l4.4 4.4\"/><path d=\"M50.1 124l4.4 4.4\"/><path d=\"M60.4 118.1l4.4 4.4\"/><path d=\"M72 116l4.4 4.4\"/><path d=\"M83.6 118.1l4.4 4.4\"/><path d=\"M93.9 124l4.4 4.4\"/><path d=\"M101.4 133l4.4 4.4\"/><path d=\"M105.5 144.1l4.4 4.4\"/><path d=\"M105.5 155.9l4.4 4.4\"/><path d=\"M101.4 167l4.4 4.4\"/><circle cx=\"188\" cy=\"150\" r=\"42\"/><path d=\"M158.6 167l4.4 4.4\"/><path d=\"M154.5 155.9l4.4 4.4\"/><path d=\"M154.5 144.1l4.4 4.4\"/><path d=\"M158.6 133l4.4 4.4\"/><path d=\"M166.1 124l4.4 4.4\"/><path d=\"M176.4 118.1l4.4 4.4\"/><path d=\"M188 116l4.4 4.4\"/><path d=\"M199.6 118.1l4.4 4.4\"/><path d=\"M209.9 124l4.4 4.4\"/><path d=\"M217.4 133l4.4 4.4\"/><path d=\"M221.5 144.1l4.4 4.4\"/><path d=\"M221.5 155.9l4.4 4.4\"/><path d=\"M217.4 167l4.4 4.4\"/><circle cx=\"72\" cy=\"150\" r=\"5\" fill=\"#3c3c3c\"/><circle cx=\"188\" cy=\"150\" r=\"5\" fill=\"#3c3c3c\"/><path d=\"M72 150l22-18M188 150l-20-22\"/><path d=\"M96 196c6 14 16 24 34 30 18-6 28-16 34-30\"/></g>","hud":"<g fill=\"none\" stroke=\"#8e8e8e\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"104\" y=\"52\" width=\"52\" height=\"30\" rx=\"6\"/><path d=\"M104 68h-60M156 68h60\"/><text x=\"112\" y=\"134\" font-size=\"28\" text-anchor=\"middle\" fill=\"#8e8e8e\" font-family=\"sans-serif\">100</text><text x=\"156\" y=\"136\" font-size=\"12\" text-anchor=\"middle\" fill=\"#8e8e8e\" font-family=\"sans-serif\">km/h</text><path d=\"M46.6 207.1L49 202.5L51.6 197.9L54.4 193.6L57.5 189.4L60.8 185.3L64.4 181.5L68.1 177.9L72.1 174.5L76.2 171.3L80.6 168.4L85 165.7L89.7 163.3L94.4 161.2L99.3 159.3L104.3 157.7L109.3 156.4L114.4 155.3L119.6 154.6L124.8 154.1L130 154L135.2 154.1L140.4 154.6L145.6 155.3L150.7 156.4L155.7 157.7L160.7 159.3L165.6 161.2L170.3 163.3L175 165.7L179.4 168.4L183.8 171.3L187.9 174.5L191.9 177.9L195.6 181.5L199.2 185.3L202.5 189.4L205.6 193.6L208.4 197.9L211 202.5L213.4 207.1M70.2 218.1L71.9 214.8L73.7 211.5L75.8 208.4L78 205.4L80.4 202.5L82.9 199.7L85.6 197.1L88.5 194.7L91.4 192.4L94.5 190.3L97.8 188.4L101.1 186.7L104.5 185.1L108 183.8L111.5 182.6L115.2 181.7L118.8 181L122.5 180.4L126.3 180.1L130 180L133.7 180.1L137.5 180.4L141.2 181L144.8 181.7L148.5 182.6L152 183.8L155.5 185.1L158.9 186.7L162.2 188.4L165.5 190.3L168.6 192.4L171.5 194.7L174.4 197.1L177.1 199.7L179.6 202.5L182 205.4L184.2 208.4L186.3 211.5L188.1 214.8L189.8 218.1\"/></g>"};
   function ccncArt(key) {
     return CCNC_ART[key] ? '<svg class="ccnc-art" viewBox="0 0 255 276" aria-hidden="true">' + CCNC_ART[key] + '</svg>' : '';
   }
@@ -3716,17 +3768,26 @@ var stockScreenGroup = '';
     }
   }
 
-  /** 설정 줄 하나. 배열은 [이름, 키], 객체는 {label, nav, note}. */
-  function stockRowHtml(row) {
+  /**
+   * 설정 줄 하나. 배열은 [이름, 키], 객체는 {label, nav, sub, note}.
+   * nav 줄(›)은 누르면 하위 화면(sub)으로 가고, 하위 화면 근거가 없으면 순정 설정 화면을 연다.
+   */
+  function stockRowHtml(row, fallback) {
     var isArray = Array.isArray(row);
     var label = isArray ? row[0] : row.label;
     var key = isArray ? row[1] : (row.key || '');
     var nav = !isArray && row.nav;
     var value = nav ? '' : (key ? '<output data-system-value="' + key + '"></output>' :
       '<output>순정 연동 대기</output>');
-    return '<div class="detail-settings-row' + (nav ? ' stock-row-nav' : '') + '"><span>' + escapeText(label) + '</span>' +
-      value + (nav ? '<svg class="stock-chevron" viewBox="0 0 12 24" aria-hidden="true">' +
-        '<path d="m2 3 8 9-8 9"/></svg>' : '') +
+    var chevron = nav ? '<svg class="stock-chevron" viewBox="0 0 12 24" aria-hidden="true">' +
+      '<path d="m2 3 8 9-8 9"/></svg>' : '';
+    var body = '<span>' + escapeText(label) + '</span>' + value + chevron;
+    if (nav) {
+      var action = (!isArray && row.sub) ? 'data-stock-sub="' + escapeText(row.sub) + '"' :
+        'data-host="' + escapeText(fallback || '') + '"';
+      return '<button type="button" class="detail-settings-row stock-row-nav" ' + action + '>' + body + '</button>';
+    }
+    return '<div class="detail-settings-row">' + body +
       (!isArray && row.note ? '</div><p class="stock-row-note">' + escapeText(row.note) + '</p>' : '</div>');
   }
 
@@ -3744,7 +3805,11 @@ var stockScreenGroup = '';
       nav += '<button type="button" class="sl-tab' + (item.lines ? ' sl-tab-2line' : '') +
         '" data-stock-group="' + escapeText(item.name) + '" aria-selected="' + (i === index) + '">' + label + '</button>';
     });
-    var rows = (group.rows || []).map(stockRowHtml).join('');
+    var sub = STOCK_SETTING_SUBS[stockSub];
+    var showSub = !!(sub && sub.parent === group.name);
+    var rows = (showSub ? sub.rows : (group.rows || [])).map(function (row) {
+      return stockRowHtml(row, screen.fallback);
+    }).join('');
     var choices = (group.choices || []).map(function (label) {
       return '<div class="detail-settings-row stock-choice"><span class="sl-radio-left">' +
         '<span class="radio-circle"></span><span>' + escapeText(label) + '</span></span></div>';
@@ -3754,7 +3819,8 @@ var stockScreenGroup = '';
         '<small>' + escapeText(item[1]) + '</small></span><output>순정 연동 대기</output></div>';
     }).join('');
     // 본문: 설명이 있으면 맨 위. 본문 제목(h2)은 설명서에 없어 넣지 않는다.
-    var main = (group.desc ? '<p class="sl-desc">' + escapeText(group.desc) + '</p>' : '') +
+    var main = ((showSub ? sub.desc : group.desc) ?
+      '<p class="sl-desc">' + escapeText((showSub ? sub.desc : group.desc)) + '</p>' : '') +
       rows + choices + switches +
       '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="' + screen.host + '">' + escapeText(screen.hostLabel) + '</button>' +
@@ -3763,6 +3829,8 @@ var stockScreenGroup = '';
       group.art ? ccncArt(group.art) :
       STOCK_SETTING_ART[section] ? '<svg viewBox="0 0 96 96" aria-hidden="true">' + STOCK_SETTING_ART[section] + '</svg>' : '',
       ' stock-settings-layout');
+    var mainBox = pane.querySelector('.detail-settings-main');
+    if (mainBox) mainBox.scrollTop = 0;
     return true;
   }
 
@@ -3822,74 +3890,61 @@ var stockScreenGroup = '';
     detailSettings(pane, '사용자 프로필 메뉴', side, main, preview + '<p>' + name + '</p>', ' stock-settings-layout');
   }
 
+  /**
+   * 사운드 화면. 다른 설정 화면과 같은 규격(stock-settings-layout)으로 만든다.
+   * 항목과 값은 docs/설정-연동표.md 1절(5W 에 있는 것만) 기준. 단계 값은 숫자로 보여 준다.
+   */
+  var SOUND_SCREENS = [
+    ['premium', '고급 음향', '고급 음향 시스템을 제어합니다.', 'soundSpeaker',
+      [['차속 연동 음량', 'soundSdvc'], ['오디오 음량 자동 줄이기', 'soundAutoVolume'],
+       ['능동 사운드 디자인', 'soundAsd'], ['파워 트레블', 'soundPowerTreble'],
+       ['음장 효과', 'soundEqMode']]],
+    ['balance', '전후/좌우', '위치는 좌석 위치로 음리를 조절할 수 있습니다. 전후/좌우 버튼으로 상세 조정이 가능합니다.', 'soundCabin',
+      [['앞뒤 소리 배분', 'soundFade'], ['좌우 소리 배분', 'soundBalance']]],
+    ['tone', '고음/중음/저음', '고음, 중음, 저음 값을 설정합니다.', 'soundTone',
+      [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass']]],
+    ['guidance', '안내음', '안내음과 음성 안내를 설정합니다.', 'soundSpeaker',
+      [['안내 음량', 'soundVolume'], ['음성 변경', ''], ['내비 안내 우선', 'soundPriority'],
+       ['통화 중 내비 안내', 'soundNaviDuringCall']]],
+    ['beep', '화면 터치음', '화면 터치음 설정을 변경합니다.', 'soundSpeaker',
+      [['화면 터치음', 'soundBeepMode']]],
+    ['surround', '서라운드', '서라운드 효과를 설정합니다.', 'soundSpeaker',
+      [['서라운드', 'soundSurround']]],
+    ['rear', '후석 취침 모드', '후석 취침 모드를 설정합니다.', 'soundRear',
+      [['후석 취침 모드', 'soundRearSleep']]],
+    ['radio', '라디오 음질', '라디오 음질을 설정합니다.', 'soundRadio',
+      [['라디오 노이즈 제어', '']]],
+    ['driver', '운전자 보조', '운전자 보조 경고 설정을 변경합니다.', 'soundShield',
+      [['경고 음량', ''], ['주행·주차 안전 우선', 'soundReverseDim'], ['후진 시 음량 줄임', 'soundReverseDim']]],
+    ['devices', '연결 기기', '연결된 기기의 음량을 설정합니다.', 'phone',
+      [['Android Auto 음량', ''], ['Apple CarPlay 음량', '']]],
+    ['volume', '미디어 음량', '미디어 소리의 음량을 이 화면에서 조절합니다.', 'soundSpeaker', []]
+  ];
+
   function renderSoundControls(pane) {
-    var items = [
-      ['premium','고급 음향',['속도 연동 음량','자동 음량 조절','능동 사운드 디자인','파워 트레블','음장 효과'], 'speaker'],
-      ['balance','전후/좌우',['앞뒤 소리 배분','좌우 소리 배분'], 'cabin'],
-      ['tone','고음/중음/저음',['고음','중음','저음'], 'tone'],
-      ['guidance','안내음',['안내 음량','음성 변경','내비 안내 우선','통화 중 내비 안내'], 'speaker'],
-      ['beep','화면 터치음',['화면 터치음'], 'device'],
-      ['surround','서라운드',['서라운드'], 'cabin'],
-      ['rear','후석 취침 모드',['후석 취침 모드'], 'cabin'],
-      ['radio','라디오 음질',['라디오 노이즈 제어'], 'speaker'],
-      ['driver','운전자 보조',['경고 음량','주행·주차 안전 우선','후진 시 음량 줄임'], 'shield'],
-      ['devices','연결 기기',['Android Auto 음량','Apple CarPlay 음량'], 'device'],
-      ['volume','미디어 음량',[], 'speaker']
-    ];
-    var art = {
-      speaker:'<g style="stroke:#8a8f96"><ellipse cx="34" cy="56" rx="15" ry="22" transform="rotate(-28 34 56)"/><ellipse cx="34" cy="56" rx="7" ry="11" transform="rotate(-28 34 56)"/><path d="M22 36c6-6 16-8 24-4M24 77c8 3 18 1 24-6"/></g><g style="stroke:#2bb79b;stroke-width:3"><path d="M58 30c9 7 12 18 9 29M66 22c13 10 17 26 13 41M74 14c17 13 22 33 17 53"/></g>',
-      cabin:'<rect x="25" y="10" width="46" height="76" rx="15"/><path d="M25 31h46M25 66h46M48 32v33"/><circle cx="48" cy="49" r="6"/>',
-      tone:'<path d="M21 17v62m27-62v62m27-62v62"/><rect x="14" y="32" width="14" height="10" rx="3"/><rect x="41" y="52" width="14" height="10" rx="3"/><rect x="68" y="43" width="14" height="10" rx="3"/>',
-      shield:'<path d="M48 13 74 25v23c0 15-9 27-26 37-17-10-26-22-26-37V25zM48 34v18m0 12v1"/>',
-      device:'<rect x="26" y="13" width="44" height="70" rx="9"/><path d="M43 22h10m-7 53h4"/>'
-    };
-    var selected = items[0];
-    var nav = '<button type="button" class="sound-back" data-local="settings-back">‹ 설정</button>';
-    items.forEach(function (item) {
-      if (item[0] === soundSection) selected = item;
-      nav += '<button type="button" data-sound-section="' + item[0] + '" aria-pressed="' +
-        (item[0] === soundSection) + '">' + item[1] + '</button>';
+    var selected = SOUND_SCREENS[0];
+    SOUND_SCREENS.forEach(function (item) { if (item[0] === soundSection) selected = item; });
+    var nav = '';
+    SOUND_SCREENS.forEach(function (item) {
+      nav += '<button type="button" class="sl-tab" data-sound-section="' + item[0] + '" aria-selected="' +
+        (item[0] === soundSection) + '">' + escapeText(item[1]) + '</button>';
     });
-    var content = '<h2>' + selected[1] + '</h2>';
+    var main = '<p class="sl-desc">' + escapeText(selected[2]) + '</p>';
     if (selected[0] === 'volume') {
-      content += '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
+      main += '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
         '<output id="theme-volume"></output><input id="theme-volume-range" aria-label="미디어 음량" type="range" min="0" value="0">' +
         '<button type="button" class="theme-control sound-step" data-host="volume-down" aria-label="음량 줄이기">−</button>' +
         '<button type="button" class="theme-control sound-step" data-host="volume-up" aria-label="음량 높이기">+</button>' +
-        '<button type="button" id="theme-mute" class="theme-control" data-host="volume-mute">음소거</button></section>';
+        '<button type="button" class="theme-control" id="theme-mute" data-host="volume-mute">음소거</button></section>';
     } else {
-      var soundKeys = {'고음':'soundTreble', '중음':'soundMiddle', '저음':'soundBass', '앞뒤 소리 배분':'soundFade',
-        '좌우 소리 배분':'soundBalance', '속도 연동 음량':'soundSdvc', '내비 안내 우선':'soundPriority',
-        '자동 음량 조절':'soundAutoVolume', '통화 중 내비 안내':'soundNaviDuringCall',
-        '후석 취침 모드':'soundRearSleep', '후진 시 음량 줄임':'soundReverseDim',
-        '주행·주차 안전 우선':'soundReverseDim', '안내 음량':'soundVolume', '화면 터치음':'soundBeepMode',
-        '서라운드':'soundSurround', '파워 트레블':'soundPowerTreble', '음장 효과':'soundEqMode',
-        '능동 사운드 디자인':'soundAsd'};
-      // 0/1 로만 오는 항목은 켜짐/꺼짐으로 읽는다(단위는 차에서 확인 중).
-      var soundOnOff = { soundAutoVolume:1, soundReverseDim:1, soundNaviDuringCall:1, soundRearSleep:1,
-        soundBeepMode:1, soundSurround:1 };
-      // Amplifier reads from StockVehicle (MicomAudioManager) sit in vehicleInfo; older ones in vehicleSettings.
-      var soundValue = function (label) {
-        var key = soundKeys[label];
-        var raw = typeof vehicleSettings[key] === 'number' ? vehicleSettings[key] : vehicleInfo[key];
-        if (typeof raw === 'boolean') return raw ? '켜짐' : '꺼짐';
-        if (typeof raw === 'number' && soundOnOff[key] && (raw === 0 || raw === 1)) return raw === 1 ? '켜짐' : '꺼짐';
-        if (key === 'rearSleep' && typeof raw === 'number') return raw === 0 ? '꺼짐' : '켜짐 (' + raw + ')';
-        return typeof raw === 'number' ? '순정 값 ' + raw : '';
-      };
-      var anyRead = selected[2].some(function (label) { return !!soundValue(label); });
-      content += '<p class="sound-help">' + (anyRead ? '순정 앰프에서 읽은 값입니다. 숫자의 단위는 차에서 확인 중이며, 변경은 기기 사운드 설정에서 합니다.'
-        : '이 항목의 순정 제어 경로를 확인 중입니다.') + '</p>';
-      selected[2].forEach(function (label) {
-        content += '<div class="sound-info-row">' + label + '<span>' +
-          (soundValue(label) || '순정 연동 대기') + '</span>' +
-          (selected[0] === 'tone' ? '<i class="sound-unavailable-track" aria-hidden="true"></i>' : '') + '</div>';
-      });
+      main += selected[4].map(function (row) {
+        var value = row[1] ? '<output data-system-value="' + row[1] + '"></output>' : '<output>순정 연동 대기</output>';
+        return '<div class="detail-settings-row"><span>' + escapeText(row[0]) + '</span>' + value + '</div>';
+      }).join('');
     }
-    content += '<button type="button" class="theme-control" data-host="settings-sound">기기 사운드 설정 열기</button>';
-    pane.innerHTML = '<div class="sound-layout"><nav class="sound-nav" aria-label="사운드 설정 메뉴">' + nav +
-      '</nav><section class="sound-content">' + content + '</section><aside class="sound-illustration" aria-hidden="true">' +
-      '<svg viewBox="0 0 96 96">' + art[selected[3]] + '</svg><span>' + selected[1] + '</span></aside></div>';
+    main += '<div class="detail-settings-actions">' +
+      '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>' + stockWriteSwitch();
+    detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected[3]), ' stock-settings-layout');
     var slider = pane.querySelector('input');
     if (slider) {
       slider.oninput = function () {
@@ -5522,8 +5577,14 @@ var stockScreenGroup = '';
     if (button === event.currentTarget) return;
     var action = button.getAttribute('data-host');
     if (action) host(action);
-    else if (button.hasAttribute('data-stock-group')) {
-      stockScreenGroup = button.getAttribute('data-stock-group');
+    else if (button.hasAttribute('data-stock-sub')) {
+      stockSub = button.getAttribute('data-stock-sub');
+      renderSettingsControls();
+    } else if (button.hasAttribute('data-stock-group')) {
+      var nextGroup = button.getAttribute('data-stock-group');
+      var sub = STOCK_SETTING_SUBS[stockSub];
+      stockSub = (sub && sub.parent === nextGroup) ? '' : '';
+      stockScreenGroup = nextGroup;
       renderSettingsControls();
     } else if (button.hasAttribute('data-stock-write')) {
       var write = button.getAttribute('data-stock-write').split('|');
