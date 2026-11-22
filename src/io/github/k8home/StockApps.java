@@ -21,6 +21,14 @@ final class StockApps {
     static final ComponentName SETTINGS = component("com.android.settings/.Settings");
     static final ComponentName VEHICLE = component("com.android.vehiclesettings/.VehicleSetting");
     static final ComponentName PROFILE = component("com.hkmc.system.app.userprofile/.UserProfileMainActivity");
+    // 실차에서 확인한 순정 설정 활동 이름 (docs/5W-순정설정-실차수집.md "순정 설정 활동 이름(확인)")
+    static final ComponentName SOUND = component("com.android.soundsettings/.SoundSetting");
+    static final ComponentName DISPLAY = component("com.android.displaysettings/.DisplaySetting");
+    static final ComponentName GENERAL = component("com.android.generalsettings/.GeneralSettings");
+    static final ComponentName BUTTONS = component("com.android.buttonsettings/.ButtonSettings");
+    static final ComponentName BLUETOOTH_SETTINGS =
+        component("com.android.btsettings/com.android.settings2.bluetooth.BluetoothSettings");
+    static final ComponentName THEME = component("com.android.themesettings/.MainActivity");
     private static final ComponentName RADIO_SERVICE = component("com.hkmc.av.app.radioge/.services.RadioAppService");
 
     private StockApps() {}
@@ -33,6 +41,17 @@ final class StockApps {
     static boolean open(Context context, Intent intent) {
         try {
             context.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+            return false;
+        }
+    }
+
+    /** 설정 화면처럼 런처(Category.LAUNCHER) 등록이 안 된 활동을 직접 연다. */
+    static boolean openActivity(Context context, ComponentName component) {
+        try {
+            context.startActivity(new Intent().setComponent(component)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return true;
         } catch (ActivityNotFoundException | SecurityException ignored) {
             return false;

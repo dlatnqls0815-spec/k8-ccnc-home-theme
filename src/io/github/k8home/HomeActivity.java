@@ -930,6 +930,8 @@ public final class HomeActivity extends Activity {
             case "settings":
                 return open(StockApps.SETTINGS) || open(new Intent(Settings.ACTION_SETTINGS));
             case "settings-general":
+                // 순정 일반 설정 활동(com.android.generalsettings/.GeneralSettings)을 먼저 연다.
+                if (openActivity(StockApps.GENERAL)) return true;
                 return openSettingsRoot();
             case "settings-car":
                 if (open(StockApps.VEHICLE) || openPackage("com.hkmc.software.vehiclesetting")) return true;
@@ -939,12 +941,15 @@ public final class HomeActivity extends Activity {
                 openNavigationCommand(StockNavigation.SETTINGS);
                 return true;
             case "settings-sound":
+                if (openActivity(StockApps.SOUND)) return true;
                 return openSettingsPanel(Settings.ACTION_SOUND_SETTINGS, label);
             case "settings-devices":
-                return open(StockApps.PROJECTION) || openSettingsPanel(Settings.ACTION_BLUETOOTH_SETTINGS, label);
+                if (openActivity(StockApps.BLUETOOTH_SETTINGS)) return true;
+                return openSettingsPanel(Settings.ACTION_BLUETOOTH_SETTINGS, label);
             case "projection":
                 return open(StockApps.PROJECTION) || openPackage("com.daudio.app.dipo");
             case "settings-display":
+                if (openActivity(StockApps.DISPLAY)) return true;
                 return openSettingsPanel(Settings.ACTION_DISPLAY_SETTINGS, label);
             case "settings-profile":
                 if (open(StockApps.PROFILE)) return true;
@@ -954,7 +959,7 @@ public final class HomeActivity extends Activity {
                 showSettingsFallback(label);
                 return true;
             case "settings-buttons":
-                if (openPackage("com.android.buttonsettings")) return true;
+                if (openActivity(StockApps.BUTTONS) || openPackage("com.android.buttonsettings")) return true;
                 showSettingsFallback(label);
                 return true;
             case "settings-cluster":
@@ -1103,6 +1108,11 @@ public final class HomeActivity extends Activity {
 
     private boolean open(ComponentName component) {
         return StockApps.open(this, component);
+    }
+
+    /** 순정 설정 활동(런처 등록이 없는 것)을 직접 연다. */
+    private boolean openActivity(ComponentName component) {
+        return StockApps.openActivity(this, component);
     }
 
     private boolean open(Intent intent) {
