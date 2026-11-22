@@ -108,6 +108,42 @@ foreach ($k in $keys) {
 $lines | Set-Content (Join-Path $out '29-stock-setting-values.txt') -Encoding UTF8
 Say ("읽힌 설정 값 " + @($lines).Count + "개 (29-stock-setting-values.txt)")
 
+# 3-4) 차량 값 읽기 경로 확인 (읽기만. 조회(getprop/content query/settings get)만 하고 아무것도 바꾸지 않는다)
+Say "차량 값 읽기 경로 확인 (읽기만)"
+$vehicleLines = @()
+# 3-4-1) 차량 설정 앱이 쓰는 값 저장소(content provider) 조회
+$vehicleUri = 'content://com.android.vehiclesettings.provider.VehicleSettingsProvider/VehicleSettingsDB'
+foreach ($q in @(
+  "content query --uri $vehicleUri",
+  "content query --uri $vehicleUri/1",
+  "dumpsys content providers --uri $vehicleUri")) {
+  $v = (& $adb -s $Serial shell $q 2>&1 | Out-String) -replace "`r", ''
+  if ($v -and $v.Trim()) { $vehicleLines += ("### " + $q + "`n" + $v.Trim()) }
+}
+# 3-4-2) 차량 관련 시스템 속성
+$props = (& $adb -s $Serial shell "getprop" 2>&1 | Out-String) -replace "`r", ''
+$vehicleLines += ($props -split "`n" | Where-Object { $_ -match 'persist\.sys\.setting|drivemode|cluster|vehicle' })
+# 3-4-3) 차량 관련 설정 키
+$vkeys = @('drivemode_notification','seat_position_alert','split_screen_on','bluelight_enable','bluelight_mode',
+  'bluelight_level','bluelight_starttime','bluelight_endtime','video_aspect_ratio','keep_last_mode',
+  'media_notification','tune_knob_function','vol_tuneknob_swap','button_settings_seek','sound_position_mode',
+  'sound_position_seat','rear_sleep_mode','daylight_bright','night_bright','waiting_display_type',
+  'clock_widget_type','analog_clock_type','rear_camera_option','camera_bright_setting_day',
+  'media_repeat_folder','androidauto_ss_osd','carplay_ss_osd','sound_rnc','sound_adp_anc','gps_auto_time',
+  'use_welcome_message','sound_mute_nav_guide','kakao_friends_voice_information','vr_enable_wakeup',
+  'vr_enable_bargein','rear_voice_recognition_lock','language_type','time_12_24')
+foreach ($k in $vkeys) {
+  foreach ($ns in @('system','global','secure')) {
+    $v = (& $adb -s $Serial shell "settings get $ns $k" 2>&1 | Out-String) -replace "`r", ''
+    $v = $v.Trim()
+    if ($v -and $v -ne 'null' -and $v -notmatch 'usage|Exception|Error') {
+      $vehicleLines += ("{0,-8} {1,-40} = {2}" -f $ns, $k, $v)
+    }
+  }
+}
+$vehicleLines | Set-Content (Join-Path $out '30-vehicle-value-paths.txt') -Encoding UTF8
+Say ("차량 값 경로 확인 줄 수: " + @($vehicleLines).Count + " (30-vehicle-value-paths.txt)")
+
 # 4) 로그: 테마를 연 뒤 잠시 모은 다음 전체 로그 덤프
 if ($LiveSeconds -gt 0) { Say "로그 $LiveSeconds 초 대기 (이 동안 미디어·내비·전화를 써 보면 값이 더 들어옴)"; Start-Sleep -Seconds $LiveSeconds }
 Save '40-logcat-all.txt' 'logcat -d -v threadtime -b main -b system -b events' | Out-Null
