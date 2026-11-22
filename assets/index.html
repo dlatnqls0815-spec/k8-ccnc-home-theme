@@ -1711,6 +1711,11 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .screenlayout-stage .sl-cluster-block .sl-seg-btn { flex: 0 0 auto; width: 13.7vw; padding: 0; line-height: 3.13vw; font-size: 1.25vw; }
 .screenlayout-stage .sl-cluster-graphic .sl-seg-btn { width: 11.22vw; }
 .screenlayout-stage .sl-cluster-graphic .sl-seg-btn[aria-pressed="true"] { width: 13.7vw; }
+/* 0.4.61 디지털 액자 탭: .sl-frame-block으로 감싸면서 줄 버튼이 글자 폭으로 줄고 ›가 글자 옆에 붙던 것 수정.
+   설명서처럼 줄은 목록 끝까지, ›는 오른쪽 끝. 차 WebView는 버튼 안 flex가 없어 ›를 절대 위치로 둔다. */
+.screenlayout-stage .sl-frame-block > .sl-row-link { width: 100%; box-sizing: border-box; text-align: left; position: relative; padding-left: 1.41vw; }
+.legacy .screenlayout-stage .sl-frame-block > .sl-row-link { display: block; height: 6.45vw; line-height: 6.45vw; }
+.legacy .screenlayout-stage .sl-frame-block .sl-chevron { position: absolute; right: 1.6vw; top: 50%; height: 2vw; margin: -1vw 2.2vw 0 0; line-height: 0; }
 </style>
 </head>
 <body>
