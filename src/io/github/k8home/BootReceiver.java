@@ -20,6 +20,7 @@ public final class BootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         if (intent == null) return;
         CornerService.sync(context);
+        PopupGuardService.start(context);
         if (!ThemePrefs.autoStart(context)) return;
         String action = intent.getAction();
         if (OPEN_HOME.equals(action)) {

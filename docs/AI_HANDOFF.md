@@ -1,4 +1,21 @@
 # K8 Gen5W 홈
+## 0.5.0-test20 순정 곡 팝업 지킴이 서비스, 설치는 테마 묶음 하나로 (2026-11-23, Claude)
+
+- 사용자 결정: 테마는 우리 것으로 계속하고, 기능만 ccNC 오버레이(서개모 이식판)에서 가져온다. 설치는 **NEMESIS 테마 묶음 하나**(앱 + 곡 넘기기 도우미)로 한다.
+  - ccNC 오버레이(blackr 테마)는 내비·분할화면 앱 안에서 돌며 곡 넘기기에 우리 도우미와 같은 시스템 기능을 쓴다: 모드 관리자 키, injectInputEvent.
+  - 그래서 일반 앱 혼자서는 안 된다. blackr 코드는 All rights reserved 라 가져오지 않는다.
+- 실차 test19: 순정 곡 팝업이 아직 떴다.
+  - 원인: 곡 바뀜을 듣는 곳이 홈 화면(onStart~onStop)과 하단바 세션(세션 끝나면 stopSelf)뿐이었다. 순정 내비만 볼 때는 아무도 닫지 않았다.
+  - 닫기 방송 자체는 K8 Now Playing 과 같다.
+- 고침: `PopupGuardService`(START_STICKY)를 추가했다.
+  - 부팅 수신기와 홈 화면 onStart 에서 시작한다.
+  - 블루투스 곡 제목이 바뀌면(시작 후 첫 곡은 기억만) 닫기 방송을 150·600·1200ms 에 보낸다.
+  - 홈 화면·하단바의 같은 송신은 지웠다. 곡 넘기기 키를 보낼 때(MediaKeys.dispatch)는 그대로 보낸다.
+- 도우미 설치는 USB 없이 adb 로 한다: 묶음 안의 `packages/k8home.install-0.5.0-test20.zip`, 그다음 `nemesis install --update`(설정-차시험 2-8).
+- 차의 `k8np.keys`(Now Playing 도우미)는 NEMESIS 앱 목록에 없다. 기록만 11-18 까지 남아 있어 겹칠 일이 없다.
+  - Now Playing 오버레이 앱은 화면이 겹쳐 사용자가 껐다.
+  - ccNC 오버레이 서개모 모듈이 켜져 있으면 미디어·길안내 버튼이 겹치니 끈다.
+
 ## 0.5.0-test19 실차 화면 검수: Chrome 30 이 vw·calc 를 다르게 세는 곳, 가짜 고정 화면 끔 (2026-11-23, Claude)
 
 차에서 test18 → test19 앱을 adb 로 설치하고(도우미 NEMESIS 묶음은 USB 가 필요해 이번엔 설치 안 함), **화면만** 확인했다.

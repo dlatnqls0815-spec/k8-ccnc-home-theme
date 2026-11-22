@@ -118,10 +118,7 @@ public final class NavBarService extends Service {
             StockMedia next = media.update(action, intent.getExtras());
             if (next == media) return;
             if (!media.source.equals(next.source)) transport.close();
-            // 곡이 바뀌면 순정 곡 정보 팝업을 닫는다(테마 하단바·미디어 화면이 같은 정보를 보여 준다).
-            if ("bt".equals(next.source) && !next.title.isEmpty() && !next.title.equals(media.title)) {
-                MediaKeys.cancelStockPopup(NavBarService.this);
-            }
+            // 곡이 바뀔 때 순정 곡 팝업 닫기는 항상 떠 있는 PopupGuardService 가 맡는다.
             media = next;
             coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "");
             pushMedia();
