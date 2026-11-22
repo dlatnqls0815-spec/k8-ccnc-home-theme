@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import zipfile
 
@@ -14,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "private" / "nemesis"
 PACKAGE_ID = "k8home.shortcuts"
 PACKAGE_VERSION = "0.4.13"
-HOME_PACKAGE_VERSION = "0.5.0-test17"
+HOME_PACKAGE_VERSION = "0.5.0-test18"
 HOME_PACKAGE_ID = "k8home.install"
 HOME_APP_ID = "io.github.k8home"
 ZIP_TIME = (2026, 11, 21, 0, 0, 0)
@@ -223,6 +224,19 @@ def main():
     parser.add_argument("--d8", type=Path, default=DEFAULT_D8)
     parser.add_argument("--android-jar", type=Path, default=DEFAULT_ANDROID_JAR)
     args = parser.parse_args()
+    # 차량 WebView(Chrome 30) 호환 검사. 걸린 것이 있으면 APK 를 만들지 않는다.
+    for check in ("legacy_clamp.py", "c30_check.py"):
+        script = Path(__file__).resolve().parent / check
+        targets = [str(ROOT / "assets" / name) for name in ("index.html", "navbar.html")]
+        cmd = [sys.executable, str(script)] + targets
+        if check == "legacy_clamp.py":
+            cmd += ["--check"]
+        result = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
+        sys.stdout.write(result.stdout)
+        sys.stderr.write(result.stderr)
+        if result.returncode != 0:
+            sys.stderr.write("빌드를 멈춘다: %s 검사 실패\n" % check)
+            sys.exit(1)
     if args.home_apk:
         if not args.home_apk.is_file() or not zipfile.is_zipfile(args.home_apk):
             parser.error("--home-apk must point to a signed K8 Home APK")
