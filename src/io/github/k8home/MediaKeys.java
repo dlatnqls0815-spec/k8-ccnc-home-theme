@@ -56,19 +56,31 @@ final class MediaKeys {
     }
 
     private static boolean sendToHelper(int wheel) {
+        return "ok".equals(askHelper(String.valueOf(wheel)));
+    }
+
+    /**
+     * Asks the helper to tap the stock navigation's guidance-list button (hidden under the theme row).
+     * Blocking: call off the main thread. Returns the helper's reply ("ok", "not-navi", ...) or "" without it.
+     */
+    static String toggleStockGuide() {
+        return askHelper("guide");
+    }
+
+    private static String askHelper(String command) {
         LocalSocket socket = new LocalSocket();
         try {
             socket.connect(new LocalSocketAddress(SOCKET));
             socket.setSoTimeout(2000);
-            socket.getOutputStream().write((wheel + "\n").getBytes("US-ASCII"));
+            socket.getOutputStream().write((command + "\n").getBytes("US-ASCII"));
             InputStream in = socket.getInputStream();
             byte[] buf = new byte[16];
             int n = in.read(buf);
             String reply = n > 0 ? new String(buf, 0, n, "US-ASCII").trim() : "";
-            Log.i(TAG, "helper key " + wheel + " -> " + reply);
-            return "ok".equals(reply);
+            Log.i(TAG, "helper " + command + " -> " + reply);
+            return reply;
         } catch (Exception missing) {
-            return false; // helper not installed or not running
+            return ""; // helper not installed or not running
         } finally {
             try {
                 socket.close();

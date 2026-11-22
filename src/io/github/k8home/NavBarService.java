@@ -73,6 +73,17 @@ public final class NavBarService extends Service {
     };
     private String coverImage = "";
     private boolean attached, pageReady, sessionEnded;
+    /**
+     * Stock guidance-list button stand-in (the stock one is under this row). 1920×720 positions of the
+     * turn-box corner: list closed → top-right corner of the simple guidance box, list open → left of the
+     * list's top tab (same spots another Gen5W theme uses). Open/closed is our own guess: the stock state
+     * is not readable from outside the navi app, so each tap flips it.
+     */
+    private static final int GUIDE_SIZE = 48, GUIDE_CLOSED_X = 1864, GUIDE_CLOSED_Y = 94,
+        GUIDE_OPEN_X = 1348, GUIDE_OPEN_Y = 18;
+    private GuideButton guide;
+    private WindowManager.LayoutParams rowParams, guideParams;
+    private boolean guideExpanded, guideBusy;
     private boolean searchSuspended;
     private boolean cancelPending;
     private StockMedia media = StockMedia.EMPTY;
@@ -453,6 +464,7 @@ public final class NavBarService extends Service {
         params.setTitle("K8HomeNavBar");
         try {
             windows.addView(web, params);
+            rowParams = params;
             attached = true;
             pushRoute();
             pushMedia();
@@ -491,6 +503,7 @@ public final class NavBarService extends Service {
     private void pushRoute() {
         if (!pageReady || !attached) return;
         StockRoute.Snapshot data = route.snapshot();
+        syncGuide(data.active);
         web.evaluateJavascript("window.K8NavBarView.route(" + quote(data.distance) + ","
             + quote(data.remaining) + "," + quote(data.destination) + "," + data.active + ","
             + quote(data.arrival) + "," + quote(data.road) + ")", null);
@@ -523,7 +536,93 @@ public final class NavBarService extends Service {
         stopSelf();
     }
 
+    /** Shows the small guidance-list button while a route is being guided, hides it otherwise. */
+    private void syncGuide(boolean active) {
+        if (!active || !attached || windows == null) {
+            removeGuide();
+            if (!active) guideExpanded = false;
+            return;
+        }
+        Point size = new Point();
+        windows.getDefaultDisplay().getRealSize(size);
+        float scale = size.x / (float) REFERENCE_WIDTH;
+        int px = Math.round(GUIDE_SIZE * scale);
+        int x = Math.round((guideExpanded ? GUIDE_OPEN_X : GUIDE_CLOSED_X) * scale);
+        int y = Math.round((guideExpanded ? GUIDE_OPEN_Y : GUIDE_CLOSED_Y) * scale);
+        if (guide == null) {
+            guide = new GuideButton(this);
+            guide.setOnClickListener(new android.view.View.OnClickListener() {
+                @Override public void onClick(android.view.View v) { toggleGuide(); }
+            });
+            guideParams = new WindowManager.LayoutParams(px, px, WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT);
+            guideParams.gravity = Gravity.TOP | Gravity.LEFT;
+            guideParams.setTitle("K8HomeGuideButton");
+            guideParams.x = x;
+            guideParams.y = y;
+            try {
+                windows.addView(guide, guideParams);
+            } catch (RuntimeException failure) {
+                Log.w(TAG, "Guide button unavailable", failure);
+                guide = null;
+                return;
+            }
+        } else if (guideParams.x != x || guideParams.y != y) {
+            guideParams.x = x;
+            guideParams.y = y;
+            windows.updateViewLayout(guide, guideParams);
+        }
+        guide.setExpanded(guideExpanded);
+    }
+
+    private void removeGuide() {
+        if (guide == null) return;
+        try {
+            windows.removeViewImmediate(guide);
+        } catch (RuntimeException ignored) { }
+        guide = null;
+    }
+
+    /**
+     * Taps the stock guidance-list button through the NEMESIS helper. The theme row lies over that button,
+     * so the row stops taking touches for the moment of the tap.
+     */
+    private void toggleGuide() {
+        if (guideBusy || !attached || rowParams == null) return;
+        guideBusy = true;
+        setRowTouchable(false);
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final String reply = MediaKeys.toggleStockGuide();
+                handler.postDelayed(new Runnable() {
+                    @Override public void run() {
+                        setRowTouchable(true);
+                        guideBusy = false;
+                        if ("ok".equals(reply)) {
+                            guideExpanded = !guideExpanded;
+                            syncGuide(route.snapshot().active);
+                        } else if (reply.isEmpty()) {
+                            toast("길안내 목록 버튼은 NEMESIS 도우미가 필요합니다.");
+                        }
+                    }
+                }, 150);
+            }
+        }, "k8home-guide").start();
+    }
+
+    private void setRowTouchable(boolean touchable) {
+        if (!attached || rowParams == null) return;
+        if (touchable) rowParams.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        else rowParams.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        try {
+            windows.updateViewLayout(web, rowParams);
+        } catch (RuntimeException ignored) { }
+    }
+
     private void detach() {
+        removeGuide();
         detachSkin();
         dismissPanel();
         if (!attached) return;

@@ -4,6 +4,9 @@ import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,6 +33,14 @@ public final class KeyHelper {
     static final String DESCRIPTOR = "com.hkmc.mode.IModeManager";
     static final int TRANSACTION_GENERATE_KEY_EVENT = 0x62;
     static final long MIN_INTERVAL_MS = 250;
+    /**
+     * "guide": the stock navigation's guidance-list expand/collapse button sits under the theme's navigation
+     * row (bottom-right of the 1920x720 navi screen; another Gen5W theme taps the same spot from inside the
+     * navi app). Only this one point, and only while the stock navi is in front.
+     */
+    static final int GUIDE = 1000;
+    static final float GUIDE_X = 1850f, GUIDE_Y = 675f;
+    static final String NAVI_PACKAGE = "com.mnsoft.navi";
 
     private static long lastKeyMs;
 
@@ -73,7 +84,15 @@ public final class KeyHelper {
             return;
         }
         lastKeyMs = now;
-        sendKey(code);
+        if (code == GUIDE) {
+            if (!NAVI_PACKAGE.equals(foregroundPackage())) {
+                out.write("not-navi\n".getBytes("US-ASCII"));
+                return;
+            }
+            tap(GUIDE_X, GUIDE_Y);
+        } else {
+            sendKey(code);
+        }
         out.write("ok\n".getBytes("US-ASCII"));
     }
 
@@ -84,6 +103,7 @@ public final class KeyHelper {
         if ("166".equals(s)) return 166;
         if ("91".equals(s)) return 91;
         if ("167".equals(s)) return 167;
+        if ("guide".equals(s)) return GUIDE;
         return -1;
     }
 
@@ -147,6 +167,42 @@ public final class KeyHelper {
         } finally {
             data.recycle();
             reply.recycle();
+        }
+    }
+
+    /** Foreground package from the mode manager (same service as the keys), or "". */
+    static String foregroundPackage() {
+        try {
+            Class<?> sm = Class.forName("android.os.ServiceManager");
+            IBinder binder = (IBinder) sm.getMethod("getService", String.class).invoke(null, SERVICE);
+            Class<?> stub = Class.forName("com.hkmc.mode.IModeManager$Stub");
+            Object mode = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
+            Object pkg = mode.getClass().getMethod("getForegroundPackageName").invoke(mode);
+            return pkg == null ? "" : pkg.toString();
+        } catch (Exception e) {
+            log("foreground: " + e);
+            return "";
+        }
+    }
+
+    /** One finger tap through InputManager (the system uid holds INJECT_EVENTS). */
+    static void tap(float x, float y) throws Exception {
+        Class<?> im = Class.forName("android.hardware.input.InputManager");
+        Object manager = im.getMethod("getInstance").invoke(null);
+        Method inject = im.getMethod("injectInputEvent", Class.forName("android.view.InputEvent"), int.class);
+        long down = SystemClock.uptimeMillis();
+        MotionEvent press = MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, x, y, 0);
+        MotionEvent release = MotionEvent.obtain(down, down + 60, MotionEvent.ACTION_UP, x, y, 0);
+        press.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        release.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        try {
+            inject.invoke(manager, press, 2); // INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
+            Thread.sleep(60);
+            inject.invoke(manager, release, 2);
+            log("guide tap " + (int) x + "," + (int) y);
+        } finally {
+            press.recycle();
+            release.recycle();
         }
     }
 
