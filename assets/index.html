@@ -1782,6 +1782,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   position: absolute; left: 73.02vw; top: -2.35vw; width: 26.98vw; height: 29.2vw; max-width: none;
   pointer-events: none; color: inherit;
 }
+/* 0.5.0-test8 검수 보정(Claude): 메뉴가 길면 왼쪽 메뉴만 따로 스크롤, › 줄에 ›가 두 번 나오던 것 제거. */
+.detail-settings-layout.stock-settings-layout .sl-nav { overflow-y: auto; overflow-x: hidden; max-height: 100%; }
+.detail-settings-layout.stock-settings-layout button.stock-row-nav:after { content: none; }
 </style>
 </head>
 <body>
@@ -3349,6 +3352,7 @@ var stockSub = '';
 
   function openSettingsSection(section) {
     settingsSection = section;
+    stockSub = ''; stockScreenGroup = '';
     if (section === 'sound') soundSection = 'premium';
     if (section === 'devices') deviceSection = 'bluetooth';
     if (section === 'display') displaySection = 'brightness';
@@ -3359,8 +3363,13 @@ var stockSub = '';
 
   function renderSettingsControls() {
     var pane = document.getElementById('theme-settings-detail');
+    // 다시 그려도 왼쪽 메뉴 스크롤 위치는 그대로 둔다(메뉴가 길 때 고른 항목이 안 보이지 않게).
+    var oldNav = pane.querySelector('.sl-nav');
+    var navTop = oldNav ? oldNav.scrollTop : 0;
+    setTimeout(function () { var nav = pane.querySelector('.sl-nav'); if (nav && navTop) nav.scrollTop = navTop; }, 0);
     if (settingsSection === 'sound') {
       renderSoundControls(pane);
+      updateSystemLabels();
       return;
     }
     if (renderStockSettingScreen(pane, settingsSection)) return;
@@ -3646,7 +3655,7 @@ var stockSub = '';
     'car-driverwarn': { title: '운전자 주의 경고', desc: '운전자 주의 경고 시스템을 설정합니다.', parent: '운전자 보조',
       rows: [['전방 차량 출발 알림', '']] },
     'cluster-theme': { title: '클러스터 테마 선택', desc: '선택된 테마로 표시합니다.', parent: '클러스터',
-      rows: [['게이지 스타일', 'clusterTheme'], ['그래픽 스타일', 'clusterTheme']] },
+      rows: [['클러스터 테마', 'clusterTheme']] },
     'cluster-info': { title: '표시 정보', desc: '클러스터에 표시할 정보를 선택합니다.', parent: '클러스터',
       rows: [['기어 변속 알림', ''], ['와이퍼/라이트 모드 표시', ''], ['도로 교통표지판 안내', ''],
         ['후측방 모니터', ''], ['도로 결빙 알림', '']] },
@@ -3899,7 +3908,7 @@ var stockSub = '';
       [['차속 연동 음량', 'soundSdvc'], ['오디오 음량 자동 줄이기', 'soundAutoVolume'],
        ['능동 사운드 디자인', 'soundAsd'], ['파워 트레블', 'soundPowerTreble'],
        ['음장 효과', 'soundEqMode']]],
-    ['balance', '전후/좌우', '위치는 좌석 위치로 음리를 조절할 수 있습니다. 전후/좌우 버튼으로 상세 조정이 가능합니다.', 'soundCabin',
+    ['balance', '전후/좌우', '좌석 위치에 맞춰 소리를 조절할 수 있습니다. 전후/좌우 버튼으로 상세 조정이 가능합니다.', 'soundCabin',
       [['앞뒤 소리 배분', 'soundFade'], ['좌우 소리 배분', 'soundBalance']]],
     ['tone', '고음/중음/저음', '고음, 중음, 저음 값을 설정합니다.', 'soundTone',
       [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass']]],
@@ -4778,8 +4787,13 @@ var stockSub = '';
         document.getElementById('qc-drawer').hidden = true;
         return;
       }
-      if (state.page === 'settings' && settingsSection) {
+      if (state.page === 'settings' && settingsSection && stockSub) {
+        // 하위 화면(경고 방식 등)에서는 뒤로 누르면 그 위 목록으로 돌아간다.
+        stockSub = '';
+        renderSettingsControls();
+      } else if (state.page === 'settings' && settingsSection) {
         settingsSection = '';
+        stockSub = '';
         renderSettingsStage();
       } else if (state.history.length) {
         showPage(state.history.pop());
@@ -5581,10 +5595,8 @@ var stockSub = '';
       stockSub = button.getAttribute('data-stock-sub');
       renderSettingsControls();
     } else if (button.hasAttribute('data-stock-group')) {
-      var nextGroup = button.getAttribute('data-stock-group');
-      var sub = STOCK_SETTING_SUBS[stockSub];
-      stockSub = (sub && sub.parent === nextGroup) ? '' : '';
-      stockScreenGroup = nextGroup;
+      stockSub = '';
+      stockScreenGroup = button.getAttribute('data-stock-group');
       renderSettingsControls();
     } else if (button.hasAttribute('data-stock-write')) {
       var write = button.getAttribute('data-stock-write').split('|');
@@ -5603,11 +5615,9 @@ var stockSub = '';
     } else if (button.hasAttribute('data-display')) {
       displaySection = button.getAttribute('data-display');
       renderSettingsControls();
-      document.querySelector('[data-display="' + displaySection + '"]').focus();
     } else if (button.hasAttribute('data-sound-section')) {
       soundSection = button.getAttribute('data-sound-section');
       renderSettingsControls();
-      document.querySelector('[data-sound-section="' + soundSection + '"]').focus();
     }
     else if (button.hasAttribute('data-driver')) {
       profileSelected = Number(button.getAttribute('data-driver'));
