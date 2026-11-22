@@ -36,6 +36,15 @@
 - `docs/설정-차시험.md`: 읽기 확인 → (사용자 허락 뒤) 쓰기 1개씩 → 원래 값으로 되돌리기 순서.
 - **차에 아무 명령도 보내지 않았다.** 쓰기 코드는 만들었기만 하고 스위치는 꺼 둔다.
 
+### 0.5.0-test1 추가 반영 (2번·3번 요청)
+- **2번 사운드 값 읽기 전용 연결**: `HeadUnitInfo` 가 `MicomAudioStatus` 에서 읽는 필드를 8개에서 25개로 넓혔다
+  (`mAutoAdjustingVolumeSetting` `mDimVolumeInReverse` `mNaviDuringCall` `mBeepMode` `mSurround` `mBoseCPMode`
+  `mMeridianHorizonMode` `mQLS` `mLiveDynamic` `mEqMode` `mVariableEqMode` `mIsRearSleepOn` `mPowerTreble`
+  `mVolume` `mAsl` 등). 테마 사운드 화면은 이 값을 **읽기 전용**으로 보여 주고 0/1 항목은 켜짐/꺼짐으로 표시한다.
+  사운드 분류에 **화면 터치음**·**서라운드**를 추가해 ccNC 설명서 분류를 맞췄다. 앰프 값의 단위는 차에서 확인 중.
+- **3번 ccNC 삽화**: `STOCK_SETTING_ART` 로 클러스터(계기 두 개+아치), 버튼(☆ 모양 버튼), 차량(센서 파동),
+  음성인식(마이크) 선 그림을 그려 오른쪽 삽화 자리에 넣었다(설명서 참고).
+
 ### 산출물
 - `C:\AI 통합\네메시스\deliverables\검수전\K8-5W-홈-0.5.0-test1.apk`, `K8-ccNC-Home-NEMESIS-0.5.0-test1-USB.zip`
 - `C:\AI 통합\네메시스\deliverables\검수전\compare-settings\` (설명서/차흉내/PC 3단 비교 4장)

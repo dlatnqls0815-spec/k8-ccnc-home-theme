@@ -151,12 +151,23 @@ final class HeadUnitInfo {
             String[][] fields = {
                 {"soundTreble", "mTreble"}, {"soundMiddle", "mMiddle"}, {"soundBass", "mBass"},
                 {"soundBalance", "mBalance"}, {"soundFade", "mFade"}, {"soundSdvc", "mSDVC"},
-                {"soundPriority", "mSoundPriority"}, {"soundAmpType", "mAmpType"}
+                {"soundPriority", "mSoundPriority"}, {"soundAmpType", "mAmpType"},
+                {"soundAutoVolume", "mAutoAdjustingVolumeSetting"}, {"soundReverseDim", "mDimVolumeInReverse"},
+                {"soundNaviDuringCall", "mNaviDuringCall"}, {"soundBeepMode", "mBeepMode"},
+                {"soundSurround", "mSurround"}, {"soundBoseCp", "mBoseCPMode"},
+                {"soundMeridian", "mMeridianHorizonMode"}, {"soundQLS", "mQLS"},
+                {"soundLiveDynamic", "mLiveDynamic"}, {"soundEqMode", "mEqMode"},
+                {"soundVariableEq", "mVariableEqMode"}, {"soundRearSleep", "mIsRearSleepOn"},
+                {"soundPowerTreble", "mPowerTreble"}, {"soundVolume", "mVolume"},
+                {"soundVuiVolume", "mVuiVolume"}, {"soundMicVolume", "mMicVolume"},
+                {"soundUvoVolume", "mUvoBlueVolume"}, {"soundAsl", "mAsl"}
             };
             for (String[] field : fields) {
                 try {
                     Object value = status.getClass().getField(field[1]).get(status);
-                    if (value instanceof Number && ((Number) value).intValue() != -1) {
+                    if (value instanceof Boolean) {
+                        info.put(field[0], ((Boolean) value).booleanValue() ? 1 : 0);
+                    } else if (value instanceof Number && ((Number) value).intValue() != -1) {
                         info.put(field[0], ((Number) value).intValue());
                     }
                 } catch (NoSuchFieldException ignored) { }
