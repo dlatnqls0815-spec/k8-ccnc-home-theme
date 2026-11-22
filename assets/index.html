@@ -1662,6 +1662,33 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .legacy .settings-grid .set-card:nth-child(6n + 5) { left: calc((100% - 5 * .885vw) * 2 / 3 + 4 * .885vw); }
 .legacy .settings-grid .set-card:nth-child(6n + 6) { left: calc((100% - 5 * .885vw) * 5 / 6 + 5 * .885vw); }
 .legacy .settings-grid .set-card:nth-child(n + 7) { top: calc((100% - .885vw) / 2 + .885vw); }
+/* 미디어 목록 보기(기아 D-media_bluetooth_main.png): 곡 줄은 왼쪽 정렬, 번호 519·재생 표시 1290(1920 기준),
+   줄 높이 123. 차 WebView는 버튼 안 flex·flex-basis를 무시해 글자가 가운데로 몰렸다. 앨범 그림은 한 곡 보기와 같은
+   자리(183~502), 작은 이전/일시정지/다음은 그림 아래 가운데 558, 간격 127.5. */
+#media-list-pane .media-track-row { display: block; position: relative; height: 6.45vw; line-height: 6.45vw; padding: 0 2.2vw;
+  text-align: left; white-space: nowrap; overflow: hidden; flex: none; }
+.media-track-row .eq-bars { position: absolute; right: 5vw; top: 50%; margin-top: -9px; line-height: 0; }
+.media-right-box { position: relative; }
+#list-mini-transport { position: absolute; left: 0; right: 0; top: 21.5vw; width: auto; max-width: none;
+  display: block; text-align: center; font-size: 0; }
+#list-mini-transport .transport-icon-btn { display: inline-block !important; vertical-align: top; margin: 0 1.52vw; padding: 0; }
+#list-mini-transport .ico, #list-mini-transport svg { display: block; width: 2.9vw !important; height: 2.9vw !important; margin: .35vw auto 0; }
+/* 키패드(기아 D-phone_keypad_main.png): 칸 3열 45~622, 숫자 줄 98~504(줄당 101), 아래 버튼 줄 510~600,
+   숫자 40px 높이 가운데, 자모는 숫자 아래. 차 WebView는 버튼 안 flex가 안 돼 자모가 숫자 옆에 붙었다. */
+.dial-pad { margin-left: 1vw; }
+.theme-dial-keys button { display: block; text-align: center; padding: .32vw 0 0; }
+.theme-dial-keys .dial-digit { display: block; font-size: 2.9vw; line-height: 1; }
+.theme-dial-keys small { display: block; line-height: 1; margin-top: .3vw; }
+.theme-dial-actions button { min-height: 4.69vw; height: 4.69vw; margin-top: .31vw; }
+.dial-pad { margin-top: -.16vw; padding-bottom: .36vw; box-sizing: border-box; }
+/* 화면구성(기아 D-settings_theme_widget.png): 왼쪽 메뉴 글자 56부터·글자 높이 36·세로선 없음, 선택 표시 0~36,
+   설명 575·124, 목록 줄 124(체크 상자 43, 572부터), 끌기 손잡이 1327~1364. */
+.screenlayout-stage > .sl-nav { padding-left: 0; border-right: 0; }
+.screenlayout-stage .sl-tab { font-size: 2.05vw; padding-left: 2.6vw; }
+.screenlayout-stage .sl-tab[aria-selected="true"]::before { left: .1vw; width: .8vw; height: 2.6vw; }
+.screenlayout-stage .sl-desc { margin-left: 2.32vw; margin-top: .79vw; }
+.screenlayout-stage .sl-check-row, .screenlayout-stage .sl-radio-row, .screenlayout-stage .sl-row-link { min-height: 6.45vw; padding-left: 2.87vw; padding-right: 1.6vw; }
+.screenlayout-stage .check-box { width: 2.24vw; height: 2.24vw; }
 </style>
 </head>
 <body>
