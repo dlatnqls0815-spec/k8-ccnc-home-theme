@@ -175,6 +175,16 @@ button.bb-idle { line-height: 80px; }
   vertical-align: middle;
 }
 #bb-idle-label { display: inline-block; max-width: 700px; overflow: hidden; white-space: nowrap; vertical-align: middle; }
+/* 실차(Chrome 30)에서 깃발과 위치 글자가 두 줄로 갈라져 글자가 잘렸다. 줄 흐름 대신 좌표로 고정한다
+   (깃발 왼쪽 68, 알약 높이 80 가운데, 글자는 깃발 오른쪽 20). */
+button.bb-idle { padding: 0; white-space: nowrap; }
+.bb-idle .bb-location { position: absolute; left: 68px; top: 24px; margin: 0; }
+#bb-idle-label { position: absolute; left: 120px; top: 0; height: 80px; line-height: 80px; }
+/* 실차(Chrome 30)에서 경로 알약도 줄이 넘어가 깃발·목적지가 둘째 줄로 밀려 안 보였다.
+   구분선·깃발·목적지는 알약 안 좌표로 고정한다(설명서 구분선 942, 깃발 976, 목적지 1032 = 알약 글자 칸 왼쪽 649 기준). */
+.bb-route-info .bb-route-divider { position: absolute; left: 293px; top: 10px; margin: 0; }
+.bb-route-info .bb-location { position: absolute; left: 326px; top: 9px; margin: 0; }
+.bb-route-info .bb-dest { position: absolute; left: 380px; top: 1px; margin: 0; }
 </style>
 </head>
 <body>

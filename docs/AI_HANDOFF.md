@@ -1,4 +1,23 @@
 # K8 Gen5W 홈
+## 0.5.0-test14 Claude 실차 검수: 하단바 (2026-11-22)
+
+차에 test13 → test14 를 설치하고 adb 로 직접 눌러 봤다(캡처·차량 설정 목록 원본은 `private/vehicle/car-20261122-test14/`, 커밋 안 함).
+
+- **확인됨(차)**: 미디어 칸 누르기 → 테마 미디어 화면이 블루투스 오디오로 열림. 일시정지 아이콘 없음, 기본 음표 그림.
+  진행 막대(주황) 보임. 좌우 스와이프 → 하단바가 `next` 를 보냄(로그에 KEYCODE_MEDIA_NEXT).
+- **고친 것(차에서 발견)**: 경로 알약과 유휴 알약 모두 Chrome 30 에서 줄이 넘어가 깃발·글자가 둘째 줄로 밀려 안 보였다
+  (경로: 구분선 뒤 빈칸 + 깃발이 거리 밑에 반쯤, 유휴: 깃발 아래로 위치 글자가 잘림). PC 흉내에서는 재현되지 않는다.
+  구분선·깃발·목적지, 유휴 깃발·글자를 좌표(absolute)로 고정 → 차에서 "▲ 우리 집", "▲ 경상북도 … 부근" 한 줄 확인.
+- **안 되는 것: 블루투스 음악 다음/이전 곡.** `StockTransport` 는 블루투스를 다루지 않아 `AudioManager.dispatchMediaKeyEvent`
+  로 떨어지고, 이 키는 전화 앱(TeleService) 미디어 버튼 수신기만 받는다. adb `input keyevent 87` 은 시스템의
+  `ModeKeyDispatcher`(system_server)를 거쳐 곡이 넘어갔다. 순정 블루투스 음악 서비스
+  `com.daudio.av.app.btaudio.ui/...service.MusicService`(동작 `com.hkmc.intent.action.BTAUDIO_REMOTE_SERVICE`)는
+  앱 전용 형식 `com.daudio.av.app.btaudio.service.IMusicService` 를 쓴다(IRemote…Service 계열 아님).
+  → 이 서비스나 시스템 입력 서비스에 Binder 로 명령을 보내야 해서 **사용자 승인 전 보류**. 테마 미디어 화면의 이전/다음 버튼도 같은 길이라 같은 문제.
+- 차량 설정 제공자 `content query` 는 셸에서 읽힘(685줄, 항목 이름·구조만, 값 없음). 일반 앱 권한으로 읽히는지는 미확인.
+  차량 속성 15개 읽힘(예: showVehicleSetting=true, seatPositioning=3, seatWheelHeat=2, smartImsOption=2). 뜻은 아직 추정.
+- 테마 미디어 화면(블루투스)이 차에서 깨짐: 이전/일시정지 버튼 그림이 부서지고(▏◂, ▏), 재생 중인데 ▶ 표시, "재생 목록"/"라이브러리" 탭 글자가 두 줄로 꺾임. 다음 작업.
+
 ## 0.5.0-test13 Claude 검수: test11(차량 설정)·test12(하단바) (2026-11-22)
 
 - 차 흉내(1280×63·1.5배·CSS.supports 끔·간격 0)로 하단바를 다시 띄우고, CDP 터치로 직접 시험했다.
