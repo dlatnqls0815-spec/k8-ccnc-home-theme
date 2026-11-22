@@ -76,9 +76,9 @@ Say '화면 캡처 4장 (테마 3, 순정 내비 1)'
 $stockShots = @(
   @('34-stock-settings-main', 'am start -W -n com.android.settings/.Settings'),
   @('35-stock-settings-vehicle', 'am start -W -n com.android.vehiclesettings/.VehicleSetting'),
-  @('36-stock-settings-sound', 'am start -W -n com.android.soundsettings/.SoundSettings'),
-  @('37-stock-settings-display', 'am start -W -n com.android.displaysettings/.DisplaySettings'),
-  @('38-stock-settings-buttons', 'am start -W -n com.android.buttonsettings/.CustomButtonSetting'),
+  @('36-stock-settings-sound', 'am start -W -n com.android.soundsettings/.SoundSetting'),
+  @('37-stock-settings-display', 'am start -W -n com.android.displaysettings/.DisplaySetting'),
+  @('38-stock-settings-buttons', 'am start -W -n com.android.buttonsettings/.ButtonSettings'),
   @('39-stock-settings-profile', 'am start -W -n com.hkmc.system.app.userprofile/.UserProfileMainActivity'),
   @('40-stock-settings-general', 'am start -W -n com.android.generalsettings/.GeneralSettings')
 )
