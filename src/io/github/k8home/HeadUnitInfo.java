@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 import android.text.format.DateFormat;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -72,6 +73,11 @@ final class HeadUnitInfo {
                 String key = keys.next();
                 info.put(key, stock.get(key));
             }
+            collectedSettings(context, info, user);
+            preferStockTone(info, "soundTreble");
+            preferStockTone(info, "soundMiddle");
+            preferStockTone(info, "soundBass");
+            preferStockTone(info, "soundAutoVolume");
         } catch (Exception ignored) { }
         return info;
     }
@@ -116,6 +122,144 @@ final class HeadUnitInfo {
                     }
                     if (value >= 0) {
                         info.put(field, value);
+                        return;
+                    }
+                } catch (Exception ignored) { }
+            }
+        }
+    }
+
+    /** 문자열 값(시간·언어 등) 읽기. 접미사 키를 먼저 보고 없으면 접미사 없는 키를 본다. */
+    private static void readStockString(ContentResolver resolver, JSONObject info, String field, String key,
+                                        int driver) {
+        String[] keys = driver > 0 ? new String[] {key + "_dr" + driver, key} : new String[] {key};
+        for (String name : keys) {
+            for (int space = 0; space < 3; space++) {
+                try {
+                    String value;
+                    if (space == 0) {
+                        value = Settings.System.getString(resolver, name);
+                    } else if (space == 1) {
+                        value = Settings.Global.getString(resolver, name);
+                    } else {
+                        value = Settings.Secure.getString(resolver, name);
+                    }
+                    if (value != null && !value.isEmpty()) {
+                        info.put(field, value);
+                        return;
+                    }
+                } catch (Exception ignored) { }
+            }
+        }
+    }
+
+    /** 현재 운전자 번호(user_profile_driver). 접미사 키(_dr1 등)를 고를 때 쓴다. */
+    private static int driverNumber(ContentResolver resolver, int fallback) {
+        try {
+            int value = Settings.System.getInt(resolver, "user_profile_driver", -1);
+            if (value >= 0) return value;
+        } catch (Exception ignored) { }
+        try {
+            int value = Settings.Global.getInt(resolver, "user_profile_driver", -1);
+            if (value >= 0) return value;
+        } catch (Exception ignored) { }
+        return fallback;
+    }
+
+    /**
+     * 실차(5W)에서 모은 순정 설정 키를 읽기 전용으로 읽는다.
+     * 근거: docs/5W-순정설정-실차수집.md 의 "테마가 읽을 수 있는 순정 설정 키" 표.
+     * 쓰기는 하지 않는다.
+     */
+    private static void collectedSettings(Context context, JSONObject info, int driver) {
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            int drv = driverNumber(resolver, driver);
+            // 사운드·안내·디스플레이·일반 등
+            String[][] ints = {
+                {"navGuideMute", "sound_mute_nav_guide"}, {"welcomeSound", "use_welcome_message"},
+                {"voiceType", "voice_type_information"}, {"kakaoVoice", "kakao_friends_voice_information"},
+                {"vrWakeup", "vr_enable_wakeup"}, {"vrBargein", "vr_enable_bargein"},
+                {"rearVoiceLock", "rear_voice_recognition_lock"}, {"bluelightEnable", "bluelight_enable"},
+                {"bluelightMode", "bluelight_mode"}, {"bluelightLevel", "bluelight_level"},
+                {"keepLastMode", "keep_last_mode"}, {"mediaNotification", "media_notification"},
+                {"timeFormat12", "time_12_24"}, {"gpsAutoTime", "gps_auto_time"}, {"summerTime", "summer_time"},
+                {"volTuneSwap", "vol_tuneknob_swap"}, {"tuneKnobFunction", "tune_knob_function"},
+                {"buttonSeek", "button_settings_seek"}, {"soundPositionMode", "sound_position_mode"},
+                {"soundPositionSeat", "sound_position_seat"}, {"rearSleepMode", "rear_sleep_mode"},
+                {"daylightBright", "daylight_bright"}, {"nightBright", "night_bright"},
+                {"splitScreenOn", "split_screen_on"}, {"waitingDisplayType", "waiting_display_type"},
+                {"clockWidgetType", "clock_widget_type"}, {"analogClockType", "analog_clock_type"},
+                {"rearCameraOption", "rear_camera_option"}, {"cameraBrightDay", "camera_bright_setting_day"},
+                {"mediaRepeatFolder", "media_repeat_folder"}, {"androidAutoOsd", "androidauto_ss_osd"},
+                {"carPlayOsd", "carplay_ss_osd"}, {"soundRnc", "sound_rnc"}, {"soundAdpAnc", "sound_adp_anc"}
+            };
+            for (String[] row : ints) readStockInt(resolver, info, row[0], row[1], drv);
+            // 접미사 없는 키(운전자 구분 없음)
+            readStockInt(resolver, info, "videoAspectRatio", "video_aspect_ratio", 0);
+            readStockInt(resolver, info, "driveModeNotification", "drivemode_notification", 0);
+            readStockInt(resolver, info, "seatPositionAlert", "seat_position_alert", 0);
+            // 문자열 값
+            readStockString(resolver, info, "bluelightStart", "bluelight_starttime", drv);
+            readStockString(resolver, info, "bluelightEnd", "bluelight_endtime", drv);
+            readStockString(resolver, info, "languageType", "language_type", drv);
+            // 고음/중음/저음: USER_ 접미사 키에 10을 0으로 저장한다(14 = +4)
+            String user = drv >= 0 ? "_USER_" + drv : "";
+            readTone(resolver, info, "soundTreble", "hkmc_sndset_treble" + user);
+            readTone(resolver, info, "soundMiddle", "hkmc_sndset_middle" + user);
+            readTone(resolver, info, "soundBass", "hkmc_sndset_bass" + user);
+            // 오디오 음량 자동 줄이기
+            readStockInt(resolver, info, "soundAutoVolumeKey", "hkmc_sndset_auto_adjusting_vol" + user, 0);
+            // 사용자 버튼과 MODE 버튼은 시스템 속성이다
+            info.put("buttonNavi", property("persist.sys.key.custom"));
+            info.put("buttonHandle", property("persist.sys.key.swrccustom"));
+            String mode = property("persist.sys.key.mode");
+            if (mode != null && !mode.isEmpty()) {
+                try {
+                    info.put("buttonMode", Integer.parseInt(mode));
+                } catch (NumberFormatException ignored) {
+                    info.put("buttonMode", mode);
+                }
+            }
+        } catch (Exception ignored) { }
+    }
+
+    /**
+     * 앰프 상태 객체 값과 순정 설정 키 값이 다르면 설정 키 쪽 값을 쓴다. 다르면 로그에 남긴다.
+     */
+    private static void preferStockTone(JSONObject info, String field) {
+        try {
+            if (!info.has(field + "Key")) return;
+            int fromKey = info.getInt(field + "Key");
+            if (info.has(field)) {
+                int fromAmp = info.optInt(field, fromKey);
+                if (fromAmp != fromKey) {
+                    Log.i("K8Settings", field + ": 앰프 " + fromAmp + " ≠ 설정 키 " + fromKey
+                        + " → 설정 키 값을 씁니다");
+                }
+            }
+            info.put(field, fromKey);
+            info.remove(field + "Key");
+        } catch (Exception ignored) { }
+    }
+
+    /** 톤 값(10 = 0 기준)을 화면용 수로 바꾼다. */
+    private static void readTone(ContentResolver resolver, JSONObject info, String field, String key) {
+        String[] names = key.startsWith("hkmc_sndset") && key.contains("_USER_") ? new String[] {key} :
+            new String[] {key};
+        for (String name : names) {
+            for (int space = 0; space < 3; space++) {
+                try {
+                    int value;
+                    if (space == 0) {
+                        value = Settings.System.getInt(resolver, name, -1);
+                    } else if (space == 1) {
+                        value = Settings.Global.getInt(resolver, name, -1);
+                    } else {
+                        value = Settings.Secure.getInt(resolver, name, -1);
+                    }
+                    if (value >= 0) {
+                        info.put(field, value - 10);
                         return;
                     }
                 } catch (Exception ignored) { }
