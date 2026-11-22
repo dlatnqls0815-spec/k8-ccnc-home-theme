@@ -1785,6 +1785,19 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 /* 0.5.0-test8 검수 보정(Claude): 메뉴가 길면 왼쪽 메뉴만 따로 스크롤, › 줄에 ›가 두 번 나오던 것 제거. */
 .detail-settings-layout.stock-settings-layout .sl-nav { overflow-y: auto; overflow-x: hidden; max-height: 100%; }
 .detail-settings-layout.stock-settings-layout button.stock-row-nav:after { content: none; }
+/* 0.5.0-test9: 지금 선택된 항목 표시(값의 뜻 표와 짝이 맞는 항목만 ccNC 모양으로 표시). */
+.detail-settings-layout.stock-settings-layout .stock-choice-current .radio-circle { border-color: #1f9c81; background: #1f9c81; }
+.detail-settings-layout.stock-settings-layout .stock-choice { position: relative; }
+.detail-settings-layout.stock-settings-layout .stock-choice-current .radio-circle:after {
+  content: ""; width: .7vw; height: .7vw; border-radius: 50%; background: #fff;
+}
+.detail-settings-layout.stock-settings-layout .stock-choice-current .sl-radio-left span + span { color: #1f9c81; }
+.detail-settings-layout.stock-settings-layout .stock-choice-mark {
+  position: absolute; right: 0; top: 50%; margin-top: -1vw; font-size: 1.2vw; color: #1f9c81; letter-spacing: .04vw;
+}
+/* 0.5.0-test9: 일반·디스플레이·기기 연결·음성인식 화면도 같은 틀로(설명 줄과 값). */
+.detail-settings-layout.stock-settings-layout .stock-switch-on { color: #1f9c81; }
+.detail-settings-layout.stock-settings-layout .stock-value-wait { color: #8c96a3; }
 </style>
 </head>
 <body>
@@ -2384,6 +2397,7 @@ var stockScreenGroup = '';
 var stockSub = '';
   var deviceSection = 'bluetooth';
   var displaySection = 'brightness';
+  var generalSection = 'date';
   var pairedDevices = null;
   var searchCategory = 'all';
   var searchRecent = [];
@@ -2642,7 +2656,45 @@ var stockSub = '';
       state.splitWidgets = order(state.splitWidgets, data.widgets, function (item) { return item && item.id; });
     } catch (ignored) {}
   }
+  /**
+   * PC 확인용 시험 값. 실차에서 모은 현재 값(docs/5W-순정설정-실차수집.md)만 넣는다.
+   * ?vehicle=1&mock=1 로 열 때만 쓴다. 차에서는 절대 쓰지 않는다.
+   */
+  function applyMockStockValues() {
+    if (!/(?:^|[?&])mock=1(?:&|$)/.test(location.search)) return;
+    var mock = {
+      navGuideMute: 1, welcomeSound: 1, voiceType: 85, kakaoVoice: 0, vrWakeup: 1, vrBargein: 1,
+      rearVoiceLock: 0, bluelightEnable: 1, bluelightMode: 0, bluelightLevel: 1,
+      bluelightStart: '7hh00mmPM', bluelightEnd: '6hh00mmAM', keepLastMode: 1, mediaNotification: 1,
+      timeFormat12: 12, gpsAutoTime: 1, summerTime: 0, volTuneSwap: 0, tuneKnobFunction: 1,
+      buttonSeek: 0, soundPositionMode: 0, soundPositionSeat: 15, rearSleepMode: 0,
+      daylightBright: 5, nightBright: 5, splitScreenOn: 0, waitingDisplayType: 0, clockWidgetType: 0,
+      analogClockType: 1, rearCameraOption: 1, cameraBrightDay: 5, mediaRepeatFolder: 1,
+      androidAutoOsd: 0, carPlayOsd: 0, videoAspectRatio: 0, soundRnc: 1, soundAdpAnc: 1,
+      driveModeNotification: 2, seatPositionAlert: 1,
+      soundTreble: 4, soundMiddle: 0, soundBass: 10, soundAutoVolume: 1,
+      buttonNavi: 'com.mobis.intent.action.CONNECTIVITY_SHORTCUT',
+      buttonHandle: 'com.hkmc.intent.action.MAP_SHORTCUT', buttonMode: 129
+    };
+    Object.keys(mock).forEach(function (key) { vehicleSettings[key] = mock[key]; });
+  }
+
+  /**
+   * PC 확인용: ?section=차량 처럼 지정하면 그 설정 화면을 바로 연다.
+   * 예) index.html?vehicle=1&mock=1&section=buttons
+   */
+  function applyPcSectionParam() {
+    var m = /(?:^|[?&])section=([^&]+)/.exec(location.search);
+    if (!m) return;
+    var name = decodeURIComponent(m[1]);
+    if (['vehicle', 'buttons', 'voice', 'sound', 'display', 'general', 'devices', 'profile']
+        .indexOf(name) < 0) return;
+    openSettingsSection(name);
+  }
+
   restoreDisplay();
+  applyMockStockValues();
+  setTimeout(applyPcSectionParam, 0);
   if (livePreview) {
     state.dest = null;
     state.playing = false;
@@ -3326,13 +3378,11 @@ var stockSub = '';
       { id: 'screenlayout', title: '화면구성', svg: '<rect x="2.8" y="4.5" width="18.4" height="15" rx="1"/><path d="m2.8 16 5.6-5.6 4.2 4.2 3.2-3.2 5.4 5.4"/>' },
       { id: 'display', title: '디스플레이', svg: '<rect x="2.8" y="4" width="18.4" height="14.5" rx="1"/><circle cx="12" cy="11.2" r="2.1"/><path d="M12 6.8v1.1M12 14.5v1.1M7.6 11.2h1.1M15.3 11.2h1.1M8.9 8.1l.8.8M14.3 13.5l.8.8M8.9 14.3l.8-.8M14.3 8.9l.8-.8"/>' },
       { id: 'buttons', title: '버튼', svg: '<path d="M10.5 12V5.5a1.5 1.5 0 0 1 3 0v6l3.4.6a2 2 0 0 1 1.6 2.3l-.9 5.6h-7.2L7 15.3a1.4 1.4 0 0 1 2.1-1.8l1.4 1.3"/><path d="M8.3 8.5a3.8 3.8 0 0 1 7.4 0"/>' },
-      { id: 'cluster', title: '클러스터/HUD', svg: '<path d="M4.2 18.5a8.6 8.6 0 1 1 15.6 0z"/><path d="m12 13.5 3-3.4M7 13.5h1.2M15.8 13.5H17M12 7.4v1.2"/>' },
       { id: 'connect', title: 'Kia Connect', svg: '<path d="M3 13.5 6 8h1.6l-1.8 3.4L9.5 8h1.7l-3 5.5H6.6l1.6-3-3.6 3zM12 13.5 15 8h1.6l-3 5.5zM16.6 13.5 19.6 8h1.6l-3 5.5z"/><text x="12" y="19.5" text-anchor="middle" font-size="4.2" stroke="none" fill="currentColor">Connect</text>' },
       { id: 'general', title: '일반', svg: '<path d="M10.3 3h3.4l.5 2.4 1.7.9 2.3-.9 1.7 2.9-1.8 1.6v2.2l1.8 1.6-1.7 2.9-2.3-.9-1.7.9-.5 2.4h-3.4l-.5-2.4-1.7-.9-2.3.9-1.7-2.9 1.8-1.6V9.9L3.6 8.3l1.7-2.9 2.3.9 1.7-.9z"/><path d="m9.6 12 1.7 1.7 3.2-3.4"/>' }
     ];
     var openCard = function (id) {
       if (id === 'screenlayout') { navigateTo('screenlayout'); return; }
-      if (id === 'cluster') { settingsSection = 'cluster'; stockScreenGroup = ''; navigateTo('settings'); renderSettingsStage(); return; }
       if (id === 'buttons') { settingsSection = 'buttons'; stockScreenGroup = ''; navigateTo('settings'); renderSettingsStage(); return; }
       if (id === 'connect') { host('connect'); return; }
       openSettingsSection(id);
@@ -3361,147 +3411,9 @@ var stockSub = '';
     renderSettingsStage();
   }
 
-  function renderSettingsControls() {
-    var pane = document.getElementById('theme-settings-detail');
-    // 다시 그려도 왼쪽 메뉴 스크롤 위치는 그대로 둔다(메뉴가 길 때 고른 항목이 안 보이지 않게).
-    var oldNav = pane.querySelector('.sl-nav');
-    var navTop = oldNav ? oldNav.scrollTop : 0;
-    setTimeout(function () { var nav = pane.querySelector('.sl-nav'); if (nav && navTop) nav.scrollTop = navTop; }, 0);
-    if (settingsSection === 'sound') {
-      renderSoundControls(pane);
-      updateSystemLabels();
-      return;
-    }
-    if (renderStockSettingScreen(pane, settingsSection)) return;
-    var heading = { vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드',
-      devices:'기기 연결', profile:'사용자 프로필', voice:'음성인식', display:'디스플레이' }[settingsSection];
-    var start = '<button type="button" class="theme-control" data-local="settings-back">‹ 설정</button><h2>' + heading + '</h2>';
-    var external = function (action, title, style) {
-      return '<button type="button" class="' + (style || 'theme-control') + '" data-host="' + action + '">' + title + '</button>';
-    };
-    if (settingsSection === 'general') {
-      detailSettings(pane, '일반 메뉴',
-        external('settings-general', '<span>SW 정보<small>/업데이트</small></span>', 'sl-tab sl-tab-2line') +
-        external('settings-general', '시스템 정보 및 설정', 'sl-tab') +
-        '<div class="sl-tab" aria-selected="true">날짜 및 시간</div>' +
-        external('settings-language', '<span>언어/Language<small data-system-value="language"></small></span>', 'sl-tab') +
-        external('settings-keyboard', '<span>키보드<small data-system-value="keyboard"></small></span>', 'sl-tab'),
-        external('settings-date', '<span>날짜 및 시간<small id="theme-date-time"></small></span>', 'detail-settings-row') +
-        '<div class="detail-settings-row"><span>시간 표기 방식</span><div class="sl-seg-group">' +
-        '<button type="button" class="sl-seg-btn" data-clock="system" aria-pressed="' + (state.clock24 === null) + '">기기 기준</button>' +
-        '<button type="button" class="sl-seg-btn" data-clock="24" aria-pressed="' + (state.clock24 === true) + '">24시간</button>' +
-        '<button type="button" class="sl-seg-btn" data-clock="12" aria-pressed="' + (state.clock24 === false) + '">12시간</button></div></div>' +
-        '<div class="detail-settings-row" data-system-row="build" hidden><span>헤드유닛 정보</span><output data-system-value="build"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="navigationAppVersion" hidden><span>내비 앱 버전</span><output data-system-value="navigationAppVersion"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="mapVersion" hidden><span>지도 버전</span><output data-system-value="mapVersion"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="naviDayNight" hidden><span>내비 주야간</span><output data-system-value="naviDayNight"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="naviMute" hidden><span>내비 안내 음소거</span><output data-system-value="naviMute"></output></div>' +
-        '<div class="detail-settings-row"><span>테마 화면 밝기</span><div>' +
-        external('brightness-down', '−') + '<output id="theme-brightness"></output>' + external('brightness-up', '+') + '</div></div>' +
-        '<button type="button" class="detail-settings-row" data-host="auto-start-toggle"><span>시동 후 자동 실행</span>' +
-        '<output id="theme-auto-start">' + (flags.autoStart ? '켜짐' : '꺼짐') + '</output></button>' +
-        '<button type="button" class="detail-settings-row" data-host="nav-bar-toggle"><span>순정 내비에서 ccNC 하단바 시험</span>' +
-        '<output id="theme-nav-bar">' + (flags.navBar ? '켜짐' : '꺼짐') + '</output></button>' +
-        '<button type="button" class="detail-settings-row" data-host="navi-skin-toggle"><span>순정 내비 왼쪽 버튼 ccNC 모양 시험</span>' +
-        '<output id="theme-navi-skin">' + (flags.naviSkin ? '켜짐' : '꺼짐') + '</output></button>' +
-        '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
-        '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
-        external('home-settings', '차량 홈 화면 설정', 'detail-settings-row'),
-        ccncArt('calendar'), ' stock-settings-layout');
-      updateClock();
-    } else if (settingsSection === 'display') {
-      var bright = displaySection === 'brightness';
-      var camera = displaySection === 'camera';
-      var nav = '<button type="button" class="sl-tab" data-display="brightness" aria-selected="' + bright + '">화면 밝기</button>' +
-        '<button type="button" class="sl-tab" data-display="warmth" aria-selected="' + (displaySection === 'warmth') + '">블루라이트</button>' +
-        '<button type="button" class="sl-tab" data-display="camera" aria-selected="' + camera + '">카메라 설정</button>' +
-        '<button type="button" class="sl-tab" data-local="open-layout">화면구성</button>' + external('settings-display', '기기 디스플레이 설정', 'sl-tab');
-      var art = '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="12" width="50" height="40" rx="3"/>' +
-        (bright ? '<circle cx="32" cy="32" r="6"/><path d="M32 18v5m0 18v5M18 32h5m18 0h5M22 22l4 4m12 12 4 4m0-20-4 4M26 38l-4 4"/>' :
-          '<path d="M16 32q16-21 32 0-16 21-32 0z"/><circle cx="32" cy="32" r="5"/>') + '</svg>';
-      var content = camera ? '<p class="sl-desc">카메라를 설정합니다.</p>' +
-        '<div class="detail-settings-row"><span>표시 정보</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-row"><span>후방 모니터 유지</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-row"><span>주차 거리 경고</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-row"><span>탑 뷰 주차 가이드라인</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-row"><span>후방 주차 가이드라인</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-actions">' + external('settings-display', '순정 카메라 설정 열기') + '</div>' :
-        bright ? '<p class="sl-desc">테마 창의 밝기를 기기 설정에 맡기거나 직접 조절합니다.</p>' +
-        '<button type="button" class="detail-settings-row" data-local="toggle-bg"><span>홈 배경</span><output>' +
-        (state.bgMode === 'blue' ? '5W 파란 배경' : 'ccNC 검정') + '</output></button>' +
-        '<button type="button" class="detail-settings-row" data-host="brightness-auto"><span>기기 밝기 사용</span><output id="theme-brightness-mode"></output></button>' +
-        '<div class="detail-settings-row"><div class="settings-brightness">' + external('brightness-down', '−') +
-        '<input id="theme-brightness-range" type="range" min="25" max="100" aria-label="테마 창 밝기">' + external('brightness-up', '+') +
-        '<output id="theme-brightness"></output></div></div><div class="detail-settings-actions">' +
-        external('brightness-reset', '초기값') + '</div>' +
-        '<div class="detail-settings-row" data-system-row="brightness" hidden><span>기기 밝기</span><output data-system-value="brightness"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="night" hidden><span>시스템 화면 모드</span><output data-system-value="night"></output></div>' +
-        '<h3 class="settings-sub-title">순정 설정 연동(시험)</h3>' +
-        '<div class="detail-settings-row"><span>순정 시간 자동 설정</span><output data-system-value="autoTime"></output></div>' +
-        '<div class="detail-settings-row"><span>순정 시간 표기 방식</span><output data-system-value="timeFormat"></output></div>' +
-        '<div class="detail-settings-actions">' +
-        '<button type="button" class="theme-control" data-stock-write="auto_time|1">순정 시간 자동 켜기</button>' +
-        '<button type="button" class="theme-control" data-stock-write="auto_time|0">순정 시간 자동 끄기</button>' +
-        '<button type="button" class="theme-control" data-stock-write="time_12_24|24">순정 24시간</button>' +
-        '<button type="button" class="theme-control" data-stock-write="time_12_24|12">순정 12시간</button>' +
-        '</div>' + stockWriteSwitch() :
-        '<p class="sl-desc">지정한 시간 동안 테마 화면에 따뜻한 색을 적용합니다.</p>' +
-        '<button type="button" class="detail-settings-row" data-local="toggle-warmth" aria-pressed="' + state.warmth.enabled +
-        '"><span>블루라이트 차단</span><output>' + (state.warmth.enabled ? '켜짐' : '꺼짐') + '</output></button>' +
-        '<label class="detail-settings-row">색온도<input id="warmth-level" type="range" min="1" max="5" value="' + state.warmth.level + '"></label>' +
-        '<div class="detail-settings-row">사용자 설정<div class="warmth-timing">' +
-        '<input id="warmth-start" type="time" aria-label="시작 시간" value="' + state.warmth.start + '"> ~ ' +
-        '<input id="warmth-end" type="time" aria-label="종료 시간" value="' + state.warmth.end + '"></div></div>' +
-        '<div class="detail-settings-row" data-system-row="blueStock" hidden><span>순정 블루라이트</span><output data-system-value="blueStock"></output></div>' +
-        '<p data-system-row="blueOverlap" hidden>순정 블루라이트가 켜져 있어 테마 효과를 켜면 두 번 겹쳐 적용됩니다. 순정 설정은 차량 설정의 화면 메뉴에서 바꿉니다.</p>';
-      detailSettings(pane, '디스플레이 메뉴', nav, content,
-        ccncArt(camera ? 'camera' : bright ? 'brightness' : 'bluelight'), ' stock-settings-layout');
-      if (bright) {
-        var range = pane.querySelector('#theme-brightness-range');
-        range.oninput = function () { document.getElementById('theme-brightness').textContent = range.value + '%'; };
-        range.onchange = function () { if (inVehicle) window.K8Host.setBrightness(Number(range.value)); };
-      } else if (!camera) {
-        pane.querySelector('#warmth-level').oninput = function () { state.warmth.level = Number(this.value); saveDisplay(); updateClock(); };
-        ['start','end'].forEach(function (key) {
-          pane.querySelector('#warmth-' + key).onchange = function () {
-            if (!this.value) { this.value = state.warmth[key]; return; }
-            state.warmth[key] = this.value;
-            saveDisplay(); updateClock();
-          };
-        });
-      }
-    } else if (settingsSection === 'devices') {
-      var bluetooth = deviceSection === 'bluetooth';
-      var deviceNav = [['bluetooth','기기 연결'],['notice','메시지 수신 알림'],['filtersettings','메시지 수신 필터 설정'],
-        ['autoreply','자동 회신 메시지'],['privacy','프라이버시 모드'],['audio','블루투스 오디오 전환'],
-        ['btinfo','시스템 블루투스 정보'],['projection','폰 프로젝션']];
-      var deviceNavHtml = deviceNav.map(function (item) {
-        return '<button type="button" class="sl-tab" data-device-section="' + item[0] + '" aria-selected="' +
-          (item[0] === deviceSection) + '">' + item[1] + '</button>';
-      }).join('');
-      var deviceName = (deviceNav.filter(function (it) { return it[0] === deviceSection; })[0] || ['', ''])[1];
-      var deviceBody = bluetooth ?
-        '<div class="detail-settings-row" id="theme-bt-call-row" hidden><span>통화 기기</span><output id="theme-bt-call"></output></div>' +
-        '<div class="detail-settings-row" id="theme-bt-audio-row" hidden><span>오디오 기기</span><output id="theme-bt-audio"></output></div>' +
-        '<div class="detail-settings-row"><span>등록 기기</span><output id="theme-bluetooth"></output></div><ol class="device-settings-list" id="theme-paired-devices"></ol>' +
-        '<div class="detail-settings-actions">' +
-        (controls.bluetooth === false ? external('bluetooth-enable', '블루투스 켜기') : '') +
-        external('settings-devices', '블루투스 연결 관리') + '</div>' :
-        deviceSection === 'projection' ?
-        '<div class="detail-settings-row" id="theme-projection-row" hidden><span>현재 사용 중</span><output id="theme-projection-state"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="projectionUsb" hidden><span>USB 폰 프로젝션</span><output data-system-value="projectionUsb"></output></div>' +
-        '<div class="detail-settings-row" data-system-row="projectionWireless" hidden><span>무선 폰 프로젝션</span><output data-system-value="projectionWireless"></output></div>' +
-        external('projection', '폰 프로젝션 설정 열기', 'detail-settings-row') :
-        '<p class="sl-desc">이 항목은 순정 기기 연결 설정에서 변경할 수 있습니다.</p>' +
-        '<div class="detail-settings-row"><span>' + deviceName + '</span><output>순정 연동 대기</output></div>' +
-        '<div class="detail-settings-actions">' + external('settings-devices', '순정 기기 연결 설정 열기') + '</div>';
-      detailSettings(pane, '기기 연결 메뉴', deviceNavHtml, deviceBody, ccncArt('phone'), ' stock-settings-layout');
-    } else if (settingsSection === 'profile') {
-      renderProfile(pane);
-    } else {
-      var path = {vehicle:['settings-car','순정 차량 설정'],navi:['settings-nav','순정 내비 설정'],
-        voice:['settings-voice','순정 음성인식 설정']}[settingsSection];
-      var readout = settingsSection === 'vehicle' ?
+  /** 차량·공조·하이브리드 상태(읽기 전용). 차량 화면 아래에 둔다. */
+  function vehicleStatusHtml() {
+    return 
         '<div class="detail-settings-row" data-system-row="vehicleCode" hidden><span>차량 사양 코드</span><output data-system-value="vehicleCode"></output></div>' +
         '<div class="detail-settings-row" data-system-row="driveModeOption" hidden><span>드라이브 모드 사양 코드</span><output data-system-value="driveModeOption"></output></div>' +
         [['climateDriver','운전석 온도'],['climatePassenger','조수석 온도'],['climateOutside','외부 온도'],['climateAc','에어컨'],
@@ -3531,11 +3443,266 @@ var stockSub = '';
               '</span><output data-system-value="' + row[0] + '"></output></div>';
           }).join('') +
         '<p data-system-row="carNote" hidden>차량 상태는 순정 차량 서비스에서 읽기만 합니다. 열림·잠김 번호의 뜻은 차에서 확인 중입니다.</p>' +
-        '<p data-system-row="hybridNote" hidden>하이브리드 값은 순정 하이브리드 서비스에서 읽기만 합니다. 배터리·모터 사용·연비 숫자의 단위는 차에서 확인 중입니다.</p>' : '';
+        '<p data-system-row="hybridNote" hidden>하이브리드 값은 순정 하이브리드 서비스에서 읽기만 합니다. 배터리·모터 사용·연비 숫자의 단위는 차에서 확인 중입니다.</p>';
+  }
+
+  function renderSettingsControls() {
+    var pane = document.getElementById('theme-settings-detail');
+    // 다시 그려도 왼쪽 메뉴 스크롤 위치는 그대로 둔다(메뉴가 길 때 고른 항목이 안 보이지 않게).
+    var oldNav = pane.querySelector('.sl-nav');
+    var navTop = oldNav ? oldNav.scrollTop : 0;
+    setTimeout(function () { var nav = pane.querySelector('.sl-nav'); if (nav && navTop) nav.scrollTop = navTop; }, 0);
+    if (settingsSection === 'sound') {
+      renderSoundControls(pane);
+      updateSystemLabels();
+      return;
+    }
+    if (renderStockSettingScreen(pane, settingsSection)) return;
+    var heading = { vehicle:'차량', general:'일반', navi:'내비게이션', sound:'사운드',
+      devices:'기기 연결', profile:'사용자 프로필', voice:'음성인식', display:'디스플레이' }[settingsSection];
+    var start = '<button type="button" class="theme-control" data-local="settings-back">‹ 설정</button><h2>' + heading + '</h2>';
+    var external = function (action, title, style) {
+      return '<button type="button" class="' + (style || 'theme-control') + '" data-host="' + action + '">' + title + '</button>';
+    };
+    if (settingsSection === 'general') {
+      var gTabs = [['sw', 'SW 정보/업데이트'], ['system', '시스템 정보'], ['date', '날짜/시간'], ['language', '언어'],
+        ['keyboard', '키보드'], ['unit', '단위 설정'], ['media', '미디어 동작'], ['reset', '초기화']];
+      var gNav = gTabs.map(function (item) {
+        return '<button type="button" class="sl-tab" data-general-section="' + item[0] + '" aria-selected="' +
+          (item[0] === generalSection) + '">' + escapeText(item[1]) + '</button>';
+      }).join('');
+      var gBody = '';
+      if (generalSection === 'sw') {
+        gBody = '<p class="sl-desc">소프트웨어 및 업데이트 정보를 표시합니다.</p>' +
+          '<div class="detail-settings-row"><span>플랫폼</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>차량 모델</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row" data-system-row="build" hidden><span>소프트웨어 버전</span><output data-system-value="build"></output></div>' +
+          '<div class="detail-settings-row" data-system-row="navigationAppVersion" hidden><span>내비 앱 버전</span><output data-system-value="navigationAppVersion"></output></div>' +
+          '<div class="detail-settings-row" data-system-row="mapVersion" hidden><span>지도 버전</span><output data-system-value="mapVersion"></output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-general', '순정 SW 정보 열기') + '</div>';
+      } else if (generalSection === 'system') {
+        gBody = '<p class="sl-desc">시스템 정보를 표시합니다.</p>' +
+          '<div class="detail-settings-row"><span>저장 공간</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>웹 매뉴얼</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>모뎀 정보</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<h3 class="settings-sub-title">테마 설정</h3>' +
+          '<div class="detail-settings-row"><span>테마 화면 밝기</span><div>' +
+          external('brightness-down', '−') + '<output id="theme-brightness"></output>' + external('brightness-up', '+') + '</div></div>' +
+          '<button type="button" class="detail-settings-row" data-host="auto-start-toggle"><span>시동 후 자동 실행</span>' +
+          '<output id="theme-auto-start">' + (flags.autoStart ? '켜짐' : '꺼짐') + '</output></button>' +
+          '<button type="button" class="detail-settings-row" data-host="nav-bar-toggle"><span>순정 내비에서 ccNC 하단바 시험</span>' +
+          '<output id="theme-nav-bar">' + (flags.navBar ? '켜짐' : '꺼짐') + '</output></button>' +
+          '<button type="button" class="detail-settings-row" data-host="navi-skin-toggle"><span>순정 내비 왼쪽 버튼 ccNC 모양 시험</span>' +
+          '<output id="theme-navi-skin">' + (flags.naviSkin ? '켜짐' : '꺼짐') + '</output></button>' +
+          '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
+          '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
+          external('home-settings', '차량 홈 화면 설정', 'detail-settings-row') +
+          '<div class="detail-settings-actions">' + external('settings-general', '순정 시스템 정보 열기') + '</div>';
+      } else if (generalSection === 'date') {
+        gBody = '<p class="sl-desc">날짜와 시간을 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>시간 자동 설정</span><output data-system-value="autoTime"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 GPS 시간 자동</span><output data-system-value="gpsAutoTime"></output></div>' +
+          '<div class="detail-settings-row"><span>서머타임</span><output data-system-value="summerTime"></output></div>' +
+          external('settings-date', '<span>날짜 및 시간<small id="theme-date-time"></small></span>', 'detail-settings-row') +
+          '<div class="detail-settings-row"><span>시간 표기 방식</span><div class="sl-seg-group">' +
+          '<button type="button" class="sl-seg-btn" data-clock="system" aria-pressed="' + (state.clock24 === null) + '">기기 기준</button>' +
+          '<button type="button" class="sl-seg-btn" data-clock="24" aria-pressed="' + (state.clock24 === true) + '">24시간</button>' +
+          '<button type="button" class="sl-seg-btn" data-clock="12" aria-pressed="' + (state.clock24 === false) + '">12시간</button></div></div>' +
+          '<div class="detail-settings-row"><span>순정 시간 표기 방식</span><output data-system-value="timeFormat12"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 시간 자동 설정</span><output data-system-value="timeFormat"></output></div>';
+      } else if (generalSection === 'language') {
+        gBody = '<p class="sl-desc">시스템 언어를 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>언어/Language</span><output data-system-value="language"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 언어 값</span><output data-system-value="languageType"></output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-language', '순정 언어 설정 열기') + '</div>';
+      } else if (generalSection === 'keyboard') {
+        gBody = '<p class="sl-desc">시스템 키보드를 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>키보드</span><output data-system-value="keyboard"></output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-keyboard', '순정 키보드 설정 열기') + '</div>';
+      } else if (generalSection === 'unit') {
+        gBody = '<p class="sl-desc">시스템 표시 단위를 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>온도 단위</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>연비 단위</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>타이어 공기압 단위</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-general', '순정 단위 설정 열기') + '</div>';
+      } else if (generalSection === 'media') {
+        gBody = '<p class="sl-desc">미디어 재생 방식 및 알림을 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>시동 켤 때 미디어 자동 재생 안 함</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>시동 끌 때 미디어 재생 유지하기</span><output data-system-value="keepLastMode"></output></div>' +
+          '<div class="detail-settings-row"><span>미디어 알림 설정</span><output data-system-value="mediaNotification"></output></div>' +
+          '<div class="detail-settings-row"><span>폴더 반복</span><output data-system-value="mediaRepeatFolder"></output></div>' +
+          '<div class="detail-settings-row"><span>Android Auto 분할 표시</span><output data-system-value="androidAutoOsd"></output></div>' +
+          '<div class="detail-settings-row"><span>CarPlay 분할 표시</span><output data-system-value="carPlayOsd"></output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-general', '순정 미디어 동작 설정 열기') + '</div>';
+      } else {
+        gBody = '<p class="sl-desc">현재 로그인 중인 계정 또는 전체 계정의 정보를 초기화합니다.</p>' +
+          '<div class="detail-settings-row"><span>프로필 삭제</span><output class="stock-value-wait">순정 설정에서 삭제</output></div>' +
+          '<div class="detail-settings-row"><span>전체 초기화</span><output class="stock-value-wait">순정 설정에서 초기화</output></div>' +
+          '<div class="detail-settings-row"><span>초기화</span><output class="stock-value-wait">순정 설정에서 초기화</output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-general', '순정 초기화 화면 열기') + '</div>';
+      }
+      detailSettings(pane, '일반 메뉴', gNav, gBody, ccncArt('calendar'), ' stock-settings-layout');
+      updateClock();
+    } else if (settingsSection === 'display') {
+      var dTabs = [['brightness', '화면 밝기'], ['warmth', '블루라이트'], ['videoColor', '영상 색상'],
+        ['videoRatio', '영상 비율'], ['camera', '카메라 설정']];
+      var dNav = dTabs.map(function (item) {
+        return '<button type="button" class="sl-tab" data-display="' + item[0] + '" aria-selected="' +
+          (item[0] === displaySection) + '">' + escapeText(item[1]) + '</button>';
+      }).join('');
+      var dBody = '';
+      if (displaySection === 'brightness') {
+        dBody = '<p class="sl-desc">화면 밝기가 자동으로 조절되도록 설정하거나, 일정한 밝기로 유지되도록 수동 설정할 수 있습니다.</p>' +
+          '<button type="button" class="detail-settings-row" data-local="toggle-bg"><span>홈 배경</span><output>' +
+          (state.bgMode === 'blue' ? '5W 파란 배경' : 'ccNC 검정') + '</output></button>' +
+          '<button type="button" class="detail-settings-row" data-host="brightness-auto"><span>기기 밝기 사용</span><output id="theme-brightness-mode"></output></button>' +
+          '<div class="detail-settings-row"><div class="settings-brightness">' + external('brightness-down', '−') +
+          '<input id="theme-brightness-range" type="range" min="25" max="100" aria-label="테마 창 밝기">' + external('brightness-up', '+') +
+          '<output id="theme-brightness"></output></div></div>' +
+          '<div class="detail-settings-actions">' + external('brightness-reset', '초기값') + '</div>' +
+          '<div class="detail-settings-row" data-system-row="brightness" hidden><span>기기 밝기</span><output data-system-value="brightness"></output></div>' +
+          '<div class="detail-settings-row" data-system-row="night" hidden><span>시스템 화면 모드</span><output data-system-value="night"></output></div>' +
+          '<h3 class="settings-sub-title">순정 설정 연동(시험)</h3>' +
+          '<div class="detail-settings-row"><span>순정 시간 자동 설정</span><output data-system-value="autoTime"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 시간 표기 방식</span><output data-system-value="timeFormat"></output></div>' +
+          '<div class="detail-settings-actions">' +
+          '<button type="button" class="theme-control" data-stock-write="auto_time|1">순정 시간 자동 켜기</button>' +
+          '<button type="button" class="theme-control" data-stock-write="auto_time|0">순정 시간 자동 끄기</button>' +
+          '<button type="button" class="theme-control" data-stock-write="time_12_24|24">순정 24시간</button>' +
+          '<button type="button" class="theme-control" data-stock-write="time_12_24|12">순정 12시간</button>' +
+          '</div>' + stockWriteSwitch();
+      } else if (displaySection === 'warmth') {
+        dBody = '<p class="sl-desc">블루라이트 색온도 및 작동 방식을 설정합니다.</p>' +
+          '<button type="button" class="detail-settings-row" data-local="toggle-warmth" aria-pressed="' + state.warmth.enabled +
+          '"><span>블루라이트 차단</span><output>' + (state.warmth.enabled ? '켜짐' : '꺼짐') + '</output></button>' +
+          '<label class="detail-settings-row">색온도<input id="warmth-level" type="range" min="1" max="5" value="' + state.warmth.level + '"></label>' +
+          '<div class="detail-settings-row">사용자 설정<div class="warmth-timing">' +
+          '<input id="warmth-start" type="time" aria-label="시작 시간" value="' + state.warmth.start + '"> ~ ' +
+          '<input id="warmth-end" type="time" aria-label="종료 시간" value="' + state.warmth.end + '"></div></div>' +
+          '<div class="detail-settings-row"><span>순정 블루라이트 차단</span><output data-system-value="bluelightEnable"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 색감 단계</span><output data-system-value="bluelightLevel"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 시간 설정</span><output data-system-value="bluelightMode"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 시작 시간</span><output data-system-value="bluelightStart"></output></div>' +
+          '<div class="detail-settings-row"><span>순정 종료 시간</span><output data-system-value="bluelightEnd"></output></div>' +
+          '<div class="detail-settings-row" data-system-row="blueStock" hidden><span>순정 블루라이트</span><output data-system-value="blueStock"></output></div>' +
+          '<p data-system-row="blueOverlap" hidden>순정 블루라이트가 켜져 있어 테마 효과를 켜면 두 번 겹쳐 적용됩니다. 순정 설정은 차량 설정의 화면 메뉴에서 바꿉니다.</p>';
+      } else if (displaySection === 'videoColor') {
+        dBody = '<p class="sl-desc">영상의 색감을 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>영상 색상</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-display', '순정 영상 색상 열기') + '</div>';
+      } else if (displaySection === 'videoRatio') {
+        dBody = '<p class="sl-desc">영상의 화면 비율을 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>영상 비율</span><output data-system-value="videoAspectRatio"></output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-display', '순정 영상 비율 열기') + '</div>';
+      } else {
+        dBody = '<p class="sl-desc">카메라를 설정합니다.</p>' +
+          '<div class="detail-settings-row"><span>표시 정보</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>후방 카메라 옵션</span><output data-system-value="rearCameraOption"></output></div>' +
+          '<div class="detail-settings-row"><span>카메라 밝기(주간)</span><output data-system-value="cameraBrightDay"></output></div>' +
+          '<div class="detail-settings-row"><span>후방 모니터 유지</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>주차 거리 경고</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>탑 뷰 주차 가이드라인</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-row"><span>후방 주차 가이드라인</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+          '<div class="detail-settings-actions">' + external('settings-display', '순정 카메라 설정 열기') + '</div>';
+      }
+      detailSettings(pane, '디스플레이 메뉴', dNav, dBody,
+        ccncArt(displaySection === 'camera' ? 'camera' : displaySection === 'brightness' ? 'brightness' : 'bluelight'),
+        ' stock-settings-layout');
+      var range = pane.querySelector('#theme-brightness-range');
+      if (range) {
+        range.oninput = function () { document.getElementById('theme-brightness').textContent = range.value + '%'; };
+        range.onchange = function () { if (inVehicle) window.K8Host.setBrightness(Number(range.value)); };
+      } else {
+        var level = pane.querySelector('#warmth-level');
+        if (level) level.oninput = function () { state.warmth.level = Number(this.value); saveDisplay(); updateClock(); };
+        ['start', 'end'].forEach(function (key) {
+          var box = pane.querySelector('#warmth-' + key);
+          if (!box) return;
+          box.onchange = function () {
+            if (!this.value) { this.value = state.warmth[key]; return; }
+            state.warmth[key] = this.value;
+            saveDisplay(); updateClock();
+          };
+        });
+      }
+    } else if (settingsSection === 'devices') {
+      var deviceNav = [['bluetooth', '기기 연결'], ['filtersettings', '메시지 수신 필터 설정'],
+        ['autoreply', '자동 회신 메시지'], ['privacy', '프라이버시 모드'],
+        ['audio', '블루투스 오디오 전환'], ['btinfo', '시스템 블루투스 정보']];
+      var deviceNavHtml = deviceNav.map(function (item) {
+        return '<button type="button" class="sl-tab" data-device-section="' + item[0] + '" aria-selected="' +
+          (item[0] === deviceSection) + '">' + escapeText(item[1]) + '</button>';
+      }).join('');
+      var deviceName = (deviceNav.filter(function (it) { return it[0] === deviceSection; })[0] || ['', ''])[1];
+      var deviceBody = deviceSection === 'bluetooth' ?
+        '<div class="detail-settings-row" id="theme-bt-call-row" hidden><span>통화 기기</span><output id="theme-bt-call"></output></div>' +
+        '<div class="detail-settings-row" id="theme-bt-audio-row" hidden><span>오디오 기기</span><output id="theme-bt-audio"></output></div>' +
+        '<div class="detail-settings-row"><span>등록 기기</span><output id="theme-bluetooth"></output></div><ol class="device-settings-list" id="theme-paired-devices"></ol>' +
+        '<div class="detail-settings-row" id="theme-projection-row" hidden><span>현재 사용 중</span><output id="theme-projection-state"></output></div>' +
+        '<div class="detail-settings-row" data-system-row="projectionUsb" hidden><span>USB 폰 프로젝션</span><output data-system-value="projectionUsb"></output></div>' +
+        '<div class="detail-settings-row" data-system-row="projectionWireless" hidden><span>무선 폰 프로젝션</span><output data-system-value="projectionWireless"></output></div>' +
+        '<div class="detail-settings-actions">' +
+        (controls.bluetooth === false ? external('bluetooth-enable', '블루투스 켜기') : '') +
+        external('projection', '폰 프로젝션 설정 열기') +
+        external('settings-devices', '블루투스 연결 관리') + '</div>' :
+        '<p class="sl-desc">' + escapeText(deviceName) + ' 설정은 순정 기기 연결 설정에서 변경합니다.</p>' +
+        '<div class="detail-settings-row"><span>' + escapeText(deviceName) + '</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
+        '<div class="detail-settings-actions">' + external('settings-devices', '순정 기기 연결 설정 열기') + '</div>';
+      detailSettings(pane, '기기 연결 메뉴', deviceNavHtml, deviceBody, ccncArt('phone'), ' stock-settings-layout');
+    } else if (settingsSection === 'profile') {
+      renderProfile(pane);
+    } else {
+      var path = {vehicle:['settings-car','순정 차량 설정'],navi:['settings-nav','순정 내비 설정'],
+        voice:['settings-voice','순정 음성인식 설정']}[settingsSection];
+      var readout = settingsSection === 'vehicle' ?vehicleStatusHtml() : '';
       pane.innerHTML = start + readout + '<p>이 항목은 순정 설정 화면에서 변경할 수 있습니다.</p>' + external(path[0],path[1]);
     }
     updateControlLabels();
     updateSystemLabels();
+  }
+
+  /**
+   * 값의 뜻 표.
+   * 근거가 있는 짝만 글자로 바꾸고, 근거가 없는 값은 "순정 값 N"으로 보여 준다.
+   * 근거: docs/5W-순정설정-실차수집.md (수집된 현재 값 + 화면 요약의 ✔ 표시)
+   */
+  var STOCK_VALUE_MEANING = {
+    buttonNavi: { 'com.mobis.intent.action.CONNECTIVITY_SHORTCUT': '폰 프로젝션' },
+    buttonHandle: { 'com.hkmc.intent.action.MAP_SHORTCUT': 'MAP' },
+    buttonMode: { '129': '자연의 소리' },
+    buttonSeek: { '0': '프리셋 채널 변경' },
+    bluelightMode: { '0': '자동' },
+    bluelightLevel: { '1': '덜 따뜻한 색감' },
+    voiceType: { '85': '밝은 여성 음성' },
+    timeFormat12: { '12': '12시간' },
+    navGuideMute: { '1': '켜짐' },
+    welcomeSound: { '1': '켜짐' },
+    gpsAutoTime: { '1': '켜짐' },
+    soundAutoVolume: { '1': '켜짐' },
+    languageType: { 'ko_KR': '한국어' }
+  };
+
+  /** 값 하나를 화면 글자로 바꾼다. 근거가 없으면 "순정 값 N". */
+  function stockValueText(field, value) {
+    if (value === undefined || value === null || value === '') return '순정 연동 대기';
+    var table = STOCK_VALUE_MEANING[field];
+    if (table) {
+      var hit = table[String(value)];
+      if (hit) return hit;
+    }
+    return '순정 값 ' + value;
+  }
+
+  /** 블루라이트 시작·종료 값("7hh00mmPM")을 "오후 7:00"으로 바꾼다. */
+  function stockTimeText(value) {
+    var m = /^(\d+)hh(\d+)mm(AM|PM)$/.exec(String(value));
+    if (!m) return String(value);
+    var hour = parseInt(m[1], 10);
+    var minute = m[2];
+    var suffix = m[3] === 'PM' ? '오후' : '오전';
+    var hour12 = hour % 12;
+    if (hour12 === 0) hour12 = 12;
+    return suffix + ' ' + hour12 + ':' + minute;
   }
 
   function updateSystemLabels() {
@@ -3593,6 +3760,26 @@ var stockSub = '';
      'soundBeepMode', 'soundSurround', 'soundPowerTreble', 'soundEqMode', 'soundAsd'].forEach(function (key) {
       readouts[key] = soundPick(key);
     });
+    // 실차에서 모은 순정 설정 키 값(읽기 전용). 근거가 있는 짝만 글자로, 나머지는 "순정 값 N"으로.
+    var collectedFields = ['navGuideMute', 'welcomeSound', 'voiceType', 'kakaoVoice', 'vrWakeup', 'vrBargein',
+      'rearVoiceLock', 'bluelightEnable', 'bluelightMode', 'bluelightLevel', 'bluelightStart', 'bluelightEnd',
+      'keepLastMode', 'mediaNotification', 'timeFormat12', 'gpsAutoTime', 'summerTime', 'volTuneSwap',
+      'tuneKnobFunction', 'buttonSeek', 'soundPositionMode', 'soundPositionSeat', 'rearSleepMode',
+      'daylightBright', 'nightBright', 'splitScreenOn', 'waitingDisplayType', 'clockWidgetType', 'analogClockType',
+      'rearCameraOption', 'cameraBrightDay', 'mediaRepeatFolder', 'androidAutoOsd', 'carPlayOsd',
+      'videoAspectRatio', 'soundRnc', 'soundAdpAnc', 'driveModeNotification', 'seatPositionAlert',
+      'languageType', 'buttonNavi', 'buttonHandle', 'buttonMode'];
+    collectedFields.forEach(function (field) {
+      var value = vehicleSettings[field];
+      if (value === undefined || value === null || value === '') return;
+      if (field === 'bluelightStart' || field === 'bluelightEnd') { readouts[field] = stockTimeText(value); return; }
+      readouts[field] = stockValueText(field, value);
+    });
+    // 고음·중음·저음은 10을 0으로 저장한 값이라 10을 뺀 수(14 → +4)로 보여 준다.
+    ['soundTreble', 'soundMiddle', 'soundBass'].forEach(function (field) {
+      var value = vehicleSettings[field];
+      if (typeof value === 'number') readouts[field] = (value > 0 ? '+' : '') + value;
+    });
     var car = vehicleLabels(vehicleInfo);
     Object.keys(car).forEach(function (key) { readouts[key] = car[key]; });
     readouts.carNote = Object.keys(car).some(function (key) { return car[key]; }) ? '1' : '';
@@ -3641,86 +3828,200 @@ var stockSub = '';
    * (docs/설정-연동표.md 2·7절 근거) 없으면 해당 순정 설정 화면을 연다.
    */
   var STOCK_SETTING_SUBS = {
-    'car-warning': { title: '경고 방식', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', parent: '운전자 보조',
-      rows: [['경고 음량', ''], ['핸들 진동 경고', ''], ['차로 안전 경고음 끄기', ''],
-        ['주행 안전 우선', ''], ['주차 안전 우선', 'soundReverseDim']] },
-    'car-scc': { title: '스마트 크루즈 컨트롤', desc: '스마트 크루즈 컨트롤 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['스마트 크루즈 응답성', '']] },
     'car-convenience': { title: '주행 편의', desc: '주행 편의 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['스마트 크루즈 컨트롤', ''], ['차로 유지 보조', ''], ['고속도로 주행 보조', ''],
-        ['고속도로 차로변경 보조', ''], ['고속도로 안전구간 자동감속', ''],
-        ['고속도로 곡선구간 자동감속', ''], ['고속도로 주행속도 자동 조절', '']] },
+      rows: [['주행 편의', ''], ['속도 제한', ''], ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''],
+        ['운전자 주의 경고', ''], ['고속도로 주행 보조', ''], ['고속도로 차로변경 보조', ''],
+        ['고속도로 주행속도 자동 조절', '']] },
+    'car-frontsafe': { title: '전방 안전', desc: '전방 안전 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['전방 안전', ''], ['충돌방지 보조', ''], ['차로 안전', ''], ['이탈방지 보조', ''], ['후측방 안전', ''],
+        ['주차 안전', ''], ['후방 충돌방지 보조', ''], ['전방 교차 안전', '']] },
+    'car-scc': { title: '스마트 크루즈 컨트롤', desc: '스마트 크루즈 컨트롤 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['스마트 크루즈 컨트롤', ''], ['운전 스타일 연동', ''], ['주행 편의', ''], ['속도 제한', ''],
+        ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''], ['드라이브 모드 연동', ''],
+        ['운전 스타일 설정', '']] },
     'car-speedlimit': { title: '속도 제한', desc: '속도 제한 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['속도 제한 보조', ''], ['속도 제한 경고', ''], ['속도 오프셋 설정', '']] },
+      rows: [['속도 제한', ''], ['속도 제한 보조', ''], ['경고 시점', ''], ['경고 방식', ''],
+        ['운전자 주의 경고', ''], ['속도 제한 경고', ''], ['속도 오프셋 설정', '']] },
+    'car-lanesafe': { title: '차로 안전', desc: '차로 안전 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['차로 안전', ''], ['이탈방지 보조', ''], ['이탈 경고', '']] },
     'car-driverwarn': { title: '운전자 주의 경고', desc: '운전자 주의 경고 시스템을 설정합니다.', parent: '운전자 보조',
-      rows: [['전방 차량 출발 알림', '']] },
+      rows: [['운전자 주의 경고', ''], ['전방 차량 출발 알림', ''], ['부주의 운전 경고', '']] },
+    'car-parksafe': { title: '주차 안전', desc: '주차 안전 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['주차 안전', ''], ['서라운드 뷰 모니터 자동 켜짐', ''], ['주차 거리 경고 자동 켜짐', ''],
+        ['후방 충돌방지 보조', ''], ['후방 충차 경고', ''], ['후방 교차 안전', ''], ['카메라 설정', '']] },
+    'car-rearsafe': { title: '후측방 안전', desc: '후측방 안전 시스템을 설정합니다.', parent: '운전자 보조',
+      rows: [['후측방 안전', ''], ['후측방 모니터', ''], ['안전 하차 보조', ''], ['충돌방지 보조', ''],
+        ['충돌 경고', '']] },
+    'car-warning': { title: '경고 방식', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', parent: '운전자 보조',
+      rows: [['경고 음량', ''], ['핸들 진동 경고', ''], ['주행 안전 우선', ''], ['주차 안전 우선', 'soundReverseDim']] },
+    'car-dm-custom': { title: 'CUSTOM · MY DRIVE MODE', desc: '시스템별 모드 선택을 통해 최적의 모드를 설정합니다.',
+      parent: '드라이브 모드',
+      rows: [['드라이브 모드 변경 알림', 'driveModeNotification'], ['MY DRIVE MODE', ''], ['SMART', '']] },
+    'car-coasting-sound': { title: '관성 주행 안내 · 사운드 켬', desc: '연료 절약을 위해 가속 페달에서 발을 떼는 시점을 알려줍니다.',
+      parent: '환경차',
+      rows: [['관성 주행 안내', ''], ['사운드 켬', ''], ['관성 주행 안내 시점', ''], ['그린존 드라이브 모드', '']] },
+    'car-coasting-timing': { title: '관성 주행 안내 시점', desc: '가속 페달에서 발을 떼는 제안 시점을 선택합니다.',
+      parent: '환경차',
+      rows: [['관성 주행 안내 시점', ''], ['그린존 드라이브 모드', '']] },
+    'hud-video': { title: 'HUD 영상 조정', desc: 'HUD 영상의 높이·기울기와 밝기를 조정합니다.', parent: 'HUD',
+      rows: [['높이 / 기울기', ''], ['밝기', '']] },
+    'hud-info': { title: 'HUD 표시 정보', desc: 'HUD에 표시할 정보를 선택합니다.', parent: 'HUD',
+      rows: [['주행 경로 안내', ''], ['주행 편의 정보', ''], ['후측방 안전 정보', ''], ['라디오/미디어 정보', '']] },
+    'cluster-bright': { title: '클러스터 화면 밝기', desc: '클러스터 화면 밝기를 조절합니다.', parent: '클러스터',
+      rows: [['화면 밝기', ''], ['자동 밝기', ''], ['초기화', '']] },
     'cluster-theme': { title: '클러스터 테마 선택', desc: '선택된 테마로 표시합니다.', parent: '클러스터',
-      rows: [['클러스터 테마', 'clusterTheme']] },
-    'cluster-info': { title: '표시 정보', desc: '클러스터에 표시할 정보를 선택합니다.', parent: '클러스터',
-      rows: [['기어 변속 알림', ''], ['와이퍼/라이트 모드 표시', ''], ['도로 교통표지판 안내', ''],
-        ['후측방 모니터', ''], ['도로 결빙 알림', '']] },
+      rows: [['클러스터 테마', 'clusterTheme'], ['Classic C', ''], ['Classic A', ''], ['Classic B', ''],
+        ['Dynamic 테마', '']] },
+    'cluster-eco': { title: '평균연비 표시', desc: '클러스터에 표시되는 평균연비를 선택합니다.', parent: '클러스터',
+      rows: [['평균연비 표시', ''], ['재시동 후 연비', ''], ['주유 후 연비', ''], ['누적 연비', ''],
+        ['엔진 회전 속도계', '']] },
+    'cluster-info': { title: '클러스터 표시 정보', desc: '클러스터에 표시할 정보를 선택합니다.', parent: '클러스터',
+      rows: [['표시 정보', ''], ['와이퍼/라이트 모드 표시', ''], ['후측방 모니터', ''], ['도로 결빙 알림', '']] },
     'cluster-voice': { title: '클러스터 음성 안내 음량', desc: '안내음의 음량을 조절할 수 있습니다.', parent: '클러스터',
       rows: [['클러스터 음성 안내 음량', '']] },
-    'hud-video': { title: '영상 조정', desc: '영상을 조정합니다.', parent: 'HUD',
-      rows: [['증강현실 매칭 조정', '']] },
-    'hud-info': { title: '표시 정보', desc: 'HUD에 표시할 정보를 선택합니다.', parent: 'HUD',
-      rows: [['속도계', ''], ['SPORT 모드 디스플레이', '']] }
+    'hvac-intake': { title: '외부 공기 차단', desc: '외부공기의 유입을 차단하기 위한 기능을 설정합니다.', parent: '공조',
+      rows: [['외부 공기 차단', ''], ['와셔액 연동', ''], ['터널 구간', ''], ['기타 차단 구간', '']] },
+    'hvac-vent': { title: '자동 환기', desc: '차량의 환기를 위한 기능을 설정합니다.', parent: '공조',
+      rows: [['자동 환기', ''], ['습기 발생 저감', '']] },
+    'hvac-defog': { title: '창문 습기 방지', desc: '유리창의 습기 발생을 줄이거나 제거하는 기능을 설정합니다.', parent: '공조',
+      rows: [['창문 습기 방지', ''], ['앞유리 습기 신속 제거', ''], ['앞유리 습기 발생 방지', '']] },
+    'hvac-comfort': { title: '열선/통풍 편의', desc: '열선과 통풍의 편의 기능을 설정합니다.', parent: '공조',
+      rows: [['열선/통풍 편의', ''], ['공조 연동 자동 제어', '']] },
+    'seat-posture': { title: '스마트 자세 제어', desc: '신체 정보를 입력하면 시트 위치를 추천 자세에 맞춰 조절합니다.', parent: '시트',
+      rows: [['스마트 자세 제어', ''], ['승하차 편의', ''], ['스마트 서포트', ''], ['에르고 모션 시트', ''],
+        ['신체 정보 입력', '']] },
+    'seat-comfort': { title: '열선/통풍 편의', desc: '열선과 통풍의 편의 기능을 설정합니다.', parent: '시트',
+      rows: [['열선/통풍 편의', ''], ['승하차 편의', ''], ['스마트 서포트', ''], ['에르고 모션 시트', ''],
+        ['공조 연동 자동 제어', '']] },
+    'light-mood': { title: '실내 무드 조명', desc: '실내 무드 조명을 설정합니다.', parent: '라이트',
+      rows: [['실내 무드 조명', ''], ['밝기', ''], ['색상', ''], ['사용자 색상', ''], ['드라이브 모드 연동', ''],
+        ['어두운 곳 주행 시 밝기 낮춤', ''], ['과속 안내 연동', '']] },
+    'light-blink': { title: '원터치 방향지시등', desc: '방향지시등 레버를 살짝 움직일 때 깜빡이는 횟수를 선택합니다.', parent: '라이트',
+      rows: [['원터치 방향지시등', ''], ['7회 깜빡임', ''], ['5회 깜빡임', ''], ['3회 깜빡임', ''], ['끄기', '']] },
+    'light-welcome': { title: '웰컴 미러/라이트', desc: '미러가 펴지는 시점과 램프가 켜지는 시점을 선택합니다.', parent: '라이트',
+      rows: [['웰컴 미러/라이트', ''], ['도어 잠금 해제 시', ''], ['운전자 접근 시', '']] },
+    'door-lock': { title: '자동 잠금', desc: '모든 도어가 자동으로 잠기는 시점을 선택합니다.', parent: '도어',
+      rows: [['자동 잠금', ''], ['주행할 때', ''], ['R, N, D단으로 이동할 때', ''], ['P단 이동할 때', ''],
+        ['끄기', '']] },
+    'door-trunk': { title: '파워 트렁크 열림 높이', desc: '파워 트렁크의 열림 높이를 선택합니다.', parent: '도어',
+      rows: [['파워 트렁크 열림 높이', ''], ['완전 열림', ''], ['절반 열림', '']] },
+    'key-phone': { title: '스마트폰 키', desc: '스마트폰 키를 등록 또는 삭제합니다.', parent: '디지털 키',
+      rows: [['스마트폰 키', ''], ['등록', ''], ['삭제', '']] },
+    'key-nfc': { title: 'NFC 카드 키', desc: '카드 키를 등록 또는 삭제합니다.', parent: '디지털 키',
+      rows: [['NFC 카드 키', ''], ['등록', ''], ['삭제', '']] },
+    'key-info': { title: '디지털 키 정보', desc: '등록된 디지털 키 정보를 보여 줍니다.', parent: '디지털 키',
+      rows: [['디지털 키 정보', '']] },
+    'conv-service': { title: '서비스 시기 알림', desc: '서비스 점검 시기까지 남은 거리와 기간을 확인합니다.', parent: '편의',
+      rows: [['서비스 시기 알림 사용', ''], ['알림 거리', ''], ['알림 기간', ''], ['초기화', '']] },
+    'sound-advanced': { title: 'Meridian Intelli-Q · 강하게', desc: '차량의 속도에 따라 최적의 사운드를 제공합니다.', parent: '고급 음향',
+      rows: [['강하게', ''], ['보통', ''], ['약하게', ''], ['끄기', '']] },
+    'sound-voicechange': { title: '음성 변경', desc: '내비게이션 안내·음성인식·문자 메시지를 읽어주는 음성을 설정합니다.',
+      parent: '안내음',
+      rows: [['밝은 여성 음성', 'voiceType'], ['부드러운 남성 음성', '']] },
+    'sound-tone-init': { title: '초기값', desc: '고음·중음·저음을 초기값으로 되돌립니다.', parent: '고음/중음/저음',
+      rows: [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass']] },
+    'sound-radio': { title: '라디오 음질', desc: '라디오 노이즈 조절 방식을 설정합니다.', parent: '라디오 음질',
+      rows: [['원음 강조', ''], ['원음/노이즈 균형', ''], ['노이즈 최소화', '']] },
+    'sound-devices': { title: '연결 기기', desc: '연결 기기의 기능별 음량을 설정합니다.', parent: '연결 기기',
+      rows: [['Android Auto', ''], ['Apple CarPlay', '']] }
   };
 
   var STOCK_SETTING_SCREENS = {
     vehicle: {
       title: '차량', host: 'settings-car', hostLabel: '순정 차량 설정 열기', fallback: 'settings-car',
+      extra: '<h3 class="settings-sub-title">차량 상태(읽기 전용)</h3>' + vehicleStatusHtml(),
       groups: [
         { name: '운전자 보조', rows: [
-          { label: '경고 방식', nav: true, sub: 'car-warning' },
-          { label: '스마트 크루즈 컨트롤', nav: true, sub: 'car-scc' },
           { label: '주행 편의', nav: true, sub: 'car-convenience' },
           { label: '속도 제한', nav: true, sub: 'car-speedlimit' },
-          { label: '운전자 주의 경고', nav: true, sub: 'car-driverwarn' } ] },
+          { label: '전방 안전', nav: true, sub: 'car-frontsafe' },
+          { label: '스마트 크루즈 컨트롤', nav: true, sub: 'car-scc' },
+          { label: '후측방 안전', nav: true, sub: 'car-rearsafe' },
+          { label: '주차 안전', nav: true, sub: 'car-parksafe' },
+          { label: '차로 안전', nav: true, sub: 'car-lanesafe' },
+          { label: '운전자 주의 경고', nav: true, sub: 'car-driverwarn' },
+          { label: '경고 방식', nav: true, sub: 'car-warning' } ] },
         { name: '드라이브 모드', rows: [
-          ['드라이브 모드', 'driveModeOption'] ] },
-        { name: '액티브 사운드 디자인', rows: [['실내 엔진 사운드 음량', 'soundAsd']] },
+          ['드라이브 모드 변경 알림', 'driveModeNotification'],
+          { label: 'CUSTOM · MY DRIVE MODE', nav: true, sub: 'car-dm-custom' } ] },
+        { name: '환경차', rows: [
+          { label: '관성 주행 안내 · 사운드 켬', nav: true, sub: 'car-coasting-sound' },
+          { label: '관성 주행 안내 시점', nav: true, sub: 'car-coasting-timing' },
+          ['그린존 드라이브 모드', ''] ] },
+        { name: 'HUD', rows: [
+          ['HUD 사용', ''],
+          { label: '영상 조정', nav: true, sub: 'hud-video' },
+          { label: '표시 정보', nav: true, sub: 'hud-info' } ] },
+        { name: '클러스터', rows: [
+          { label: '화면 밝기', nav: true, sub: 'cluster-bright' },
+          { label: '클러스터 테마 선택', nav: true, sub: 'cluster-theme' },
+          { label: '평균연비 표시', nav: true, sub: 'cluster-eco' },
+          { label: '표시 정보', nav: true, sub: 'cluster-info' },
+          { label: '클러스터 음성 안내 음량', nav: true, sub: 'cluster-voice' } ],
+          switches: [['웰컴 사운드', '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.', 'welcomeSound']] },
         { name: '공조', art: 'fan', rows: [
-          ['외부 공기 차단', ''], ['자동 환기', ''], ['창문 습기 방지', ''], ['공조 편의', ''] ] }
+          { label: '외부 공기 차단', nav: true, sub: 'hvac-intake' },
+          { label: '자동 환기', nav: true, sub: 'hvac-vent' },
+          { label: '창문 습기 방지', nav: true, sub: 'hvac-defog' },
+          { label: '열선/통풍 편의', nav: true, sub: 'hvac-comfort' } ] },
+        { name: '시트', rows: [
+          ['시트 위치 변경 알림', 'seatPositionAlert'],
+          ['에르고 모션 동작 알림', ''],
+          { label: '스마트 자세 제어', nav: true, sub: 'seat-posture' },
+          { label: '열선/통풍 편의', nav: true, sub: 'seat-comfort' } ] },
+        { name: '라이트', rows: [
+          { label: '실내 무드 조명', nav: true, sub: 'light-mood' },
+          { label: '원터치 방향지시등', nav: true, sub: 'light-blink' },
+          { label: '웰컴 미러/라이트', nav: true, sub: 'light-welcome' },
+          ['헤드램프 에스코트', ''], ['하이빔 보조', ''] ] },
+        { name: '도어', rows: [
+          { label: '자동 잠금', nav: true, sub: 'door-lock' },
+          { label: '파워 트렁크 열림 높이', nav: true, sub: 'door-trunk' },
+          ['스마트 트렁크', ''], ['원격 창문 제어', ''] ] },
+        { name: '디지털 키', rows: [
+          ['디지털 키 사용', ''],
+          { label: '스마트폰 키', nav: true, sub: 'key-phone' },
+          { label: 'NFC 카드 키', nav: true, sub: 'key-nfc' },
+          { label: '디지털 키 정보', nav: true, sub: 'key-info' } ] },
+        { name: '편의', rows: [
+          ['후석 승객 알림', ''],
+          { label: '서비스 시기 알림', nav: true, sub: 'conv-service' },
+          ['휴대기기용 무선 충전 시스템', ''] ] }
       ]
     },
     voice: {
-      title: '음성인식', host: 'settings-voice', hostLabel: '순정 음성인식 설정 열기',
+      title: '음성인식', host: 'settings-voice', hostLabel: '순정 음성인식 설정 열기', fallback: 'settings-voice',
       groups: [
-        { name: '안내 방식', art: 'mic', rows: [['안내 방식', '']] },
-        { name: '안내 속도', art: 'mic', rows: [['안내 속도', '']] },
-        { name: '카카오 프렌즈', art: 'mic', rows: [['카카오 프렌즈', '']] },
-        { name: '후석 음성인식', art: 'micLock', rows: [['후석 음성인식', '']] }
+        { name: '호출어', art: 'mic', rows: [['호출어', 'vrWakeup']] },
+        { name: '안내 중 말하기', art: 'mic', rows: [['안내 중 말하기(끼어들기)', 'vrBargein']] },
+        { name: '음성 변경', art: 'mic', rows: [['음성 변경', 'voiceType']] },
+        { name: '카카오 프렌즈', art: 'mic', rows: [['카카오 프렌즈 음성', 'kakaoVoice']] },
+        { name: '후석 음성인식 잠금', art: 'micLock', rows: [['후석 음성인식 잠금', 'rearVoiceLock']] }
       ]
     },
     buttons: {
-      title: '버튼', host: 'settings-buttons', hostLabel: '순정 버튼 설정 열기',
+      title: '버튼', host: 'settings-buttons', hostLabel: '순정 버튼 설정 열기', fallback: 'settings-buttons',
       groups: [
         { name: '사용자 버튼 ☆ (내비게이션)', art: 'btnNavi', lines: ['사용자 버튼 ☆', '(내비게이션)'],
           desc: '이 버튼으로 실행할 기능을 선택하십시오. (내비게이션)',
-          choices: ['경로 취소', '내 차 위치 공유', '날씨', '라디오'] },
+          choices: [
+            { label: '폰 프로젝션', current: true }, '프라이버시 모드', '하이브리드', '핸즈프리 기기 연결 변경', '홈',
+            '화면 켜기/끄기', '후석 취침 모드', 'DMB', 'Kia Connect', 'MAP', 'Radio/Media On/Off', '없음' ] },
         { name: '사용자 버튼 ★ (핸들)', art: 'btnHandle', desc: '이 버튼으로 실행할 기능을 선택하십시오. (핸들)',
-          choices: ['경로 취소', '내 차 위치 공유', '날씨', '라디오'] },
-        { name: 'MODE 버튼', art: 'btnMode', desc: '핸들 [MODE] 버튼으로 재생할 미디어를 자유롭게 선택할 수 있습니다.',
-          choices: ['라디오', '미디어', '내비게이션'] },
-        { name: '[∧]/[∨] 버튼 (핸들)', art: 'btnUpDown', desc: '라디오 청취 중 핸들의 [∧]/[∨] 버튼으로 실행할 기능을 선택하십시오.',
-          rows: [['[∧]/[∨] 버튼', 'buttonSeek']] },
-        { name: 'VOL/TUNE 노브', art: 'btnVolTune', desc: 'VOL 노브에 적용된 기능을 변경합니다. 또는 VOL 노브와 TUNE 노브 기능의 위치를 서로 바꿉니다.',
-          rows: [['VOL/TUNE 노브', 'tuneKnob']] }
-      ]
-    },
-    cluster: {
-      title: '클러스터/HUD', host: 'settings-cluster', hostLabel: '순정 클러스터 설정 열기', fallback: 'settings-cluster',
-      groups: [
-        { name: '클러스터', rows: [
-          { label: '클러스터 테마 선택', nav: true, sub: 'cluster-theme' },
-          { label: '표시 정보', nav: true, sub: 'cluster-info' },
-          { label: '클러스터 음성 안내 음량', nav: true, sub: 'cluster-voice' } ],
-          switches: [['웰컴 사운드', '클러스터 화면이 켜지거나 꺼질 때 사운드를 출력합니다.']] },
-        { name: 'HUD', rows: [
-          { label: 'HUD 사용', nav: true }, { label: '디스플레이 모드', nav: true },
-          { label: '영상 조정', nav: true, sub: 'hud-video' },
-          { label: '표시 정보', nav: true, sub: 'hud-info' } ] }
+          choices: ['DMB', 'Kia Connect', { label: 'MAP', current: true }, 'Radio/Media On/Off', '없음'] },
+        { name: 'MODE 버튼', art: 'btnMode', desc: 'MODE 버튼을 눌러 재생할 미디어를 선택합니다. 재생 가능한 미디어에 한하여 동작합니다.',
+          choices: ['블루투스 오디오', '지니 뮤직', '멜론', '폰 프로젝션', { label: '자연의 소리', current: true },
+            'USB 음악', 'USB 비디오', 'FM', 'AM', 'DMB'] },
+        { name: '[∧]/[∨] 버튼 (핸들)', art: 'btnUpDown',
+          desc: '라디오 청취 중 핸들의 [∧]/[∨] 버튼으로 실행할 기능을 선택하십시오.',
+          rows: [['[∧]/[∨] 버튼', 'buttonSeek']],
+          choices: [{ label: '프리셋 채널 변경', current: true }, '방송 탐색 / 주파수 이동'] },
+        { name: '후석 잠금', art: 'btnRearLock', desc: '후석 컨트롤러 잠금을 설정합니다.',
+          rows: [['후석 잠금', '']] },
+        { name: 'VOL/TUNE 노브', art: 'btnVolTune',
+          desc: 'VOL 노브에 적용된 기능을 변경합니다. 또는 VOL 노브와 TUNE 노브 기능의 위치를 서로 바꿉니다.',
+          rows: [['VOL/TUNE 노브 위치 바꾸기', 'volTuneSwap'], ['TUNE 노브 기능', 'tuneKnobFunction']],
+          choices: ['좌측', '우측', '음량/전원', '미디어 탐색', '지도 확대/축소'] }
       ]
     }
   };
@@ -3819,18 +4120,24 @@ var stockSub = '';
     var rows = (showSub ? sub.rows : (group.rows || [])).map(function (row) {
       return stockRowHtml(row, screen.fallback);
     }).join('');
-    var choices = (group.choices || []).map(function (label) {
-      return '<div class="detail-settings-row stock-choice"><span class="sl-radio-left">' +
-        '<span class="radio-circle"></span><span>' + escapeText(label) + '</span></span></div>';
+    var choices = (group.choices || []).map(function (item) {
+      var obj = typeof item === 'string' ? { label: item } : item;
+      var current = obj.current === true;
+      return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
+        '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
+        '</span></span>' + (current ? '<span class="stock-choice-mark">ccNC</span>' : '') + '</div>';
     }).join('');
     var switches = (group.switches || []).map(function (item) {
+      var key = item[2];
+      var value = key ? '<output data-system-value="' + key + '"></output>' :
+        '<output class="stock-value-wait">순정 연동 대기</output>';
       return '<div class="detail-settings-row"><span class="sl-switch-text"><span>' + escapeText(item[0]) + '</span>' +
-        '<small>' + escapeText(item[1]) + '</small></span><output>순정 연동 대기</output></div>';
+        '<small>' + escapeText(item[1]) + '</small></span>' + value + '</div>';
     }).join('');
     // 본문: 설명이 있으면 맨 위. 본문 제목(h2)은 설명서에 없어 넣지 않는다.
     var main = ((showSub ? sub.desc : group.desc) ?
       '<p class="sl-desc">' + escapeText((showSub ? sub.desc : group.desc)) + '</p>' : '') +
-      rows + choices + switches +
+      rows + choices + switches + (screen.extra || '') +
       '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="' + screen.host + '">' + escapeText(screen.hostLabel) + '</button>' +
       '</div>' + stockWriteSwitch();
@@ -3904,56 +4211,66 @@ var stockSub = '';
    * 항목과 값은 docs/설정-연동표.md 1절(5W 에 있는 것만) 기준. 단계 값은 숫자로 보여 준다.
    */
   var SOUND_SCREENS = [
-    ['premium', '고급 음향', '고급 음향 시스템을 제어합니다.', 'soundSpeaker',
-      [['차속 연동 음량', 'soundSdvc'], ['오디오 음량 자동 줄이기', 'soundAutoVolume'],
-       ['능동 사운드 디자인', 'soundAsd'], ['파워 트레블', 'soundPowerTreble'],
-       ['음장 효과', 'soundEqMode']]],
-    ['balance', '전후/좌우', '좌석 위치에 맞춰 소리를 조절할 수 있습니다. 전후/좌우 버튼으로 상세 조정이 가능합니다.', 'soundCabin',
-      [['앞뒤 소리 배분', 'soundFade'], ['좌우 소리 배분', 'soundBalance']]],
-    ['tone', '고음/중음/저음', '고음, 중음, 저음 값을 설정합니다.', 'soundTone',
-      [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass']]],
-    ['guidance', '안내음', '안내음과 음성 안내를 설정합니다.', 'soundSpeaker',
-      [['안내 음량', 'soundVolume'], ['음성 변경', ''], ['내비 안내 우선', 'soundPriority'],
-       ['통화 중 내비 안내', 'soundNaviDuringCall']]],
-    ['beep', '화면 터치음', '화면 터치음 설정을 변경합니다.', 'soundSpeaker',
-      [['화면 터치음', 'soundBeepMode']]],
-    ['surround', '서라운드', '서라운드 효과를 설정합니다.', 'soundSpeaker',
-      [['서라운드', 'soundSurround']]],
-    ['rear', '후석 취침 모드', '후석 취침 모드를 설정합니다.', 'soundRear',
-      [['후석 취침 모드', 'soundRearSleep']]],
-    ['radio', '라디오 음질', '라디오 음질을 설정합니다.', 'soundRadio',
-      [['라디오 노이즈 제어', '']]],
-    ['driver', '운전자 보조', '운전자 보조 경고 설정을 변경합니다.', 'soundShield',
-      [['경고 음량', ''], ['주행·주차 안전 우선', 'soundReverseDim'], ['후진 시 음량 줄임', 'soundReverseDim']]],
-    ['devices', '연결 기기', '연결된 기기의 음량을 설정합니다.', 'phone',
-      [['Android Auto 음량', ''], ['Apple CarPlay 음량', '']]],
-    ['volume', '미디어 음량', '미디어 소리의 음량을 이 화면에서 조절합니다.', 'soundSpeaker', []]
+    { id: 'premium', name: '고급 음향', desc: '고급 음향 시스템을 제어합니다.', art: 'soundSpeaker',
+      rows: [['Meridian Horizon 커스텀', ''], ['Meridian Intelli-Q', ''],
+        { label: 'Meridian Intelli-Q · 강하게', nav: true, sub: 'sound-advanced' },
+        ['오디오 음량 자동 줄이기', 'soundAutoVolume']] },
+    { id: 'balance', name: '전후/좌우', desc: '좌석 위치에 맞춰 소리를 조절할 수 있습니다. 전후, 좌우 버튼으로 상세 조정이 가능합니다.',
+      art: 'soundCabin',
+      rows: [['전후 (전=후)', 'soundFade'], ['좌우 (좌=우)', 'soundBalance'],
+        ['사운드 위치 좌석', 'soundPositionSeat'], ['사운드 위치 모드', 'soundPositionMode']] },
+    { id: 'tone', name: '고음/중음/저음', desc: '고음, 중음, 저음 값을 설정합니다.', art: 'soundTone',
+      rows: [['고음', 'soundTreble'], ['중음', 'soundMiddle'], ['저음', 'soundBass'],
+        { label: '초기값', nav: true, sub: 'sound-tone-init' }] },
+    { id: 'guidance', name: '안내음', desc: '상황별 안내음 및 음성 유형을 설정합니다.', art: 'soundSpeaker',
+      rows: [{ label: '음성 변경', nav: true, sub: 'sound-voicechange' },
+        ['안내 음량', 'soundVolume'], ['내비게이션 안내 일시 정지', 'navGuideMute'],
+        ['통화 중 내비게이션 안내', 'soundNaviDuringCall'], ['내비게이션 안내 우선', 'soundPriority'],
+        ['웰컴 사운드', 'welcomeSound']] },
+    { id: 'radio', name: '라디오 음질', desc: '라디오 노이즈 조절 방식을 설정합니다.', art: 'soundRadio',
+      rows: [{ label: '라디오 음질', nav: true, sub: 'sound-radio' }] },
+    { id: 'driver', name: '운전자 보조', desc: '운전자 보조 시스템의 경고 방식을 설정합니다.', art: 'soundShield',
+      choices: ['경고 음량', '핸들 진동 경고', '주행 안전 우선', '주차 안전 우선'] },
+    { id: 'devices', name: '연결 기기', desc: '연결된 기기의 음량을 설정합니다.', art: 'phone',
+      rows: [{ label: '연결 기기', nav: true, sub: 'sound-devices' }] },
+    { id: 'volume', name: '미디어 음량', desc: '미디어 소리의 음량을 이 화면에서 조절합니다.', art: 'soundSpeaker',
+      rows: [] }
   ];
 
   function renderSoundControls(pane) {
     var selected = SOUND_SCREENS[0];
-    SOUND_SCREENS.forEach(function (item) { if (item[0] === soundSection) selected = item; });
+    SOUND_SCREENS.forEach(function (item) { if (item.id === soundSection) selected = item; });
     var nav = '';
     SOUND_SCREENS.forEach(function (item) {
-      nav += '<button type="button" class="sl-tab" data-sound-section="' + item[0] + '" aria-selected="' +
-        (item[0] === soundSection) + '">' + escapeText(item[1]) + '</button>';
+      nav += '<button type="button" class="sl-tab" data-sound-section="' + item.id + '" aria-selected="' +
+        (item.id === soundSection) + '">' + escapeText(item.name) + '</button>';
     });
-    var main = '<p class="sl-desc">' + escapeText(selected[2]) + '</p>';
-    if (selected[0] === 'volume') {
+    var sub = STOCK_SETTING_SUBS[stockSub];
+    var showSub = !!(sub && sub.parent === selected.name);
+    var main = '<p class="sl-desc">' + escapeText(showSub ? sub.desc : selected.desc) + '</p>';
+    if (selected.id === 'volume') {
       main += '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
         '<output id="theme-volume"></output><input id="theme-volume-range" aria-label="미디어 음량" type="range" min="0" value="0">' +
         '<button type="button" class="theme-control sound-step" data-host="volume-down" aria-label="음량 줄이기">−</button>' +
         '<button type="button" class="theme-control sound-step" data-host="volume-up" aria-label="음량 높이기">+</button>' +
         '<button type="button" class="theme-control" id="theme-mute" data-host="volume-mute">음소거</button></section>';
     } else {
-      main += selected[4].map(function (row) {
-        var value = row[1] ? '<output data-system-value="' + row[1] + '"></output>' : '<output>순정 연동 대기</output>';
-        return '<div class="detail-settings-row"><span>' + escapeText(row[0]) + '</span>' + value + '</div>';
+      var rowList = showSub ? (sub.rows || []) : (selected.rows || []);
+      main += rowList.map(function (row) {
+        return stockRowHtml(row, 'settings-sound');
+      }).join('');
+      var choiceList = showSub ? (sub.choices || []) : (selected.choices || []);
+      main += choiceList.map(function (item) {
+        var obj = typeof item === 'string' ? { label: item } : item;
+        var current = obj.current === true;
+        return '<div class="detail-settings-row stock-choice' + (current ? ' stock-choice-current' : '') +
+          '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + escapeText(obj.label) +
+          '</span></span>' + (current ? '<span class="stock-choice-mark">ccNC</span>' : '') + '</div>';
       }).join('');
     }
     main += '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>' + stockWriteSwitch();
-    detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected[3]), ' stock-settings-layout');
+    detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected.art), ' stock-settings-layout');
     var slider = pane.querySelector('input');
     if (slider) {
       slider.oninput = function () {
@@ -3965,7 +4282,6 @@ var stockSub = '';
     }
     updateControlLabels();
   }
-
   function updateControlLabels() {
     var volume = document.getElementById('theme-volume');
     var brightness = document.getElementById('theme-brightness');
@@ -5615,6 +5931,10 @@ var stockSub = '';
     } else if (button.hasAttribute('data-display')) {
       displaySection = button.getAttribute('data-display');
       renderSettingsControls();
+    } else if (button.hasAttribute('data-general-section')) {
+      generalSection = button.getAttribute('data-general-section');
+      renderSettingsControls();
+      document.querySelector('[data-general-section="' + generalSection + '"]').focus();
     } else if (button.hasAttribute('data-sound-section')) {
       soundSection = button.getAttribute('data-sound-section');
       renderSettingsControls();
