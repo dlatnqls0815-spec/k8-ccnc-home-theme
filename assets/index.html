@@ -1689,6 +1689,28 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .screenlayout-stage .sl-desc { margin-left: 2.32vw; margin-top: .79vw; }
 .screenlayout-stage .sl-check-row, .screenlayout-stage .sl-radio-row, .screenlayout-stage .sl-row-link { min-height: 6.45vw; padding-left: 2.87vw; padding-right: 1.6vw; }
 .screenlayout-stage .check-box { width: 2.24vw; height: 2.24vw; }
+/* 0.4.59 화면구성 하위 화면(기아 D-settings_theme_standbyscreen / selectacluster.png) 대조. 기준 1920×720 환산.
+   설명문 글자 576, 라디오 원 575~615·글자 656, 기어 1330~1362,
+   클러스터 내용 시작 556, 제목 558~730(y221), 세그먼트 바 556~1082(y327,h60)·556~1249(y556,h60). */
+.screenlayout-stage .sl-radio-row { padding-left: 3.5vw; }
+.screenlayout-stage .sl-radio-left { gap: 2.14vw; }
+.screenlayout-stage .sl-desc + .standby-option { margin-top: .31vw; }
+.screenlayout-stage .standby-option > [data-standby-options] { padding-right: 2.03vw; }
+.screenlayout-stage .standby-option > [data-standby-options] svg { width: 2.05vw; height: 2.05vw; fill: none; stroke: #88939e; stroke-width: 1.6; }
+.screenlayout-stage .sl-cluster-block { margin-left: 2.55vw; }
+/* 디지털 액자(기아 D-settings_theme_digitalpicture.png): 첫 목록 줄 글자 y226(설명문 아래 79) */
+.screenlayout-stage .sl-frame-block { margin-top: .68vw; }
+.screenlayout-stage .sl-cluster-block strong { display: block; font-size: 1.72vw !important; }
+.screenlayout-stage .sl-cluster-block p { font-size: 1.46vw !important; }
+.screenlayout-stage .sl-cluster-gauge { margin-top: 2.09vw !important; }
+.screenlayout-stage .sl-cluster-gauge p { margin-top: .28vw !important; }
+.screenlayout-stage .sl-cluster-graphic { margin-top: 2.81vw !important; }
+.screenlayout-stage .sl-cluster-graphic p { margin-top: .34vw !important; }
+.screenlayout-stage .sl-cluster-block .sl-seg-group { width: auto; max-width: none; height: 3.13vw;
+  margin-top: 1.29vw; border-radius: 1.6vw; }
+.screenlayout-stage .sl-cluster-block .sl-seg-btn { flex: 0 0 auto; width: 13.7vw; padding: 0; line-height: 3.13vw; font-size: 1.25vw; }
+.screenlayout-stage .sl-cluster-graphic .sl-seg-btn { width: 11.22vw; }
+.screenlayout-stage .sl-cluster-graphic .sl-seg-btn[aria-pressed="true"] { width: 13.7vw; }
 </style>
 </head>
 <body>
@@ -3653,8 +3675,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
     if (state.slTab === 'frame') {
       panel.innerHTML =
         '<p class="sl-desc">대기 화면과 분할 화면에 선택한 이미지가 표시됩니다.</p>' +
+        '<div class="sl-frame-block">' +
         '<button type="button" class="sl-row-link" data-frame-act="standby"><span>대기 화면 이미지</span><span class="sl-chevron" aria-hidden="true"><svg viewBox="0 0 12 24"><path d="m2 3 8 9-8 9"/></svg></span></button>' +
-        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span class="sl-chevron" aria-hidden="true"><svg viewBox="0 0 12 24"><path d="m2 3 8 9-8 9"/></svg></span></button>';
+        '<button type="button" class="sl-row-link" data-frame-act="split"><span>분할 화면 이미지</span><span class="sl-chevron" aria-hidden="true"><svg viewBox="0 0 12 24"><path d="m2 3 8 9-8 9"/></svg></span></button></div>';
       Array.prototype.forEach.call(panel.querySelectorAll('[data-frame-act]'), function (b) {
         b.addEventListener('click', function () {
           frameTarget = b.getAttribute('data-frame-act');
@@ -3666,18 +3689,18 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
       panel.innerHTML =
         '<p class="sl-desc">선택된 테마로 표시합니다.</p>' +
         '<div class="detail-settings-row" data-system-row="clusterTheme" hidden><span>순정 저장 테마 번호</span><output data-system-value="clusterTheme"></output></div>' +
-        '<div style="margin-top:8px">' +
+        '<div class="sl-cluster-block sl-cluster-gauge">' +
           '<strong style="font-size:clamp(15px,1.3vw,22px)">게이지 스타일</strong>' +
           '<p style="color:#8b94a0;font-size:14px;margin-top:3px">게이지의 스타일을 선택합니다.</p>' +
-          '<div class="sl-seg-group">' +
+          '<div class="sl-seg-group sl-seg-gauge">' +
             '<button type="button" class="sl-seg-btn" data-gauge="Classic" aria-pressed="' + (state.gaugeStyle === 'Classic') + '">Classic</button>' +
             '<button type="button" class="sl-seg-btn" data-gauge="Simple" aria-pressed="' + (state.gaugeStyle === 'Simple') + '">Simple</button>' +
           '</div>' +
         '</div>' +
-        '<div style="margin-top:14px">' +
+        '<div class="sl-cluster-block sl-cluster-graphic">' +
           '<strong style="font-size:clamp(15px,1.3vw,22px)">그래픽 스타일</strong>' +
           '<p style="color:#8b94a0;font-size:14px;margin-top:3px">홈 화면의 그래픽 스타일을 선택합니다.</p>' +
-          '<div class="sl-seg-group">' +
+          '<div class="sl-seg-group sl-seg-graphic">' +
             '<button type="button" class="sl-seg-btn" data-gstyle="A" aria-pressed="' + (state.graphicStyle === 'A') + '">Style A</button>' +
             '<button type="button" class="sl-seg-btn" data-gstyle="B" aria-pressed="' + (state.graphicStyle === 'B') + '">Style B</button>' +
             '<button type="button" class="sl-seg-btn" data-gstyle="C" aria-pressed="' + (state.graphicStyle === 'C') + '">Style C</button>' +
@@ -3708,7 +3731,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
         html +=
           '<div class="standby-option"><button type="button" class="sl-radio-row" data-sopt="' + o.id + '" aria-checked="' +
             (state.standbyMode === o.id) + '"><span class="sl-radio-left"><span class="radio-circle"></span><span>' + o.label + '</span></span></button>' +
-            (o.gear ? '<button type="button" data-standby-options="' + o.id + '" aria-label="' + o.label + ' 설정">⚙</button>' : '') +
+            (o.gear ? '<button type="button" data-standby-options="' + o.id + '" aria-label="' + o.label + ' 설정">' +
+              '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/>' +
+              '<path d="M12 2.4v2.8M12 18.8v2.8M2.4 12h2.8M18.8 12h2.8M4.9 4.9l2 2M17.1 17.1l2 2M19.1 4.9l-2 2M6.9 17.1l-2 2"/></svg></button>' : '') +
           '</div>';
       });
       if (standbyClockOptions) html += '<div class="sl-seg-group standby-clock-style" aria-label="대기 시계 종류">' +
