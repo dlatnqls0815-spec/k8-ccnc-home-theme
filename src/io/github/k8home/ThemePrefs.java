@@ -12,6 +12,7 @@ final class ThemePrefs {
     static final String AUTO_START = "auto-start";
     private static final String NAV_BAR = "stock-nav-bar-preview";
     private static final String CORNERS = "stock-corner-buttons";
+    private static final String NAVI_SKIN = "stock-navi-ccnc-buttons";
 
     private ThemePrefs() { }
 
@@ -46,4 +47,12 @@ final class ThemePrefs {
         of(context).edit().putBoolean(CORNERS, value).commit();
     }
 
+    /** Cover the stock navigation's left buttons with ccNC-styled, touch-through skins (needs the bar). */
+    static boolean naviSkin(Context context) {
+        return of(context).getBoolean(NAVI_SKIN, false);
+    }
+
+    static void setNaviSkin(Context context, boolean value) {
+        of(context).edit().putBoolean(NAVI_SKIN, value).apply();
+    }
 }

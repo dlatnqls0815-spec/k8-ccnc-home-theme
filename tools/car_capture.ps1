@@ -1,7 +1,7 @@
 ﻿# K8 5W 실차 수집 (PC PowerShell에서 실행, 묻지 않고 끝까지 진행).
 #   1) 테마 설치 확인(버전, HOME 등록)
 #   2) 로그·상태·화면·순정 앱/프레임워크 파일을 private/vehicle/capture-<시각>/ 로 모음
-# 차량에는 읽기만 한다. 예외: 테마 화면 캡처를 위해 테마를 열고(/sdcard 임시 PNG는 지움).
+# 차량에는 읽기만 한다. 예외: 화면 캡처를 위해 테마와 순정 내비를 열고(/sdcard 임시 PNG는 지움).
 # setprop, 설정 변경, 방송 송신, 모듈 조작은 하지 않는다.
 # 주소: -Serial ip:5555 / 환경변수 K8_ADDR / private/k8-addr / 연결된 기기 하나 자동 선택.
 param(
@@ -59,7 +59,9 @@ Save '28-settings.txt' 'settings list system; echo ---; settings list global; ec
 $shots = @(
   @('30-theme-home', 'am start -W -n io.github.k8home/.HomeActivity'),
   @('31-theme-apps', 'am start -W -n io.github.k8home/.HomeActivity --ez io.github.k8home.extra.OPEN_APPS true'),
-  @('32-theme-media', 'am start -W -n io.github.k8home/.HomeActivity --ez io.github.k8home.extra.OPEN_MEDIA true')
+  @('32-theme-media', 'am start -W -n io.github.k8home/.HomeActivity --ez io.github.k8home.extra.OPEN_MEDIA true'),
+  # 순정 내비 지도 화면: 왼쪽 버튼 줄 덮개(naviskin.html) 위치를 실제 픽셀로 맞추는 기준
+  @('33-stock-navi', 'am start -W -n com.mnsoft.navi/.NaviApp')
 )
 foreach ($s in $shots) {
   & $adb -s $Serial shell $s[1] | Out-Null
@@ -68,7 +70,7 @@ foreach ($s in $shots) {
   & $adb -s $Serial pull /sdcard/k8cap.png (Join-Path $out ($s[0] + '.png')) 2>&1 | Out-Null
 }
 & $adb -s $Serial shell 'rm /sdcard/k8cap.png' | Out-Null
-Say '테마 화면 캡처 3장'
+Say '화면 캡처 4장 (테마 3, 순정 내비 1)'
 
 # 4) 로그: 테마를 연 뒤 잠시 모은 다음 전체 로그 덤프
 if ($LiveSeconds -gt 0) { Say "로그 $LiveSeconds 초 대기 (이 동안 미디어·내비·전화를 써 보면 값이 더 들어옴)"; Start-Sleep -Seconds $LiveSeconds }

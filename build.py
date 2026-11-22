@@ -58,6 +58,7 @@ def build(sdk, jdk, output):
             apk.write(ROOT / "assets" / "index.html", "assets/index.html")
             apk.write(ROOT / "assets" / "navbar.html", "assets/navbar.html")
             apk.write(ROOT / "assets" / "corners.html", "assets/corners.html")
+            apk.write(ROOT / "assets" / "naviskin.html", "assets/naviskin.html")
             apk.write(ROOT / "assets" / "playback_panel.html", "assets/playback_panel.html")
             apk.write(ROOT / "assets" / "route_panel.html", "assets/route_panel.html")
             for icon in sorted((ROOT / "assets" / "icons").glob("*.png")):

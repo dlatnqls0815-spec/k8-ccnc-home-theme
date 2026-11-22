@@ -2150,7 +2150,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   var searchRecent = [];
   var profileMode = 'detail';
   /* Switches that the native side owns: boot auto start and the bar over the stock navigation. */
-  var flags = { autoStart:false, navBar:false, corners:false };
+  var flags = { autoStart:false, navBar:false, corners:false, naviSkin:false };
   var profileSelected = 0;
   var editingProfileName = false;
   var standbyClockOptions = false;
@@ -3154,6 +3154,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
         '<output id="theme-auto-start">' + (flags.autoStart ? '켜짐' : '꺼짐') + '</output></button>' +
         '<button type="button" class="detail-settings-row" data-host="nav-bar-toggle"><span>순정 내비에서 ccNC 하단바 시험</span>' +
         '<output id="theme-nav-bar">' + (flags.navBar ? '켜짐' : '꺼짐') + '</output></button>' +
+        '<button type="button" class="detail-settings-row" data-host="navi-skin-toggle"><span>순정 내비 왼쪽 버튼 ccNC 모양 시험</span>' +
+        '<output id="theme-navi-skin">' + (flags.naviSkin ? '켜짐' : '꺼짐') + '</output></button>' +
         '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
         '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
         external('home-settings', '차량 홈 화면 설정', 'detail-settings-row'),
@@ -4289,8 +4291,10 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
       if (state.page === page) return;
       navigateTo(page);
     },
-    systemFlagsChanged: function (autoStart, navBar, corners) {
-      flags = { autoStart:autoStart === true, navBar:navBar === true, corners:corners === true };
+    systemFlagsChanged: function (autoStart, navBar, corners, naviSkin) {
+      flags = { autoStart:autoStart === true, navBar:navBar === true, corners:corners === true, naviSkin:naviSkin === true };
+      var skinOut = document.getElementById('theme-navi-skin');
+      if (skinOut) skinOut.textContent = flags.naviSkin ? '켜짐' : '꺼짐';
       var cornerOut = document.getElementById('theme-corners');
       if (cornerOut) cornerOut.textContent = flags.corners ? '켜짐' : '꺼짐';
       var auto = document.getElementById('theme-auto-start');

@@ -25,3 +25,7 @@
 1. `tools/car_capture.ps1`을 다시 돌려 `/system/framework`를 끝까지 받기 → `MobisBuildFeature` 값으로 흰 테마 가능 여부 확인.
 2. 길안내 중 내비 화면 캡처(지도·메뉴·검색) → 덮개 위치 실측.
 3. 덮개 시험판은 1·2 결과를 보고 만든다.
+
+## 0.4.53에서 만든 것
+
+덮개 시험판(`assets/naviskin.html`). 자세한 내용은 `AI_HANDOFF.md` 0.4.53.

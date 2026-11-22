@@ -1,5 +1,14 @@
 # K8 Gen5W 홈
 
+## 0.4.53 순정 내비 왼쪽 버튼 ccNC 덮개 시험 (2026-11-22, Claude)
+
+- `assets/naviskin.html` + `NavBarService.syncSkin()`: 하단바 시험 중, 순정 내비 왼쪽 버튼 줄 위에 ccNC 모양 덮개 창(`K8HomeNaviSkin`, 140×632, `FLAG_NOT_TOUCHABLE`·투명)을 띄운다. 누르면 아래 순정 버튼이 그대로 동작.
+- 덮는 것: 홈(0번 칸)·Nav 음성(2)·확대(3)·축소(5). 나침반(1)·Auto 축척(4)은 값(방향·축척)을 알 수 없어 순정 그대로.
+- ccNC 모양(설명서 `D-map_guidance.png` 실측): 102×102, 모서리 3px, 낮 #e5e1dc/아이콘 #646462, "Nav" 24px 굵게, 스피커 40×31. 밤은 #2f3033/#dcdcdc(설명서에 밤 그림 없음, 추정).
+- 상태: `DAYNIGHT_CHANGED daynight_status` true = 밤(내비 내부 uimode 2), `VIT_NOTI_NAVI_MUTE_STATE Value` true = 음소거(내비 `message/c.e(Context,int)` 해석).
+- 언제 보이나: 설정 "순정 내비 왼쪽 버튼 ccNC 모양 시험"(기본 꺼짐) + 하단바 붙어 있음 + `IInterfaceService` 5번(`isMapView_State`)이 참. 5번은 `com.mnsoft.navi.g` 메서드 순서와 `az.onTransact`의 vtable 번호로 맞춤(1/2/3/16/22 기존 값과 일치 확인). 바뀔 때 `K8HomeNavBar` 로그 남김.
+- **위치는 차 사진 추정값**(맨 위 6px, 간격 107px, 순정 버튼보다 2px 크게). 실차 화면이 PC에 없어서다. `tools/car_capture.ps1`가 이제 `33-stock-navi.png`(순정 내비 화면)도 찍는다 → 그 그림으로 `naviskin.html`의 `SLOT_TOP`/`SLOT_PITCH`만 고치면 된다.
+
 ## 0.4.52 내비 위 하단바 깃발·목적지 (2026-11-22, Claude)
 
 - 설명서와 같은 글(`285 km`, `3:39 PM`, `서초구 양재대로12길`)로 겹쳐 잼: 깃발 31×30 연회색 #d6d6d6(976~1007, 위 20), 목적지 25px(1032~1259, 글자 위 24). 우리 값은 1~2px 안으로 일치.
