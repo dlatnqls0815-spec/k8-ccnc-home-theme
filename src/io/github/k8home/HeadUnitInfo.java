@@ -57,6 +57,31 @@ final class HeadUnitInfo {
         return info;
     }
 
+    /**
+     * 차량 관련 시스템 속성(읽기 전용).
+     * 근거: 순정 차량 설정 앱 dex 문자열(docs/차량설정-연동조사.md 2절).
+     * 값의 뜻은 아직 확인되지 않았으므로 화면에는 "순정 값 N"으로 보여 준다.
+     */
+    static void vehicleProps(JSONObject info) {
+        try {
+            info.put("vehicleSettingShown", property("persist.sys.showVehicleSetting"));
+            info.put("driverAssistance", property("persist.sys.VSDriverAssistance"));
+            info.put("ambientLight", property("persist.sys.usmAmbientLight"));
+            info.put("moodLamp", property("persist.sys.usmMoodLamp"));
+            info.put("asdSetting", property("persist.sys.usmASDsetting"));
+            info.put("seatPositioning", property("persist.sys.seatPositioning"));
+            info.put("seatWheelHeat", property("persist.sys.seatWheelHeat"));
+            info.put("seatMemory", property("persist.sys.showSeatMemoryt"));
+            info.put("frontSeatShown", property("persist.sys.showSWRCFrontSeat"));
+            info.put("climateTunnel", property("persist.sys.climate.tunnelsect"));
+            info.put("climateOther", property("persist.sys.climate.othersect"));
+            info.put("climateRecMode", property("persist.sys.climate.recmodeplus"));
+            info.put("climateSupport", property("persist.sys.climate.support"));
+            info.put("smartImsOption", property("persist.sys.smartImsOption"));
+            info.put("performanceGauge", property("persist.sys.performancegauge"));
+        } catch (Exception ignored) { }
+    }
+
     static JSONObject savedVehicleSettings(Context context) {
         JSONObject info = new JSONObject();
         try {
@@ -74,6 +99,7 @@ final class HeadUnitInfo {
                 info.put(key, stock.get(key));
             }
             collectedSettings(context, info, user);
+            vehicleProps(info);
             preferStockTone(info, "soundTreble");
             preferStockTone(info, "soundMiddle");
             preferStockTone(info, "soundBass");
