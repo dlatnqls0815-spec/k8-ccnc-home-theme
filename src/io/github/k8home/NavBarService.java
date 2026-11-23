@@ -86,6 +86,7 @@ public final class NavBarService extends Service {
     private GuideButton guide;
     private WindowManager.LayoutParams rowParams, guideParams;
     private boolean guideExpanded, guideBusy;
+    private long guideQuietUntil;
     private boolean searchSuspended;
     private boolean cancelPending;
     private StockMedia media = StockMedia.EMPTY;
@@ -327,6 +328,11 @@ public final class NavBarService extends Service {
         @JavascriptInterface public void action(final String action) {
             handler.post(new Runnable() {
                 @Override public void run() {
+                    // 길안내 목록 버튼 탭 중에는 도우미의 탭이 하단바(미디어 칸)로 들어올 수 있다 → 무시(실차 2026-11-23).
+                    if (guideBusy || SystemClock.uptimeMillis() < guideQuietUntil) {
+                        Log.i(TAG, "ignored during guide tap: " + action);
+                        return;
+                    }
                     if (!sessionEnded && attached && mapInFront() && screenOn()) handle(action);
                 }
             });
@@ -607,11 +613,15 @@ public final class NavBarService extends Service {
         setRowTouchable(false);
         new Thread(new Runnable() {
             @Override public void run() {
+                // 하단바를 "터치 안 받음"으로 바꾼 것이 창에 적용되기 전에 도우미가 탭하면 탭이 하단바 미디어 칸으로 갔다
+                // (목록 접을 때 미디어 화면이 열림, 실차 2026-11-23). 적용될 때까지 잠깐 기다린다.
+                try { Thread.sleep(250); } catch (InterruptedException ignored) { }
                 final String reply = MediaKeys.toggleStockGuide();
                 handler.postDelayed(new Runnable() {
                     @Override public void run() {
                         setRowTouchable(true);
                         guideBusy = false;
+                        guideQuietUntil = SystemClock.uptimeMillis() + 400;
                         if ("ok".equals(reply)) {
                             guideExpanded = !guideExpanded;
                             syncGuide(route.snapshot().active);
