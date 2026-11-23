@@ -1,4 +1,22 @@
 # K8 Gen5W 홈
+## 0.5.0-test28~30 실차 원격 확인과 고침 (2026-11-23, Claude, 사용자 차 밖)
+
+`tools/car_visit.ps1` 로 설치하고 차 WebView 원격 디버깅(`tools/car_cdp.cjs`, `tools/car_screens.cjs`)으로 확인했다. 결과 `private/vehicle/visit-*`.
+
+- **설치 실패 고침**: NEMESIS 가 `package-version=0.5.0-test27` 을 거부(점으로 이은 숫자만). `build_nemesis.py` 가 `0.5.0.27` 처럼 숫자만 쓴다.
+- **도우미가 업데이트 뒤 죽음**: 앞 도우미가 `k8home.keys` 소켓을 쥔 채라 새 도우미가 바로 실패, NEMESIS 가 5번 만에 포기. `KeyHelper` 가 최대 60초 1초마다 다시 잡는다. test30 업데이트에서 살아 있음 확인.
+- **곡 넘기기가 안 되던 진짜 이유**: 테마가 앞에 있으면 차 키 분배기(ModeKeyDispatcher)가 키를 먼저 테마에 주고, WebView 가 "처리함"(isViewHandled=true)을 돌려줘 블루투스 플레이어가 무시했다.
+  실제 핸들 버튼도 같았을 것이다. `HomeActivity.dispatchKeyEvent` 가 166/167/91 을 받지 않게 했다 → 실차에서 곡이 넘어감(바람기억 → 이 밤이 지나면).
+- **순정 곡 팝업**: 순정 내비만 앞에 둔 채 다음 곡 → 팝업이 뜨고 약 0.15초 뒤 닫힘(`K8HomePopup track changed: stock popup cancel sent` 다음 RightSideOsd cancel). 순간 깜빡임은 남는다.
+  ccNC 오버레이 서개모 모듈(`hmg-seogaemo/watcher`)도 켜져 있어 함께 닫았을 수 있다.
+- **설정 칸 높이(차에서만)**: `#theme-settings-detail`(flex 항목) 안의 `height:100%` 가 Chrome 30 에서 안 풀려 칸 전체가 872px 로 늘어났다 → 설정 칸을 절대 위치로 부모에 붙임.
+  그러자 Chrome 30 의 세로 flex 가 항목을 줄여 겹침 → `.detail-settings-main > *` flex-shrink 0. PC 흉내(`chrome30()`)에 `:where(*){min-width:0;min-height:0}` 를 넣어 이 줄어듦도 흉내 낸다.
+- **하단바 단추 2px**: 차의 button 기본 margin 2px → `.bottom-bar button { margin: 0 }`.
+- **전후/좌우 값**: 앰프 전후·좌우도 0~20·가운데 10(차에서 10/10). 화면이 원시 값 10 을 "전 +10"으로 보이던 것을 `soundRaw.offset` 으로 빼서 고침 → 실차 "전=후 / 좌=우".
+- **확인 결과**: 설정·화면구성 등 11화면 하단바 규칙 ①②③ 실차 통과. 글꼴은 /system/fonts 의 NanumGothic 이 이름 없는 대체 글꼴로만 등록 → 테마도 이미 그 글꼴로 그려짐.
+- 남은 것: 실제 핸들 버튼, 길안내 목록 버튼·시간 칸(경로 필요), ‹ 버튼 순정 내비 하위 화면, 라디오 타일, 긴 제목 굵기, 사운드 쓰기 시험.
+- 버전 test30(code 91).
+
 ## 0.5.0-test27 설정 가운데 칸을 하단바 빈 가운데까지 (2026-11-23, Claude)
 
 사용자 요청(ccNC 전후/좌우 사진): 하단바 가운데는 비어 있으니 설정 값이 그 아래까지 나와야 한다.

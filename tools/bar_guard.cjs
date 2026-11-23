@@ -115,7 +115,8 @@ function measure(page, selectors) {
   }, selectors);
 }
 
-(async () => {
+module.exports = { TOP, BOTTOM, NAVBAR, EXTRA };
+if (require.main === module) (async () => {
   const update = process.argv.indexOf('--update') >= 0;
   const tmp = path.join(ASSETS, '__guard.html');
   const barTmp = path.join(ASSETS, '__guard_navbar.html');

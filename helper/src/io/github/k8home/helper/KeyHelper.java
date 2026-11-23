@@ -50,7 +50,18 @@ public final class KeyHelper {
 
     public static void main(String[] args) throws IOException {
         log("start");
-        LocalServerSocket server = new LocalServerSocket(SOCKET);
+        // 업데이트 때 앞 도우미가 아직 소켓을 쥐고 있으면 바로 실패해 NEMESIS 가 5번 만에 포기했다(실차 2026-11-23).
+        // 최대 60초 동안 1초마다 다시 잡는다.
+        LocalServerSocket server = null;
+        for (int tries = 0; server == null; tries++) {
+            try {
+                server = new LocalServerSocket(SOCKET);
+            } catch (IOException busy) {
+                if (tries >= 60) throw busy;
+                log("socket busy, retry " + (tries + 1));
+                try { Thread.sleep(1000); } catch (InterruptedException ignored) { }
+            }
+        }
         while (true) {
             LocalSocket client = server.accept();
             try {

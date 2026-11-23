@@ -1757,6 +1757,8 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .legacy .pager-tools > * { line-height: 1.3; }
 /* 차(Chrome 30)의 세로 flex 는 내용이 넘치면 자식을 0 까지 줄여 화면구성 설명이 첫 줄과 겹쳤다(실차 test18). */
 .legacy .sl-main > * { -webkit-flex-shrink: 0; flex-shrink: 0; }
+/* 차(Chrome 30)는 세로 flex 안에서 넘치는 항목을 줄여 겹치게 한다(min-height:auto 가 없다). 설정 가운데 칸도 막는다(실차 2026-11-23). */
+.stock-settings-layout .detail-settings-main > * { -webkit-flex-shrink: 0; flex-shrink: 0; }
 .legacy .pager-bar { display: inline-block; vertical-align: middle; -webkit-appearance: none; border: 0; min-height: 0; min-width: 0; font-size: 0; line-height: 0; }
 .legacy .pager-bar[hidden], .legacy .pager-bar[data-page="standby"] { display: none; }
 .clock small { margin-left: .68vw; }
@@ -2156,6 +2158,16 @@ button.detail-settings-row.switch-row .stock-row-note {
 .shell.under-bar .ccnc-pos-readout { position: relative; top: 7vw; }
 /* 내려 놓은 두 줄 아래로 다음 줄(순정 설정에서 변경 ›)이 밀려 겹치지 않게 한다. */
 .shell.under-bar .ccnc-pos-stage { margin-bottom: 4.8vw; }
+
+/* 차(Chrome 30)에서 #theme-settings-detail(flex 항목) 안의 height:100% 가 풀리지 않아 설정 칸 전체가 글 길이(872px)만큼
+   늘어났다(2026-11-23 실차 원격 디버깅). 부모 가장자리에 붙여 높이를 정한다. */
+#theme-settings-detail { position: relative; }
+.detail-settings-layout.stock-settings-layout { position: absolute; left: 0; right: 0; top: 6px; bottom: 14px; height: auto; }
+.shell.under-bar .detail-settings-layout.stock-settings-layout { bottom: 0; }
+/* 차의 button 기본 margin 2px 때문에 하단바 단추가 2px 안쪽으로 들어갔다(실차). PC 설계와 같게 0. */
+.bottom-bar button { margin: 0; }
+/* 왼쪽 메뉴는 위쪽 margin -0.52vw 로 올려 둔 만큼 아래 여백도 더해야 하단바 위(417)에서 끝난다. */
+.shell.under-bar .stock-settings-layout .sl-nav { margin-bottom: 69.33px; margin-bottom: 5.4158vw; }
 </style>
 </head>
 <body>
@@ -5305,8 +5317,11 @@ var stockSub = '';
       var posVal = function (v) {
         return typeof v === 'number' && !isNaN(v) && v >= -10 && v <= 10 ? Math.round(v) : null;
       };
-      var fadeVal = posVal(vehicleSettings.soundFade);
-      var balVal = posVal(vehicleSettings.soundBalance);
+      // 차에서 확인(2026-11-23): 앰프 전후·좌우도 0~20, 가운데 10(soundRaw.offset = 10). 단위를 모르면 찍지 않는다.
+      var ampRaw = vehicleSettings.soundRaw || {};
+      var ampOff = typeof ampRaw.offset === 'number' && ampRaw.offset >= 0 ? ampRaw.offset : null;
+      var fadeVal = ampOff === null ? null : posVal(typeof ampRaw.mFade === 'number' ? ampRaw.mFade - ampOff : null);
+      var balVal = ampOff === null ? null : posVal(typeof ampRaw.mBalance === 'number' ? ampRaw.mBalance - ampOff : null);
       var posKnown = fadeVal !== null && balVal !== null;
       var f = posKnown ? fadeVal : 0, b = posKnown ? balVal : 0;
       var focusLabel = function () {

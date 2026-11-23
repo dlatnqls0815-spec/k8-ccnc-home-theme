@@ -59,7 +59,10 @@ function chrome30(html) {
     css = css.replace(/\{([^{}]*)\}/g, (mm, body) => '{' + stripDecls(body) + '}');
     return a + css + b;
   });
-  return html.replace(/(\sstyle=")([^"]*)(")/g, (m, a, body, b) => a + stripDecls(body) + b);
+  html = html.replace(/(\sstyle=")([^"]*)(")/g, (m, a, body, b) => a + stripDecls(body) + b);
+  // Chrome 30 의 flex 항목은 min-width/min-height 가 auto 가 아니라 0 이라, 넘치면 줄어들어 겹친다(실차 2026-11-23).
+  // 우선순위 0 인 :where(*) 로 흉내 낸다(작성자가 직접 준 min-* 은 그대로 이긴다).
+  return html.replace(/<head([^>]*)>/i, (m, a) => '<head' + a + '><style>:where(*){min-width:0;min-height:0}</style>');
 }
 
 async function boxMap(page) {

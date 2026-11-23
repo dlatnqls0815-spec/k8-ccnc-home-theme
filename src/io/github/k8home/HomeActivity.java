@@ -1232,6 +1232,17 @@ public final class HomeActivity extends Activity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * 핸들 곡 넘기기·재생 키(166 이전, 167 다음, 91 재생/정지)는 테마가 받지 않는다.
+     * 차의 키 분배기는 앞 화면이 키를 "처리했다"고 하면 블루투스 플레이어로 넘기지 않는데, WebView 가 이 키를 처리한 것으로
+     * 돌려줘 테마가 앞에 있을 때 핸들·도우미 곡 넘기기가 모두 먹혔다(실차 2026-11-23 logcat: isViewHandled=true).
+     */
+    @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        int code = event.getKeyCode();
+        if (code == MediaKeys.WHEEL_PREVIOUS || code == MediaKeys.WHEEL_NEXT || code == MediaKeys.WHEEL_PLAY_PAUSE) return false;
+        return super.dispatchKeyEvent(event);
+    }
+
     @Override public void onBackPressed() {
         if (pageReady) web.evaluateJavascript("window.K8Home.back()", null);
         else finish();
