@@ -136,6 +136,14 @@ def compile_helper(jdk, d8_jar, android_jar):
     return data
 
 
+def numeric_version(text):
+    """NEMESIS 는 package-version 에 점으로 이은 숫자만 받는다(차에서 "0.5.0-test27" 거부, 2026-11-23).
+    0.5.0-test27 → 0.5.0.27 처럼 숫자만 남긴다."""
+    import re
+    parts = re.findall(r"\d+", text)
+    return ".".join(parts) if parts else "0"
+
+
 def build_home(out, apk, helper_dex):
     apk_path = "app/k8-home.apk"
     package_name = f"{HOME_PACKAGE_ID}-{HOME_PACKAGE_VERSION}.zip"
@@ -146,7 +154,7 @@ def build_home(out, apk, helper_dex):
         f"id={HOME_PACKAGE_ID}",
         "name=K8 ccNC Home Theme",
         "type=application,service",
-        f"package-version={HOME_PACKAGE_VERSION}",
+        f"package-version={numeric_version(HOME_PACKAGE_VERSION)}",
         "short-desc=K8 ccNC home with stock navigation",
         "os=any",
         "models=any",
