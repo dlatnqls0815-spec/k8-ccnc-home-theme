@@ -201,16 +201,16 @@ def wave(x0, y0, x1, y1, bulge):
     return 'M%s %sQ%s %s %s %s' % (f(x0), f(y0), f(cx), f((y0 + y1) / 2), f(x1), f(y1))
 
 
-# 스피커 + 청록 파문 (D-settings_sound_position.png / _guide.png / _warning.png 오른쪽 칸)
-cone = ('<g transform="rotate(-32 108 148)">'
-        '<ellipse cx="108" cy="148" rx="41" ry="45"/>'
-        '<ellipse cx="111" cy="145" rx="28" ry="34"/>'
-        '<ellipse cx="108" cy="158" rx="12" ry="15"/></g>'
-        '<path d="M79 143c-9 4-13 12-12 21 1 10 7 17 15 19"/>')
-waves = (path(wave(140, 68, 142, 175, 163), stroke=T, stroke_width='2.2') +
-         path(wave(140, 68, 142, 175, 187), stroke=T, stroke_width='2.2') +
-         path(wave(140, 68, 142, 175, 210), stroke=T, stroke_width='2.2'))
-A['soundSpeaker'] = g(cone, 1.6) + g(waves, 2.2, T)
+# 스피커 + 청록 동심원 파문 (D-settings_sound_position.png / _guide.png / _warning.png 오른쪽 칸)
+cone = ('<g transform="rotate(-30 112 146)">'
+        '<ellipse cx="116" cy="146" rx="34" ry="44" fill="#0b0d11"/>'
+        '<ellipse cx="114" cy="146" rx="24" ry="32"/>'
+        '<ellipse cx="108" cy="148" rx="10" ry="14"/>'
+        '<path d="M90 120c-14 6-20 14-20 26s6 20 20 26"/></g>')
+waves = (path(arc(118, 134, 48, -62, 30)) +
+         path(arc(118, 134, 65, -66, 34)) +
+         path(arc(118, 134, 82, -70, 38)))
+A['soundSpeaker'] = g(cone, 1.8) + g(waves, 2.4, T)
 
 # 안내음 (스피커 + 왼쪽 위 (i) 아이콘: D-settings_sound_guide.png)
 A['soundGuide'] = (A['soundSpeaker'] +
@@ -232,17 +232,28 @@ A['mediaAction'] = (A['soundSpeaker'] +
 # 차 실내 위치(전후/좌우 화면) -> 원본 ccNC는 soundSpeaker 사용, 호환용 유지
 A['soundCabin'] = A['soundSpeaker']
 
-# 고음/중음/저음 (3D 등각투영 믹서 보드: D-settings_sound_audio.png)
-board = rpoly([(48, 144), (138, 102), (212, 138), (122, 184)], 8)
-board_bot = 'M48 148v10l74 36 90-46v-10'
-slots = 'M82 134l58 29M106 122l58 29M130 110l58 29'
-def knob(cx, cy):
-    return ('<path d="M%s %sl14-7 12 6-14 7z" fill="#20252d" stroke="%s" stroke-width="1.3"/>'
-            '<path d="M%s %sv7l12 6v-7M%s %sv7l14-7v-7" fill="#14181e" stroke="%s" stroke-width="1.2"/>') % (
-        f(cx - 7), f(cy), G, f(cx - 7), f(cy), f(cx + 5), f(cy + 6), G)
-A['soundTone'] = (path(board, fill='#14171c', stroke=G, stroke_width='1.8') +
-                  g(board_bot, 1.8) + g(slots, 1.4, '#4b5563') +
-                  knob(104, 144) + knob(124, 130) + knob(158, 123))
+# 고음/중음/저음 (3D 등각투영 믹서 보드: D-settings_sound_audio.png 정밀 재현)
+m_top = [(34, 134), (146, 86), (222, 136), (110, 192)]
+m_bot = 'M34 139v12l76 48 112-56v-12'
+def iso_pt(u, v):
+    # u: 0..1 along (34,134)->(146,86), v: 0..1 along (34,134)->(110,192)
+    x = 34 + (146 - 34) * u + (110 - 34) * v
+    y = 134 + (86 - 134) * u + (192 - 134) * v
+    return (x, y)
+m_tracks = ''
+for u in (0.22, 0.48, 0.74):
+    p0 = iso_pt(u, 0.14); p1 = iso_pt(u, 0.86)
+    m_tracks += 'M%s %sL%s %s' % (f(p0[0]), f(p0[1]), f(p1[0]), f(p1[1]))
+def m_knob(u, v):
+    p0 = iso_pt(u - 0.08, v - 0.07); p1 = iso_pt(u + 0.08, v - 0.07)
+    p2 = iso_pt(u + 0.08, v + 0.07); p3 = iso_pt(u - 0.08, v + 0.07)
+    top_d = 'M%s %sL%s %sL%s %sL%s %sZ' % (f(p0[0]), f(p0[1]-7), f(p1[0]), f(p1[1]-7), f(p2[0]), f(p2[1]-7), f(p3[0]), f(p3[1]-7))
+    side_d = 'M%s %sV%sL%s %sL%s %sV%s' % (f(p0[0]), f(p0[1]-7), f(p0[1]), f(p3[0]), f(p3[1]), f(p2[0]), f(p2[1]), f(p2[1]-7))
+    return (path(side_d, fill='#12161c', stroke='#9bb0c1', stroke_width='1.3', stroke_linejoin='round') +
+            path(top_d, fill='#232a33', stroke='#b4c6d4', stroke_width='1.4', stroke_linejoin='round'))
+A['soundTone'] = (path(rpoly(m_top, 10), fill='#10141a', stroke='#9bb0c1', stroke_width='1.8') +
+                  g(path(m_bot), 1.8, '#9bb0c1') + g(path(m_tracks), 3.6, '#232932') + g(path(m_tracks), 1.2, '#4a5666') +
+                  m_knob(0.22, 0.30) + m_knob(0.22, 0.66) + m_knob(0.48, 0.56) + m_knob(0.74, 0.24) + m_knob(0.74, 0.52) + m_knob(0.74, 0.78))
 
 # 운전자 보조(방패) 호환용 -> soundWarning 별칭
 A['soundShield'] = A['soundWarning']
@@ -260,17 +271,30 @@ A['soundRadio'] = (g(path(lw), 1.8, '#d9623b') + g(path(rw1), 1.8, '#d9623b') + 
 A['soundRear'] = g('<path d="M64 200v-40a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v40z"/>'
                     '<path d="M64 176h128M80 200v22M180 200v22"/>', 1.8)
 
-# 일반 › 키보드 (3D 등각투영 키보드: D-settings_general_keyboard.png)
-kb_out = rpoly([(44, 146), (166, 98), (218, 126), (96, 180)], 8)
+# 일반 › 키보드 (3D 등각투영 키보드: D-settings_general_keyboard.png 정밀 재현)
+kb_pts = [(28, 144), (104, 106), (226, 152), (150, 198)]
+def kb_pt(u, v):
+    x = 28 + (226 - 104) * u + (104 - 28) * v
+    y = 144 + (152 - 106) * u + (106 - 144) * v
+    return (x, y)
 kb_keys = ''
-for r_ in range(3):
-    for c_ in range(6):
-        u = 0.14 + c_ * 0.135; v = 0.22 + r_ * 0.24
-        kx = 44 + (166 - 44) * u + (96 - 44) * v
-        ky = 146 + (98 - 146) * u + (180 - 146) * v
-        kb_keys += '<path d="M%s %sl11-4.5 6 3.5-11 4.5z"/>' % (f(kx), f(ky))
-A['keyboard'] = (path(kb_out, fill='#14171c', stroke=G, stroke_width='1.8') +
-                 g('M44 150v7l52 30 122-54v-7', 1.8) + g(kb_keys, 1.1))
+for r_ in range(4):
+    cols = 8 if r_ < 3 else 5
+    for c_ in range(cols):
+        if r_ == 3 and c_ == 2:
+            u0, u1 = 0.28, 0.72
+        elif r_ == 3 and c_ > 2:
+            u0 = 0.75 + (c_ - 3) * 0.10; u1 = u0 + 0.08
+        elif r_ == 3:
+            u0 = 0.06 + c_ * 0.10; u1 = u0 + 0.08
+        else:
+            u0 = 0.06 + c_ * 0.112; u1 = u0 + 0.088
+        v0 = 0.14 + r_ * 0.21; v1 = v0 + 0.15
+        p0 = kb_pt(u0, v0); p1 = kb_pt(u1, v0); p2 = kb_pt(u1, v1); p3 = kb_pt(u0, v1)
+        kb_keys += 'M%s %sL%s %sL%s %sL%s %sZ' % (f(p0[0]), f(p0[1]), f(p1[0]), f(p1[1]), f(p2[0]), f(p2[1]), f(p3[0]), f(p3[1]))
+A['keyboard'] = (path(rpoly(kb_pts, 8), fill='#11151b', stroke='#9bb0c1', stroke_width='1.8') +
+                 g(path('M28 148v7l122 49 76-46v-7'), 1.8, '#9bb0c1') +
+                 g(path(kb_keys), 1.1, '#8fa3b5'))
 
 # 디스플레이 › 영상 색상 (모니터 안 슬라이더 3줄: D-settings_display_screencolor.png)
 sc_bars = 'M98 128h64M98 144h64M98 160h64'
@@ -289,13 +313,20 @@ A['btnRearLock'] = g('<rect x="76" y="114" width="104" height="58" rx="10"/>'
                      '<rect x="114" y="138" width="28" height="22" rx="3"/>'
                      '<path d="M120 138v-7a8 8 0 0 1 16 0v7M128 147v5"/>', 1.8)
 
-# 차량 › 시트 (3D 시트: D-settings_vehicle_seat.png)
-seat_back = 'M116 140c-6-22-4-54 6-76 5-10 10-16 14-26 3-8 14-10 21-4 4 4 4 12 2 20-1 8 6 12 10 22 4 12 4 38-6 60z'
-seat_base = 'M72 174c-4-10 6-18 22-22l36-8 44 10c10 4 12 14 6 22l-36 18c-16 8-48 8-62-4z'
-A['seat'] = ('<g transform="translate(-14, 18) scale(1.12)">' +
-             path(seat_back, fill='#1c2026', stroke=G, stroke_width='1.8', stroke_linejoin='round') +
-             path(seat_base, fill='#1c2026', stroke=G, stroke_width='1.8', stroke_linejoin='round') +
-             g(path('M82 172c18 10 44 10 64 0l30-14'), 1.2, '#5a6470') + '</g>')
+# 차량 › 시트 (3D 시트: Lite_d-settings_seat.png 정밀 재현)
+seat_defs = ('<defs><linearGradient id="stG" x1="0" y1="0" x2="1" y2="1">'
+             '<stop offset="0%" stop-color="#2b313a"/><stop offset="100%" stop-color="#111419"/></linearGradient></defs>')
+st_head = 'M140 52c2-12 16-14 24-8 6 4 7 14 4 24l-26-4z'
+st_back = 'M116 164c-10-28-6-68 12-94l36-4c14 14 20 34 18 60-2 22-8 42-16 54l-50-16z'
+st_bolster = 'M126 74c14 14 18 46 10 82M164 68c8 18 10 46 2 84'
+st_base = 'M58 184c-4-12 10-22 30-26l44-8 52 14c12 4 12 18 4 26l-46 24c-20 10-58 8-76-8-5-4-7-12-8-22z'
+st_seam = 'M64 186c20 12 52 14 74 2l46-24M104 176l40 12'
+A['seat'] = (seat_defs +
+             path(st_head, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
+             path(st_back, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
+             g(path(st_bolster), 1.1, '#5d6b78') +
+             path(st_base, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
+             g(path(st_seam), 1.3, '#6b7b8a'))
 
 # 차량 › 편의 (톱니바퀴 + 손가락 터치: D-settings_vehicle_convenience.png)
 conv_gear = gear(126, 134, 48, 39, 8, 0.42)
@@ -318,27 +349,49 @@ A['vehicleStatus'] = g('<path d="M52 162h152l-14-32c-5-12-18-18-32-18h-62c-14 0-
                        '<circle cx="86" cy="166" r="14"/><circle cx="170" cy="166" r="14"/>'
                        '<path d="M114 82l10 10 20-20" stroke="%s" stroke-width="2.4"/>' % T, 1.8)
 
-# ---------------------------------------------------------------- 클러스터/HUD (0.5.0-test7)
-# 설명서 그림은 음영 있는 렌더링이다. 선으로 그릴 수 있는 부분만 옮기고 음영은 생략했다.
+# ---------------------------------------------------------------- 클러스터/HUD (ccNC 원본 정밀 재현)
+cl_defs = ('<defs>'
+           '<radialGradient id="clG" cx="50%" cy="40%" r="55%">'
+           '<stop offset="0%" stop-color="#2c3540"/><stop offset="100%" stop-color="#0a0c10"/></radialGradient>'
+           '<linearGradient id="clFade" x1="0" y1="0" x2="0" y2="1">'
+           '<stop offset="0%" stop-color="#9cb0c2" stop-opacity="1"/><stop offset="78%" stop-color="#9cb0c2" stop-opacity="0.7"/>'
+           '<stop offset="100%" stop-color="#000" stop-opacity="0"/></linearGradient>'
+           '</defs>')
 dial = []
-for cx in (72, 188):
-    dial.append('<circle cx="%d" cy="150" r="42"/>' % cx)
-    for k in range(13):
-        a = math.radians(150 + k * 20)
-        dial.append('<path d="M%s %sl4.4 4.4"/>' % (f(cx + 34 * math.cos(a)), f(150 + 34 * math.sin(a))))
-dial.append('<circle cx="72" cy="150" r="5" fill="%s"/>' % D)
-dial.append('<circle cx="188" cy="150" r="5" fill="%s"/>' % D)
-dial.append('<path d="M72 150l22-18M188 150l-20-22"/>')
-dial.append('<path d="M96 196c6 14 16 24 34 30 18-6 28-16 34-30"/>')
-A['cluster'] = (g(path(earc(130, 196, 104, 104, 0, 208, 332) + earc(130, 196, 74, 74, 0, 208, 332)), 1.7) +
-                g(''.join(dial), 1.6))
+for cx, needle in ((66, (22, -16)), (189, (-20, -18))):
+    dial.append('<circle cx="%d" cy="166" r="44" fill="url(#clG)" stroke="url(#clFade)" stroke-width="1.4"/>' % cx)
+    for k in range(15):
+        a = math.radians(150 + k * 17)
+        x0 = cx + 33 * math.cos(a); y0 = 166 + 33 * math.sin(a)
+        x1 = cx + 41 * math.cos(a); y1 = 166 + 41 * math.sin(a)
+        dial.append('<path d="M%s %sL%s %s" stroke="#7d8f9e" stroke-width="1.3"/>' % (f(x0), f(y0), f(x1), f(y1)))
+    dial.append('<path d="M%d 166l%d %d" stroke="#c8d6e2" stroke-width="2" stroke-linecap="round"/>' % (cx, needle[0], needle[1]))
+    dial.append('<circle cx="%d" cy="166" r="5" fill="#1b2128" stroke="#9cb0c2" stroke-width="1.3"/>' % cx)
+# Steering wheel upper rim arching over the cluster gauges (ccNC_D-settings_cluster_cluster.png)
+wheel = (
+    '<path d="M12 188C28 112 76 74 128 74s100 38 116 114" fill="none" stroke="url(#clFade)" stroke-width="2.2"/>'
+    '<path d="M30 192C44 128 84 96 128 96s84 32 98 96" fill="none" stroke="url(#clFade)" stroke-width="1.6"/>'
+    '<path d="M18 194c24-18 64-28 110-28s86 10 110 28" fill="#06080c" stroke="url(#clFade)" stroke-width="1.8"/>'
+    '<rect x="108" y="136" width="40" height="22" rx="3" fill="#10141a" stroke="#475563" stroke-width="1"/>'
+)
+A['cluster'] = cl_defs + ''.join(dial) + wheel
 
-hud = ('<rect x="104" y="52" width="52" height="30" rx="6"/>'
-       '<path d="M104 68h-60M156 68h60"/>'
-       '<text x="112" y="134" font-size="28" text-anchor="middle" fill="%s" font-family="sans-serif">100</text>'
-       '<text x="156" y="136" font-size="12" text-anchor="middle" fill="%s" font-family="sans-serif">km/h</text>') % (G, G)
-hud += path(earc(130, 246, 92, 92, 0, 205, 335) + earc(130, 246, 66, 66, 0, 205, 335))
-A['hud'] = g(hud, 1.7)
+hud_defs = ('<defs>'
+            '<linearGradient id="hudBox" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0%" stop-color="#4e555e"/><stop offset="100%" stop-color="#191d22"/></linearGradient>'
+            '<linearGradient id="hudFade" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0%" stop-color="#9cb0c2" stop-opacity="0.95"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></linearGradient>'
+            '</defs>')
+hud = (hud_defs +
+       '<path d="M104 92L24 148M151 92L231 148" stroke="#3c444e" stroke-width="1.4"/>'
+       '<rect x="102" y="64" width="51" height="34" rx="10" fill="url(#hudBox)" stroke="#687380" stroke-width="1.3"/>'
+       '<text x="115" y="152" font-size="30" font-weight="500" text-anchor="middle" fill="#eef4fa" font-family="sans-serif">100</text>'
+       '<text x="159" y="152" font-size="11" text-anchor="middle" fill="#b4c2cf" font-family="sans-serif">km/h</text>'
+       '<path d="M16 206h223" stroke="#2f363e" stroke-width="1.2"/>'
+       '<path d="M40 248C54 198 88 176 128 176s74 22 88 72" fill="none" stroke="url(#hudFade)" stroke-width="2.2"/>'
+       '<path d="M56 248C68 208 94 190 128 190s60 18 72 58" fill="none" stroke="url(#hudFade)" stroke-width="1.6"/>'
+       '<path d="M74 236c16-10 34-14 54-14s38 4 54 14" fill="none" stroke="url(#hudFade)" stroke-width="1.6"/>')
+A['hud'] = hud
 
 open('ccnc-art.json', 'w', encoding='utf-8').write(json.dumps(A, ensure_ascii=False))
 html = '<html><body style="margin:0;background:#000">' + ''.join(
