@@ -177,6 +177,9 @@ button.bb-idle { line-height: 80px; }
 .bb-route-info .bb-route-value { font-size: 33px; }
 .bb-route-info .bb-route-unit { font-size: 23px; }
 #bb-route-time2:not(:empty) { margin-left: 6px; }
+/* "12시간 59분"처럼 시간이 두 자리면 구분선에 닿으므로 그때만 줄인다(글자 크기 통일의 예외). */
+.bb-route-info .bb-time.is-hm-long .bb-route-value { font-size: 29px; }
+.bb-route-info .bb-time.is-hm-long .bb-route-unit { font-size: 20px; }
 
 /* 깃발 31x30 #d6d6d6, 목적지 26px(한 줄 글 통일). */
 /* 깃발(31x30)과 목적지 글자를 항상 보이게 한다(0 폭·숨김 방지). */
@@ -292,7 +295,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
     var single = !showArrival && !hm && /^(\d+)\s*(시간|분)$/.exec(time);
     var metric = document.getElementById('bb-time-metric');
     metric.hidden = !time;
-    metric.className = hm ? 'bb-metric bb-time is-hm' : 'bb-metric bb-time';
+    metric.className = hm ? 'bb-metric bb-time is-hm' + (hm[1].length > 1 ? ' is-hm-long' : '') : 'bb-metric bb-time';
     metric.setAttribute('aria-label', (showArrival ? '도착 예정 ' : '남은 시간 ') + time);
     if (clock) {
       document.getElementById('bb-route-time').textContent = clock[1];
