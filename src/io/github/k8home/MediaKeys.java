@@ -29,12 +29,13 @@ final class MediaKeys {
     static final String SPLIT_CONTROL_ACTION = "ACTION_SPLITSCREEN_CONTROL";
     static final String EXTRA_CANCEL_OSD = "EXTRA_SPLITSCREEN_CONTROL_CANCEL_OSD";
     /**
-     * 순정 팝업(RightSideOsd)은 곡 제목이 바뀌고 약 0.1초 뒤에 뜨고, 떠 있지 않을 때 받은 취소는 버린다(실차 2026-11-23:
-     * 제목 22.35 → 팝업 22.48 → 첫 취소 22.64, 약 0.15초 보임). 0.04~0.5초 사이를 30ms 마다 취소해 뜨자마자 닫는다.
-     * 끄는 공식 스위치는 없다(BTAudio·RightScreenHome 조건 확인: 내비 전체 화면이면 늘 띄움).
+     * 순정 팝업(RightSideOsd)은 곡 넘기기 키 뒤 1~1.5초, 곡 정보가 바뀐 뒤 0.1~1초 사이에 뜨고, 떠 있지 않을 때 받은 취소는 버린다.
+     * 그래서 신호(키·위치 방송·곡 제목 방송)가 오면 2.5초 동안 40ms 마다 취소를 보낸다(겹치면 창만 늘린다).
+     * 끄는 공식 스위치는 없다(BTAudio·RightScreenHome 확인: 내비 전체 화면이면 늘 띄움). 실차 2026-11-23.
      */
-    private static final long[] CANCEL_OSD_DELAYS_MS = {40, 70, 100, 130, 160, 190, 220, 250, 280, 310, 340, 370,
-        400, 450, 500, 600, 900, 1200};
+    private static final long CANCEL_WINDOW_MS = 2500, CANCEL_EVERY_MS = 40;
+    private static long cancelUntil;
+    private static boolean cancelling;
     private static final String TAG = "K8HomeKeys";
 
     private MediaKeys() {}
@@ -112,19 +113,23 @@ final class MediaKeys {
         }
     }
 
-    /**
-     * Closes the stock track popup (the BT app's MusicService sends the same broadcast). It can open a
-     * moment after the metadata, so the broadcast goes out a few times (same as K8 Now Playing).
-     */
+    /** Closes the stock track popup: sends the BT app's own cancel broadcast every 40 ms for the next 2.5 s. */
     static void cancelStockPopup(Context context) {
         final Context app = context.getApplicationContext();
-        Handler handler = new Handler(Looper.getMainLooper());
-        for (long delay : CANCEL_OSD_DELAYS_MS) {
-            handler.postDelayed(new Runnable() {
-                @Override public void run() {
-                    app.sendBroadcast(new Intent(SPLIT_CONTROL_ACTION).putExtra(EXTRA_CANCEL_OSD, true));
-                }
-            }, delay);
-        }
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override public void run() {
+                cancelUntil = Math.max(cancelUntil, SystemClock.uptimeMillis() + CANCEL_WINDOW_MS);
+                if (cancelling) return;
+                cancelling = true;
+                handler.post(new Runnable() {
+                    @Override public void run() {
+                        app.sendBroadcast(new Intent(SPLIT_CONTROL_ACTION).putExtra(EXTRA_CANCEL_OSD, true));
+                        if (SystemClock.uptimeMillis() < cancelUntil) handler.postDelayed(this, CANCEL_EVERY_MS);
+                        else cancelling = false;
+                    }
+                });
+            }
+        });
     }
 }

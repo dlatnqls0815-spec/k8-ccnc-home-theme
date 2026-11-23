@@ -1,4 +1,14 @@
 # K8 Gen5W 홈
+## 0.5.0-test32~33 실차(사용자 탑승): 핸들 곡 넘기기 OK, 순정 팝업 뜨자마자 닫기 (2026-11-23, Claude)
+
+- 핸들 다음/이전 곡: 테마 앞·NEMESIS 관리 앱 앞 모두 `isViewHandled=false` 로 블루투스에 전달, 곡 바뀜.
+- test31 에서 팝업이 1~1.6초 남은 경우: `K8HomePopup` 이 듣는 위젯 방송(`com.hkmc.audio.btaudio.widgetupdate`)이 곡 변경보다 최대 1초 늦고, 팝업은 키 뒤 1~1.5초에 뜸.
+  재부팅 뒤 첫 곡 변경은 앞 제목을 몰라 건너뛰어 4초 남음(test32 에서 고침: 처음 받은 제목도 닫음).
+- test33: 신호가 오면 2.5초 동안 40ms 마다 취소(`MediaKeys.cancelStockPopup` 창 방식). 신호 = 테마 앞 핸들 166/167 키, 블루투스 위치 방송
+  `com.broadcom.bt.avrcp.profile.action.CURRENT_PLAY_POSITION`(POSITION -1·길이 바뀜·처음으로), 기존 위젯 제목 방송.
+  실차 7번 넘김 모두 팝업이 뜬 뒤 0.00~0.04초 안에 닫힘 시작(state 2→3). 블루투스 서비스가 곡 중간에도 가끔 POSITION -1 을 보내 창이 헛열림(해 없음).
+- 도우미는 재부팅 뒤 스스로 켜짐 확인.
+
 ## 0.5.0-test31 순정 곡 팝업을 뜨자마자 닫기 (2026-11-23, Claude, 실차 원격)
 
 사용자 질문: 팝업이 0.15초 깜빡이는 것도 아예 안 나오게 못 하나.

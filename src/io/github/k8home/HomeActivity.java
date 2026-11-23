@@ -1239,7 +1239,11 @@ public final class HomeActivity extends Activity {
      */
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         int code = event.getKeyCode();
-        if (code == MediaKeys.WHEEL_PREVIOUS || code == MediaKeys.WHEEL_NEXT || code == MediaKeys.WHEEL_PLAY_PAUSE) return false;
+        if (code == MediaKeys.WHEEL_PREVIOUS || code == MediaKeys.WHEEL_NEXT || code == MediaKeys.WHEEL_PLAY_PAUSE) {
+            // 곡 넘기기 키면 순정 팝업이 1~1.5초 뒤 뜬다: 지금부터 닫기 창을 연다.
+            if (code != MediaKeys.WHEEL_PLAY_PAUSE && event.getAction() == KeyEvent.ACTION_DOWN) MediaKeys.cancelStockPopup(this);
+            return false;
+        }
         return super.dispatchKeyEvent(event);
     }
 
