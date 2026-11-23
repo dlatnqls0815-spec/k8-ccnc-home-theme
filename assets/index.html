@@ -2745,7 +2745,7 @@ var stockSub = '';
   var searchRecent = [];
   var profileMode = 'detail';
   /* Switches that the native side owns: boot auto start and the bar over the stock navigation. */
-  var flags = { autoStart:false, navBar:false, corners:false, naviSkin:false };
+  var flags = { autoStart:false, navBar:false, corners:false, naviSkin:false, stockWrite:false, soundWrite:false };
   var profileSelected = 0;
   var editingProfileName = false;
   var standbyClockOptions = false;
@@ -3972,7 +3972,7 @@ var stockSub = '';
       else if (c.classList.contains('stock-toggle')) toggle = c;
       else if (!label && c.tagName === 'SPAN') label = c;
     }
-    if (label && label.firstChild && label.firstChild.nodeType === 3 && /^순정 /.test(label.firstChild.nodeValue)) {
+    if (label && !row.classList.contains('ccnc-stock-link') && !/-toggle$/.test(row.getAttribute('data-host') || '') && label.firstChild && label.firstChild.nodeType === 3 && /^순정 /.test(label.firstChild.nodeValue)) {
       label.firstChild.nodeValue = label.firstChild.nodeValue.replace(/^순정 /, '');
     }
     if (!out) return;
@@ -5061,6 +5061,20 @@ var stockSub = '';
       rows: [{ label: 'Android Auto', nav: true, sub: 'sound-devices' }, { label: 'Apple CarPlay', nav: true, sub: 'sound-devices' }] }
   ];
 
+  /* 사운드 직접 변경 상태와 앰프 원시 값(단위 확인용). soundWriteResult 가 결과로 바꾼다. */
+  var soundLastResult = '';
+  function soundWriteNote() {
+    var raw = vehicleSettings.soundRaw || {};
+    var parts = [];
+    if (typeof raw.mTreble === 'number') parts.push('고/중/저 ' + raw.mTreble + '/' + raw.mMiddle + '/' + raw.mBass);
+    if (typeof raw.mFade === 'number') parts.push('전후/좌우 ' + raw.mFade + '/' + raw.mBalance);
+    if (typeof raw.offset === 'number') parts.push(raw.offset === 10 ? '단위 0~20' : raw.offset === 0 ? '단위 -10~10' : '단위 확인 전');
+    var state = flags.soundWrite ? '사운드 직접 변경 켜짐(시험): 손을 떼면 순정 사운드에 바로 씁니다.' : '';
+    var text = (soundLastResult ? soundLastResult + ' · ' : state ? state + ' · ' : '') +
+      (parts.length ? '앰프 값 ' + parts.join(', ') : '');
+    return '<p class="settings-write-note" id="sound-write-note">' + escapeText(text) + '</p>';
+  }
+
   function renderSoundControls(pane) {
     var selected = SOUND_SCREENS[0];
     SOUND_SCREENS.forEach(function (item) { if (item.id === soundSection) selected = item; });
@@ -5095,7 +5109,7 @@ var stockSub = '';
       }).join('') +
       '<div class="ccnc-tone-footer">' +
         '<button type="button" class="ccnc-tone-reset" id="ccnc-tone-reset" data-host="settings-sound">초기값</button>' +
-      '</div></div>';
+      '</div></div>' + soundWriteNote();
     } else if (selected.id === 'balance' && !showSub) {
       var gridLines = '';
       for (var gi = 1; gi < 10; gi++) {
@@ -5152,7 +5166,7 @@ var stockSub = '';
               '<div class="ccnc-pos-metric"><span>좌우</span><strong id="ccnc-pos-bal">좌=우</strong></div>' +
             '</div>' +
           '</div>' +
-        '</div>';
+        '</div>' + soundWriteNote();
     } else if (selected.id === 'guidance' && !showSub) {
       main += (selected.rows || []).map(function (row) { return stockRowHtml(row, 'settings-sound'); }).join('') +
         '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
@@ -5171,15 +5185,50 @@ var stockSub = '';
     main += '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>';
     detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected.art), ' stock-settings-layout');
-    /* 고음/중음/저음·전후/좌우 그림은 차 값을 보여 주기만 한다. 테마는 순정 사운드 값을 바꾸지 않는다
-       (차량 설정 쓰기는 사용자 승인 전 금지). 그림이나 단추를 누르면 순정 사운드 설정을 연다.
-       값을 모르면 가운데에 흐리게 둔다. 화면이 다시 그려질 때 vehicleSettings 를 덮어쓰지 않는다. */
+    /* 고음/중음/저음·전후/좌우 그림은 차 값을 보여 준다. 테마 설정 › 화면구성 › 테마 설정의
+       "사운드 직접 변경(시험)" 스위치(기본 꺼짐)가 꺼져 있으면 그림·단추를 눌러도 순정 사운드 설정을 연다.
+       켜져 있으면(차에서만) 손을 뗄 때 K8Host.setSoundTone / setSoundFadeBalance 로 순정 사운드 서비스에 쓴다.
+       Java 쪽(StockSound)이 앰프 단위를 확인하지 못하면 쓰지 않고 이유를 아래 줄에 보인다.
+       쓰고 나면 Java 가 값을 다시 읽어 화면을 새로 그린다. vehicleSettings 는 여기서 바꾸지 않는다. */
+    var soundLive = !!(flags.soundWrite && inVehicle && window.K8Host && window.K8Host.setSoundTone);
     var openStockSound = function () { host('settings-sound'); };
+    var soundBusy = function () {
+      var note = document.getElementById('sound-write-note');
+      if (note) note.textContent = '순정 사운드에 보내는 중…';
+    };
+    if (soundLive) {
+      Array.prototype.forEach.call(pane.querySelectorAll('.ccnc-tone-btn, .ccnc-tone-reset, .ccnc-pos-dbtn'), function (btn) {
+        btn.removeAttribute('data-host');
+      });
+    }
+    // 끌기: 누르는 동안 그림만 움직이고, 손을 떼면 onEnd 를 한 번 부른다.
+    var dragOn = function (el, onMove, onEnd) {
+      var active = false;
+      var point = function (e) { return e.touches && e.touches.length ? e.touches[0] : e.changedTouches && e.changedTouches.length ? e.changedTouches[0] : e; };
+      var down = function (e) { active = true; onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
+      var move = function (e) { if (!active) return; onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
+      var up = function () { if (!active) return; active = false; onEnd(); };
+      el.addEventListener('touchstart', down);
+      el.addEventListener('touchmove', move);
+      el.addEventListener('touchend', up);
+      el.addEventListener('touchcancel', up);
+      el.addEventListener('mousedown', down);
+      el.addEventListener('mousemove', move);
+      el.addEventListener('mouseup', up);
+      el.addEventListener('mouseleave', up);
+    };
+    var toneOf = function (key) {
+      var v = vehicleSettings[key];
+      return typeof v === 'number' && !isNaN(v) ? Math.max(-10, Math.min(10, Math.round(v))) : null;
+    };
     if (selected.id === 'tone' && !showSub) {
-      var paintTone = function (group) {
-        var raw = vehicleSettings[group.getAttribute('data-tone-key')];
-        var known = typeof raw === 'number' && !isNaN(raw);
-        var val = known ? Math.max(-10, Math.min(10, Math.round(raw))) : 0;
+      var toneShown = {};
+      var paintTone = function (group, value) {
+        var key = group.getAttribute('data-tone-key');
+        var raw = value !== undefined ? value : toneOf(key);
+        var known = raw !== null;
+        var val = known ? raw : 0;
+        toneShown[key] = val;
         var pct = (val + 10) / 20 * 100;
         var wrap = group.querySelector('.ccnc-tone-track-wrap');
         var fill = group.querySelector('.ccnc-tone-fill');
@@ -5192,13 +5241,40 @@ var stockSub = '';
         fill.style.left = (val >= 0 ? 50 : pct) + '%';
         fill.style.width = Math.abs(pct - 50) + '%';
       };
+      var sendTone = function () {
+        soundBusy();
+        window.K8Host.setSoundTone(toneShown.soundBass || 0, toneShown.soundMiddle || 0, toneShown.soundTreble || 0);
+      };
       var groups = pane.querySelectorAll('.ccnc-tone-group');
       for (var ti = 0; ti < groups.length; ti++) {
         paintTone(groups[ti]);
-        groups[ti].querySelector('.ccnc-tone-track-wrap').addEventListener('click', openStockSound);
+        (function (group) {
+          var key = group.getAttribute('data-tone-key');
+          var wrap = group.querySelector('.ccnc-tone-track-wrap');
+          if (!soundLive) { wrap.addEventListener('click', openStockSound); return; }
+          dragOn(wrap, function (p) {
+            var r = wrap.getBoundingClientRect();
+            if (!r.width) return;
+            paintTone(group, Math.round(Math.max(0, Math.min(1, (p.clientX - r.left) / r.width)) * 20) - 10);
+          }, sendTone);
+          Array.prototype.forEach.call(group.querySelectorAll('.ccnc-tone-btn'), function (btn) {
+            btn.addEventListener('click', function () {
+              var next = Math.max(-10, Math.min(10, (toneShown[key] || 0) + (Number(btn.getAttribute('data-tone-step')) || 0)));
+              if (next === toneShown[key]) return;
+              paintTone(group, next);
+              sendTone();
+            });
+          });
+        })(groups[ti]);
+      }
+      if (soundLive) {
+        document.getElementById('ccnc-tone-reset').addEventListener('click', function () {
+          for (var ri = 0; ri < groups.length; ri++) paintTone(groups[ri], 0);
+          sendTone();
+        });
       }
     } else if (selected.id === 'balance' && !showSub) {
-      // 앰프 전후·좌우 값(MicomAudioStatus mFade/mBalance)은 단위를 아직 차에서 확인하지 못했다.
+      // 앰프 전후·좌우 값(MicomAudioStatus mFade/mBalance)은 단위·방향을 아직 차에서 확인하지 못했다.
       // -10~10 안의 값만 그 자리에 찍고, 그 밖이면 가운데에 흐리게 둔다.
       var posVal = function (v) {
         return typeof v === 'number' && !isNaN(v) && v >= -10 && v <= 10 ? Math.round(v) : null;
@@ -5220,21 +5296,48 @@ var stockSub = '';
         if (b >= 3) return '우측 집중';
         return '사용자 지정 위치';
       };
-      var xPct = (b + 10) / 20 * 100, yPct = (10 - f) / 20 * 100;
       var gridEl = document.getElementById('ccnc-pos-grid');
       var spot = document.getElementById('ccnc-pos-spot');
-      document.getElementById('ccnc-pos-hline').style.top = yPct + '%';
-      document.getElementById('ccnc-pos-vline').style.left = xPct + '%';
-      spot.style.left = xPct + '%';
-      spot.style.top = yPct + '%';
-      if (posKnown) gridEl.classList.remove('ccnc-tone-unknown');
-      else gridEl.classList.add('ccnc-tone-unknown');
-      document.getElementById('ccnc-pos-focus').textContent = focusLabel();
-      document.getElementById('ccnc-pos-fade').textContent = !posKnown ? '–' :
-        f === 0 ? '전=후' : (f > 0 ? '전 +' + f : '후 +' + Math.abs(f));
-      document.getElementById('ccnc-pos-bal').textContent = !posKnown ? '–' :
-        b === 0 ? '좌=우' : (b < 0 ? '좌 +' + Math.abs(b) : '우 +' + b);
-      gridEl.addEventListener('click', openStockSound);
+      var paintPos = function () {
+        var xPct = (b + 10) / 20 * 100, yPct = (10 - f) / 20 * 100;
+        document.getElementById('ccnc-pos-hline').style.top = yPct + '%';
+        document.getElementById('ccnc-pos-vline').style.left = xPct + '%';
+        spot.style.left = xPct + '%';
+        spot.style.top = yPct + '%';
+        if (posKnown) gridEl.classList.remove('ccnc-tone-unknown');
+        else gridEl.classList.add('ccnc-tone-unknown');
+        document.getElementById('ccnc-pos-focus').textContent = focusLabel();
+        document.getElementById('ccnc-pos-fade').textContent = !posKnown ? '–' :
+          f === 0 ? '전=후' : (f > 0 ? '전 +' + f : '후 +' + Math.abs(f));
+        document.getElementById('ccnc-pos-bal').textContent = !posKnown ? '–' :
+          b === 0 ? '좌=우' : (b < 0 ? '좌 +' + Math.abs(b) : '우 +' + b);
+      };
+      paintPos();
+      if (!soundLive) {
+        gridEl.addEventListener('click', openStockSound);
+      } else {
+        var sendPos = function () { soundBusy(); window.K8Host.setSoundFadeBalance(f, b); };
+        dragOn(gridEl, function (p) {
+          var r = gridEl.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          b = Math.round(Math.max(0, Math.min(1, (p.clientX - r.left) / r.width)) * 20) - 10;
+          f = 10 - Math.round(Math.max(0, Math.min(1, (p.clientY - r.top) / r.height)) * 20);
+          posKnown = true;
+          paintPos();
+        }, sendPos);
+        Array.prototype.forEach.call(pane.querySelectorAll('.ccnc-pos-dbtn'), function (btn) {
+          btn.addEventListener('click', function () {
+            if (btn.getAttribute('data-pos-reset')) { f = 0; b = 0; }
+            else {
+              f = Math.max(-10, Math.min(10, f + (Number(btn.getAttribute('data-pos-df')) || 0)));
+              b = Math.max(-10, Math.min(10, b + (Number(btn.getAttribute('data-pos-db')) || 0)));
+            }
+            posKnown = true;
+            paintPos();
+            sendPos();
+          });
+        });
+      }
     }
     var slider = pane.querySelector('input');
     if (slider) {
@@ -5407,7 +5510,10 @@ var stockSub = '';
           '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
           '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
           slExternal('home-settings', '차량 홈 화면 설정', 'detail-settings-row') +
-        stockWriteSwitch();
+        stockWriteSwitch() +
+          '<button type="button" class="detail-settings-row" data-host="sound-write-toggle" data-switch-desc="' +
+          '사운드 › 고음/중음/저음·전후/좌우를 순정 설정을 열지 않고 테마에서 바로 바꿉니다. 시험이 끝나면 끄세요.">' +
+          '<span>사운드 직접 변경(시험)</span><output id="theme-sound-write">' + (flags.soundWrite ? '켜짐' : '꺼짐') + '</output></button>';
       updateControlLabels();
       panel.onclick = function (event) {
         var b = event.target;
@@ -6143,12 +6249,20 @@ var stockSub = '';
       if (!note) return;
       note.textContent = (ok ? '저장됨: ' : '저장 안 됨: ') + (message || '') + (key ? ' (' + key + ')' : '');
     },
+    soundWriteResult: function (ok, message) {
+      var note = document.getElementById('sound-write-note');
+      soundLastResult = ok ? (message || '보냄') : '쓰지 않음: ' + (message || '');
+      if (note) note.textContent = soundLastResult;
+    },
     stockWriteChanged: function (on) {
       updateStockWriteUi(on === true);
     },
-    systemFlagsChanged: function (autoStart, navBar, corners, naviSkin, stockWrite) {
+    systemFlagsChanged: function (autoStart, navBar, corners, naviSkin, stockWrite, soundWrite) {
       flags = { autoStart:autoStart === true, navBar:navBar === true, corners:corners === true, naviSkin:naviSkin === true,
-        stockWrite:stockWrite === true };
+        stockWrite:stockWrite === true, soundWrite:soundWrite === true };
+      var soundOut = document.getElementById('theme-sound-write');
+      if (soundOut) soundOut.textContent = flags.soundWrite ? '켜짐' : '꺼짐';
+      if (state.page === 'settings' && settingsSection === 'sound') renderSettingsControls();
       updateStockWriteUi(flags.stockWrite);
       var skinOut = document.getElementById('theme-navi-skin');
       if (skinOut) skinOut.textContent = flags.naviSkin ? '켜짐' : '꺼짐';

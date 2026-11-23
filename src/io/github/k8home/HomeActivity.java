@@ -526,7 +526,38 @@ public final class HomeActivity extends Activity {
         if (!pageReady) return;
         web.evaluateJavascript("window.K8Home.systemFlagsChanged("
             + ThemePrefs.autoStart(this) + "," + ThemePrefs.navBar(this) + "," + ThemePrefs.corners(this) + ","
-            + ThemePrefs.naviSkin(this) + "," + ThemePrefs.stockWrite(this) + ")", null);
+            + ThemePrefs.naviSkin(this) + "," + ThemePrefs.stockWrite(this) + "," + ThemePrefs.soundWrite(this) + ")", null);
+    }
+
+    private interface SoundWrite { StockSound.Result run(); }
+
+    /** 사운드 쓰기는 한 번에 하나만, UI 스레드 밖에서. 끝나면 결과를 화면에 알리고 값을 다시 읽는다. */
+    private volatile boolean writingSound;
+    private void writeSound(final SoundWrite write) {
+        if (!ThemePrefs.soundWrite(this)) {
+            reportSoundResult(false, "사운드 직접 변경 스위치가 꺼져 있습니다.");
+            return;
+        }
+        if (writingSound) return;
+        writingSound = true;
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final StockSound.Result result = write.run();
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        writingSound = false;
+                        if (isDestroyed()) return;
+                        reportSoundResult(result.ok, result.message);
+                        refreshVehicleSettings();
+                    }
+                });
+            }
+        }, "K8HomeSoundWrite").start();
+    }
+
+    private void reportSoundResult(boolean ok, String message) {
+        if (!pageReady) return;
+        web.evaluateJavascript("window.K8Home.soundWriteResult(" + ok + "," + javascriptString(message) + ")", null);
     }
 
     /** Tells the page whether a stock setting write worked, so it can show the reason. */
@@ -733,6 +764,20 @@ public final class HomeActivity extends Activity {
             });
         }
 
+        /** 고음/중음/저음(테마 단위 -10~10). "사운드 직접 변경" 스위치가 켜져 있을 때만 쓴다. */
+        @JavascriptInterface public void setSoundTone(final int bass, final int middle, final int treble) {
+            writeSound(new SoundWrite() {
+                @Override public StockSound.Result run() { return StockSound.setTone(HomeActivity.this, bass, middle, treble); }
+            });
+        }
+
+        /** 전후/좌우(테마 단위 -10~10). "사운드 직접 변경" 스위치가 켜져 있을 때만 쓴다. */
+        @JavascriptInterface public void setSoundFadeBalance(final int fade, final int balance) {
+            writeSound(new SoundWrite() {
+                @Override public StockSound.Result run() { return StockSound.setFadeBalance(HomeActivity.this, fade, balance); }
+            });
+        }
+
         /** Bounds of the split widget's map page, or zeros when it is not on screen. */
         @JavascriptInterface public void updateSplitBounds(final int viewport, final int left, final int top,
                                                             final int width, final int height) {
@@ -912,6 +957,12 @@ public final class HomeActivity extends Activity {
             }
             toast(on ? "순정 설정을 테마에서 직접 바꿉니다. 되돌리려면 순정 설정 화면을 쓰세요."
                     : "순정 설정은 읽기만 합니다. 바꾸려면 순정 설정 화면을 여세요.");
+        } else if ("sound-write-toggle".equals(action)) {
+            boolean on = !ThemePrefs.soundWrite(this);
+            ThemePrefs.setSoundWrite(this, on);
+            syncFlags();
+            toast(on ? "고음/중음/저음·전후/좌우를 테마에서 직접 바꿉니다(시험). 되돌리려면 순정 사운드 설정을 쓰세요."
+                    : "사운드 값은 보기만 합니다. 바꾸려면 순정 사운드 설정을 여세요.");
         } else if ("home-settings".equals(action)) {
             if (!open(new Intent("android.settings.HOME_SETTINGS"))) {
                 toast("이 기기에서 홈 화면 설정을 열 수 없습니다.");

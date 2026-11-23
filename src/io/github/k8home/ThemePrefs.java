@@ -14,6 +14,7 @@ final class ThemePrefs {
     private static final String CORNERS = "stock-corner-buttons";
     private static final String NAVI_SKIN = "stock-navi-ccnc-buttons";
     private static final String STOCK_WRITE = "stock-settings-write";
+    private static final String SOUND_WRITE = "stock-sound-write";
 
     private ThemePrefs() { }
 
@@ -63,6 +64,15 @@ final class ThemePrefs {
      */
     static boolean stockWrite(Context context) {
         return of(context).getBoolean(STOCK_WRITE, false);
+    }
+
+    /** 고음/중음/저음·전후/좌우를 테마에서 직접 바꾸는지. 기본 꺼짐. */
+    static boolean soundWrite(Context context) {
+        return of(context).getBoolean(SOUND_WRITE, false);
+    }
+
+    static void setSoundWrite(Context context, boolean value) {
+        of(context).edit().putBoolean(SOUND_WRITE, value).commit();
     }
 
     static void setStockWrite(Context context, boolean value) {

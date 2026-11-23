@@ -104,6 +104,7 @@ final class HeadUnitInfo {
             preferStockTone(info, "soundMiddle");
             preferStockTone(info, "soundBass");
             preferStockTone(info, "soundAutoVolume");
+            info.put("soundRaw", StockSound.raw(context));
         } catch (Exception ignored) { }
         return info;
     }
@@ -294,7 +295,7 @@ final class HeadUnitInfo {
         }
     }
 
-    private static int profile(Context context, JSONObject info) {
+    static int profile(Context context, JSONObject info) {
         try {
             Class<?> api = Class.forName("com.hkmc.userprofile.UserProfileManager");
             Object manager = api.getConstructor(Context.class).newInstance(context.getApplicationContext());
