@@ -718,6 +718,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .sl-desc {
   padding-left: 12px; border-left: 2px solid #555e6a;
   font-size: 13px; font-size: 13.44px; /*c30*/ font-size: clamp(13px, 1.05vw, 18px); color: #8c96a3;
+  word-break: keep-all;
 }
 .sl-row-link, .sl-radio-row, .sl-check-row {
   display: flex; align-items: center; justify-content: space-between;
@@ -1933,7 +1934,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .detail-settings-layout.stock-settings-layout .detail-settings-row > output { position: relative; top: -0.42vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-art { width: 24.8vw; padding-top: 8vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-row { min-height: 6.4vw; font-size: 1.72vw; }
-.detail-settings-layout.stock-settings-layout .detail-settings-row > span:first-child { font-weight: 500; }
+.detail-settings-layout.stock-settings-layout .detail-settings-row > span:first-child,
+.screenlayout-stage .detail-settings-row,
+.screenlayout-stage .detail-settings-row > span:first-child { font-weight: 500; }
 .detail-settings-layout.stock-settings-layout .sl-desc {
   margin: 0 0 1.4vw .83vw; padding-left: 0; border-left: 0; font-size: 1.4vw; color: #8c96a3; line-height: 1.4;
 }
@@ -4237,12 +4240,13 @@ var stockSub = '';
           '<div class="detail-settings-row"><span>모뎀 정보</span><output class="stock-value-wait">순정 연동 대기</output></div>' +
           '<div class="detail-settings-actions">' + external('settings-general', '순정 시스템 정보 열기') + '</div>';
       } else if (generalSection === 'date') {
+        var is24 = clockUses24Hours();
         gBody = '<p class="sl-desc">날짜와 시간을 설정합니다.</p>' +
           '<div class="detail-settings-row" data-switch-desc="GPS 또는 네트워크를 활용해 시간이 자동으로 설정됩니다."><span>시간 자동 설정</span><output data-system-value="gpsAutoTime"></output></div>' +
           external('settings-date', '<span>날짜/시간 설정<small id="theme-date-time"></small></span>', 'detail-settings-row sl-nav-row') +
           '<div class="detail-settings-row"><span>시간 표기 방식</span><div class="sl-seg-group">' +
-          '<button type="button" class="sl-seg-btn" data-clock="24" aria-pressed="' + (state.clock24 === true) + '">24시간</button>' +
-          '<button type="button" class="sl-seg-btn" data-clock="12" aria-pressed="' + (state.clock24 === false) + '">12시간</button></div></div>' +
+          '<button type="button" class="sl-seg-btn" data-clock="24" aria-pressed="' + is24 + '">24시간</button>' +
+          '<button type="button" class="sl-seg-btn" data-clock="12" aria-pressed="' + (!is24) + '">12시간</button></div></div>' +
           '';
       } else if (generalSection === 'language') {
         gBody = '<p class="sl-desc">시스템 언어를 설정합니다.</p>' +
@@ -5076,7 +5080,7 @@ var stockSub = '';
    */
   var SOUND_SCREENS = [
     { id: 'premium', name: '고급 음향', desc: '고급 음향 시스템을 제어합니다.', art: 'soundPremium',
-      rows: [['Meridian Horizon 커스텀', ''],
+      rows: [{ label: 'Meridian Horizon 커스텀', nav: true, sub: '' },
         { label: 'Meridian Intelli-Q', nav: true, sub: 'sound-advanced' },
         ['오디오 음량 자동 줄이기', 'soundAutoVolume']] },
     { id: 'balance', name: '전후/좌우', desc: '좌석 위치에 맞춰 소리를 조절할 수 있습니다. 전후, 좌우 버튼으로 상세 조정이 가능합니다.',
@@ -5550,7 +5554,7 @@ var stockSub = '';
           '<output id="theme-navi-skin">' + (flags.naviSkin ? '켜짐' : '꺼짐') + '</output></button>' +
           '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
           '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
-          slExternal('home-settings', '차량 홈 화면 설정', 'detail-settings-row') +
+          slExternal('home-settings', '<span>차량 홈 화면 설정</span>', 'detail-settings-row') +
         stockWriteSwitch() +
           '<button type="button" class="detail-settings-row" data-host="sound-write-toggle" data-switch-desc="' +
           '사운드 › 고음/중음/저음·전후/좌우를 순정 설정을 열지 않고 테마에서 바로 바꿉니다. 시험이 끝나면 끄세요.">' +
@@ -6471,7 +6475,7 @@ var stockSub = '';
       vehicleSettings = parseHostJson(vehicle, {});
       updateClock();
       updateSystemLabels();
-      if (state.page === 'settings' && settingsSection === 'sound') renderSettingsControls();
+      if (state.page === 'settings' && (settingsSection === 'sound' || (settingsSection === 'general' && generalSection === 'date'))) renderSettingsControls();
     },
     pairedDevicesChanged: function (names) {
       pairedDevices = Array.isArray(names) ? names : null;
