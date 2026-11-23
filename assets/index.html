@@ -1556,7 +1556,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
   font-size: 1.05vw; color: #c4ced8; text-align: center; pointer-events: none;
 }
 .ccnc-pos-ctrl { flex: 1; min-width: 0; margin-left: 1.8vw; text-align: center; }
-.ccnc-pos-dpad { display: inline-block; text-align: center; }
+.ccnc-pos-dpad { display: block; width: 16.2vw; margin: 0 auto; text-align: center; }
 .ccnc-pos-drow { display: block; margin-bottom: .65vw; white-space: nowrap; }
 .ccnc-pos-dbtn {
   display: inline-block; vertical-align: middle; width: 4.6vw; height: 3.3vw; margin: 0 .35vw;
@@ -1572,6 +1572,7 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .ccnc-pos-metric span { display: block; font-size: .95vw; color: #8c96a2; }
 .ccnc-pos-metric strong { display: block; font-size: 1.1vw; font-weight: 500; color: #cfd7df; margin-top: .2vw; }
 .ccnc-pos-div { width: 1px; height: 2.2vw; background: rgba(255,255,255,.14); margin: 0 1.2vw; }
+.ccnc-tone-unknown .ccnc-tone-thumb, .ccnc-tone-unknown .ccnc-tone-fill, .ccnc-pos-grid.ccnc-tone-unknown .ccnc-pos-spot { opacity: .35; }
 /* The brown in the manual screens is the callout highlight, not a ccNC colour: lists, cards and keys use
    the unhighlighted surfaces' dark grey (#1f1f20). */
 
@@ -5081,19 +5082,19 @@ var stockSub = '';
         return '<div class="ccnc-tone-group" data-tone-key="' + t.key + '">' +
           '<div class="ccnc-tone-label">' + t.label + '</div>' +
           '<div class="ccnc-tone-row">' +
-            '<button type="button" class="ccnc-tone-btn" data-tone-step="-1" aria-label="' + t.label + ' 내리기">−</button>' +
+            '<button type="button" class="ccnc-tone-btn" data-host="settings-sound" data-tone-step="-1" aria-label="' + t.label + ' 내리기">−</button>' +
             '<div class="ccnc-tone-track-wrap" role="slider" aria-label="' + t.label + '" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0">' +
               '<div class="ccnc-tone-track"></div>' +
               '<div class="ccnc-tone-center-tick"></div>' +
               '<div class="ccnc-tone-fill"></div>' +
               '<div class="ccnc-tone-thumb">0</div>' +
             '</div>' +
-            '<button type="button" class="ccnc-tone-btn" data-tone-step="1" aria-label="' + t.label + ' 올리기">+</button>' +
+            '<button type="button" class="ccnc-tone-btn" data-host="settings-sound" data-tone-step="1" aria-label="' + t.label + ' 올리기">+</button>' +
           '</div>' +
         '</div>';
       }).join('') +
       '<div class="ccnc-tone-footer">' +
-        '<button type="button" class="ccnc-tone-reset" id="ccnc-tone-reset">초기값</button>' +
+        '<button type="button" class="ccnc-tone-reset" id="ccnc-tone-reset" data-host="settings-sound">초기값</button>' +
       '</div></div>';
     } else if (selected.id === 'balance' && !showSub) {
       var gridLines = '';
@@ -5134,15 +5135,15 @@ var stockSub = '';
           '<div class="ccnc-pos-ctrl">' +
             '<div class="ccnc-pos-dpad">' +
               '<div class="ccnc-pos-drow">' +
-                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="1" data-pos-db="0" aria-label="앞쪽으로"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-host="settings-sound" data-pos-df="1" data-pos-db="0" aria-label="앞쪽으로"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>' +
               '</div>' +
               '<div class="ccnc-pos-drow">' +
-                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="0" data-pos-db="-1" aria-label="왼쪽으로"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>' +
-                '<button type="button" class="ccnc-pos-dbtn" data-pos-reset="1" aria-label="중앙 초기화"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>' +
-                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="0" data-pos-db="1" aria-label="오른쪽으로"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-host="settings-sound" data-pos-df="0" data-pos-db="-1" aria-label="왼쪽으로"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-host="settings-sound" data-pos-reset="1" aria-label="중앙 초기화"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-host="settings-sound" data-pos-df="0" data-pos-db="1" aria-label="오른쪽으로"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>' +
               '</div>' +
               '<div class="ccnc-pos-drow">' +
-                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="-1" data-pos-db="0" aria-label="뒤쪽으로"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-host="settings-sound" data-pos-df="-1" data-pos-db="0" aria-label="뒤쪽으로"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>' +
               '</div>' +
             '</div>' +
             '<div class="ccnc-pos-readout">' +
@@ -5170,93 +5171,44 @@ var stockSub = '';
     main += '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>';
     detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected.art), ' stock-settings-layout');
+    /* 고음/중음/저음·전후/좌우 그림은 차 값을 보여 주기만 한다. 테마는 순정 사운드 값을 바꾸지 않는다
+       (차량 설정 쓰기는 사용자 승인 전 금지). 그림이나 단추를 누르면 순정 사운드 설정을 연다.
+       값을 모르면 가운데에 흐리게 둔다. 화면이 다시 그려질 때 vehicleSettings 를 덮어쓰지 않는다. */
+    var openStockSound = function () { host('settings-sound'); };
     if (selected.id === 'tone' && !showSub) {
-      var clampTone = function (v) {
-        var n = typeof v === 'number' && !isNaN(v) ? Math.round(v) : 0;
-        return Math.max(-10, Math.min(10, n));
-      };
       var paintTone = function (group) {
-        var key = group.getAttribute('data-tone-key');
-        var val = clampTone(vehicleSettings[key]);
-        vehicleSettings[key] = val;
+        var raw = vehicleSettings[group.getAttribute('data-tone-key')];
+        var known = typeof raw === 'number' && !isNaN(raw);
+        var val = known ? Math.max(-10, Math.min(10, Math.round(raw))) : 0;
         var pct = (val + 10) / 20 * 100;
         var wrap = group.querySelector('.ccnc-tone-track-wrap');
         var fill = group.querySelector('.ccnc-tone-fill');
         var thumb = group.querySelector('.ccnc-tone-thumb');
         wrap.setAttribute('aria-valuenow', String(val));
+        if (known) group.classList.remove('ccnc-tone-unknown');
+        else group.classList.add('ccnc-tone-unknown');
         thumb.style.left = pct + '%';
-        thumb.textContent = (val > 0 ? '+' : '') + val;
-        if (val >= 0) {
-          fill.style.left = '50%';
-          fill.style.width = (pct - 50) + '%';
-        } else {
-          fill.style.left = pct + '%';
-          fill.style.width = (50 - pct) + '%';
-        }
+        thumb.textContent = known ? (val > 0 ? '+' : '') + val : '–';
+        fill.style.left = (val >= 0 ? 50 : pct) + '%';
+        fill.style.width = Math.abs(pct - 50) + '%';
       };
       var groups = pane.querySelectorAll('.ccnc-tone-group');
       for (var ti = 0; ti < groups.length; ti++) {
-        (function (group) {
-          var key = group.getAttribute('data-tone-key');
-          paintTone(group);
-          var btns = group.querySelectorAll('.ccnc-tone-btn');
-          for (var bi = 0; bi < btns.length; bi++) {
-            btns[bi].addEventListener('click', function () {
-              var step = Number(this.getAttribute('data-tone-step')) || 0;
-              vehicleSettings[key] = clampTone((vehicleSettings[key] || 0) + step);
-              paintTone(group);
-            });
-          }
-          var wrap = group.querySelector('.ccnc-tone-track-wrap');
-          var dragging = false;
-          var setFromClientX = function (clientX) {
-            var r = wrap.getBoundingClientRect();
-            if (!r.width) return;
-            var ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-            vehicleSettings[key] = Math.round(ratio * 20) - 10;
-            paintTone(group);
-          };
-          wrap.addEventListener('mousedown', function (e) { dragging = true; setFromClientX(e.clientX); });
-          wrap.addEventListener('mousemove', function (e) { if (dragging) setFromClientX(e.clientX); });
-          wrap.addEventListener('mouseup', function () { dragging = false; });
-          wrap.addEventListener('mouseleave', function () { dragging = false; });
-          wrap.addEventListener('touchstart', function (e) {
-            if (e.touches && e.touches.length) { dragging = true; setFromClientX(e.touches[0].clientX); }
-          });
-          wrap.addEventListener('touchmove', function (e) {
-            if (dragging && e.touches && e.touches.length) {
-              if (e.preventDefault) e.preventDefault();
-              setFromClientX(e.touches[0].clientX);
-            }
-          });
-          wrap.addEventListener('touchend', function () { dragging = false; });
-        })(groups[ti]);
-      }
-      var resetToneBtn = document.getElementById('ccnc-tone-reset');
-      if (resetToneBtn) {
-        resetToneBtn.addEventListener('click', function () {
-          vehicleSettings.soundTreble = 0;
-          vehicleSettings.soundMiddle = 0;
-          vehicleSettings.soundBass = 0;
-          for (var ri = 0; ri < groups.length; ri++) paintTone(groups[ri]);
-        });
+        paintTone(groups[ti]);
+        groups[ti].querySelector('.ccnc-tone-track-wrap').addEventListener('click', openStockSound);
       }
     } else if (selected.id === 'balance' && !showSub) {
-      var normPos = function (v) {
-        if (typeof v !== 'number' || isNaN(v)) return 0;
-        if (v > 10 && v <= 20) v = v - 10;
-        return Math.max(-10, Math.min(10, Math.round(v)));
+      // 앰프 전후·좌우 값(MicomAudioStatus mFade/mBalance)은 단위를 아직 차에서 확인하지 못했다.
+      // -10~10 안의 값만 그 자리에 찍고, 그 밖이면 가운데에 흐리게 둔다.
+      var posVal = function (v) {
+        return typeof v === 'number' && !isNaN(v) && v >= -10 && v <= 10 ? Math.round(v) : null;
       };
-      var fadeVal = normPos(vehicleSettings.soundFade);
-      var balVal = normPos(vehicleSettings.soundBalance);
-      var gridEl = document.getElementById('ccnc-pos-grid');
-      var hline = document.getElementById('ccnc-pos-hline');
-      var vline = document.getElementById('ccnc-pos-vline');
-      var spot = document.getElementById('ccnc-pos-spot');
-      var focusEl = document.getElementById('ccnc-pos-focus');
-      var fadeOut = document.getElementById('ccnc-pos-fade');
-      var balOut = document.getElementById('ccnc-pos-bal');
-      var focusLabel = function (f, b) {
+      var fadeVal = posVal(vehicleSettings.soundFade);
+      var balVal = posVal(vehicleSettings.soundBalance);
+      var posKnown = fadeVal !== null && balVal !== null;
+      var f = posKnown ? fadeVal : 0, b = posKnown ? balVal : 0;
+      var focusLabel = function () {
+        if (!posKnown) return '순정 값 확인 전';
         if (f === 0 && b === 0) return '차량 중앙 집중';
         if (f >= 3 && b <= -3) return '운전석 집중';
         if (f >= 3 && b >= 3) return '조수석 집중';
@@ -5268,58 +5220,21 @@ var stockSub = '';
         if (b >= 3) return '우측 집중';
         return '사용자 지정 위치';
       };
-      var paintPos = function () {
-        fadeVal = Math.max(-10, Math.min(10, fadeVal));
-        balVal = Math.max(-10, Math.min(10, balVal));
-        vehicleSettings.soundFade = fadeVal;
-        vehicleSettings.soundBalance = balVal;
-        var xPct = (balVal + 10) / 20 * 100;
-        var yPct = (10 - fadeVal) / 20 * 100;
-        hline.style.top = yPct + '%';
-        vline.style.left = xPct + '%';
-        spot.style.left = xPct + '%';
-        spot.style.top = yPct + '%';
-        focusEl.textContent = focusLabel(fadeVal, balVal);
-        fadeOut.textContent = fadeVal === 0 ? '전=후' : (fadeVal > 0 ? '전 +' + fadeVal : '후 +' + Math.abs(fadeVal));
-        balOut.textContent = balVal === 0 ? '좌=우' : (balVal < 0 ? '좌 +' + Math.abs(balVal) : '우 +' + balVal);
-      };
-      paintPos();
-      var posDragging = false;
-      var setPosFromPoint = function (clientX, clientY) {
-        var r = gridEl.getBoundingClientRect();
-        if (!r.width || !r.height) return;
-        var rx = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-        var ry = Math.max(0, Math.min(1, (clientY - r.top) / r.height));
-        balVal = Math.round(rx * 20) - 10;
-        fadeVal = 10 - Math.round(ry * 20);
-        paintPos();
-      };
-      gridEl.addEventListener('mousedown', function (e) { posDragging = true; setPosFromPoint(e.clientX, e.clientY); });
-      gridEl.addEventListener('mousemove', function (e) { if (posDragging) setPosFromPoint(e.clientX, e.clientY); });
-      gridEl.addEventListener('mouseup', function () { posDragging = false; });
-      gridEl.addEventListener('mouseleave', function () { posDragging = false; });
-      gridEl.addEventListener('touchstart', function (e) {
-        if (e.touches && e.touches.length) { posDragging = true; setPosFromPoint(e.touches[0].clientX, e.touches[0].clientY); }
-      });
-      gridEl.addEventListener('touchmove', function (e) {
-        if (posDragging && e.touches && e.touches.length) {
-          if (e.preventDefault) e.preventDefault();
-          setPosFromPoint(e.touches[0].clientX, e.touches[0].clientY);
-        }
-      });
-      gridEl.addEventListener('touchend', function () { posDragging = false; });
-      var dbtns = pane.querySelectorAll('.ccnc-pos-dbtn');
-      for (var di = 0; di < dbtns.length; di++) {
-        dbtns[di].addEventListener('click', function () {
-          if (this.getAttribute('data-pos-reset')) {
-            fadeVal = 0; balVal = 0;
-          } else {
-            fadeVal += Number(this.getAttribute('data-pos-df')) || 0;
-            balVal += Number(this.getAttribute('data-pos-db')) || 0;
-          }
-          paintPos();
-        });
-      }
+      var xPct = (b + 10) / 20 * 100, yPct = (10 - f) / 20 * 100;
+      var gridEl = document.getElementById('ccnc-pos-grid');
+      var spot = document.getElementById('ccnc-pos-spot');
+      document.getElementById('ccnc-pos-hline').style.top = yPct + '%';
+      document.getElementById('ccnc-pos-vline').style.left = xPct + '%';
+      spot.style.left = xPct + '%';
+      spot.style.top = yPct + '%';
+      if (posKnown) gridEl.classList.remove('ccnc-tone-unknown');
+      else gridEl.classList.add('ccnc-tone-unknown');
+      document.getElementById('ccnc-pos-focus').textContent = focusLabel();
+      document.getElementById('ccnc-pos-fade').textContent = !posKnown ? '–' :
+        f === 0 ? '전=후' : (f > 0 ? '전 +' + f : '후 +' + Math.abs(f));
+      document.getElementById('ccnc-pos-bal').textContent = !posKnown ? '–' :
+        b === 0 ? '좌=우' : (b < 0 ? '좌 +' + Math.abs(b) : '우 +' + b);
+      gridEl.addEventListener('click', openStockSound);
     }
     var slider = pane.querySelector('input');
     if (slider) {
