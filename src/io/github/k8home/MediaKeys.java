@@ -28,7 +28,13 @@ final class MediaKeys {
     /** Stock split-screen panel: closes the track popup the BT app shows on a key or track change. */
     static final String SPLIT_CONTROL_ACTION = "ACTION_SPLITSCREEN_CONTROL";
     static final String EXTRA_CANCEL_OSD = "EXTRA_SPLITSCREEN_CONTROL_CANCEL_OSD";
-    private static final long[] CANCEL_OSD_DELAYS_MS = {150, 600, 1200};
+    /**
+     * 순정 팝업(RightSideOsd)은 곡 제목이 바뀌고 약 0.1초 뒤에 뜨고, 떠 있지 않을 때 받은 취소는 버린다(실차 2026-11-23:
+     * 제목 22.35 → 팝업 22.48 → 첫 취소 22.64, 약 0.15초 보임). 0.04~0.5초 사이를 30ms 마다 취소해 뜨자마자 닫는다.
+     * 끄는 공식 스위치는 없다(BTAudio·RightScreenHome 조건 확인: 내비 전체 화면이면 늘 띄움).
+     */
+    private static final long[] CANCEL_OSD_DELAYS_MS = {40, 70, 100, 130, 160, 190, 220, 250, 280, 310, 340, 370,
+        400, 450, 500, 600, 900, 1200};
     private static final String TAG = "K8HomeKeys";
 
     private MediaKeys() {}
