@@ -1488,6 +1488,90 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 .sl-seg-btn { white-space: nowrap; }
 .detail-settings-row .sl-seg-group { width: auto; min-width: 26vw; }
 .detail-settings-art svg { color: #8a8f96; }
+/* ccNC 사운드 고음/중음/저음 슬라이더 (ccNC_D-settings_sound_audio.png) */
+.ccnc-tone-list { margin-top: .2vw; }
+.ccnc-tone-group { padding: 1.0vw 0 1.25vw; border-bottom: 1px solid rgba(255,255,255,.10); }
+.ccnc-tone-label { font-size: 1.35vw; font-weight: 500; color: #eef2f6; margin-bottom: 1.1vw; }
+.ccnc-tone-row { display: flex; align-items: center; }
+.ccnc-tone-btn {
+  width: 2.7vw; height: 2.7vw; border-radius: 50%; flex-shrink: 0;
+  background: #171a20; border: 1px solid rgba(255,255,255,.08);
+  color: #dfe4ea; font-size: 1.65vw; line-height: 2.5vw; text-align: center; padding: 0;
+}
+.ccnc-tone-btn:active { background: #2a303a; }
+.ccnc-tone-track-wrap {
+  position: relative; flex: 1; height: 3.1vw; margin: 0 1.4vw; cursor: pointer;
+}
+.ccnc-tone-track {
+  position: absolute; left: 0; right: 0; top: 50%; height: 5px; margin-top: -2.5px;
+  background: #2f3844; border-radius: 3px;
+}
+.ccnc-tone-center-tick {
+  position: absolute; left: 50%; top: 50%; width: 2px; height: 11px; margin: -5.5px 0 0 -1px;
+  background: rgba(255,255,255,.28);
+}
+.ccnc-tone-fill {
+  position: absolute; top: 50%; height: 5px; margin-top: -2.5px;
+  background: #2bb79b; border-radius: 3px;
+}
+.ccnc-tone-thumb {
+  position: absolute; top: 50%; width: 2.8vw; height: 2.8vw; margin: -1.4vw 0 0 -1.4vw;
+  border-radius: 50%; background: #dde2e8; color: #12161c;
+  font-size: 1.15vw; font-weight: 600; line-height: 2.8vw; text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.55); pointer-events: none;
+}
+.ccnc-tone-footer { margin-top: 1.1vw; display: flex; align-items: center; }
+.ccnc-tone-reset {
+  padding: .65vw 1.5vw; border-radius: .5vw; background: #1c2026;
+  border: 1px solid rgba(255,255,255,.12); color: #dce2e8; font-size: 1.15vw;
+}
+.ccnc-tone-reset:active { background: #2b313a; }
+
+/* ccNC 사운드 전후/좌우 소리 위치 좌표 패드 (ccNC_D-settings_sound_position.png) */
+.ccnc-pos-stage { display: flex; align-items: center; justify-content: space-between; margin-top: .8vw; }
+.ccnc-pos-car-wrap { position: relative; width: 17.8vw; flex-shrink: 0; text-align: center; }
+.ccnc-pos-car { position: relative; width: 17.8vw; height: 18.8vw; margin: 0 auto; }
+.ccnc-pos-car-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.ccnc-pos-grid {
+  position: absolute; left: 2.4vw; top: 2.8vw; width: 13.0vw; height: 13.0vw;
+  cursor: crosshair; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07); background: rgba(16,20,26,.55);
+}
+.ccnc-pos-grid-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.ccnc-pos-hline {
+  position: absolute; left: 0; right: 0; height: 1px; pointer-events: none;
+  background: -webkit-linear-gradient(left, rgba(160,210,235,0), rgba(160,210,235,.55), rgba(160,210,235,0));
+  background: linear-gradient(to right, rgba(160,210,235,0), rgba(160,210,235,.55), rgba(160,210,235,0));
+}
+.ccnc-pos-vline {
+  position: absolute; top: 0; bottom: 0; width: 1px; pointer-events: none;
+  background: -webkit-linear-gradient(top, rgba(160,210,235,0), rgba(160,210,235,.55), rgba(160,210,235,0));
+  background: linear-gradient(to bottom, rgba(160,210,235,0), rgba(160,210,235,.55), rgba(160,210,235,0));
+}
+.ccnc-pos-spot {
+  position: absolute; width: 6.4vw; height: 6.4vw; margin: -3.2vw 0 0 -3.2vw; pointer-events: none;
+}
+.ccnc-pos-focus {
+  position: absolute; left: 0; right: 0; bottom: .6vw;
+  font-size: 1.05vw; color: #c4ced8; text-align: center; pointer-events: none;
+}
+.ccnc-pos-ctrl { flex: 1; min-width: 0; margin-left: 1.8vw; text-align: center; }
+.ccnc-pos-dpad { display: inline-block; text-align: center; }
+.ccnc-pos-drow { display: block; margin-bottom: .65vw; white-space: nowrap; }
+.ccnc-pos-dbtn {
+  display: inline-block; vertical-align: middle; width: 4.6vw; height: 3.3vw; margin: 0 .35vw;
+  border-radius: .45vw; background: #1a1e24; border: 1px solid rgba(255,255,255,.08);
+  color: #e4e9ef; padding: 0; text-align: center;
+}
+.ccnc-pos-dbtn:active { background: #2c333d; }
+.ccnc-pos-dbtn svg { display: block; width: 1.6vw; height: 1.6vw; margin: .8vw auto 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ccnc-pos-readout {
+  margin-top: 1.4vw; display: flex; align-items: center; justify-content: center;
+}
+.ccnc-pos-metric { min-width: 6.4vw; text-align: center; }
+.ccnc-pos-metric span { display: block; font-size: .95vw; color: #8c96a2; }
+.ccnc-pos-metric strong { display: block; font-size: 1.1vw; font-weight: 500; color: #cfd7df; margin-top: .2vw; }
+.ccnc-pos-div { width: 1px; height: 2.2vw; background: rgba(255,255,255,.14); margin: 0 1.2vw; }
 /* The brown in the manual screens is the callout highlight, not a ccNC colour: lists, cards and keys use
    the unhighlighted surfaces' dark grey (#1f1f20). */
 
@@ -4987,7 +5071,88 @@ var stockSub = '';
     var sub = STOCK_SETTING_SUBS[stockSub];
     var showSub = !!(sub && sub.parent === selected.name);
     var main = '<p class="sl-desc">' + escapeText(showSub ? sub.desc : selected.desc) + '</p>';
-    if (selected.id === 'guidance' && !showSub) {
+    if (selected.id === 'tone' && !showSub) {
+      var toneItems = [
+        { key: 'soundTreble', label: '고음' },
+        { key: 'soundMiddle', label: '중음' },
+        { key: 'soundBass', label: '저음' }
+      ];
+      main = '<div class="ccnc-tone-list">' + toneItems.map(function (t) {
+        return '<div class="ccnc-tone-group" data-tone-key="' + t.key + '">' +
+          '<div class="ccnc-tone-label">' + t.label + '</div>' +
+          '<div class="ccnc-tone-row">' +
+            '<button type="button" class="ccnc-tone-btn" data-tone-step="-1" aria-label="' + t.label + ' 내리기">−</button>' +
+            '<div class="ccnc-tone-track-wrap" role="slider" aria-label="' + t.label + '" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0">' +
+              '<div class="ccnc-tone-track"></div>' +
+              '<div class="ccnc-tone-center-tick"></div>' +
+              '<div class="ccnc-tone-fill"></div>' +
+              '<div class="ccnc-tone-thumb">0</div>' +
+            '</div>' +
+            '<button type="button" class="ccnc-tone-btn" data-tone-step="1" aria-label="' + t.label + ' 올리기">+</button>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+      '<div class="ccnc-tone-footer">' +
+        '<button type="button" class="ccnc-tone-reset" id="ccnc-tone-reset">초기값</button>' +
+      '</div></div>';
+    } else if (selected.id === 'balance' && !showSub) {
+      var gridLines = '';
+      for (var gi = 1; gi < 10; gi++) {
+        var gp = gi * 10;
+        gridLines += '<line x1="' + gp + '" y1="0" x2="' + gp + '" y2="100"/><line x1="0" y1="' + gp + '" x2="100" y2="' + gp + '"/>';
+      }
+      main = '<p class="sl-desc">원하는 좌석 위치를 눌러서 조절할 수 있습니다. 전후/좌우 버튼으로 상세 조절이 가능합니다.</p>' +
+        '<div class="ccnc-pos-stage">' +
+          '<div class="ccnc-pos-car-wrap">' +
+            '<div class="ccnc-pos-car">' +
+              '<svg class="ccnc-pos-car-svg" viewBox="0 0 180 190" aria-hidden="true">' +
+                '<defs><linearGradient id="carSideG" x1="0" y1="0" x2="0" y2="1">' +
+                  '<stop offset="0%" stop-color="#5d6976" stop-opacity="0.15"/>' +
+                  '<stop offset="22%" stop-color="#7c8b99" stop-opacity="0.75"/>' +
+                  '<stop offset="85%" stop-color="#7c8b99" stop-opacity="0.65"/>' +
+                  '<stop offset="100%" stop-color="#5d6976" stop-opacity="0.1"/>' +
+                '</linearGradient></defs>' +
+                '<path d="M22 4v182M158 4v182" fill="none" stroke="url(#carSideG)" stroke-width="1.6"/>' +
+                '<path d="M26 10c4 14 14 20 64 20s60-6 64-20" fill="none" stroke="#657382" stroke-width="1.4" stroke-opacity="0.7"/>' +
+                '<path d="M22 30c-10 4-16 10-16 16 0 4 4 6 8 4l8-6M158 30c10 4 16 10 16 16 0 4-4 6-8 4l-8-6" fill="none" stroke="#6d7c8b" stroke-width="1.4" stroke-opacity="0.7"/>' +
+              '</svg>' +
+              '<div class="ccnc-pos-grid" id="ccnc-pos-grid" aria-label="소리 위치 좌표 패드">' +
+                '<svg class="ccnc-pos-grid-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">' +
+                  '<g stroke="rgba(255,255,255,0.06)" stroke-width="0.6">' + gridLines + '</g>' +
+                '</svg>' +
+                '<div class="ccnc-pos-hline" id="ccnc-pos-hline"></div>' +
+                '<div class="ccnc-pos-vline" id="ccnc-pos-vline"></div>' +
+                '<svg class="ccnc-pos-spot" id="ccnc-pos-spot" viewBox="0 0 80 80" aria-hidden="true">' +
+                  '<circle cx="40" cy="40" r="34" fill="rgba(31,182,232,0.10)" stroke="rgba(31,182,232,0.34)" stroke-width="1.2"/>' +
+                  '<circle cx="40" cy="40" r="22" fill="rgba(31,182,232,0.14)" stroke="rgba(43,183,155,0.65)" stroke-width="1.6"/>' +
+                  '<circle cx="40" cy="40" r="10.5" fill="#1fb6e8"/>' +
+                '</svg>' +
+              '</div>' +
+              '<div class="ccnc-pos-focus" id="ccnc-pos-focus">차량 중앙 집중</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ccnc-pos-ctrl">' +
+            '<div class="ccnc-pos-dpad">' +
+              '<div class="ccnc-pos-drow">' +
+                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="1" data-pos-db="0" aria-label="앞쪽으로"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>' +
+              '</div>' +
+              '<div class="ccnc-pos-drow">' +
+                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="0" data-pos-db="-1" aria-label="왼쪽으로"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-pos-reset="1" aria-label="중앙 초기화"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>' +
+                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="0" data-pos-db="1" aria-label="오른쪽으로"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>' +
+              '</div>' +
+              '<div class="ccnc-pos-drow">' +
+                '<button type="button" class="ccnc-pos-dbtn" data-pos-df="-1" data-pos-db="0" aria-label="뒤쪽으로"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="ccnc-pos-readout">' +
+              '<div class="ccnc-pos-metric"><span>전후</span><strong id="ccnc-pos-fade">전=후</strong></div>' +
+              '<div class="ccnc-pos-div"></div>' +
+              '<div class="ccnc-pos-metric"><span>좌우</span><strong id="ccnc-pos-bal">좌=우</strong></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    } else if (selected.id === 'guidance' && !showSub) {
       main += (selected.rows || []).map(function (row) { return stockRowHtml(row, 'settings-sound'); }).join('') +
         '<section class="sound-panel"><label for="theme-volume-range">미디어 음량</label><br>' +
         '<output id="theme-volume"></output><input id="theme-volume-range" aria-label="미디어 음량" type="range" min="0" value="0">' +
@@ -5005,6 +5170,157 @@ var stockSub = '';
     main += '<div class="detail-settings-actions">' +
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>';
     detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected.art), ' stock-settings-layout');
+    if (selected.id === 'tone' && !showSub) {
+      var clampTone = function (v) {
+        var n = typeof v === 'number' && !isNaN(v) ? Math.round(v) : 0;
+        return Math.max(-10, Math.min(10, n));
+      };
+      var paintTone = function (group) {
+        var key = group.getAttribute('data-tone-key');
+        var val = clampTone(vehicleSettings[key]);
+        vehicleSettings[key] = val;
+        var pct = (val + 10) / 20 * 100;
+        var wrap = group.querySelector('.ccnc-tone-track-wrap');
+        var fill = group.querySelector('.ccnc-tone-fill');
+        var thumb = group.querySelector('.ccnc-tone-thumb');
+        wrap.setAttribute('aria-valuenow', String(val));
+        thumb.style.left = pct + '%';
+        thumb.textContent = (val > 0 ? '+' : '') + val;
+        if (val >= 0) {
+          fill.style.left = '50%';
+          fill.style.width = (pct - 50) + '%';
+        } else {
+          fill.style.left = pct + '%';
+          fill.style.width = (50 - pct) + '%';
+        }
+      };
+      var groups = pane.querySelectorAll('.ccnc-tone-group');
+      for (var ti = 0; ti < groups.length; ti++) {
+        (function (group) {
+          var key = group.getAttribute('data-tone-key');
+          paintTone(group);
+          var btns = group.querySelectorAll('.ccnc-tone-btn');
+          for (var bi = 0; bi < btns.length; bi++) {
+            btns[bi].addEventListener('click', function () {
+              var step = Number(this.getAttribute('data-tone-step')) || 0;
+              vehicleSettings[key] = clampTone((vehicleSettings[key] || 0) + step);
+              paintTone(group);
+            });
+          }
+          var wrap = group.querySelector('.ccnc-tone-track-wrap');
+          var dragging = false;
+          var setFromClientX = function (clientX) {
+            var r = wrap.getBoundingClientRect();
+            if (!r.width) return;
+            var ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+            vehicleSettings[key] = Math.round(ratio * 20) - 10;
+            paintTone(group);
+          };
+          wrap.addEventListener('mousedown', function (e) { dragging = true; setFromClientX(e.clientX); });
+          wrap.addEventListener('mousemove', function (e) { if (dragging) setFromClientX(e.clientX); });
+          wrap.addEventListener('mouseup', function () { dragging = false; });
+          wrap.addEventListener('mouseleave', function () { dragging = false; });
+          wrap.addEventListener('touchstart', function (e) {
+            if (e.touches && e.touches.length) { dragging = true; setFromClientX(e.touches[0].clientX); }
+          });
+          wrap.addEventListener('touchmove', function (e) {
+            if (dragging && e.touches && e.touches.length) {
+              if (e.preventDefault) e.preventDefault();
+              setFromClientX(e.touches[0].clientX);
+            }
+          });
+          wrap.addEventListener('touchend', function () { dragging = false; });
+        })(groups[ti]);
+      }
+      var resetToneBtn = document.getElementById('ccnc-tone-reset');
+      if (resetToneBtn) {
+        resetToneBtn.addEventListener('click', function () {
+          vehicleSettings.soundTreble = 0;
+          vehicleSettings.soundMiddle = 0;
+          vehicleSettings.soundBass = 0;
+          for (var ri = 0; ri < groups.length; ri++) paintTone(groups[ri]);
+        });
+      }
+    } else if (selected.id === 'balance' && !showSub) {
+      var normPos = function (v) {
+        if (typeof v !== 'number' || isNaN(v)) return 0;
+        if (v > 10 && v <= 20) v = v - 10;
+        return Math.max(-10, Math.min(10, Math.round(v)));
+      };
+      var fadeVal = normPos(vehicleSettings.soundFade);
+      var balVal = normPos(vehicleSettings.soundBalance);
+      var gridEl = document.getElementById('ccnc-pos-grid');
+      var hline = document.getElementById('ccnc-pos-hline');
+      var vline = document.getElementById('ccnc-pos-vline');
+      var spot = document.getElementById('ccnc-pos-spot');
+      var focusEl = document.getElementById('ccnc-pos-focus');
+      var fadeOut = document.getElementById('ccnc-pos-fade');
+      var balOut = document.getElementById('ccnc-pos-bal');
+      var focusLabel = function (f, b) {
+        if (f === 0 && b === 0) return '차량 중앙 집중';
+        if (f >= 3 && b <= -3) return '운전석 집중';
+        if (f >= 3 && b >= 3) return '조수석 집중';
+        if (f >= 3) return '앞좌석 집중';
+        if (f <= -3 && b <= -3) return '뒷좌석 좌측 집중';
+        if (f <= -3 && b >= 3) return '뒷좌석 우측 집중';
+        if (f <= -3) return '뒷좌석 집중';
+        if (b <= -3) return '좌측 집중';
+        if (b >= 3) return '우측 집중';
+        return '사용자 지정 위치';
+      };
+      var paintPos = function () {
+        fadeVal = Math.max(-10, Math.min(10, fadeVal));
+        balVal = Math.max(-10, Math.min(10, balVal));
+        vehicleSettings.soundFade = fadeVal;
+        vehicleSettings.soundBalance = balVal;
+        var xPct = (balVal + 10) / 20 * 100;
+        var yPct = (10 - fadeVal) / 20 * 100;
+        hline.style.top = yPct + '%';
+        vline.style.left = xPct + '%';
+        spot.style.left = xPct + '%';
+        spot.style.top = yPct + '%';
+        focusEl.textContent = focusLabel(fadeVal, balVal);
+        fadeOut.textContent = fadeVal === 0 ? '전=후' : (fadeVal > 0 ? '전 +' + fadeVal : '후 +' + Math.abs(fadeVal));
+        balOut.textContent = balVal === 0 ? '좌=우' : (balVal < 0 ? '좌 +' + Math.abs(balVal) : '우 +' + balVal);
+      };
+      paintPos();
+      var posDragging = false;
+      var setPosFromPoint = function (clientX, clientY) {
+        var r = gridEl.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        var rx = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+        var ry = Math.max(0, Math.min(1, (clientY - r.top) / r.height));
+        balVal = Math.round(rx * 20) - 10;
+        fadeVal = 10 - Math.round(ry * 20);
+        paintPos();
+      };
+      gridEl.addEventListener('mousedown', function (e) { posDragging = true; setPosFromPoint(e.clientX, e.clientY); });
+      gridEl.addEventListener('mousemove', function (e) { if (posDragging) setPosFromPoint(e.clientX, e.clientY); });
+      gridEl.addEventListener('mouseup', function () { posDragging = false; });
+      gridEl.addEventListener('mouseleave', function () { posDragging = false; });
+      gridEl.addEventListener('touchstart', function (e) {
+        if (e.touches && e.touches.length) { posDragging = true; setPosFromPoint(e.touches[0].clientX, e.touches[0].clientY); }
+      });
+      gridEl.addEventListener('touchmove', function (e) {
+        if (posDragging && e.touches && e.touches.length) {
+          if (e.preventDefault) e.preventDefault();
+          setPosFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      });
+      gridEl.addEventListener('touchend', function () { posDragging = false; });
+      var dbtns = pane.querySelectorAll('.ccnc-pos-dbtn');
+      for (var di = 0; di < dbtns.length; di++) {
+        dbtns[di].addEventListener('click', function () {
+          if (this.getAttribute('data-pos-reset')) {
+            fadeVal = 0; balVal = 0;
+          } else {
+            fadeVal += Number(this.getAttribute('data-pos-df')) || 0;
+            balVal += Number(this.getAttribute('data-pos-db')) || 0;
+          }
+          paintPos();
+        });
+      }
+    }
     var slider = pane.querySelector('input');
     if (slider) {
       slider.oninput = function () {
