@@ -5320,7 +5320,7 @@ var stockSub = '';
       // 차에서 확인(2026-11-23): 앰프 전후·좌우도 0~20, 가운데 10(soundRaw.offset = 10). 단위를 모르면 찍지 않는다.
       var ampRaw = vehicleSettings.soundRaw || {};
       var ampOff = typeof ampRaw.offset === 'number' && ampRaw.offset >= 0 ? ampRaw.offset : null;
-      var fadeVal = ampOff === null ? null : posVal(typeof ampRaw.mFade === 'number' ? ampRaw.mFade - ampOff : null);
+      var fadeVal = ampOff === null ? null : posVal(typeof ampRaw.mFade === 'number' ? ampOff - ampRaw.mFade : null); // 앰프 전후는 클수록 뒤(실차)
       var balVal = ampOff === null ? null : posVal(typeof ampRaw.mBalance === 'number' ? ampRaw.mBalance - ampOff : null);
       var posKnown = fadeVal !== null && balVal !== null;
       var f = posKnown ? fadeVal : 0, b = posKnown ? balVal : 0;

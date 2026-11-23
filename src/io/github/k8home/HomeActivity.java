@@ -535,7 +535,10 @@ public final class HomeActivity extends Activity {
     private volatile boolean writingSound;
     private void writeSound(final SoundWrite write) {
         if (!ThemePrefs.soundWrite(this)) {
-            reportSoundResult(false, "사운드 직접 변경 스위치가 꺼져 있습니다.");
+            // JavaBridge 스레드에서 불리므로 WebView 는 UI 스레드에서 건드린다(실차 오류 2026-11-23).
+            runOnUiThread(new Runnable() {
+                @Override public void run() { reportSoundResult(false, "사운드 직접 변경 스위치가 꺼져 있습니다."); }
+            });
             return;
         }
         if (writingSound) return;

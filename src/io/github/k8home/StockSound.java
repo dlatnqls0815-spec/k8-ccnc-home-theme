@@ -92,6 +92,11 @@ final class StockSound {
 
     private static boolean inRange(int value) { return value >= -10 && value <= 10; }
 
+    /** 앰프 상태는 쓰고 나서 조금 뒤에 바뀐다(실차: 바로 읽으면 앞 값). */
+    private static void settle() {
+        try { Thread.sleep(400); } catch (InterruptedException ignored) { }
+    }
+
     /** 테마 단위(-10~10, 0 = 가운데)의 저음·중음·고음을 쓴다. */
     static Result setTone(Context context, int bass, int middle, int treble) {
         if (!inRange(bass) || !inRange(middle) || !inRange(treble)) return new Result(false, "범위(-10~10)를 벗어난 값입니다.");
@@ -104,6 +109,7 @@ final class StockSound {
             Object done = manager.getClass().getMethod("setBassMidTreb", int.class, int.class, int.class)
                 .invoke(manager, bass + off, middle + off, treble + off);
             Log.i(TAG, "setBassMidTreb " + (bass + off) + "/" + (middle + off) + "/" + (treble + off) + " → " + done);
+            settle();
             Object after = status(manager);
             String read = after == null ? "?" : field(after, "mBass") + "/" + field(after, "mMiddle") + "/" + field(after, "mTreble");
             boolean ok = !Boolean.FALSE.equals(done);
@@ -117,7 +123,10 @@ final class StockSound {
         }
     }
 
-    /** 테마 단위(-10~10, 0 = 가운데)의 전후·좌우를 쓴다. 방향(+가 앞·오른쪽인지)은 차에서 확인한다. */
+    /**
+     * 테마 단위(-10~10, 0 = 가운데, 전후 + = 앞, 좌우 + = 오른쪽)의 전후·좌우를 쓴다.
+     * 차에서 확인(2026-11-23): 앰프·순정 키 전후는 값이 클수록 뒤(11 = 뒤로 한 칸), 좌우는 클수록 오른쪽.
+     */
     static Result setFadeBalance(Context context, int fade, int balance) {
         if (!inRange(fade) || !inRange(balance)) return new Result(false, "범위(-10~10)를 벗어난 값입니다.");
         try {
@@ -131,8 +140,9 @@ final class StockSound {
                 return new Result(false, "지금 전후/좌우 앰프 값(" + nowFade + "/" + nowBalance + ")이 예상 단위와 달라 쓰지 않았습니다.");
             }
             Object done = manager.getClass().getMethod("setFadeBalance", int.class, int.class)
-                .invoke(manager, fade + off, balance + off);
-            Log.i(TAG, "setFadeBalance " + (fade + off) + "/" + (balance + off) + " → " + done);
+                .invoke(manager, off - fade, balance + off);
+            Log.i(TAG, "setFadeBalance " + (off - fade) + "/" + (balance + off) + " → " + done);
+            settle();
             Object after = status(manager);
             String read = after == null ? "?" : field(after, "mFade") + "/" + field(after, "mBalance");
             boolean ok = !Boolean.FALSE.equals(done);
