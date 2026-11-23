@@ -201,7 +201,7 @@ def wave(x0, y0, x1, y1, bulge):
     return 'M%s %sQ%s %s %s %s' % (f(x0), f(y0), f(cx), f((y0 + y1) / 2), f(x1), f(y1))
 
 
-# 스피커 + 청록 파문 (D-settings_sound_position.png / _guide.png 오른쪽 칸)
+# 스피커 + 청록 파문 (D-settings_sound_position.png / _guide.png / _warning.png 오른쪽 칸)
 cone = ('<g transform="rotate(-32 108 148)">'
         '<ellipse cx="108" cy="148" rx="41" ry="45"/>'
         '<ellipse cx="111" cy="145" rx="28" ry="34"/>'
@@ -212,33 +212,111 @@ waves = (path(wave(140, 68, 142, 175, 163), stroke=T, stroke_width='2.2') +
          path(wave(140, 68, 142, 175, 210), stroke=T, stroke_width='2.2'))
 A['soundSpeaker'] = g(cone, 1.6) + g(waves, 2.2, T)
 
-# 차 실내 위치(전후/좌우 화면의 본문 그림)
-cabin = ('<path d="M60 40h140v150H60z"/>'
-         '<path d="M60 40c14 6 126 6 140 0M60 190c14-6 126-6 140 0"/>'
-         '<path d="M60 40v150M200 40v150"/>'
-         '<circle cx="130" cy="115" r="21" stroke="%s"/>'
-         '<circle cx="130" cy="115" r="11" fill="%s"/>'
-         '<path d="M130 60v100M75 115h110"/>') % (T, T)
-A['soundCabin'] = g(cabin, 1.6)
+# 안내음 (스피커 + 왼쪽 위 (i) 아이콘: D-settings_sound_guide.png)
+A['soundGuide'] = (A['soundSpeaker'] +
+                   g('<circle cx="56" cy="112" r="14"/>', 1.8, T) +
+                   '<circle cx="56" cy="105.5" r="1.6" fill="%s"/>' % T +
+                   '<path d="M56 110v9" stroke="%s" stroke-width="2.4" stroke-linecap="round"/>' % T)
 
-# 고음/중음/저음
-A['soundTone'] = g('<path d="M78 46v180M128 46v180M178 46v180"/>'
-                   '<rect x="66" y="90" width="24" height="16" rx="4"/>'
-                   '<rect x="116" y="140" width="24" height="16" rx="4"/>'
-                   '<rect x="166" y="112" width="24" height="16" rx="4"/>', 1.8)
+# 운전자 보조 경고음 (스피커 + 빨간 삼각형 ! 경고 마크: D-settings_sound_warning.png)
+A['soundWarning'] = (A['soundSpeaker'] +
+                     '<path d="M56 96L71 122H41Z" fill="#000" stroke="#e03c31" stroke-width="2" stroke-linejoin="round"/>' +
+                     '<path d="M56 104v9" stroke="#e03c31" stroke-width="2.2" stroke-linecap="round"/>' +
+                     '<circle cx="56" cy="117.5" r="1.4" fill="#e03c31"/>')
 
-# 운전자 보조(방패)
-A['soundShield'] = g('<path d="M130 42L188 66v46C188 142 170 166 130 186 90 166 72 142 72 112V66z"/>'
-                      '<path d="M130 108v34M130 166v3"/>', 1.8)
+# 미디어 동작 (스피커 + 왼쪽 아래 재생 (▷) 원형 배지: D-settings_general_mediaaction.png)
+A['mediaAction'] = (A['soundSpeaker'] +
+                    '<circle cx="66" cy="176" r="24" fill="#0d1117" stroke="%s" stroke-width="1.8"/>' % G +
+                    '<path d="M59 166l17 10-17 10Z" fill="none" stroke="%s" stroke-width="2" stroke-linejoin="round"/>' % T)
 
-# 라디오 음질(안테나+파문)
-A['soundRadio'] = g('<rect x="92" y="120" width="76" height="64" rx="8"/>'
-                     '<path d="M110 120l16-58M150 120l-16-58"/>'
-                     '<path d="M186 104a44 44 0 0 1 0 40M196 92a60 60 0 0 1 0 64"/>', 1.8)
+# 차 실내 위치(전후/좌우 화면) -> 원본 ccNC는 soundSpeaker 사용, 호환용 유지
+A['soundCabin'] = A['soundSpeaker']
+
+# 고음/중음/저음 (3D 등각투영 믹서 보드: D-settings_sound_audio.png)
+board = rpoly([(48, 144), (138, 102), (212, 138), (122, 184)], 8)
+board_bot = 'M48 148v10l74 36 90-46v-10'
+slots = 'M82 134l58 29M106 122l58 29M130 110l58 29'
+def knob(cx, cy):
+    return ('<path d="M%s %sl14-7 12 6-14 7z" fill="#20252d" stroke="%s" stroke-width="1.3"/>'
+            '<path d="M%s %sv7l12 6v-7M%s %sv7l14-7v-7" fill="#14181e" stroke="%s" stroke-width="1.2"/>') % (
+        f(cx - 7), f(cy), G, f(cx - 7), f(cy), f(cx + 5), f(cy + 6), G)
+A['soundTone'] = (path(board, fill='#14171c', stroke=G, stroke_width='1.8') +
+                  g(board_bot, 1.8) + g(slots, 1.4, '#4b5563') +
+                  knob(104, 144) + knob(124, 130) + knob(158, 123))
+
+# 운전자 보조(방패) 호환용 -> soundWarning 별칭
+A['soundShield'] = A['soundWarning']
+
+# 라디오 음질 (라디오 + 좌측 주황 노이즈 파형 + 우측 원음/노이즈 파형: D-settings_sound_radionoise.png)
+lw = 'M18 148c10-24 22 24 34 0s20-26 30 0'
+rw1 = 'M174 148c10-20 20 20 30 0s18-18 28 0'
+rw2 = 'M174 148c10 18 22-22 32 0s18 16 26 0'
+A['soundRadio'] = (g(path(lw), 1.8, '#d9623b') + g(path(rw1), 1.8, '#d9623b') + g(path(rw2), 2.0, T) +
+                   '<rect x="90" y="118" width="76" height="58" rx="6" fill="#0d1117" stroke="%s" stroke-width="1.8"/>' % G +
+                   g(path('M98 118l48-22M106 138h24M106 152h24'), 1.8) +
+                   '<circle cx="148" cy="145" r="10" fill="none" stroke="%s" stroke-width="1.8"/>' % G)
 
 # 후석 취침(침대)
 A['soundRear'] = g('<path d="M64 200v-40a16 16 0 0 1 16-16h96a16 16 0 0 1 16 16v40z"/>'
                     '<path d="M64 176h128M80 200v22M180 200v22"/>', 1.8)
+
+# 일반 › 키보드 (3D 등각투영 키보드: D-settings_general_keyboard.png)
+kb_out = rpoly([(44, 146), (166, 98), (218, 126), (96, 180)], 8)
+kb_keys = ''
+for r_ in range(3):
+    for c_ in range(6):
+        u = 0.14 + c_ * 0.135; v = 0.22 + r_ * 0.24
+        kx = 44 + (166 - 44) * u + (96 - 44) * v
+        ky = 146 + (98 - 146) * u + (180 - 146) * v
+        kb_keys += '<path d="M%s %sl11-4.5 6 3.5-11 4.5z"/>' % (f(kx), f(ky))
+A['keyboard'] = (path(kb_out, fill='#14171c', stroke=G, stroke_width='1.8') +
+                 g('M44 150v7l52 30 122-54v-7', 1.8) + g(kb_keys, 1.1))
+
+# 디스플레이 › 영상 색상 (모니터 안 슬라이더 3줄: D-settings_display_screencolor.png)
+sc_bars = 'M98 128h64M98 144h64M98 160h64'
+sc_act = 'M98 128h28M98 144h14M98 160h40'
+sc_knobs = ('<circle cx="126" cy="128" r="4" fill="#141414" stroke="#fff" stroke-width="1.5"/>'
+            '<circle cx="112" cy="144" r="4" fill="#141414" stroke="#fff" stroke-width="1.5"/>'
+            '<circle cx="138" cy="160" r="4" fill="#141414" stroke="#fff" stroke-width="1.5"/>')
+A['screenColor'] = screen(g(path(sc_bars), 2.2, '#4a5568') + g(path(sc_act), 2.2, T) + sc_knobs)
+
+# 디스플레이 › 영상 비율
+A['videoRatio'] = screen(g('<rect x="96" y="118" width="66" height="46" rx="3"/>'
+                           '<path d="M104 126l8 8M154 156l-8-8"/>', 1.8, T))
+
+# 버튼 › 후석 잠금
+A['btnRearLock'] = g('<rect x="76" y="114" width="104" height="58" rx="10"/>'
+                     '<rect x="114" y="138" width="28" height="22" rx="3"/>'
+                     '<path d="M120 138v-7a8 8 0 0 1 16 0v7M128 147v5"/>', 1.8)
+
+# 차량 › 시트 (3D 시트: D-settings_vehicle_seat.png)
+seat_back = 'M116 140c-6-22-4-54 6-76 5-10 10-16 14-26 3-8 14-10 21-4 4 4 4 12 2 20-1 8 6 12 10 22 4 12 4 38-6 60z'
+seat_base = 'M72 174c-4-10 6-18 22-22l36-8 44 10c10 4 12 14 6 22l-36 18c-16 8-48 8-62-4z'
+A['seat'] = ('<g transform="translate(-14, 18) scale(1.12)">' +
+             path(seat_back, fill='#1c2026', stroke=G, stroke_width='1.8', stroke_linejoin='round') +
+             path(seat_base, fill='#1c2026', stroke=G, stroke_width='1.8', stroke_linejoin='round') +
+             g(path('M82 172c18 10 44 10 64 0l30-14'), 1.2, '#5a6470') + '</g>')
+
+# 차량 › 편의 (톱니바퀴 + 손가락 터치: D-settings_vehicle_convenience.png)
+conv_gear = gear(126, 134, 48, 39, 8, 0.42)
+hand = ('M138 192v-42a6 6 0 0 1 12 0v22l22 6c6 2 10 8 8 16l-6 22h-36l-14-22c-3-5 1-11 7-9l7 7z')
+A['convenience'] = (g(path(conv_gear) + '<circle cx="126" cy="134" r="20"/>', 1.8) +
+                    path(hand, fill='#000', stroke=G, stroke_width='1.8', stroke_linejoin='round'))
+
+# 차량 › 디지털 키 (스마트폰 + NFC 카드 키 + 열쇠 아이콘: D-settings_vehicle_digitalkey.png)
+dk_phone = rpoly([(126, 68), (192, 92), (146, 212), (80, 188)], 10)
+dk_card = rpoly([(62, 124), (124, 146), (98, 212), (38, 190)], 6)
+key_ico = '<circle cx="146" cy="126" r="7"/><path d="M142 132l-12 20M136 143l5 3M132 149l5 3"/>'
+key_ico2 = '<circle cx="88" cy="164" r="6"/><path d="M84 169l-9 15M80 177l4 2"/>'
+A['digitalKey'] = (path(dk_phone, fill='#0d1014', stroke=G, stroke_width='1.8') +
+                   g(key_ico, 1.6) +
+                   path(dk_card, fill='#0d1014', stroke=G, stroke_width='1.8') +
+                   g(key_ico2, 1.5))
+
+# 차량 › 차량 상태
+A['vehicleStatus'] = g('<path d="M52 162h152l-14-32c-5-12-18-18-32-18h-62c-14 0-27 6-32 18z"/>'
+                       '<circle cx="86" cy="166" r="14"/><circle cx="170" cy="166" r="14"/>'
+                       '<path d="M114 82l10 10 20-20" stroke="%s" stroke-width="2.4"/>' % T, 1.8)
 
 # ---------------------------------------------------------------- 클러스터/HUD (0.5.0-test7)
 # 설명서 그림은 음영 있는 렌더링이다. 선으로 그릴 수 있는 부분만 옮기고 음영은 생략했다.
