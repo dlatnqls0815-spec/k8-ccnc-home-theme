@@ -50,6 +50,7 @@ public final class KeyHelper {
 
     public static void main(String[] args) throws IOException {
         log("start");
+        watchOwnDex();
         // 업데이트 때 앞 도우미가 아직 소켓을 쥐고 있으면 바로 실패해 NEMESIS 가 5번 만에 포기했다(실차 2026-11-23).
         // 최대 60초 동안 1초마다 다시 잡는다.
         LocalServerSocket server = null;
@@ -244,6 +245,30 @@ public final class KeyHelper {
 
     static final String LOG = "/data/nemesis/logs/k8home.keys/keys.log";
     static final long LOG_LIMIT = 256 * 1024;
+
+    /**
+     * 테마를 업데이트하면 NEMESIS 가 새 도우미를 띄우지만 앞 도우미는 살아서 소켓을 쥐고 있어, 새 도우미가 60초씩 실패를 되풀이하고
+     * 그 사이 버튼이 한 번 먹통이 됐다(실차 2026-11-23). 내 dex 파일이 바뀌면(업데이트) 2초 안에 스스로 끝낸다.
+     */
+    private static void watchOwnDex() {
+        String cp = System.getenv("CLASSPATH");
+        if (cp == null || cp.isEmpty()) return;
+        final File dex = new File(cp.split(":")[0]);
+        final long stamp = dex.lastModified(), size = dex.length();
+        Thread watcher = new Thread(new Runnable() {
+            @Override public void run() {
+                while (true) {
+                    try { Thread.sleep(2000); } catch (InterruptedException ignored) { }
+                    if (!dex.exists() || dex.lastModified() != stamp || dex.length() != size) {
+                        log("dex replaced, exiting for the new helper");
+                        System.exit(0);
+                    }
+                }
+            }
+        }, "dex-watch");
+        watcher.setDaemon(true);
+        watcher.start();
+    }
 
     static void log(String msg) {
         String line = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.US).format(new Date()) + " " + msg;
