@@ -241,6 +241,20 @@ def main():
         if result.returncode != 0:
             sys.stderr.write("빌드를 멈춘다: %s 검사 실패\n" % check)
             sys.exit(1)
+    # 상단바·하단바 비율 지킴이(tools/bar_guard.cjs). 기준값(tools/bar_baseline.json)과 1px 넘게 다르면 멈춘다.
+    # 일부러 바꿨으면 사용자 확인 뒤 `node tools/bar_guard.cjs --update`. Edge·playwright-core 가 없는 PC 만
+    # K8_SKIP_BAR_GUARD=1 로 건너뛸 수 있다(이때는 크게 경고한다).
+    if os.environ.get("K8_SKIP_BAR_GUARD") == "1":
+        sys.stderr.write("경고: 상단바·하단바 비율 검사를 건너뛰었다(K8_SKIP_BAR_GUARD=1). 이 묶음은 검수 전에 다시 검사해야 한다.\n")
+    else:
+        guard = subprocess.run(["node", str(Path(__file__).resolve().parent / "bar_guard.cjs")], cwd=str(ROOT),
+                               capture_output=True)
+        out = guard.stdout.decode("utf-8", "replace") + guard.stderr.decode("utf-8", "replace")
+        sys.stdout.buffer.write(out.encode("utf-8")) if hasattr(sys.stdout, "buffer") else sys.stdout.write(out)
+        sys.stdout.flush()
+        if guard.returncode != 0:
+            sys.stderr.write("빌드를 멈춘다: 상단바·하단바 비율이 기준값과 다르다(bar_guard)\n")
+            sys.exit(1)
     if args.home_apk:
         if not args.home_apk.is_file() or not zipfile.is_zipfile(args.home_apk):
             parser.error("--home-apk must point to a signed K8 Home APK")

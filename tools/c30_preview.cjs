@@ -109,7 +109,8 @@ async function bottomGap(page) {
   });
 }
 
-(async () => {
+module.exports = { chrome30, SCREENS, VIEW, BAR_VIEW, PW, ASSETS };
+if (require.main === module) (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const want = process.argv.slice(2);
   const names = want.length ? want : Object.keys(SCREENS);
