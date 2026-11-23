@@ -135,17 +135,24 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 .bb-route-info { display: block; white-space: nowrap; font-size: 0; line-height: 48px; }
 .bb-route-info > * { display: inline-block; vertical-align: middle; font-size: 26px; }
 .bb-route-info > [hidden] { display: none; }
-.bb-route-info .bb-metric { display: inline-block; height: 48px; }
-.bb-route-info .bb-metric > span { display: inline-block; vertical-align: baseline; }
+.bb-route-info .bb-metric { display: inline-block; height: 48px; line-height: 48px; vertical-align: middle; }
+.bb-route-info .bb-metric > span { display: inline; line-height: normal; vertical-align: baseline; }
 .bb-time { width: auto; line-height: 48px; }
 .bb-dest { line-height: 48px; max-width: 300px; }
 .bb-media-zone { left: 1423px; width: 497px; }
 .bb-media-play { position: absolute; left: 0; top: 0; display: block; }
-.bb-media-play .bb-media-default { display: block; margin: 0 auto; }
+.bb-media-play .bb-media-default { position: absolute; left: 50%; top: 50%; margin: -23px 0 0 -23px; display: block; }
 .bb-media-play img[hidden] { display: none; }
-.bb-media-body { position: absolute; left: 88px; right: 0; top: 0; height: 88px; display: block; }
-.bb-media-meta { display: block; padding-top: 16px; }
-.bb-media-off { display: block; line-height: 88px; }
+.bb-media-body { position: absolute; left: 86px; right: 0; top: 0; height: 88px; display: block; padding: 0; text-align: left; }
+.bb-media-meta {
+  position: absolute; left: 18px; right: 18px; top: 50%;
+  -webkit-transform: translateY(-50%); transform: translateY(-50%);
+  display: block; padding: 0;
+}
+.bb-media-meta strong { font-size: 26px; line-height: 31px; }
+.bb-media-meta span { font-size: 22px; line-height: 26px; margin-top: 2px; }
+.bb-media-meta span:empty { display: none; }
+.bb-media-off { position: absolute; left: 18px; right: 18px; top: 0; height: 88px; line-height: 88px; font-size: 26px; display: block; }
 /* 설명서 D-map_guidance.png 확대 실측(1920 기준): 알약 513~1373, 위아래 4px(높이 80), X는 알약 왼쪽 끝의
    지름 76px 밝은 원(중심 551) 안 26px, 뒤로 화살표 20x26, 집 31x24, 목록 30x24, 선 굵기 2px,
    거리 649, 시간 771, 재생 띠 1423~1509. */
@@ -155,11 +162,11 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 #bb-menu-btn { left: 305px; }
 .bb-pill { left: -13px; top: 4px; height: 80px; width: 860px; }
 .bb-route-cancel { left: 1px; top: 2px; width: 76px; height: 76px; background: #5b5a58; }
-.bb-route-cancel .bb-icon { width: 26px; height: 26px; }
-.bb-route-info { left: 136px; top: 12px; }
+.bb-route-cancel .bb-icon { position: absolute; left: 50%; top: 50%; margin: -13px 0 0 -13px; width: 26px; height: 26px; }
+.bb-route-info { left: 136px; top: 16px; height: 48px; line-height: 48px; }
 button.bb-idle { line-height: 80px; }
-/* 아이콘·글자가 설명서보다 3~5px 아래에 있어 설명서 기준(뒤로 27~54, 거리 28~52, 깃발 25~56)에 맞춰 올린다. */
-.bb-key .bb-icon { position: relative; top: -2px; }
+/* 왼쪽 키 아이콘과 가운데 알약·미디어 글자를 줄(88px) 세로 정가운데(±1px)에 맞춘다. */
+.bb-key .bb-icon { position: absolute; left: 50%; top: 50%; margin: -16px 0 0 -16px; }
 .bb-media-zone { left: 1423px; width: 497px; }
 .bb-media-play { width: 86px; flex-basis: 86px; }
 .bb-media-body { left: 86px; }
@@ -169,32 +176,30 @@ button.bb-idle { line-height: 80px; }
 
 .bb-route-info .bb-route-value { font-size: 33px; }
 .bb-route-info .bb-route-unit { font-size: 23px; }
-.bb-route-info .bb-time.is-hm .bb-route-value { font-size: 29px; }
-.bb-route-info .bb-time.is-hm .bb-route-unit { font-size: 20px; }
 #bb-route-time2:not(:empty) { margin-left: 6px; }
 
-/* 깃발 31x30 #d6d6d6 (976~1007, 위 20), 목적지 25px (1032~, 글자 위 24). */
+/* 깃발 31x30 #d6d6d6, 목적지 26px(한 줄 글 통일). */
 /* 깃발(31x30)과 목적지 글자를 항상 보이게 한다(0 폭·숨김 방지). */
 .bb-route-info .bb-location { margin-left: 2px; fill: #d6d6d6; width: 31px; height: 30px; display: inline-block; }
 .bb-route-info .bb-dest {
-  margin-left: 23px; font-size: 25px; position: relative; top: 1px; color: #e4e2df;
+  margin-left: 23px; font-size: 26px; color: #e4e2df;
   display: inline-block; vertical-align: middle; overflow: visible;
 }
 .bb-dest-text {
-  display: inline-block; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  vertical-align: middle;
+  display: block; height: 48px; line-height: 48px; max-width: 300px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 #bb-idle-label { display: inline-block; max-width: 700px; overflow: hidden; white-space: nowrap; vertical-align: middle; }
 /* 실차(Chrome 30)에서 깃발과 위치 글자가 두 줄로 갈라져 글자가 잘렸다. 줄 흐름 대신 좌표로 고정한다
    (깃발 왼쪽 68, 알약 높이 80 가운데, 글자는 깃발 오른쪽 20). */
 button.bb-idle { padding: 0; white-space: nowrap; }
 .bb-idle .bb-location { position: absolute; left: 68px; top: 24px; margin: 0; }
-#bb-idle-label { position: absolute; left: 120px; top: 0; height: 80px; line-height: 80px; }
+#bb-idle-label { position: absolute; left: 120px; top: 0; height: 80px; line-height: 80px; font-size: 26px; }
 /* 실차(Chrome 30)에서 경로 알약도 줄이 넘어가 깃발·목적지가 둘째 줄로 밀려 안 보였다.
    구분선·깃발·목적지는 알약 안 좌표로 고정한다(설명서 구분선 942, 깃발 976, 목적지 1032 = 알약 글자 칸 왼쪽 649 기준). */
 .bb-route-info .bb-route-divider { position: absolute; left: 293px; top: 10px; margin: 0; }
 .bb-route-info .bb-location { position: absolute; left: 326px; top: 9px; margin: 0; }
-.bb-route-info .bb-dest { position: absolute; left: 380px; top: 1px; margin: 0; }
+.bb-route-info .bb-dest { position: absolute; left: 380px; top: 0; height: 48px; line-height: 48px; margin: 0; }
 </style>
 </head>
 <body>

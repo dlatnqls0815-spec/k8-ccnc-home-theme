@@ -1,4 +1,18 @@
 # K8 Gen5W 홈
+## 제미나이: 두 하단바 글자 크기 한 벌 통일 및 세로 정가운데 맞춤 (2026-11-23, Gemini)
+
+- 대상: `assets/index.html`(`#detail-bottom-bar`, A) · `assets/navbar.html`(순정 내비 위 하단바, B). 칸 폭·높이·자리·상단바·버전(`test35`) 미변경.
+- **통일한 글자 크기 표**:
+  - 큰 숫자(거리·남은 시간·도착 시각): 1920 기준 `33px` → A `22px` / B `33px`
+  - 단위(`km`, `m`, `분`, `시간`, `AM/PM`): 1920 기준 `23px` → A `15.33px` / B `23px`
+  - 한 줄 글(목적지·곡 제목·현재 위치): 1920 기준 `26px` → A `17.33px` / B `26px`
+  - 작은 줄(가수): 1920 기준 `22px` → A `14.67px` / B `22px`
+- **위아래 맞춤 방법(Chrome 30 호환)**:
+  - 아이콘(`‹ ⌂ ≡`, `X`, 기본 앨범): B에서 `top: -2px` 제거 후 `position: absolute; left: 50%; top: 50%` 음수 마진으로 `dy = 0` 고정(A 아이콘 이미 `dy = 0`).
+  - 숫자·단위 바닥선: `.bb-metric` / `.bb-route-metric`을 `inline-block`으로, 내부 숫자·단위를 `display: inline; vertical-align: baseline`으로 통일하고 B `.bb-route-info`를 `top: 16px`(알약 80px 가운데) · `.bb-dest-text`를 `display: block; height: 48px; line-height: 48px`로 맞춤.
+  - 곡 제목+가수 두 줄 덩어리: A·B 모두 `.bb-media-meta`를 `top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%)` + `span:empty { display: none }`으로 1줄·2줄 모두 줄 정가운데(`dy = 0`) 맞춤.
+- **확인**: `c30_check.py` 0곳, `bar_guard.cjs` 규칙 ①②③ 통과 및 바뀐 곳이 A `.bb-media-meta` 글자 자리·높이(22곳)뿐임을 확인 뒤 `--update` 재검증(36개 화면 기준값과 같음), `c30_preview.cjs`(`navbar-c30.png`, `media-bt-c30.png`, 화면 오류 0) 육안 확인 완료.
+
 ## 0.5.0-test35 제미나이 설정 작은 고침 4개 검수 (2026-11-23, Claude)
 
 - 제미나이 4c2a160(로컬 커밋, 검수 뒤 푸시): 테마 설정 줄 굵기 500, Meridian Horizon 커스텀 ›, 시간 표기 "기기 기준"일 때 차 실제 방식 선택(`clockUses24Hours`), `.sl-desc` word-break keep-all.
