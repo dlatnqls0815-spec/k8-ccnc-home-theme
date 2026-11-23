@@ -91,7 +91,7 @@
 - **설치 실패 고침**: NEMESIS 가 `package-version=0.5.0-test27` 을 거부(점으로 이은 숫자만). `build_nemesis.py` 가 `0.5.0.27` 처럼 숫자만 쓴다.
 - **도우미가 업데이트 뒤 죽음**: 앞 도우미가 `k8home.keys` 소켓을 쥔 채라 새 도우미가 바로 실패, NEMESIS 가 5번 만에 포기. `KeyHelper` 가 최대 60초 1초마다 다시 잡는다. test30 업데이트에서 살아 있음 확인.
 - **곡 넘기기가 안 되던 진짜 이유**: 테마가 앞에 있으면 차 키 분배기(ModeKeyDispatcher)가 키를 먼저 테마에 주고, WebView 가 "처리함"(isViewHandled=true)을 돌려줘 블루투스 플레이어가 무시했다.
-  실제 핸들 버튼도 같았을 것이다. `HomeActivity.dispatchKeyEvent` 가 166/167/91 을 받지 않게 했다 → 실차에서 곡이 넘어감(바람기억 → 이 밤이 지나면).
+  실제 핸들 버튼도 같았을 것이다. `HomeActivity.dispatchKeyEvent` 가 166/167/91 을 받지 않게 했다 → 실차에서 곡이 넘어감.
 - **순정 곡 팝업**: 순정 내비만 앞에 둔 채 다음 곡 → 팝업이 뜨고 약 0.15초 뒤 닫힘(`K8HomePopup track changed: stock popup cancel sent` 다음 RightSideOsd cancel). 순간 깜빡임은 남는다.
   ccNC 오버레이 서개모 모듈(`hmg-seogaemo/watcher`)도 켜져 있어 함께 닫았을 수 있다.
 - **설정 칸 높이(차에서만)**: `#theme-settings-detail`(flex 항목) 안의 `height:100%` 가 Chrome 30 에서 안 풀려 칸 전체가 872px 로 늘어났다 → 설정 칸을 절대 위치로 부모에 붙임.

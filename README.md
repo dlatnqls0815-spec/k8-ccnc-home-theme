@@ -2,12 +2,31 @@
 
 기아 K8 Gen5W(1920×720, Android 4.4 / API 19)에서 사용할 수 있도록 기아 ccNC 공식 매뉴얼의 화면을 구현하는 프로젝트입니다.
 
-**네메시스 ccNC 홈 0.4.17**은 순정 내비 위 하단바의 한 줄 도착 시각, 블루투스 앨범 표지, 곡 스와이프, 하단바 위 경로 요약을 추가한 USB 패키지입니다. K8 5W에서 네메시스 설치와 실행을 확인한 버전은 0.4.14이며, 0.4.17은 실차 시험 전입니다. 매니저의 **K8 ccNC Home Theme → Launch**에서 열 수 있습니다. [네메시스 설치 안내](docs/NEMESIS_INSTALL.md) · [차량용 인수인계](docs/AI_HANDOFF.md)
+## ⬇️ 내려받기 (0.5.0-test38, 2026-11-23)
+
+| 파일 | 용도 |
+|---|---|
+| [**K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기 도우미). USB 로 설치 |
+| [k8home-0.5.0-test38.apk](downloads/k8home-0.5.0-test38.apk?raw=1) | 테마 앱만(도우미 없음 → 블루투스 곡 넘기기·길안내 목록 버튼은 안 됨) |
+
+**설치(USB)**: zip 을 풀어 안의 `NEMESIS.data` 와 `packages` 폴더를 USB 최상위에 둔다(기존 `NEMESIS.data` 가 있으면 백업) → 정차 상태에서 NEMESIS 매니저 **Package Store → USB → K8 ccNC Home Theme** 설치 → **My Packages → K8 ccNC Home Theme → Launch**. 자세한 것은 [네메시스 설치 안내](docs/NEMESIS_INSTALL.md).
+
+**이 판에서 되는 것(2026-11-23 K8 5W 실차 확인)**
+- 테마 홈·전체 앱·미디어·전화·설정(5W 자리, ccNC 모양) 화면, 순정 내비 위 ccNC 하단바(길안내 시간 5초 교대, 목록 버튼)
+- 블루투스 곡 넘기기: 하단바 밀기, 핸들 버튼(테마가 앞에 있어도)
+- 순정 곡 팝업을 뜨자마자 닫기
+- 사운드 › 고음/중음/저음·전후/좌우 표시, "사운드 직접 변경(시험)" 스위치(기본 꺼짐)
+
+**주의**: 개인이 만든 시험판입니다. 차량 순정 시스템 위에서 도는 NEMESIS 모듈이므로 본인 책임으로 설치하세요. 문제가 생기면 NEMESIS 매니저에서 지우면 순정으로 돌아갑니다.
+
+만들기:
 
 ```bash
 python build.py --sdk "<Android_SDK_경로>" --jdk "<JDK_경로>" --output "<출력_APK_경로>"
-python tools/build_nemesis.py --home-apk "<출력_APK_경로>" --out "<USB_묶음_출력_경로>"
+python tools/build_nemesis.py --home-apk "<출력_APK_경로>" --jdk "<JDK_경로>" --out "<USB_묶음_출력_경로>"
 ```
+
+작업 기록: [차량용 인수인계](docs/AI_HANDOFF.md) · [실차 확인 목록](docs/설정-차시험.md)
 
 
 ## 🌐 바로 체험하기 (라이브 웹 데모 링크)
