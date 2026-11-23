@@ -313,20 +313,48 @@ A['btnRearLock'] = g('<rect x="76" y="114" width="104" height="58" rx="10"/>'
                      '<rect x="114" y="138" width="28" height="22" rx="3"/>'
                      '<path d="M120 138v-7a8 8 0 0 1 16 0v7M128 147v5"/>', 1.8)
 
-# 차량 › 시트 (3D 시트: Lite_d-settings_seat.png 정밀 재현)
-seat_defs = ('<defs><linearGradient id="stG" x1="0" y1="0" x2="1" y2="1">'
-             '<stop offset="0%" stop-color="#2b313a"/><stop offset="100%" stop-color="#111419"/></linearGradient></defs>')
-st_head = 'M140 52c2-12 16-14 24-8 6 4 7 14 4 24l-26-4z'
-st_back = 'M116 164c-10-28-6-68 12-94l36-4c14 14 20 34 18 60-2 22-8 42-16 54l-50-16z'
-st_bolster = 'M126 74c14 14 18 46 10 82M164 68c8 18 10 46 2 84'
-st_base = 'M58 184c-4-12 10-22 30-26l44-8 52 14c12 4 12 18 4 26l-46 24c-20 10-58 8-76-8-5-4-7-12-8-22z'
-st_seam = 'M64 186c20 12 52 14 74 2l46-24M104 176l40 12'
+# 차량 › 시트 (3D 시트: ccNC_D-settings_vehicle_seat.png 실측 좌표 1:1 정밀 재현)
+seat_defs = ('<defs>'
+             '<linearGradient id="stFront" x1="0" y1="0" x2="1" y2="1">'
+             '<stop offset="0%" stop-color="#272c33"/><stop offset="100%" stop-color="#14171c"/></linearGradient>'
+             '<linearGradient id="stSeat" x1="0" y1="0" x2="1" y2="0.6">'
+             '<stop offset="0%" stop-color="#242930"/><stop offset="100%" stop-color="#13161b"/></linearGradient>'
+             '</defs>')
+# 전체 등받이+헤드레스트 외곽 (측면 두께 포함, 매끄러운 일체형 실루엣)
+st_back_outer = (
+    'M148 51c2-5 7-7 15-7 8 0 13 3 15 8l2 18c1 4 4 8 8 14 2 4 2 9 1 16'
+    'l-9 62c-1 5-3 9-6 11l-54-14c-8-8-13-22-12-38 1-14 6-27 13-39 5-8 11-12 19-16'
+    'c2-6 4-11 8-15z'
+)
+# 등받이 앞면 쿠션 (오른쪽 볼스터 두께 제외)
+st_back_front = (
+    'M143 70l26-2c6 6 9 14 9 24 0 16-4 38-8 66l-52-13c-7-8-11-21-10-35 1-14 6-26 14-35 5-5 13-5 21-5z'
+)
+# 헤드레스트 목 어두운 띠
+st_neck = 'M143 65c8-1 18-1 28 2l-1 8c-10-2-20-2-28 0z'
+# 방석 전체 외곽 (앞·아래 측면 포함, 원본처럼 날렵한 각도)
+st_base_outer = (
+    'M118 158c16-2 36 3 56 14 3 2 3 6 2 11-1 6-5 11-12 16l-18 10'
+    'c-14 6-28 6-42 0l-28-11c-7-3-10-8-10-15 0-6 3-10 10-13 14-6 28-10 42-12z'
+)
+# 방석 윗면 쿠션
+st_base_top = (
+    'M118 158c16-2 35 3 55 13l-36 16c-10 4-20 4-30 0l-35-13c14-7 30-14 46-16z'
+)
+# 방석 앞 측면 세로 꺾임 + 볼스터 내부 선
+st_details = (
+    'M170 46c2 7 2 15 1 24'
+    'M171 71c5 7 8 15 7 26l-8 67'
+    'M68 175l36 14c7 3 14 3 22 0l44-18'
+    'M108 190c-2 6-2 12 0 18'
+)
 A['seat'] = (seat_defs +
-             path(st_head, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
-             path(st_back, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
-             g(path(st_bolster), 1.1, '#5d6b78') +
-             path(st_base, fill='url(#stG)', stroke='#9db0c0', stroke_width='1.8', stroke_linejoin='round') +
-             g(path(st_seam), 1.3, '#6b7b8a'))
+             path(st_back_outer, fill='#0d0f13', stroke='#95a9ba', stroke_width='1.7', stroke_linejoin='round') +
+             path(st_back_front, fill='url(#stFront)', stroke='#3f4954', stroke_width='1.0', stroke_linejoin='round') +
+             path(st_neck, fill='#080a0d', stroke='none') +
+             path(st_base_outer, fill='#0b0d11', stroke='#95a9ba', stroke_width='1.7', stroke_linejoin='round') +
+             path(st_base_top, fill='url(#stSeat)', stroke='#485460', stroke_width='1.0', stroke_linejoin='round') +
+             g(path(st_details), 1.0, '#5a6875'))
 
 # 차량 › 편의 (톱니바퀴 + 손가락 터치: D-settings_vehicle_convenience.png)
 conv_gear = gear(126, 134, 48, 39, 8, 0.42)
@@ -349,32 +377,48 @@ A['vehicleStatus'] = g('<path d="M52 162h152l-14-32c-5-12-18-18-32-18h-62c-14 0-
                        '<circle cx="86" cy="166" r="14"/><circle cx="170" cy="166" r="14"/>'
                        '<path d="M114 82l10 10 20-20" stroke="%s" stroke-width="2.4"/>' % T, 1.8)
 
-# ---------------------------------------------------------------- 클러스터/HUD (ccNC 원본 정밀 재현)
+# ---------------------------------------------------------------- 클러스터/HUD (ccNC_D-settings_cluster_cluster.png 1:1 정밀 재현)
 cl_defs = ('<defs>'
-           '<radialGradient id="clG" cx="50%" cy="40%" r="55%">'
-           '<stop offset="0%" stop-color="#2c3540"/><stop offset="100%" stop-color="#0a0c10"/></radialGradient>'
-           '<linearGradient id="clFade" x1="0" y1="0" x2="0" y2="1">'
-           '<stop offset="0%" stop-color="#9cb0c2" stop-opacity="1"/><stop offset="78%" stop-color="#9cb0c2" stop-opacity="0.7"/>'
+           '<radialGradient id="clDial" cx="50%" cy="48%" r="54%">'
+           '<stop offset="0%" stop-color="#3a4450"/><stop offset="55%" stop-color="#181e26"/><stop offset="100%" stop-color="#090b0f"/></radialGradient>'
+           '<linearGradient id="clRim" x1="0" y1="0" x2="0" y2="1">'
+           '<stop offset="0%" stop-color="#9cb0c2" stop-opacity="0.95"/><stop offset="68%" stop-color="#7c8f9f" stop-opacity="0.65"/>'
+           '<stop offset="100%" stop-color="#000" stop-opacity="0"/></linearGradient>'
+           '<linearGradient id="clPad" x1="0" y1="0" x2="0" y2="1">'
+           '<stop offset="0%" stop-color="#94a8b8" stop-opacity="0.9"/><stop offset="45%" stop-color="#4e5d6b" stop-opacity="0.35"/>'
+           '<stop offset="100%" stop-color="#000" stop-opacity="0"/></linearGradient>'
+           '<linearGradient id="clDash" x1="0" y1="0" x2="1" y2="0">'
+           '<stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="30%" stop-color="#3c4854" stop-opacity="0.45"/>'
+           '<stop offset="50%" stop-color="#4b5966" stop-opacity="0.55"/><stop offset="70%" stop-color="#3c4854" stop-opacity="0.45"/>'
            '<stop offset="100%" stop-color="#000" stop-opacity="0"/></linearGradient>'
            '</defs>')
+# 계기판 상단 대시보드 후드 (은은한 배경 곡선)
+cl_bg = '<path d="M18 112C58 84 96 70 134 70s76 14 116 42" fill="none" stroke="url(#clDash)" stroke-width="1.2"/>'
+# 가운데 트립 LCD 창
+cl_lcd = '<rect x="104" y="124" width="60" height="22" rx="2" fill="#0d1116" stroke="#36434f" stroke-width="1"/>'
 dial = []
-for cx, needle in ((66, (22, -16)), (189, (-20, -18))):
-    dial.append('<circle cx="%d" cy="166" r="44" fill="url(#clG)" stroke="url(#clFade)" stroke-width="1.4"/>' % cx)
-    for k in range(15):
-        a = math.radians(150 + k * 17)
-        x0 = cx + 33 * math.cos(a); y0 = 166 + 33 * math.sin(a)
-        x1 = cx + 41 * math.cos(a); y1 = 166 + 41 * math.sin(a)
-        dial.append('<path d="M%s %sL%s %s" stroke="#7d8f9e" stroke-width="1.3"/>' % (f(x0), f(y0), f(x1), f(y1)))
-    dial.append('<path d="M%d 166l%d %d" stroke="#c8d6e2" stroke-width="2" stroke-linecap="round"/>' % (cx, needle[0], needle[1]))
-    dial.append('<circle cx="%d" cy="166" r="5" fill="#1b2128" stroke="#9cb0c2" stroke-width="1.3"/>' % cx)
-# Steering wheel upper rim arching over the cluster gauges (ccNC_D-settings_cluster_cluster.png)
+for cx in (80, 188):
+    dial.append('<circle cx="%d" cy="146" r="27" fill="url(#clDial)" stroke="#4c5c6b" stroke-width="1.0"/>' % cx)
+    for k in range(19):
+        a = math.radians(145 + k * 14)
+        x0 = cx + 21.5 * math.cos(a); y0 = 146 + 21.5 * math.sin(a)
+        x1 = cx + 25.5 * math.cos(a); y1 = 146 + 25.5 * math.sin(a)
+        dial.append('<path d="M%s %sL%s %s" stroke="#6c7d8c" stroke-width="0.9"/>' % (f(x0), f(y0), f(x1), f(y1)))
+    # 7~8시 방향 얇은 바늘 + 중앙 허브
+    dial.append('<path d="M%d 146l-19 11" stroke="#aabac8" stroke-width="1.2" stroke-linecap="round"/>' % cx)
+    dial.append('<circle cx="%d" cy="146" r="4.0" fill="#4f5d6a" stroke="#232b33" stroke-width="1"/>' % cx)
+# 스티어링 휠 상단 림 + 하단 혼 패드(게이지 아랫부분을 자연스럽게 가림)
 wheel = (
-    '<path d="M12 188C28 112 76 74 128 74s100 38 116 114" fill="none" stroke="url(#clFade)" stroke-width="2.2"/>'
-    '<path d="M30 192C44 128 84 96 128 96s84 32 98 96" fill="none" stroke="url(#clFade)" stroke-width="1.6"/>'
-    '<path d="M18 194c24-18 64-28 110-28s86 10 110 28" fill="#06080c" stroke="url(#clFade)" stroke-width="1.8"/>'
-    '<rect x="108" y="136" width="40" height="22" rx="3" fill="#10141a" stroke="#475563" stroke-width="1"/>'
+    '<path d="M22 166C52 94 90 72 134 72s82 22 112 94" fill="none" stroke="url(#clRim)" stroke-width="2.0"/>'
+    '<path d="M36 168C62 108 94 90 134 90s72 18 98 78" fill="none" stroke="url(#clRim)" stroke-width="1.5"/>'
+    # 하단 혼 패드 검은 마스크로 게이지 하단 가림
+    '<path d="M36 178C66 166 100 158 134 158s68 8 98 20L244 236H24Z" fill="#000"/>'
+    # 혼 패드 상단 아치 + 좌우 에어백/스포크 페이드아웃 윤곽
+    '<path d="M42 175C72 164 102 158 134 158s62 6 92 17" fill="none" stroke="url(#clPad)" stroke-width="1.8"/>'
+    '<path d="M78 166c-12 12-14 30-6 48M190 166c12 12 14 30 6 48" fill="none" stroke="url(#clPad)" stroke-width="1.2"/>'
+    '<path d="M26 164c6-12 18-16 24-8-4 14-14 32-20 52M242 164c-6-12-18-16-24-8 4 14 14 32 20 52" fill="none" stroke="url(#clPad)" stroke-width="1.1"/>'
 )
-A['cluster'] = cl_defs + ''.join(dial) + wheel
+A['cluster'] = cl_defs + cl_bg + cl_lcd + ''.join(dial) + wheel
 
 hud_defs = ('<defs>'
             '<linearGradient id="hudBox" x1="0" y1="0" x2="0" y2="1">'
