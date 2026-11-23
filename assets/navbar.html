@@ -79,12 +79,15 @@ img { -webkit-user-drag: none; user-select: none; }
 
 /* 오른쪽 앨범과 현재 곡. 영역 안의 좌우 제스처는 곡을 바꾼다. */
 .bb-media-zone { width: 492px; flex: 0 0 492px; display: flex; align-items: stretch; }
-/* 재생 진행 막대. 설명서 D-media_bluetooth_main.png 실측(1920 기준): 앨범 그림 오른쪽 x1509~1920,
-   막대 높이 2px, 재생된 부분 #d28a5c, 남은 부분 회색. */
+/* 재생 진행 막대. 앨범 그림 오른쪽 x1509~1920, 순정 스타일로 두껍게(6px) 표시. */
 .bb-media-progress {
-  position: absolute; left: 86px; right: 0; top: 0; height: 2px; background: rgba(255,255,255,.30);
+  position: absolute; left: 86px; right: 0; top: 0; height: 6px;
+  background: rgba(255,255,255,.28); z-index: 2; pointer-events: none;
 }
-.bb-media-progress i { display: block; height: 100%; width: 0; background: #d28a5c; }
+.bb-media-progress i {
+  display: block; height: 100%; width: 0; background: #d28a5c;
+  -webkit-transition: width .35s linear; transition: width .35s linear;
+}
 .bb-media-play {
   width: 86px; flex: 0 0 86px; height: 88px; padding: 0; background: #1c1c1c; overflow: hidden;
   position: relative;
@@ -141,7 +144,8 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 .bb-media-play .bb-media-default { display: block; margin: 0 auto; }
 .bb-media-play img[hidden] { display: none; }
 .bb-media-body { position: absolute; left: 88px; right: 0; top: 0; height: 88px; display: block; }
-.bb-media-meta, .bb-media-off { display: block; }
+.bb-media-meta { display: block; padding-top: 16px; }
+.bb-media-off { display: block; line-height: 88px; }
 /* 설명서 D-map_guidance.png 확대 실측(1920 기준): 알약 513~1373, 위아래 4px(높이 80), X는 알약 왼쪽 끝의
    지름 76px 밝은 원(중심 551) 안 26px, 뒤로 화살표 20x26, 집 31x24, 목록 30x24, 선 굵기 2px,
    거리 649, 시간 771, 재생 띠 1423~1509. */
@@ -193,7 +197,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
 <body>
 <footer class="bottom-bar" id="detail-bottom-bar">
   <div class="bb-nav-keys">
-    <button type="button" class="bb-key" id="bb-back-btn" aria-label="순정 하단줄 표시">
+    <button type="button" class="bb-key" id="bb-back-btn" aria-label="뒤로">
       <svg class="bb-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M25 3.5 8.5 16 25 28.5"/></svg>
     </button>
     <button type="button" class="bb-key" id="bb-home-btn" aria-label="홈">
@@ -363,8 +367,13 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       var meta = document.getElementById('bb-media-meta');
       songKnown = !!name;
       songPlaying = playing === true;
-      if (typeof position === 'number' && position >= 0) mediaPos = position;
-      if (typeof duration === 'number' && duration > 0) mediaDur = duration;
+      if (!name) {
+        mediaPos = 0;
+        mediaDur = 0;
+      } else {
+        if (typeof position === 'number') mediaPos = position >= 0 ? position : 0;
+        if (typeof duration === 'number') mediaDur = duration > 0 ? duration : 0;
+      }
       setProgress();
       if (!progressTimer) progressTimer = window.setInterval(tickProgress, 1000);
       refreshCover();

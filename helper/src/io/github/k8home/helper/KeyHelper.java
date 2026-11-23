@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +40,7 @@ public final class KeyHelper {
      * navi app). Only this one point, and only while the stock navi is in front.
      */
     static final int GUIDE = 1000;
+    static final int BACK = 1001;
     static final float GUIDE_X = 1850f, GUIDE_Y = 675f;
     static final String NAVI_PACKAGE = "com.mnsoft.navi";
 
@@ -90,6 +92,12 @@ public final class KeyHelper {
                 return;
             }
             tap(GUIDE_X, GUIDE_Y);
+        } else if (code == BACK) {
+            if (!NAVI_PACKAGE.equals(foregroundPackage())) {
+                out.write("not-navi\n".getBytes("US-ASCII"));
+                return;
+            }
+            sendBackKey();
         } else {
             sendKey(code);
         }
@@ -104,6 +112,7 @@ public final class KeyHelper {
         if ("91".equals(s)) return 91;
         if ("167".equals(s)) return 167;
         if ("guide".equals(s)) return GUIDE;
+        if ("back".equals(s)) return BACK;
         return -1;
     }
 
@@ -204,6 +213,22 @@ public final class KeyHelper {
             press.recycle();
             release.recycle();
         }
+    }
+
+    /** 순정 내비 하위 화면에서 뒤로가기 키를 InputManager로 전달한다. */
+    static void sendBackKey() throws Exception {
+        Class<?> im = Class.forName("android.hardware.input.InputManager");
+        Object manager = im.getMethod("getInstance").invoke(null);
+        Method inject = im.getMethod("injectInputEvent", Class.forName("android.view.InputEvent"), int.class);
+        long now = SystemClock.uptimeMillis();
+        KeyEvent down = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK, 0, 0,
+            -1, 0, 0, InputDevice.SOURCE_KEYBOARD);
+        KeyEvent up = new KeyEvent(now, now + 40, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK, 0, 0,
+            -1, 0, 0, InputDevice.SOURCE_KEYBOARD);
+        inject.invoke(manager, down, 2);
+        Thread.sleep(40);
+        inject.invoke(manager, up, 2);
+        log("back key");
     }
 
     static final String LOG = "/data/nemesis/logs/k8home.keys/keys.log";

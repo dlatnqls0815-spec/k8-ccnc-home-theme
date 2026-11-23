@@ -343,7 +343,16 @@ public final class NavBarService extends Service {
                 Log.w(TAG, "Theme home unavailable", failure);
             }
         } else if ("back".equals(action)) {
-            endSession();
+            // 뒤로가기 버튼으로 하단바 세션을 종료(숨김)하지 않고 유지한다.
+            if (panel != null) {
+                dismissPanel();
+            } else if (navi != null && !mapView()) {
+                new Thread(new Runnable() {
+                    @Override public void run() {
+                        MediaKeys.sendBack();
+                    }
+                }, "k8home-back").start();
+            }
         } else if ("search".equals(action)) {
             searchSuspended = true;
             entryDeadline = SystemClock.elapsedRealtime() + ENTRY_TIMEOUT_MS;

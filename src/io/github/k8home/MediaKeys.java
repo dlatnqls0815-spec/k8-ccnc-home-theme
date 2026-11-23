@@ -67,6 +67,11 @@ final class MediaKeys {
         return askHelper("guide");
     }
 
+    /** 순정 내비 하위 화면에서 뒤로가기 키를 NEMESIS 도우미로 전달한다(메인 스레드 외에서 호출). */
+    static String sendBack() {
+        return askHelper("back");
+    }
+
     private static String askHelper(String command) {
         LocalSocket socket = new LocalSocket();
         try {
