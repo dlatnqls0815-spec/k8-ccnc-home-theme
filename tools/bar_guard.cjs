@@ -8,6 +8,9 @@
 //   - 설정처럼 가운데 칸이 없는 화면은 순정 ccNC 처럼 양쪽 칸만 있고 가운데가 비어 있어야 한다(바탕 투명).
 //     이 모양도 기준값에 들어 있다.
 //   - 시계 글자 폭이 바뀌지 않게 시각을 10:10 으로 고정한다.
+//   - 기준값과 별개로 늘 지켜야 하는 규칙(사용자 확인 2026-11-23)도 검사한다. 기준값을 새로 써도 이 규칙은 못 넘는다.
+//     ① 가운데 칸이 없는 하단바의 가운데는 위 화면과 같은 색(#000)이라 경계가 보이지 않는다.
+//     ② 설정·화면구성의 가운데 칸 세로선은 하단바 왼쪽 칸 끝·오른쪽 칸 시작과 1px 안에서 맞는다.
 //
 // 사용:
 //   node tools/bar_guard.cjs            기준값과 비교(빌드 전 tools/build_nemesis.py 가 부른다)
@@ -28,6 +31,43 @@ const BOTTOM = ['#detail-bottom-bar', '#detail-bottom-bar .bb-nav-keys', '#detai
   '#detail-bottom-bar .bb-media-meta', '.pager-bars'];
 const NAVBAR = ['body', '.bb-nav-keys', '.bb-nav-keys > *', '.bb-center', '#bb-route-pill', '#bb-idle-pill',
   '#bb-media-zone', '#bb-media-zone > *'];
+
+// 기준값 외에 더 재는 화면(설정 안쪽). 페이지 안에서 toString 으로 돌리므로 바깥 변수를 쓰지 않는다.
+const EXTRA = {
+  'settings-vehicle': K => { K.openHome(); K.showPage('settings');
+    [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('차량') >= 0)[0].click(); },
+  'settings-sound-tone': K => { K.openHome(); K.showPage('settings');
+    [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('사운드') >= 0)[0].click();
+    [].filter.call(document.querySelectorAll('#theme-settings-detail .sl-tab'), x => x.textContent.trim() === '고음/중음/저음')[0].click(); },
+  'settings-general': K => { K.openHome(); K.showPage('settings');
+    [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('일반') >= 0)[0].click(); },
+  'screenlayout-theme': K => { K.openHome(); K.showPage('screenlayout');
+    document.querySelector('[data-sl-tab="theme"]').click(); },
+};
+
+function rules(page) {
+  return page.evaluate(() => {
+    const bad = [];
+    const bar = document.getElementById('detail-bottom-bar');
+    if (!bar || !bar.getBoundingClientRect().height || getComputedStyle(bar).display === 'none') return bad;
+    const keys = bar.querySelector('.bb-nav-keys').getBoundingClientRect();
+    const media = bar.querySelector('.bb-media-box').getBoundingClientRect();
+    if (bar.classList.contains('no-center')) {
+      const view = document.getElementById('view-detail');
+      const want = view ? getComputedStyle(view).backgroundColor : 'rgb(0, 0, 0)';
+      const got = getComputedStyle(bar).backgroundColor;
+      if (got !== want) bad.push('① 하단바 가운데 색 ' + got + ' ≠ 위 화면 ' + want + ' (경계가 보인다)');
+    }
+    const cols = document.querySelectorAll('.stock-settings-layout .detail-settings-main, .screenlayout-stage > .sl-main');
+    for (let i = 0; i < cols.length; i++) {
+      const r = cols[i].getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (Math.abs(r.left - keys.right) > 1) bad.push('② 가운데 칸 왼쪽 세로선 ' + Math.round(r.left) + ' ≠ 하단바 왼쪽 칸 끝 ' + Math.round(keys.right));
+      if (Math.abs(r.right - media.left) > 1) bad.push('② 가운데 칸 오른쪽 세로선 ' + Math.round(r.right) + ' ≠ 하단바 오른쪽 칸 시작 ' + Math.round(media.left));
+    }
+    return bad;
+  });
+}
 
 function measure(page, selectors) {
   return page.evaluate(sels => {
@@ -58,6 +98,7 @@ function measure(page, selectors) {
   fs.writeFileSync(barTmp, chrome30(fs.readFileSync(path.join(ASSETS, 'navbar.html'), 'utf8')));
   const browser = await chromium.launch({ channel: 'msedge' });
   const now = {};
+  const broken = [];
   const errors = [];
   const url = f => 'file:///' + f.replace(/\\/g, '/');
   async function open(file, view, legacy, query) {
@@ -88,12 +129,14 @@ function measure(page, selectors) {
     return { ctx, page };
   }
   try {
-    for (const name of Object.keys(SCREENS)) {
+    const ALL = Object.assign({}, SCREENS, EXTRA);
+    for (const name of Object.keys(ALL)) {
       for (const [mode, file, legacy] of [['원본', path.join(ASSETS, 'index.html'), false], ['차흉내', tmp, true]]) {
         const s = await open(file, VIEW, legacy, '?vehicle=1&mock=1');
-        await s.page.evaluate(src => { const K = window.K8Home; eval('(' + src + ')')(K); }, SCREENS[name].toString());
+        await s.page.evaluate(src => { const K = window.K8Home; eval('(' + src + ')')(K); }, ALL[name].toString());
         await s.page.waitForTimeout(400);
         now[name + ' · ' + mode] = await measure(s.page, TOP.concat(BOTTOM));
+        (await rules(s.page)).forEach(r => broken.push(name + ' · ' + mode + '  ' + r));
         await s.ctx.close();
       }
     }
@@ -117,6 +160,12 @@ function measure(page, selectors) {
     fs.unlinkSync(barTmp);
   }
   if (errors.length) console.log('화면 오류 ' + errors.length + '개\n   ' + errors.slice(0, 5).join('\n   '));
+  if (broken.length) {
+    console.log('bar_guard: 늘 지켜야 하는 규칙을 ' + broken.length + '곳 어겼습니다 (기준값을 새로 써도 통과하지 않습니다)');
+    broken.slice(0, 40).forEach(r => console.log('   ' + r));
+    process.exitCode = 1;
+    return;
+  }
   if (update || !fs.existsSync(BASE)) {
     fs.writeFileSync(BASE, JSON.stringify(now, null, 1) + '\n');
     console.log('bar_guard: 기준값을 새로 썼습니다 (' + Object.keys(now).length + '개 화면) → ' + path.relative(process.cwd(), BASE));

@@ -1039,7 +1039,7 @@
    1280,
    63
   ],
-  "#detail-bottom-bar 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
   "#detail-bottom-bar .bb-nav-keys": [
    0,
    417,
@@ -1148,7 +1148,7 @@
    1280,
    63
   ],
-  "#detail-bottom-bar 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
   "#detail-bottom-bar .bb-nav-keys": [
    0,
    417,
@@ -1257,7 +1257,7 @@
    1280,
    63
   ],
-  "#detail-bottom-bar 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
   "#detail-bottom-bar .bb-nav-keys": [
    0,
    417,
@@ -1366,7 +1366,7 @@
    1280,
    63
   ],
-  "#detail-bottom-bar 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
   "#detail-bottom-bar .bb-nav-keys": [
    0,
    417,
@@ -1791,6 +1791,878 @@
    468,
    153,
    3
+  ]
+ },
+ "settings-vehicle · 원본": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   0,
+   102,
+   54
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   5,
+   113,
+   50
+  ],
+  "#detail-search-btn": [
+   25,
+   11,
+   41,
+   38
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   45,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "settings-vehicle · 차흉내": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   1,
+   102,
+   53
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   6,
+   113,
+   48
+  ],
+  "#detail-search-btn": [
+   25,
+   12,
+   41,
+   36
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   45,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "settings-sound-tone · 원본": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   0,
+   125,
+   54
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   5,
+   135,
+   50
+  ],
+  "#detail-search-btn": [
+   25,
+   11,
+   41,
+   38
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   68,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "settings-sound-tone · 차흉내": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   1,
+   125,
+   53
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   6,
+   135,
+   48
+  ],
+  "#detail-search-btn": [
+   25,
+   12,
+   41,
+   36
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   68,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "settings-general · 원본": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   0,
+   102,
+   54
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   5,
+   113,
+   50
+  ],
+  "#detail-search-btn": [
+   25,
+   11,
+   41,
+   38
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   45,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "settings-general · 차흉내": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   1,
+   102,
+   53
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   6,
+   113,
+   48
+  ],
+  "#detail-search-btn": [
+   25,
+   12,
+   41,
+   36
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   45,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "screenlayout-theme · 원본": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   0,
+   147,
+   54
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   5,
+   158,
+   50
+  ],
+  "#detail-search-btn": [
+   25,
+   11,
+   41,
+   38
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   91,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
+  ]
+ },
+ "screenlayout-theme · 차흉내": {
+  "#top-bar": [
+   0,
+   0,
+   1280,
+   55
+  ],
+  "#top-bar 바탕": "rgb(0, 0, 0)",
+  "#top-bar .top-left": [
+   28,
+   1,
+   147,
+   53
+  ],
+  "#top-bar .top-right": [
+   1148,
+   4,
+   118,
+   47
+  ],
+  "#detail-top-title": [
+   17,
+   6,
+   158,
+   48
+  ],
+  "#detail-search-btn": [
+   25,
+   12,
+   41,
+   36
+  ],
+  "#detail-heading-text": [
+   75,
+   14,
+   91,
+   31
+  ],
+  "#qc-open-btn": [
+   569,
+   3,
+   142,
+   22
+  ],
+  "#top-bar .top-right > *[3]": [
+   1148,
+   7,
+   118,
+   47
+  ],
+  "#detail-bottom-bar": [
+   0,
+   417,
+   1280,
+   63
+  ],
+  "#detail-bottom-bar 바탕": "rgb(0, 0, 0)",
+  "#detail-bottom-bar .bb-nav-keys": [
+   0,
+   417,
+   312,
+   63
+  ],
+  "#detail-bottom-bar .bb-nav-keys 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-key[0]": [
+   0,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[1]": [
+   104,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-key[2]": [
+   208,
+   417,
+   104,
+   63
+  ],
+  "#detail-bottom-bar .bb-center": [
+   312,
+   417,
+   650,
+   63
+  ],
+  "#detail-bottom-bar .bb-center 바탕": "rgba(0, 0, 0, 0)",
+  "#detail-bottom-bar .bb-media-box": [
+   963,
+   417,
+   317,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-box 바탕": "rgb(27, 26, 27)",
+  "#detail-bottom-bar .bb-media-thumb": [
+   963,
+   417,
+   60,
+   63
+  ],
+  "#detail-bottom-bar .bb-media-meta": [
+   1039,
+   435,
+   241,
+   24
   ]
  },
  "순정 내비 하단바 대기 · 원본": {

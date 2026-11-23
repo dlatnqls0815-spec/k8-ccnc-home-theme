@@ -901,6 +901,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .bb-media-topline { z-index: 2; }
 /* ccNC corner blocks: transparent middle, "▷ Off" media box */
 .bottom-bar.no-center { background: transparent; border-top: 0; pointer-events: none; }
+/* 가운데 칸이 없을 때 가운데는 위 화면(.detail-view #000)과 이어져 경계가 보이지 않아야 한다(사용자 확인 2026-11-23).
+   투명이면 뒤의 앱 바탕(#0d~#10 그라데이션)이 비쳐 줄이 생긴다. tools/bar_guard.cjs 가 이 색을 지킨다. */
+.bottom-bar.no-center { background: #000; }
 .bottom-bar.no-center > .bb-nav-keys, .bottom-bar.no-center > .bb-media-box { pointer-events: auto; }
 .bottom-bar.no-center > .bb-media-box { border-left: 0; }
 .split-content-box.native-map > * { visibility: hidden; }
@@ -1861,6 +1864,8 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 /* 화면구성(기아 D-settings_theme_widget.png): 왼쪽 메뉴 글자 56부터·글자 높이 36·세로선 없음, 선택 표시 0~36,
    설명 575·124, 목록 줄 124(체크 상자 43, 572부터), 끌기 손잡이 1327~1364. */
 .screenlayout-stage > .sl-nav { padding-left: 0; border-right: 0; }
+/* 화면구성도 설정과 같이 가운데 칸 양쪽에 세로선(하단바 양쪽 칸 끝과 같은 자리). */
+.screenlayout-stage > .sl-main { border-left: 1px solid #1b1f25; border-right: 1px solid #1b1f25; }
 .screenlayout-stage .sl-tab { font-size: 2.05vw; padding-left: 2.6vw; }
 .screenlayout-stage .sl-tab[aria-selected="true"]::before { left: .1vw; width: .8vw; height: 2.6vw; }
 .screenlayout-stage .sl-desc { margin-left: 2.32vw; margin-top: .79vw; }
@@ -1902,6 +1907,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .detail-settings-layout.stock-settings-layout { margin-left: 0; width: 100%; height: 100%; overflow: hidden; }
 .detail-settings-layout.stock-settings-layout .detail-settings-main { overflow: auto; }
 .detail-settings-layout.stock-settings-layout .sl-nav { width: 25.3vw; padding: 0; margin-top: -0.52vw; }
+/* 세로선은 하단바 양쪽 칸 끝과 정확히 맞춘다(왼쪽 칸 끝 24.4%, 오른쪽 칸 시작 75.2%, 사용자 확인 2026-11-23).
+   글자 자리는 그대로 두려고 줄어든·늘어난 만큼 안쪽 여백을 바꿨다. tools/bar_guard.cjs 가 줄맞춤을 지킨다. */
+.detail-settings-layout.stock-settings-layout .sl-nav { width: 24.4vw; }
 .detail-settings-layout.stock-settings-layout .sl-tab {
   padding: 0 1vw 0 2.81vw; min-height: 5vw; font-size: 2.05vw; line-height: 5vw; color: #7b7b7b;
   white-space: nowrap; overflow: visible; text-overflow: clip; display: block; text-align: left;
@@ -1917,10 +1925,11 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   width: 47.5vw; flex: none; padding: 0 1.6vw 0 3.7vw; position: relative;
   border-left: 1px solid #1b1f25; border-right: 1px solid #1b1f25;
 }
+.detail-settings-layout.stock-settings-layout .detail-settings-main { width: 50.8vw; padding: 0 4vw 0 4.6vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-row { padding-left: 0; padding-right: 0; }
 .detail-settings-layout.stock-settings-layout .detail-settings-row > span:first-child,
 .detail-settings-layout.stock-settings-layout .detail-settings-row > output { position: relative; top: -0.42vw; }
-.detail-settings-layout.stock-settings-layout .detail-settings-art { width: 27.2vw; padding-top: 8vw; }
+.detail-settings-layout.stock-settings-layout .detail-settings-art { width: 24.8vw; padding-top: 8vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-row { min-height: 6.4vw; font-size: 1.72vw; }
 .detail-settings-layout.stock-settings-layout .detail-settings-row > span:first-child { font-weight: 500; }
 .detail-settings-layout.stock-settings-layout .sl-desc {
