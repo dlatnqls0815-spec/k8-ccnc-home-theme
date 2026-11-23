@@ -6,8 +6,7 @@
 
 | 파일 | 용도 |
 |---|---|
-| [**K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기 도우미). USB 로 설치 |
-| [k8home-0.5.0-test38.apk](downloads/k8home-0.5.0-test38.apk?raw=1) | 테마 앱만(도우미 없음 → 블루투스 곡 넘기기·길안내 목록 버튼은 안 됨) |
+| [**K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test38-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기 도우미). USB 로 설치. 테마 앱만 필요하면 안의 `packages/…zip` 속 `app/k8-home.apk` |
 
 **설치(USB)**: zip 을 풀어 안의 `NEMESIS.data` 와 `packages` 폴더를 USB 최상위에 둔다(기존 `NEMESIS.data` 가 있으면 백업) → 정차 상태에서 NEMESIS 매니저 **Package Store → USB → K8 ccNC Home Theme** 설치 → **My Packages → K8 ccNC Home Theme → Launch**. 자세한 것은 [네메시스 설치 안내](docs/NEMESIS_INSTALL.md).
 
