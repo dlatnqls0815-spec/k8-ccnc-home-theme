@@ -169,6 +169,9 @@ button.bb-idle { line-height: 80px; }
 
 .bb-route-info .bb-route-value { font-size: 33px; }
 .bb-route-info .bb-route-unit { font-size: 23px; }
+.bb-route-info .bb-time.is-hm .bb-route-value { font-size: 29px; }
+.bb-route-info .bb-time.is-hm .bb-route-unit { font-size: 20px; }
+#bb-route-time2:not(:empty) { margin-left: 6px; }
 
 /* 깃발 31x30 #d6d6d6 (976~1007, 위 20), 목적지 25px (1032~, 글자 위 24). */
 /* 깃발(31x30)과 목적지 글자를 항상 보이게 한다(0 폭·숨김 방지). */
@@ -221,7 +224,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       <div class="bb-route-info">
         <div class="bb-metric" id="bb-distance-metric"><span class="bb-route-value" id="bb-route-dist"></span><span class="bb-route-unit" id="bb-route-unit"></span></div>
         <button type="button" class="bb-metric bb-time" id="bb-time-metric" aria-label="남은 시간과 도착 예정 표시 전환">
-          <span class="bb-route-value" id="bb-route-time"></span><span class="bb-route-unit" id="bb-route-period"></span>
+          <span class="bb-route-value" id="bb-route-time"></span><span class="bb-route-unit" id="bb-route-period"></span><span class="bb-route-value" id="bb-route-time2"></span><span class="bb-route-unit" id="bb-route-unit2"></span>
         </button>
         <span class="bb-route-divider" id="bb-route-divider"></span>
         <svg class="bb-icon bb-location" id="bb-route-flag" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1l15.5 30-15.5-7.5L.5 31z"/></svg>
@@ -274,20 +277,63 @@ button.bb-idle { padding: 0; white-space: nowrap; }
   });
   var arrivalMode = true;
   var currentRemain = '', currentArrival = '';
+  var timeToggleTimer = 0;
+  var TIME_TOGGLE_MS = 5000; // 순정 내비처럼 5초마다 소요시간과 도착 예정 시간을 번갈아 표시
   function renderTime() {
     var showArrival = arrivalMode && currentArrival || !currentRemain && currentArrival;
     var time = showArrival ? currentArrival : currentRemain;
     var clock = showArrival && /^(\d{1,2}:\d{2})(?:\s+(AM|PM))?$/i.exec(time);
+    var hm = !showArrival && /^(\d+)\s*시간\s+(\d+)\s*분$/.exec(time);
+    var single = !showArrival && !hm && /^(\d+)\s*(시간|분)$/.exec(time);
     var metric = document.getElementById('bb-time-metric');
     metric.hidden = !time;
+    metric.className = hm ? 'bb-metric bb-time is-hm' : 'bb-metric bb-time';
     metric.setAttribute('aria-label', (showArrival ? '도착 예정 ' : '남은 시간 ') + time);
-    document.getElementById('bb-route-time').textContent = clock ? clock[1] : time;
-    document.getElementById('bb-route-period').textContent = clock && clock[2] || '';
+    if (clock) {
+      document.getElementById('bb-route-time').textContent = clock[1];
+      document.getElementById('bb-route-period').textContent = clock[2] || '';
+      document.getElementById('bb-route-time2').textContent = '';
+      document.getElementById('bb-route-unit2').textContent = '';
+    } else if (hm) {
+      document.getElementById('bb-route-time').textContent = hm[1];
+      document.getElementById('bb-route-period').textContent = '시간';
+      document.getElementById('bb-route-time2').textContent = hm[2];
+      document.getElementById('bb-route-unit2').textContent = '분';
+    } else if (single) {
+      document.getElementById('bb-route-time').textContent = single[1];
+      document.getElementById('bb-route-period').textContent = single[2];
+      document.getElementById('bb-route-time2').textContent = '';
+      document.getElementById('bb-route-unit2').textContent = '';
+    } else {
+      document.getElementById('bb-route-time').textContent = time;
+      document.getElementById('bb-route-period').textContent = '';
+      document.getElementById('bb-route-time2').textContent = '';
+      document.getElementById('bb-route-unit2').textContent = '';
+    }
+  }
+  function syncTimeToggle(restart) {
+    if (restart && timeToggleTimer) {
+      window.clearInterval(timeToggleTimer);
+      timeToggleTimer = 0;
+    }
+    if (currentRemain && currentArrival) {
+      if (!timeToggleTimer) {
+        timeToggleTimer = window.setInterval(function () {
+          if (!currentRemain || !currentArrival) return;
+          arrivalMode = !arrivalMode;
+          renderTime();
+        }, TIME_TOGGLE_MS);
+      }
+    } else if (timeToggleTimer) {
+      window.clearInterval(timeToggleTimer);
+      timeToggleTimer = 0;
+    }
   }
   document.getElementById('bb-time-metric').addEventListener('click', function () {
     if (!currentRemain || !currentArrival) return;
     arrivalMode = !arrivalMode;
     renderTime();
+    syncTimeToggle(true);
   });
 
   function fitBar() {
@@ -406,6 +452,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       if (!dest && !guidanceActive) {
         arrivalMode = true;
         currentRemain = currentArrival = '';
+        syncTimeToggle(true);
         route.hidden = true;
         idle.hidden = false;
         return;
@@ -424,6 +471,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       setHidden(document.getElementById('bb-route-flag'), !hasDest);
       document.getElementById('bb-dest-info').hidden = !hasDest;
       renderTime();
+      syncTimeToggle(false);
       document.getElementById('bb-dest-text').textContent = hasDest ? dest : '';
     }
   };
