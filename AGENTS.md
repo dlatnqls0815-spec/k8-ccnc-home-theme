@@ -14,6 +14,8 @@
   ① 가운데 칸이 없는 하단바의 가운데는 위 화면과 같은 #000 이라 경계가 보이지 않는다.
   ② 설정(`.stock-settings-layout .detail-settings-main`)·화면구성(`.screenlayout-stage > .sl-main`)의 세로선은
      하단바 왼쪽 칸 끝(24.4%)·오른쪽 칸 시작(75.2%)과 1px 안에서 맞는다. 하단바를 옮기지 말고 화면 칸을 맞춘다.
+  ③ 설정·화면구성은 순정 ccNC 처럼 가운데 칸만 하단바의 빈 가운데까지 내려 쓰고(`#shell.under-bar`, `syncUnderBar`),
+     왼쪽 메뉴·오른쪽 그림 칸은 하단바 위에서 끝난다.
 - 두 줄을 일부러 바꿔야 하면 사용자에게 먼저 묻고, 승인 뒤에만 `node tools/bar_guard.cjs --update` 로 기준값을 새로 쓴다.
   기준값 파일을 손으로 고치거나 검사를 끄지 않는다(`K8_SKIP_BAR_GUARD=1` 은 Edge 가 없는 PC 에서만).
 

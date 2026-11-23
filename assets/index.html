@@ -2139,6 +2139,23 @@ button.detail-settings-row.switch-row .stock-row-note {
 }
 .legacy button.detail-settings-row.switch-row > span { display: inline-block; vertical-align: top; max-width: 80%; }
 .legacy button.detail-settings-row.switch-row::before { vertical-align: top; }
+
+/* 설정·화면구성: 가운데 칸만 하단바의 빈 가운데까지 내려 쓴다(순정 ccNC, 사용자 확인 2026-11-23, syncUnderBar).
+   바탕은 위 화면(.detail-view #000)이 화면 맨 아래까지 이어져 경계가 없다. 양쪽 칸 자리는 하단바 위에서 끝낸다. */
+.shell.in-detail.under-bar .deck { bottom: 0; }
+.shell.under-bar #stage-settings, .shell.under-bar #theme-settings-detail { padding-bottom: 0; }
+.shell.under-bar .bottom-bar.no-center { background: transparent; }
+.shell.under-bar .stock-settings-layout .sl-nav,
+.shell.under-bar .stock-settings-layout .detail-settings-art,
+.shell.under-bar .screenlayout-stage > .sl-nav,
+.shell.under-bar .screenlayout-stage > .sl-preview { margin-bottom: 62.6667px; margin-bottom: 4.8958vw; }
+.shell.under-bar .stock-settings-layout .detail-settings-main,
+.shell.under-bar .screenlayout-stage > .sl-main { padding-bottom: 1vw; }
+/* 전후/좌우: 설명서처럼 "차량 중앙 집중"과 전후·좌우 값 줄을 하단바 높이의 빈 가운데로 내려 한 줄에 맞춘다. */
+.shell.under-bar .ccnc-pos-focus { bottom: -4.6vw; }
+.shell.under-bar .ccnc-pos-readout { position: relative; top: 7vw; }
+/* 내려 놓은 두 줄 아래로 다음 줄(순정 설정에서 변경 ›)이 밀려 겹치지 않게 한다. */
+.shell.under-bar .ccnc-pos-stage { margin-bottom: 4.8vw; }
 </style>
 </head>
 <body>
@@ -7513,6 +7530,29 @@ var stockSub = '';
   shell.setAttribute('data-style', state.graphicStyle);
   window.setInterval(updateClock, 10000);
   drawWallpaper();
+  /* 설정·화면구성 화면은 순정 ccNC 처럼 가운데 칸만 하단바의 빈 가운데까지 내려 쓴다(사용자 확인 2026-11-23).
+     하단바 가운데 칸이 비어 있고(.no-center) 설정 칸 모양이 보일 때만 #shell 에 under-bar 를 붙인다.
+     왼쪽 메뉴·오른쪽 그림 칸은 하단바 위에서 끝난다. tools/bar_guard.cjs 가 지킨다. */
+  function syncUnderBar() {
+    var view = document.getElementById('view-detail');
+    var bar = document.getElementById('detail-bottom-bar');
+    var on = false;
+    if (view && !view.hidden && bar && !bar.hidden && bar.classList.contains('no-center')) {
+      var cols = view.querySelectorAll('.stock-settings-layout, .screenlayout-stage');
+      for (var i = 0; i < cols.length; i++) if (cols[i].offsetWidth) on = true;
+    }
+    setClass(shell, 'under-bar', on);
+  }
+  (function () {
+    var wrap = function (fn) {
+      return function () { var out = fn.apply(this, arguments); syncUnderBar(); return out; };
+    };
+    renderSettingsStage = wrap(renderSettingsStage);
+    renderSettingsControls = wrap(renderSettingsControls);
+    renderScreenLayoutStage = wrap(renderScreenLayoutStage);
+    renderBottomBar = wrap(renderBottomBar);
+    showPage = wrap(showPage);
+  })();
   watchCcncSettings('theme-settings-detail');
   watchCcncSettings('sl-panel-content');
   showPage('home');

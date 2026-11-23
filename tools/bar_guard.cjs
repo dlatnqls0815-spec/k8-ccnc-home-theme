@@ -11,6 +11,7 @@
 //   - 기준값과 별개로 늘 지켜야 하는 규칙(사용자 확인 2026-11-23)도 검사한다. 기준값을 새로 써도 이 규칙은 못 넘는다.
 //     ① 가운데 칸이 없는 하단바의 가운데는 위 화면과 같은 색(#000)이라 경계가 보이지 않는다.
 //     ② 설정·화면구성의 가운데 칸 세로선은 하단바 왼쪽 칸 끝·오른쪽 칸 시작과 1px 안에서 맞는다.
+//     ③ 설정·화면구성은 가운데 칸만 하단바의 빈 가운데까지 내려 쓰고(순정 ccNC), 양쪽 칸 자리는 하단바 위에서 끝난다.
 //
 // 사용:
 //   node tools/bar_guard.cjs            기준값과 비교(빌드 전 tools/build_nemesis.py 가 부른다)
@@ -39,6 +40,9 @@ const EXTRA = {
   'settings-sound-tone': K => { K.openHome(); K.showPage('settings');
     [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('사운드') >= 0)[0].click();
     [].filter.call(document.querySelectorAll('#theme-settings-detail .sl-tab'), x => x.textContent.trim() === '고음/중음/저음')[0].click(); },
+  'settings-sound-balance': K => { K.openHome(); K.showPage('settings');
+    [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('사운드') >= 0)[0].click();
+    [].filter.call(document.querySelectorAll('#theme-settings-detail .sl-tab'), x => x.textContent.trim() === '전후/좌우')[0].click(); },
   'settings-general': K => { K.openHome(); K.showPage('settings');
     [].filter.call(document.querySelectorAll('#settings-cards-grid .set-card'), x => x.textContent.indexOf('일반') >= 0)[0].click(); },
   'screenlayout-theme': K => { K.openHome(); K.showPage('screenlayout');
@@ -52,11 +56,32 @@ function rules(page) {
     if (!bar || !bar.getBoundingClientRect().height || getComputedStyle(bar).display === 'none') return bad;
     const keys = bar.querySelector('.bb-nav-keys').getBoundingClientRect();
     const media = bar.querySelector('.bb-media-box').getBoundingClientRect();
+    const view = document.getElementById('view-detail');
+    const under = document.getElementById('shell').classList.contains('under-bar');
     if (bar.classList.contains('no-center')) {
-      const view = document.getElementById('view-detail');
       const want = view ? getComputedStyle(view).backgroundColor : 'rgb(0, 0, 0)';
-      const got = getComputedStyle(bar).backgroundColor;
+      let got = getComputedStyle(bar).backgroundColor;
+      if (/rgba\(.*, 0\)$/.test(got) || got === 'transparent') {
+        // 하단바 가운데가 투명하면 뒤에 위 화면이 화면 맨 아래까지 깔려 있어야 한다.
+        const vr = view ? view.getBoundingClientRect() : null;
+        got = vr && vr.bottom >= bar.getBoundingClientRect().bottom - 1 ? want : '앱 바탕(위 화면이 하단바 뒤까지 안 내려옴)';
+      }
       if (got !== want) bad.push('① 하단바 가운데 색 ' + got + ' ≠ 위 화면 ' + want + ' (경계가 보인다)');
+    }
+    if (under) {
+      // ③ 가운데 칸은 하단바 빈 가운데까지 내려 쓰고, 양쪽 칸 자리는 하단바 위에서 끝난다.
+      const barTop = bar.getBoundingClientRect().top, barBottom = bar.getBoundingClientRect().bottom;
+      const side = document.querySelectorAll('.stock-settings-layout .sl-nav, .stock-settings-layout .detail-settings-art, ' +
+        '.screenlayout-stage > .sl-nav, .screenlayout-stage > .sl-preview');
+      for (let i = 0; i < side.length; i++) {
+        const r = side[i].getBoundingClientRect();
+        if (r.width && r.height && r.bottom > barTop + 1) bad.push('③ 양쪽 칸 ' + side[i].className + ' 아래 끝 ' + Math.round(r.bottom) + ' > 하단바 위 ' + Math.round(barTop));
+      }
+      const mids = document.querySelectorAll('.stock-settings-layout .detail-settings-main, .screenlayout-stage > .sl-main');
+      for (let i = 0; i < mids.length; i++) {
+        const r = mids[i].getBoundingClientRect();
+        if (r.width && r.height && r.bottom < barBottom - 8) bad.push('③ 가운데 칸 아래 끝 ' + Math.round(r.bottom) + ' 이 하단바 빈 가운데까지 안 내려옴(' + Math.round(barBottom) + ')');
+      }
     }
     const cols = document.querySelectorAll('.stock-settings-layout .detail-settings-main, .screenlayout-stage > .sl-main');
     for (let i = 0; i < cols.length; i++) {
