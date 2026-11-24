@@ -1,4 +1,21 @@
 # K8 Gen5W 홈
+## 0.5.0-test57 기아 ccNC main2 통일·재생 상세 시트 (2026-11-25, Claude, 커밋 전·차 확인 전)
+
+- 기준을 기아 ccNC 설명서(ownersmanual.kia.com …/ccNC/AVNT/KOR/Korean/Media_btmusic.html)로 바꿈. 현대 것과 달리 검정 바탕·청록 강조. 설명서의 갈색(#30241d)은 번호 칸 덧칠 강조라 쓰지 않음(전화 그림은 하단 탭 칸까지 갈색).
+- 블루투스·USB·라디오·자연의 소리 기본 화면 = main2 틀(`ccMain2`): 왼쪽 회색 카드(청록 삼각형·청록 이름), 가운데 이름·제목·부제·큰 단추·진행선, 오른쪽 그림, 위 탭. 탭: 재생 목록|가사, 라디오|방송 목록, 자연의 소리|소리 목록(목록 탭 = 예전 화면 그대로).
+- 하단 소스 탭 강조색 #367193 → 기아 청록 #1e8a79(사용자 승인).
+- 재생 상세: 음악 페이지가 아니라 어느 화면에서든 밑에서 올라오는 시트(`#cc-sheet`, 0.25초, 위 62px 비움), 가사 없음, ⌄·목록·뒤로로 닫힘. 오른쪽 아래 미니 플레이어(블루투스·USB일 때)·앨범 그림으로 열림.
+- 순정 내비 지도 위: NavBarService 미니 플레이어(블루투스·USB) → `assets/media_sheet.html` 투명 창(높이 658/720, TYPE_PHONE)으로 같은 시트, 기기 이름은 StockPhone, 앨범은 BluetoothCoverArt. 닫기 = `sheet-close`, 뒤로 키, 지도에서 벗어나면(detach) 닫힘.
+- 검사: c30 0, 화면 오류 0, bar_guard 같음, APK 빌드. **차에서 볼 것**: 내비 위 시트가 뜨고 단추가 먹는지, 맨 위 탭이 눌리는지, 가사(K8Lyrics).
+
+## 0.5.0-test56 블루투스·USB 가사 + 음악 단추 위치 (2026-11-25, Claude, 커밋 전·차 확인 전)
+
+- 단추 위치: Chrome 30 은 button 안 absolute 자식의 left:50% 를 다르게 재 ccNC 단추 아이콘이 20px 오른쪽에 섰다(c30 캡처에서 확인). `.cc-btn svg` 를 흐름 안 가운데(margin auto)로 바꿔 앨범 아래 가운데·양끝에 맞음.
+- 가사: `StockLyrics`(LRCLIB `api/get` → 없으면 `api/search`, 결과·"없음"을 cache/lyrics 에 저장, 제목·가수·길이만 보냄, User-Agent `K8ccNCHome/0.5`). 4.4 는 TLS 1.2 가 꺼져 있고 lrclib.net 은 TLS 1.0 거부 → 소켓마다 TLSv1.2 켬. 인증서 체인은 GlobalSign Root CA(4.4 저장소에 있음).
+  INTERNET 권한 추가. 다리 `K8Host.lyrics(key,title,artist,sec)` → `K8Home.lyricsChanged(key,json)`.
+  화면: 목록 보기 위 "재생 목록 | 가사" 탭(가사 찾으면 자동으로 가사), 6줄(지난 2·지금·다음 3), 0.3초마다 줄 확인. 재생 상세는 앨범 줄 자리에 지금 줄·다음 줄. 시간 없는 가사는 전체 글.
+- 확인: c30 0곳, 화면 오류 0, bar_guard 기준값과 같음, LRC 읽기 자체 검사 통과, test56 APK 빌드. **차에서 볼 것**: logcat `K8Lyrics`(lyrics synced/plain/none 또는 fetch failed = 인터넷·TLS 문제), 탭 눌림, 줄 맞춤.
+
 ## 0.5.0-test55 제미나이 작업 검수 (2026-11-24, Claude, 커밋 전·차 확인 전)
 
 - 비교: 20:07 차에 깐 Claude 판(test49 개발판 APK)을 풀어 지금 파일과 맞댐. 검사 c30 0곳, 화면 오류 0, bar_guard 는 media-bt·usb 16곳(승인 대기) 그대로, APK 빌드 통과.

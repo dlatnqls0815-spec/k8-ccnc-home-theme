@@ -840,7 +840,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   background: #279480; color: #fff;
 }
 /* ccNC 소스 탭(D-media_fmradio_channel): 지금 탭은 푸른 알약. */
-.bb-tab-btn[data-msrc][aria-selected="true"] { background: #367193; border-radius: 999px; }
+.bb-tab-btn[data-msrc][aria-selected="true"] { background: #1e8a79; border-radius: 999px; }
 .bb-tab-btn.phone-active[aria-selected="true"] {
   background: #678776; color: #fff;
 }
@@ -1393,8 +1393,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .bb-tab-btn .ico-cut-fill { fill: #181a1d; }
 .bb-tab-btn[aria-selected="true"] .ico-cut { stroke: #279480; }
 .bb-tab-btn[aria-selected="true"] .ico-cut-fill { fill: #279480; }
-.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut { stroke: #367193; }
-.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut-fill { fill: #367193; }
+.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut { stroke: #1e8a79; }
+.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut-fill { fill: #1e8a79; }
 .ico-grey { color: #8e8e8e; }
 .circle-btn .ico { width: 2.2vw; height: 2.2vw; }
 
@@ -2066,8 +2066,10 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .cc-big { left: 175px; top: 196px; width: 1150px; font-size: 54px; color: #f6f6f6; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; }
 .cc-sub { left: 177px; top: 282px; width: 1150px; font-size: 28px; color: #a9adb2; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; }
 .cc-btn { width: 96px; height: 96px; background: none; border: 0; }
-.cc-btn svg { position: absolute; left: 50%; top: 50%; width: 40px; height: 52px; margin: -26px 0 0 -20px; }
-.cc-btn.cc-wide svg { width: 56px; height: 52px; margin-left: -28px; }
+/* Chrome 30 은 button 안 absolute 자식의 left:50% 를 다르게 재 단추 아이콘이 앨범보다 20px 오른쪽에 섰다: 흐름 안에서 가운데. */
+.cc-btn { padding: 0; }
+.cc-btn svg { display: block; width: 40px; height: 52px; margin: 0 auto; }
+.cc-btn.cc-wide svg { width: 56px; }
 .cc-btn:active { background: rgba(255,255,255,.08); border-radius: 12px; }
 .cc-listen { left: 175px; top: 452px; width: 320px; height: 84px; border: 2px solid #8a8d92; border-radius: 42px; background: none; color: #f0f0f0; font-size: 30px; text-align: center; }
 .cc-listen:active { background: rgba(255,255,255,.08); }
@@ -2105,7 +2107,6 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .ccnc-canvas .cc-h-flow .hybrid-flow { width: 640px; height: 400px; max-height: none; }
 
 /* 0.5.0-test40 라디오(ccNC D-media_fmradio_channel): 푸른 회색 바탕 위에 반투명 칸 두 개와 로고 그림. */
-.ccnc-canvas[data-page="radio"] { background: #26303d; background: -webkit-linear-gradient(left, #26303d 0%, #2c3442 55%, #363642 100%); background: linear-gradient(90deg, #26303d 0%, #2c3442 55%, #363642 100%); }
 .shell.in-detail.cc-tint .top { background: transparent; }
 /* 설명서 사진의 갈색 칸은 설명용 강조라 그리지 않는다(사용자 확인 2026-11-24): 칸 바탕 = 화면 바탕. */
 .cc-r-panel { display: none; }
@@ -2124,10 +2125,42 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .cc-r-name { position: absolute; left: 148px; top: 68px; width: 640px; font-size: 28px; color: #a8a8ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 .cc-r-mark { position: absolute; right: 40px; top: 44px; width: 36px; height: 36px; }
 .cc-r-empty { padding: 200px 0 0; font-size: 28px; color: #9a9ca2; text-align: center; }
+/* 가사(LRCLIB): 목록 보기 위쪽 "재생 목록 | 가사" 탭, 지금 줄은 크고 하얗게·지난 줄 흐리게·다음 줄 회색. */
+.cc-m-tab { top: 18px; height: 70px; padding: 0 6px; background: none; border: 0; border-bottom: 4px solid transparent; font-size: 30px; color: #9a9a9a; }
+.cc-m-tab.on { color: #2fae9c; border-bottom-color: #2fae9c; }
+.cc-lyr { padding: 34px 48px 0; }
+.cc-lyr p { margin: 0; font-size: 30px; line-height: 70px; color: #8a94a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-lyr p.past { color: #5d6672; }
+.cc-lyr p.now { color: #fff; font-size: 40px; font-weight: bold; }
+.cc-lyr.plain p { white-space: normal; line-height: 52px; color: #d0d4d9; }
+/* 0.5.0-test57: 재생 상세는 ccNC 처럼 지금 화면 위로 밑에서 올라오는 시트(차 사진: 위 62px 은 뒤 화면이 보임, 위 모서리 둥긂). */
+.cc-sheet { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 60; pointer-events: none; overflow: hidden;
+  visibility: hidden; -webkit-transform: translateY(100%); transform: translateY(100%);
+  -webkit-transition: -webkit-transform .25s ease-out, visibility 0s .25s; transition: transform .25s ease-out, visibility 0s .25s; }
+.cc-sheet.open { visibility: visible; -webkit-transform: translateY(0); transform: translateY(0);
+  -webkit-transition: -webkit-transform .25s ease-out; transition: transform .25s ease-out; }
+.cc-sheet .ccnc-canvas { background: none; pointer-events: none; }
+.cc-sheet .ccnc-canvas > * { pointer-events: auto; }
+.cc-sheet-panel { left: 16px; top: 62px; width: 1888px; height: 658px; background: #262626; border-radius: 18px 18px 0 0; }
 .cc-r-art { left: 1504px; top: 127px; width: 320px; height: 320px; border-radius: 14px; overflow: hidden; background: #efe9e3; }
 .cc-r-art > img, .cc-r-art > svg { display: block; width: 320px; height: 320px; }
 /* ccNC 블루투스·USB 음악(D-media_bluetooth_main = 목록, D-media_bluetooth_audio = 재생 상세). 흐린 앨범아트 바탕은 사용자 요청으로 뺌. */
-.ccnc-canvas[data-page="music"] { background-color: #262b33; }
+/* 0.5.0-test57: 기아 ccNC D-media_bluetooth_main2 틀(검정 바탕·청록 강조)로 블루투스·USB·라디오·자연의 소리를 통일.
+   자리(1920x720): 왼쪽 카드 19~438 x 112~615, 가운데 글 529~, 단추 중심 x 576·739·902 y 465, 진행선 543~1423 y 545, 그림 1503~1830 x 186~513. */
+/* 설명서의 갈색(#30241d)은 번호 칸에 덧칠한 설명용 강조(테두리 칸 안만 갈색, 전화 하단 탭까지 갈색): 실제는 옅은 회색 카드(차 사진). */
+.cc-k-card { left: 19px; top: 112px; width: 419px; height: 503px; background: #1f1f1f; background: rgba(255, 255, 255, .12); border-radius: 6px; }
+.cc-k-tri { left: 19px; top: 112px; width: 0; height: 0; border-top: 26px solid #2fae9c; border-right: 26px solid transparent; }
+.cc-k-name { left: 50px; top: 128px; width: 370px; font-size: 40px; color: #2fae9c; overflow: hidden; text-overflow: ellipsis; }
+.cc-k-label { left: 529px; top: 118px; width: 880px; font-size: 30px; color: #d6d6d6; overflow: hidden; text-overflow: ellipsis; }
+.cc-k-title { left: 529px; top: 160px; width: 900px; font-size: 62px; line-height: 1.3; color: #fff; overflow: hidden; text-overflow: ellipsis; }
+.cc-k-sub { left: 529px; width: 900px; font-size: 32px; color: #eee; overflow: hidden; text-overflow: ellipsis; }
+.cc-k-sub.dim { color: #6f6f6f; }
+.cc-k-line { left: 543px; top: 545px; width: 880px; height: 4px; background: #3d3d3d; }
+.cc-k-line span { position: absolute; left: 0; top: 0; height: 4px; background: #d0662e; }
+.cc-k-time { top: 562px; width: 120px; font-size: 24px; color: #e0e0e0; }
+.cc-k-art { left: 1503px; top: 186px; width: 327px; height: 327px; overflow: hidden; border: 0; padding: 0; background-color: #1a1a1a; background-position: center; background-size: cover; background-repeat: no-repeat; }
+.cc-k-art img, .cc-k-art svg { display: block; width: 100%; height: 100%; }
+.cc-k-tabline { left: 520px; top: 88px; width: 910px; height: 2px; background: #2a2a2a; }
 .cc-m-dev { left: 64px; top: 104px; width: 360px; font-size: 32px; color: #9a9ca2; overflow: hidden; text-overflow: ellipsis; }
 .cc-m-list { left: 498px; top: 104px; width: 921px; height: 521px; overflow-x: hidden; overflow-y: auto; }
 .cc-m-row { position: relative; height: 124px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
@@ -2649,6 +2682,7 @@ button.detail-settings-row.switch-row .stock-row-note {
   <section id="view-ccnc" class="ccnc-view" aria-label="ccNC 기능 화면" hidden>
     <div class="ccnc-canvas" id="ccnc-canvas"></div>
   </section>
+  <div class="cc-sheet" id="cc-sheet" aria-label="재생 상세"><div class="ccnc-canvas" id="cc-sheet-canvas"></div></div>
 
   <!-- Top Quick Control Overlay Drawer (Systemoverview_quickcontrol_2.gif) -->
   <section class="qc-drawer" id="qc-drawer" aria-label="퀵 컨트롤" hidden>
@@ -3448,6 +3482,7 @@ var stockSub = '';
 
   function redrawMediaCover() {
     if (state.page === 'music') renderCcncScreen();
+    renderSheet();
     lastMediaCardKey = '';
     drawMediaCardCanvas();
     drawAlbumArt(document.getElementById('detail-album-canvas'));
@@ -3725,11 +3760,34 @@ var stockSub = '';
       container.appendChild(el);
     });
     paintAppTiles(container);
+    scheduleChamfers();
     if (container.offsetWidth > 0 && container.offsetHeight > 0 && !appsCanvasesNeedPaint(container)) {
       appsPageRendered[targetPage] = true;
     } else {
       appsPageRendered[targetPage] = false;
     }
+  }
+
+  /* 잘린 모서리: 차(Chrome 30)는 clip-path 안 calc() 를 못 읽어 CSS 다각형을 버린다(test18 부터 줄만 그려짐).
+     카드 크기를 재서 px 다각형을 직접 넣는다(한 변 = 화면 폭의 2.1%, 설명서 1920 기준 40px). 크기가 같으면 다시 넣지 않는다. */
+  function applyChamfers() {
+    var cut = Math.round(window.innerWidth * 0.021);
+    Array.prototype.forEach.call(document.querySelectorAll('.chamfer-br, .chamfer-both'), function (el) {
+      var w = el.offsetWidth, h = el.offsetHeight;
+      if (!w || !h) return;
+      var both = /(^|\s)chamfer-both(\s|$)/.test(el.className), key = w + 'x' + h + 'x' + cut + (both ? 'b' : 'r');
+      if (el.getAttribute('data-cut') === key) return;
+      el.setAttribute('data-cut', key);
+      var poly = 'polygon(' + (both ? cut + 'px 0, ' : '0 0, ') + w + 'px 0, ' + w + 'px ' + (h - cut) + 'px, ' + (w - cut) + 'px ' + h + 'px, 0 ' + h + 'px' +
+        (both ? ', 0 ' + cut + 'px' : '') + ')';
+      el.style.webkitClipPath = poly;
+      el.style.clipPath = poly;
+    });
+  }
+  var chamferTimer = 0;
+  function scheduleChamfers() {   // 넘김이 끝난 뒤 한 번(넘기는 동안 크기를 재지 않게)
+    clearTimeout(chamferTimer);
+    chamferTimer = setTimeout(applyChamfers, 350);
   }
 
   function layoutHomeCards() {
@@ -3743,6 +3801,7 @@ var stockSub = '';
       if (card.style.left !== want) card.style.left = want;   // 같은 값을 다시 넣으면 홈을 통째로 다시 배치한다
       left += width[name] + .75;
     });
+    scheduleChamfers();
   }
 
   function handleTileAction(tile) {
@@ -4197,12 +4256,23 @@ var stockSub = '';
 
   function renderCcncRadio() {
     if (!state.radioView) state.radioView = state.radioBand === 'am' ? 'am' : 'fm';
+    var listOn = ccTab.radio === 'list', tabs = ccTabs('라디오', '방송 목록', listOn, 'tab-now', 'tab-more');
+    if (!listOn) {
+      var rn = radioNow(), rName = rn.name || (rn.kHz ? radioNameByKHz[rn.kHz] || '' : ''), rLogo = radioLogo(rName);
+      var band = state.radioBand === 'am' ? 'AM' : 'FM';
+      return tabs + ccMain2({
+        name: band, label: rn.kHz ? radioLabel(rn.kHz) : band,
+        title: rName || (rn.kHz ? radioLabel(rn.kHz) : '방송 정보 없음'),
+        buttons: ccMainButtons([['prev', CC_ICONS.prevCh, '이전 방송'], ['next', CC_ICONS.nextCh, '다음 방송']]),
+        art: rLogo ? '<img src="' + rLogo + '" alt="">' : ccRadioArt(), artAttr: ' data-cc="tab-more" aria-label="방송 목록"'
+      });
+    }
     var view = state.radioView;
     var favs = {};
     radioRows('fav').forEach(function (r) { favs[r.kHz] = true; });
     var rows = radioRows(view);
     var now = radioNow();
-    var h = '<span class="ccnc-pos cc-r-panel" style="left:22px;top:104px;width:393px;height:398px"></span>';
+    var h = tabs + '<span class="ccnc-pos cc-r-panel" style="left:22px;top:104px;width:393px;height:398px"></span>';
     [['fav', '즐겨찾기'], ['fm', 'FM'], ['am', 'AM']].forEach(function (m, i) {
       h += '<button type="button" class="ccnc-pos cc-r-menu' + (view === m[0] ? ' on' : '') + '" style="top:' + (118 + i * 96) + 'px" data-rview="' + m[0] + '">' +
         (view === m[0] ? '<i class="cc-r-bar"></i>' : '') + '<span>' + m[1] + '</span></button>';
@@ -4312,7 +4382,19 @@ var stockSub = '';
   function renderCcncNature() {
     var list = natureList(), active = state.mediaSource === 'nature', cur = active ? natureIndex() : -1;
     var shown = cur >= 0 ? cur : natureTarget >= 0 ? natureTarget : 0;
-    var h = '<div class="ccnc-pos cc-n-list">';
+    var listOn = ccTab.nature === 'list', tabs = ccTabs('자연의 소리', '소리 목록', listOn, 'tab-now', 'tab-more');
+    if (!listOn) {
+      var ntr = state.tracks[state.trackIndex] || {}, nArt = list[shown] && list[shown].art;
+      return tabs + ccMain2({
+        name: '자연의 소리', label: '자연의 소리', title: list[shown] ? list[shown].name : '자연의 소리',
+        buttons: ccMainButtons([['prev', CC_ICONS.prev, '이전'],
+          ['toggle', active && state.playing ? CC_ICONS.pause : CC_ICONS.play, active && state.playing ? '일시정지' : '재생'], ['next', CC_ICONS.next, '다음']]),
+        pct: active && ntr.pct > 0 ? ntr.pct : 0,
+        art: nArt ? '' : ccForestArt(),
+        artAttr: (nArt ? ' style="background-image:url(&quot;' + nArt + '&quot;)"' : '') + ' data-cc="tab-more" aria-label="소리 목록"'
+      });
+    }
+    var h = tabs + '<div class="ccnc-pos cc-n-list">';
     list.forEach(function (n, i) {
       h += '<button type="button" class="cc-n-row' + (i === cur ? ' cur' : '') + '" data-nature="' + i + '">' +
         '<span class="cc-n-thumb"' + (n.art ? ' style="background-image:url(&quot;' + n.art + '&quot;)"' : '') + '></span>' +
@@ -4463,9 +4545,18 @@ var stockSub = '';
 
   function ccncAction(what) {
     var page = state.page;
-    if (what === 'mlist' || what === 'mdetail') {
-      state.musicView = what === 'mlist' ? 'list' : 'detail';
+    if (what === 'tab-now' || what === 'tab-more') {
+      ccTab[page] = what === 'tab-more' ? 'list' : 'now';
       renderCcncScreen();
+      return;
+    }
+    if (what === 'tab-list' || what === 'tab-lyrics') {
+      state.musicTab = what === 'tab-lyrics' ? 'lyrics' : 'list';
+      renderCcncScreen();
+      return;
+    }
+    if (what === 'mlist' || what === 'mdetail') {
+      if (what === 'mdetail') openSheet(); else closeSheet();
       return;
     }
     var band = state.radioBand === 'am' ? 'am' : 'fm';
@@ -4533,42 +4624,146 @@ var stockSub = '';
     }
     return '<img src="' + musicArtUrl + '" alt="">';
   }
+  /* 0.5.0-test56: 블루투스·USB 가사. 곡이 바뀌면 K8Host.lyrics 로 LRCLIB 에 묻고(StockLyrics, 차에 저장),
+     답은 K8Home.lyricsChanged 로 온다. 줄 고르기는 마지막 재생 위치 + 그 뒤 흐른 시간. */
+  var lyricsKey = '', lyricsState = '', lyricsLines = [], lyricsPlain = [], mediaPos = 0, mediaPosAt = 0, lyricsShown = -2;
+  function requestLyrics(title, artist, duration) {
+    if ((state.mediaSource !== 'bt' && state.mediaSource !== 'usb') || !title || title === '미디어 정보 대기') return;
+    var key = title + '\n' + artist;
+    if (key === lyricsKey) return;
+    lyricsKey = key; lyricsState = 'wait'; lyricsLines = []; lyricsPlain = []; state.musicTab = null;
+    if (inVehicle && window.K8Host && window.K8Host.lyrics) window.K8Host.lyrics(key, title, artist, duration > 0 ? Math.round(duration / 1000) : 0);
+    else lyricsState = 'none';
+  }
+  function setLyrics(key, json) {
+    if (key !== lyricsKey) return;
+    var data = parseHostJson(json, {}), lines = [];
+    String(data.synced || '').split('\n').forEach(function (raw) {
+      var text = raw.replace(/\[[^\]]*\]/g, '').trim(), m, re = /\[(\d+):(\d+(?:\.\d+)?)\]/g;
+      while ((m = re.exec(raw))) lines.push({ t: (+m[1] * 60 + +m[2]) * 1000, text: text });
+    });
+    lines.sort(function (a, b) { return a.t - b.t; });
+    lyricsLines = lines.filter(function (l) { return l.text; });
+    lyricsPlain = lyricsLines.length ? [] : String(data.plain || '').split('\n');
+    lyricsState = lyricsLines.length || data.plain ? 'ok' : 'none';
+    lyricsShown = -2;
+    if (state.page === 'music') renderCcncScreen();
+  }
+  function lyricsIndex() {
+    var pos = mediaPos + (state.playing ? Date.now() - mediaPosAt : 0) + 300, i = -1;
+    while (i + 1 < lyricsLines.length && lyricsLines[i + 1].t <= pos) i++;
+    return i;
+  }
+  setInterval(function () {
+    if (state.page !== 'music' || !lyricsLines.length) return;
+    var i = lyricsIndex();
+    if (i !== lyricsShown) { lyricsShown = i; renderCcncScreen(); }
+  }, 300);
+  function lyricsPanel() {
+    if (lyricsState !== 'ok') return '<div class="cc-r-empty">' + (lyricsState === 'wait' ? '가사를 찾는 중' : '가사 없음') + '</div>';
+    if (!lyricsLines.length) return lyricsPlain.map(function (t) { return '<p>' + (escapeText(t) || '&nbsp;') + '</p>'; }).join('');
+    var cur = lyricsIndex(), h = '';
+    for (var i = Math.max(0, cur - 2), n = 0; i < lyricsLines.length && n < 6; i++, n++) {
+      h += '<p class="' + (i < cur ? 'past' : i === cur ? 'now' : '') + '">' + escapeText(lyricsLines[i].text) + '</p>';
+    }
+    return h;
+  }
+
+  var ccTab = { radio: 'now', nature: 'now' };
+  function ccTabs(first, second, secondOn, firstAct, secondAct) {
+    return '<span class="ccnc-pos cc-k-tabline"></span>' +
+      '<button type="button" class="ccnc-pos cc-m-tab' + (secondOn ? '' : ' on') + '" style="left:810px" data-cc="' + firstAct + '">' + first + '</button>' +
+      '<button type="button" class="ccnc-pos cc-m-tab' + (secondOn ? ' on' : '') + '" style="left:1010px" data-cc="' + secondAct + '">' + second + '</button>';
+  }
+  /* 기아 main2 틀: o = {name, label, title, sub1, sub2, buttons, pct, cur, dur, art, artAttr, center} (center 가 있으면 가운데를 그것으로). */
+  function ccMain2(o) {
+    var h = '<span class="ccnc-pos cc-k-card"></span><span class="ccnc-pos cc-k-tri"></span>' +
+      '<span class="ccnc-pos ccnc-txt cc-k-name">' + escapeText(o.name || '') + '</span>';
+    if (o.center) h += o.center;
+    else {
+      if (o.label) h += '<span class="ccnc-pos ccnc-txt cc-k-label">' + escapeText(o.label) + '</span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-k-title">' + escapeText(o.title || '') + '</span>';
+      if (o.sub1) h += '<span class="ccnc-pos ccnc-txt cc-k-sub" style="top:272px">' + escapeText(o.sub1) + '</span>';
+      if (o.sub2) h += '<span class="ccnc-pos ccnc-txt cc-k-sub dim" style="top:324px">' + escapeText(o.sub2) + '</span>';
+      h += o.buttons || '';
+      if (o.pct !== undefined) {
+        h += '<span class="ccnc-pos cc-k-line"><span style="width:' + Math.round(o.pct * 8.8) + 'px"></span></span>';
+        h += '<span class="ccnc-pos ccnc-txt cc-k-time" style="left:543px">' + escapeText(o.cur || '') + '</span>';
+        h += '<span class="ccnc-pos ccnc-txt cc-k-time" style="left:1303px;text-align:right;color:#8a8a8a">' + escapeText(o.dur || '') + '</span>';
+      }
+    }
+    return h + '<button type="button" class="ccnc-pos cc-k-art"' + (o.artAttr || '') + '>' + (o.art || '') + '</button>';
+  }
+  function ccMainButtons(list) {   // [[data-cc, icon, label], ...] → 중심 x 576·739·902
+    return list.map(function (b, i) { return ccButton(528 + i * 163, 417, 'data-cc="' + b[0] + '"', b[1], b[2]); }).join('');
+  }
+
+  var sheetOpen = false, lastSheetHtml = '';
+  function musicSheetHtml() {
+    var tr = state.tracks[state.trackIndex] || {};
+    var known = tr.title && tr.title !== '미디어 정보 대기';
+    var dev = state.mediaSource === 'usb' ? 'USB' : (phoneData.audio.join(', ') || '블루투스 기기');
+    return '<span class="ccnc-pos cc-sheet-panel"></span>' +
+      ccBack(sourceLabel(state.mediaSource) || '블루투스 오디오') +
+      '<span class="ccnc-pos ccnc-txt cc-d-dev">' + escapeText(dev) + '</span>' +
+      '<span class="ccnc-pos ccnc-txt cc-big" style="top:206px">' + escapeText(known ? tr.title : '타이틀 정보 없음') + '</span>' +
+      '<span class="ccnc-pos ccnc-txt cc-d-artist">' + escapeText(tr.artist || '아티스트 정보 없음') + '</span>' +
+      '<span class="ccnc-pos ccnc-txt cc-d-album">' + escapeText(tr.album || '앨범 정보 없음') + '</span>' +
+      ccButton(175, 446, 'data-cc="prev"', CC_ICONS.prev, '이전') +
+      ccButton(338, 446, 'data-cc="toggle"', state.playing ? CC_ICONS.pause : CC_ICONS.play, state.playing ? '일시정지' : '재생') +
+      ccButton(496, 446, 'data-cc="next"', CC_ICONS.next, '다음') +
+      ccButton(1184, 446, 'data-cc="mlist"', CC_ICONS.list, '재생 목록') +
+      '<span class="ccnc-pos cc-line"><span style="width:' + (tr.pct > 0 ? Math.round(tr.pct * 10.85) : 0) + 'px"></span></span>' +
+      '<span class="ccnc-pos ccnc-txt cc-d-time" style="left:175px">' + escapeText(tr.cur && tr.cur !== '—' ? tr.cur : '') + '</span>' +
+      '<span class="ccnc-pos ccnc-txt cc-d-time" style="left:1160px;width:100px;text-align:right">' + escapeText(tr.dur && tr.dur !== '—' ? tr.dur : '') + '</span>' +
+      '<span class="ccnc-pos cc-d-art">' + musicArt() + '</span>';
+  }
+  function renderSheet() {
+    var canvas = document.getElementById('cc-sheet-canvas');
+    if (!sheetOpen || !canvas) return;
+    var html = musicSheetHtml();
+    if (html === lastSheetHtml) return;
+    lastSheetHtml = html;
+    canvas.innerHTML = html;
+    var sc = (shell.clientWidth || 1920) / 1920;
+    canvas.style.webkitTransform = canvas.style.transform = 'scale(' + sc + ')';
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-back]'), function (b) { b.addEventListener('click', closeSheet); });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-cc]'), function (b) {
+      b.addEventListener('click', function () {
+        var what = b.getAttribute('data-cc');
+        if (what === 'mlist') { closeSheet(); return; }
+        if (livePreview) { host('media-' + what); if (what !== 'toggle') state.playing = true; }
+        else if (what === 'toggle') state.playing = !state.playing;
+        renderSheet();
+      });
+    });
+  }
+  function openSheet() {
+    sheetOpen = true; lastSheetHtml = '';
+    renderSheet();
+    document.getElementById('cc-sheet').className = 'cc-sheet open';
+  }
+  function closeSheet() {
+    sheetOpen = false;
+    document.getElementById('cc-sheet').className = 'cc-sheet';
+  }
+
   function renderCcncMusic() {
     var tr = state.tracks[state.trackIndex] || {};
     var known = tr.title && tr.title !== '미디어 정보 대기';
     var dev = state.mediaSource === 'usb' ? 'USB' : (phoneData.audio.join(', ') || '블루투스 기기');
     var h = '';
-    if (state.musicView === 'detail') {
-      h += ccBack(sourceLabel(state.mediaSource) || '블루투스 오디오');
-      h += '<span class="ccnc-pos ccnc-txt cc-d-dev">' + escapeText(dev) + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt cc-big" style="top:206px">' + escapeText(known ? tr.title : '타이틀 정보 없음') + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt cc-d-artist">' + escapeText(tr.artist || '아티스트 정보 없음') + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt cc-d-album">' + escapeText(tr.album || '앨범 정보 없음') + '</span>';
-      h += ccButton(175, 446, 'data-cc="prev"', CC_ICONS.prev, '이전');
-      h += ccButton(338, 446, 'data-cc="toggle"', state.playing ? CC_ICONS.pause : CC_ICONS.play, state.playing ? '일시정지' : '재생');
-      h += ccButton(496, 446, 'data-cc="next"', CC_ICONS.next, '다음');
-      h += ccButton(1184, 446, 'data-cc="mlist"', CC_ICONS.list, '재생 목록');
-      h += '<span class="ccnc-pos cc-line"><span style="width:' + (tr.pct > 0 ? Math.round(tr.pct * 10.85) : 0) + 'px"></span></span>';
-      h += '<span class="ccnc-pos ccnc-txt cc-d-time" style="left:175px">' + escapeText(tr.cur && tr.cur !== '—' ? tr.cur : '') + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt cc-d-time" style="left:1160px;width:100px;text-align:right">' + escapeText(tr.dur && tr.dur !== '—' ? tr.dur : '') + '</span>';
-      h += '<span class="ccnc-pos cc-d-art">' + musicArt() + '</span>';
-      return h;
-    }
-    h += '<span class="ccnc-pos cc-r-bar" style="left:22px;top:124px"></span>';
-    h += '<span class="ccnc-pos ccnc-txt cc-m-dev">' + escapeText(dev) + '</span>';
-    h += '<div class="ccnc-pos cc-m-list">';
-    if (known) {
-      h += '<div class="cc-m-row cur"><span>1 &nbsp; ' + escapeText(tr.title) + '</span>' +
-        (state.playing ? '<span class="eq-bars" aria-label="재생 중"><i></i><i></i><i></i><i></i></span>' : '') + '</div>';
-    } else {
-      h += '<div class="cc-r-empty">재생 중인 곡이 없습니다</div>';
-    }
-    h += '</div>';
-    h += '<button type="button" class="ccnc-pos cc-m-art" data-cc="mdetail" aria-label="재생 화면">' + musicArt() + '</button>';
-    // ccNC 사진 자리: 아트 1483~1802 × 186~505, 단추 중심 y 562, x 1515·1643·1771(아트 왼끝·가운데·오른끝)
-    h += ccButton(1467, 514, 'data-cc="prev"', CC_ICONS.prev, '이전');
-    h += ccButton(1595, 514, 'data-cc="toggle"', state.playing ? CC_ICONS.pause : CC_ICONS.play, state.playing ? '일시정지' : '재생');
-    h += ccButton(1723, 514, 'data-cc="next"', CC_ICONS.next, '다음');
+    var showLyrics = state.musicTab ? state.musicTab === 'lyrics' : lyricsState === 'ok';
+    h += ccTabs('재생 목록', '가사', showLyrics, 'tab-list', 'tab-lyrics');
+    h += ccMain2({
+      name: dev, label: dev,
+      title: known ? tr.title : '타이틀 정보 없음', sub1: tr.artist || '아티스트 정보 없음', sub2: tr.album || '앨범 정보 없음',
+      buttons: ccMainButtons([['prev', CC_ICONS.prev, '이전'],
+        ['toggle', state.playing ? CC_ICONS.pause : CC_ICONS.play, state.playing ? '일시정지' : '재생'], ['next', CC_ICONS.next, '다음']]),
+      pct: tr.pct > 0 ? tr.pct : 0, cur: tr.cur && tr.cur !== '—' ? tr.cur : '', dur: tr.dur && tr.dur !== '—' ? tr.dur : '',
+      center: showLyrics ? '<div class="ccnc-pos cc-m-list cc-lyr' + (lyricsLines.length ? '' : ' plain') + '">' + lyricsPanel() + '</div>' : '',
+      art: musicArt(), artAttr: ' data-cc="mdetail" aria-label="재생 화면"'
+    });
     return h;
   }
 
@@ -4598,8 +4793,7 @@ var stockSub = '';
     }
     Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-back]'), function (b) {
       b.addEventListener('click', function () {
-        if (state.page === 'music') ccncAction('mlist');   // ⌄ = 재생 상세 접기
-        else window.K8Home.back();
+        window.K8Home.back();
       });
     });
     Array.prototype.forEach.call(canvas.querySelectorAll('[data-cc]'), function (b) {
@@ -6729,7 +6923,7 @@ var stockSub = '';
     var detail = isDetailPage(next) || isCcncPage(next);
     setClass(shell, 'in-detail', detail);
     setClass(shell, 'in-navi', next === 'navi');
-    setClass(shell, 'cc-tint', next === 'radio' || next === 'music');   // ccNC 라디오: 상단바도 화면과 같은 푸른 회색 바탕
+    setClass(shell, 'cc-tint', next === 'radio' || next === 'music' || next === 'nature');   // ccNC 라디오: 상단바도 화면과 같은 푸른 회색 바탕
     if (next === 'radio') { scheduleRadioRefresh(); if (inVehicle) host('media-refresh'); }   // 들어올 때마다 순정 목록·현재 방송을 새로 읽는다
     setClass(shell, 'aux-mode', next === 'search' || next === 'memo');
     var standby = document.getElementById('view-standby');
@@ -6805,6 +6999,7 @@ var stockSub = '';
     updateAllStatuses();
     if (next === 'search') renderSearch();
     if (next === 'memo' && inVehicle) host('memo-refresh');
+    if (next === 'home' || isAppsPage(next)) scheduleChamfers();
   }
 
   function navigateTo(next) {
@@ -7055,6 +7250,7 @@ var stockSub = '';
       showPage('home');
     },
     back: function () {
+      if (sheetOpen) { closeSheet(); return; }
       if (!document.getElementById('qc-drawer').hidden) {
         if (qcDraft) { closeQuickEditor(); return; }
         document.getElementById('qc-drawer').hidden = true;
@@ -7185,6 +7381,7 @@ var stockSub = '';
       if (state.page === 'home') updateHomeRoute();
       if (isDetailPage(state.page)) renderSplitWidget();
     },
+    lyricsChanged: function (key, json) { setLyrics(key, json); },
     savedPlacesChanged: function (homeSaved, homeName, workSaved, workName) {
       var map = {
         home: { saved: homeSaved === true, name: homeName || '', label: '우리 집' },
@@ -7221,6 +7418,9 @@ var stockSub = '';
       track.cur = format(position);
       track.dur = format(duration);
       track.pct = duration > 0 ? Math.max(0, Math.min(100, 100 * position / duration)) : 0;
+      if (position >= 0) { mediaPos = position; mediaPosAt = Date.now(); }
+      requestLyrics(title || '', artist || '', duration);
+      renderSheet();
       if (natureTarget >= 0 && state.mediaSource === 'nature' && natureIndex() >= 0) {
         var goNature = natureTarget;
         natureTarget = -1;
@@ -7993,8 +8193,8 @@ var stockSub = '';
     navigateTo('apps1');
   });
   document.getElementById('bb-media-btn').addEventListener('click', function () {
-    if (state.page === 'music' && state.musicView !== 'detail') {
-      ccncAction('mdetail');   // ccNC: 목록 보기에서 오른쪽 아래 미니 플레이어 → 재생 상세
+    if (state.mediaSource === 'bt' || state.mediaSource === 'usb') {
+      openSheet();   // ccNC: 오른쪽 아래 미니 플레이어 → 어느 화면에서든 재생 상세가 밑에서 올라옴
     } else if (state.page === 'media' || state.page === 'music') {
       togglePlay();
     } else {

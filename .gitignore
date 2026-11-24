@@ -12,3 +12,7 @@ Thumbs.db
 
 # 차 흉내 비교 사진(tools/c30_preview.cjs)
 captures/
+
+# 기아·현대 설명서 사진(저장소에 올리지 않음)
+docs/ccnc-manual-images/
+docs/images/ccnc-2025-hyundai/

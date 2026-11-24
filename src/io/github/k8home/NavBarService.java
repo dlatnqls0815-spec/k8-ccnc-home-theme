@@ -36,6 +36,9 @@ public final class NavBarService extends Service {
     private static final String PAGE = "file:///android_asset/navbar.html";
     private static final String ROUTE_PAGE = "file:///android_asset/route_panel.html";
     private static final String SKIN_PAGE = "file:///android_asset/naviskin.html";
+    private static final String SHEET_PAGE = "file:///android_asset/media_sheet.html";
+    // 재생 상세 시트: 화면 위 62px(1920x720 기준)은 지도가 보이게 비운다(순정 ccNC 사진).
+    private static final int SHEET_TOP = 62;
     // Navigation IInterfaceService call 5 = isMapView_State() (vtable order of com.mnsoft.navi.g, 2026-11-22).
     private static final String NAVI_DESCRIPTOR = "com.mnsoft.navi.IInterfaceService";
     private static final int NAVI_IS_MAP_VIEW = 5;
@@ -53,6 +56,9 @@ public final class NavBarService extends Service {
     private WindowManager windows;
     private WebView web;
     private WebView panel;
+    private WebView sheet;
+    private boolean sheetReady;
+    private StockPhone phone;
     private String panelPage = "";
     private BluetoothCoverArt coverArt;
     private WebView skin;
@@ -350,7 +356,9 @@ public final class NavBarService extends Service {
             }
         } else if ("back".equals(action)) {
             // 뒤로가기 버튼으로 하단바 세션을 종료(숨김)하지 않고 유지한다.
-            if (panel != null) {
+            if (sheet != null) {
+                sheet.evaluateJavascript("window.K8Sheet && window.K8Sheet.close()", null);
+            } else if (panel != null) {
                 dismissPanel();
             } else if (navi != null && !mapView()) {
                 new Thread(new Runnable() {
@@ -372,7 +380,10 @@ public final class NavBarService extends Service {
                 endSession();
             }
         } else if ("media".equals(action)) {
-            openThemeMedia();
+            if ("bt".equals(media.source) || "usb".equals(media.source)) openSheet();
+            else openThemeMedia();
+        } else if ("sheet-close".equals(action)) {
+            closeSheet();
         } else if ("route-details".equals(action) && route.snapshot().active) {
             togglePanel(ROUTE_PAGE, 432, 166);
         } else if ("route-close".equals(action)) {
@@ -449,6 +460,71 @@ public final class NavBarService extends Service {
             else view.destroy();
             Log.w(TAG, "Navigation panel unavailable", failure);
         }
+    }
+
+    /** ccNC 재생 상세를 지도 위로 밑에서 올린다(블루투스·USB). 위 62px 은 지도가 보이게 비운 투명 창. */
+    private void openSheet() {
+        if (windows == null || !attached || sheet != null) return;
+        dismissPanel();
+        Point size = new Point();
+        windows.getDefaultDisplay().getRealSize(size);
+        final WebView view = createWebView();
+        view.setBackgroundColor(0);
+        view.setWebViewClient(new WebViewClient() {
+            @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return true;
+            }
+
+            @Override public void onPageFinished(WebView loaded, String url) {
+                if (sheet != loaded) return;
+                sheetReady = true;
+                pushSheet();
+            }
+        });
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+            size.x, Math.round(size.y * (REFERENCE_HEIGHT - SHEET_TOP) / (float) REFERENCE_HEIGHT),
+            WindowManager.LayoutParams.TYPE_PHONE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.BOTTOM | Gravity.LEFT;
+        params.setTitle("K8HomeMediaSheet");
+        try {
+            windows.addView(view, params);
+            sheet = view;
+            sheetReady = false;
+            if (phone == null) {
+                phone = new StockPhone(this, new Runnable() {
+                    @Override public void run() { pushSheet(); }
+                });
+            }
+            phone.start();
+            view.loadUrl(SHEET_PAGE);
+        } catch (RuntimeException failure) {
+            view.destroy();
+            Log.w(TAG, "Media sheet unavailable", failure);
+            openThemeMedia();
+        }
+    }
+
+    private void closeSheet() {
+        if (phone != null) phone.stop();
+        if (sheet == null) return;
+        WebView view = sheet;
+        sheet = null;
+        sheetReady = false;
+        try {
+            windows.removeViewImmediate(view);
+        } catch (IllegalArgumentException ignored) { }
+        view.removeJavascriptInterface("K8NavBar");
+        view.destroy();
+    }
+
+    private void pushSheet() {
+        if (sheet == null || !sheetReady) return;
+        String device = phone == null ? "" : phone.audioDevices().optString(0, "");
+        sheet.evaluateJavascript("window.K8Sheet.media(" + quote(media.title) + "," + quote(media.artist) + ","
+            + Boolean.TRUE.equals(media.playing) + "," + media.position + "," + media.duration + ","
+            + quote(media.source) + "," + quote(device) + ");window.K8Sheet.cover(" + quote(coverImage) + ")", null);
     }
 
     private void dismissPanel() {
@@ -533,12 +609,14 @@ public final class NavBarService extends Service {
     }
 
     private void pushMedia() {
+        pushSheet();
         if (pageReady && attached) web.evaluateJavascript("window.K8NavBarView.media(" + quote(media.title) + ","
             + quote(media.artist.isEmpty() ? media.settings : media.artist) + "," + Boolean.TRUE.equals(media.playing)
             + "," + media.position + "," + media.duration + ")", null);
     }
 
     private void pushCover() {
+        pushSheet();
         if (pageReady && attached) web.evaluateJavascript("window.K8NavBarView.cover(" + quote(coverImage) + ")", null);
     }
 
@@ -650,6 +728,7 @@ public final class NavBarService extends Service {
         removeGuide();
         detachSkin();
         dismissPanel();
+        closeSheet();
         if (!attached) return;
         attached = false;
         try {

@@ -121,6 +121,7 @@ public class HomeActivity extends Activity {
     private StockTransport transport;
     private StockRadio radio;
     private StockPhoneBook phoneBook;
+    private StockLyrics lyrics;
     private StockClimate climate;
     private StockHybrid hybrid;
     private StockWeather weather;
@@ -185,6 +186,7 @@ public class HomeActivity extends Activity {
         radio = new StockRadio(this);
         radio.preloadNatureList();
         phoneBook = new StockPhoneBook(this);
+        lyrics = new StockLyrics(this);
         vehicle = new StockVehicle(this, new Runnable() {
             @Override public void run() { syncVehicle(); }
         });
@@ -851,6 +853,21 @@ public class HomeActivity extends Activity {
                     if (!open(call) && !open(new Intent(dial).setPackage(STOCK_PHONE)) && !open(dial) && !open(StockApps.PHONE)) {
                         toast("이 기기에서 전화 걸기 화면을 열 수 없습니다.");
                     }
+                }
+            });
+        }
+
+        /** Lyrics for the playing track (StockLyrics); the answer arrives as K8Home.lyricsChanged(key, json). */
+        @JavascriptInterface public void lyrics(String key, String title, String artist, int seconds) {
+            if (key == null || title == null || title.trim().isEmpty()) return;
+            lyrics.request(key, title.trim(), artist == null ? "" : artist.trim(), seconds, new StockLyrics.Callback() {
+                @Override public void done(final String doneKey, final String json) {
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            if (pageReady && !isDestroyed()) web.evaluateJavascript("window.K8Home.lyricsChanged("
+                                + javascriptString(doneKey) + "," + javascriptString(json) + ")", null);
+                        }
+                    });
                 }
             });
         }

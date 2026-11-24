@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>재생 상세</title>
+<style>
+/* 0.5.0-test57: 순정 내비 지도 위로 밑에서 올라오는 ccNC 재생 상세(차 사진). NavBarService 가 위 62px 를 비운 창에 띄운다.
+   도판은 1920x658(화면 1920x720 의 62px 아래), 자리는 테마 재생 상세와 같다. */
+html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; font-family: sans-serif; -webkit-user-select: none; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 658px; -webkit-transform-origin: 0 0; transform-origin: 0 0; }
+#panel { position: absolute; left: 16px; top: 0; width: 1888px; height: 658px; background: #262626; border-radius: 18px 18px 0 0;
+  -webkit-transform: translateY(100%); transform: translateY(100%); -webkit-transition: -webkit-transform .25s ease-out; transition: transform .25s ease-out; }
+#panel.open { -webkit-transform: translateY(0); transform: translateY(0); }
+.p { position: absolute; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f0f0f0; }
+button { position: absolute; padding: 0; margin: 0; border: 0; background: none; outline: none; }
+button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
+.btn { width: 96px; height: 96px; }
+.btn svg { display: block; width: 40px; height: 52px; margin: 22px auto 0; }
+#back { left: 68px; top: 38px; width: 320px; height: 48px; }
+#back svg { position: absolute; left: 12px; top: 10px; width: 30px; height: 30px; }
+#back span { position: absolute; left: 66px; top: 4px; font-size: 30px; color: #f0f0f0; white-space: nowrap; }
+#line { position: absolute; left: 159px; top: 528px; width: 1085px; height: 3px; background: #4d4d4d; }
+#line span { position: absolute; left: 0; top: 0; height: 3px; background: #c9a25a; }
+#art { position: absolute; left: 1390px; top: 106px; width: 435px; height: 435px; background: #1a1a1a; overflow: hidden; }
+#art img { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="panel">
+  <button type="button" id="back" aria-label="닫기"><svg viewBox="0 0 30 30"><path d="M7 11l8 8 8-8" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"/></svg><span id="source">블루투스 오디오</span></button>
+  <span class="p" id="device" style="left:161px;top:96px;width:1100px;font-size:28px;color:#c9c9cc"></span>
+  <span class="p" id="title" style="left:159px;top:136px;width:1150px;font-size:54px;line-height:1.25;color:#f6f6f6">타이틀 정보 없음</span>
+  <span class="p" id="artist" style="left:161px;top:228px;width:1100px;font-size:32px;color:#ececec">아티스트 정보 없음</span>
+  <span class="p" style="left:161px;top:278px;width:1100px;font-size:28px;color:#8a8d92">앨범 정보 없음</span>
+  <button type="button" class="btn" style="left:159px;top:384px" data-act="previous" aria-label="이전"><svg viewBox="0 0 40 52"><path d="M8 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M36 8 14 26l22 18z" style="fill:#e8e8e8"/></svg></button>
+  <button type="button" class="btn" style="left:322px;top:384px" data-act="play" aria-label="재생 또는 일시정지" id="toggle"></button>
+  <button type="button" class="btn" style="left:480px;top:384px" data-act="next" aria-label="다음"><svg viewBox="0 0 40 52"><path d="M32 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M4 8l22 18L4 44z" style="fill:#e8e8e8"/></svg></button>
+  <button type="button" class="btn" style="left:1168px;top:384px" id="list" aria-label="닫기"><svg viewBox="0 0 40 52"><path d="M12 16h22M12 26h22M12 36h22" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/><circle cx="6" cy="16" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="26" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="36" r="2" style="fill:#e8e8e8"/></svg></button>
+  <span id="line"><span id="played" style="width:0"></span></span>
+  <span class="p" id="cur" style="left:159px;top:538px;font-size:22px;color:#b9b9bd"></span>
+  <span class="p" id="dur" style="left:1144px;top:538px;width:100px;text-align:right;font-size:22px;color:#b9b9bd"></span>
+  <span id="art"><img id="cover" alt="" hidden></span>
+</div></div>
+<script>
+(function () {
+  'use strict';
+  var PLAY = '<svg viewBox="0 0 40 52"><path d="M8 6l28 20L8 46z" style="fill:#e8e8e8"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 40 52"><path d="M11 8v36M29 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:7"/></svg>';
+  var stage = document.getElementById('stage'), panel = document.getElementById('panel');
+  var playing = false, pos = 0, dur = 0, closing = false;
+  function send(action) { if (window.K8NavBar) window.K8NavBar.action(action); }
+  function fit() {
+    var s = (window.innerWidth || 1920) / 1920;
+    stage.style.webkitTransform = stage.style.transform = 'scale(' + s + ')';
+  }
+  function clock(ms) {
+    var sec = Math.floor(ms / 1000);
+    return Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2);
+  }
+  function progress() {
+    document.getElementById('played').style.width = (dur > 0 ? Math.round(1085 * Math.min(pos, dur) / dur) : 0) + 'px';
+    document.getElementById('cur').textContent = dur > 0 ? clock(pos) : '';
+    document.getElementById('dur').textContent = dur > 0 ? clock(dur) : '';
+  }
+  function close() {
+    if (closing) return;
+    closing = true;
+    panel.className = '';
+    setTimeout(function () { send('sheet-close'); }, 260);
+  }
+  document.getElementById('back').onclick = close;
+  document.getElementById('list').onclick = close;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-act]'), function (b) {
+    b.onclick = function () {
+      var act = b.getAttribute('data-act');
+      send(act);
+      playing = act === 'play' ? !playing : true;   // 순정 방송은 늦게 오므로 먼저 바꿔 보인다
+      document.getElementById('toggle').innerHTML = playing ? PAUSE : PLAY;
+    };
+  });
+  setInterval(function () { if (playing && dur > 0) { pos += 1000; progress(); } }, 1000);
+  window.K8Sheet = {
+    media: function (title, artist, isPlaying, position, duration, source, device) {
+      playing = isPlaying === true;
+      pos = position > 0 ? position : 0;
+      dur = duration > 0 ? duration : 0;
+      document.getElementById('title').textContent = title || '타이틀 정보 없음';
+      document.getElementById('artist').textContent = artist || '아티스트 정보 없음';
+      document.getElementById('source').textContent = source === 'usb' ? 'USB 음악' : '블루투스 오디오';
+      document.getElementById('device').textContent = source === 'usb' ? 'USB' : (device || '블루투스 기기');
+      document.getElementById('toggle').innerHTML = playing ? PAUSE : PLAY;
+      progress();
+    },
+    cover: function (uri) {
+      var img = document.getElementById('cover');
+      if (uri && /^data:image\/jpeg;base64,/.test(uri)) { if (img.getAttribute('src') !== uri) img.src = uri; img.hidden = false; }
+      else { img.hidden = true; img.removeAttribute('src'); }
+    },
+    close: close
+  };
+  document.getElementById('toggle').innerHTML = PLAY;
+  fit();
+  window.addEventListener('resize', fit);
+  setTimeout(function () { panel.className = 'open'; }, 30);
+})();
+</script>
+</body>
+</html>
