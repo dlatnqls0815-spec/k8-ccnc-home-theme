@@ -1038,11 +1038,13 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .legacy .screenlayout-stage > .sl-preview, .legacy .bb-media-box { width: 24.8%; }
 .legacy .qc-grid > * { width: 32%; padding-right: 1%; }
 .legacy .sl-main, #theme-settings-detail { overflow: auto; }
-.legacy .hcard, .legacy .set-card, .legacy .app-tile { border-radius: 4px; }
+.legacy .hcard, .legacy .set-card, .legacy .app-tile { border-radius: 4px; box-shadow: none; }
+.legacy .standby-view, .legacy .standby-clock, .legacy .standby-date { text-shadow: none; }
 .deck { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
-.home-view, .apps-view, .standby-view { touch-action: none; }
+.home-view, .apps-view, .standby-view { touch-action: none; -webkit-transform: translateZ(0); -webkit-backface-visibility: hidden; }
 .deck.is-sliding { overflow: hidden; }
-.deck > .pager-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.deck > .pager-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; -webkit-backface-visibility: hidden; }
+.map-snap-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: 1; }
 .card-held { outline: 3px solid #a4d5f8; outline-offset: -4px; opacity: .78; }
 .card-target { outline: 3px solid #7fa6c2; outline-offset: -4px; }
 .card-drag-copy { position: fixed !important; pointer-events: none; z-index: 50; margin: 0; opacity: .86; transition: none; }
@@ -2028,6 +2030,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
   position: absolute; top: -1.4vw; margin-left: -1.485vw; width: 2.97vw; height: 2.97vw;
   border-radius: 50%; background: #fff;
 }
+.ccnc-view {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 8; overflow: hidden;
+}
 .ccnc-canvas {
   position: absolute; left: 0; top: 0; width: 1920px; height: 720px;
   -webkit-transform-origin: 0 0; transform-origin: 0 0;
@@ -2251,6 +2256,7 @@ button.detail-settings-row.switch-row .stock-row-note {
       <article class="hcard hcard-map chamfer-br" data-card="map">
         <div class="hcard-art" id="map-slot" data-open="navi">
           <canvas id="home-map-canvas" aria-hidden="true"></canvas>
+          <img id="home-map-snap" class="map-snap-img" alt="" hidden>
           <span class="map-scale-tag">Auto<br>50 m</span>
           <p id="map-note" class="art-badge" hidden>실차 지도 연결됨</p>
         </div>
@@ -2966,7 +2972,18 @@ var stockSub = '';
       radio:'라디오', nature:'자연의 소리', carplay:'CarPlay 오디오'}[source] || '';
   }
 
+  var appsSlideCache = {};
+  function invalidateAppsCache() {
+    lastRenderedAppsPage = '';
+    Object.keys(appsSlideCache).forEach(function (k) {
+      var el = appsSlideCache[k];
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    });
+    appsSlideCache = {};
+  }
+
   function saveDisplay() {
+    invalidateAppsCache();
     try {
       localStorage.setItem(saveKey, JSON.stringify({
         design: 2, bgMode: state.bgMode, graphicStyle: state.graphicStyle, gaugeStyle: state.gaugeStyle,
@@ -3249,13 +3266,18 @@ var stockSub = '';
   }
 
   /* Draw Home Media Card Art (5W mod video 2.5s & Systemoverview_home_2.png) */
+  var lastMediaCardKey = '';
   function drawMediaCardCanvas() {
     var canvas = document.getElementById('home-media-canvas');
+    if (!canvas) return;
     canvas.parentNode.setAttribute('data-cover', String(!!mediaCover));
+    var tr = state.tracks[state.trackIndex];
+    var key = [canvas.clientWidth, canvas.clientHeight, mediaCover ? mediaCover.src.length : 0, tr ? tr.palette.join(',') : ''].join('|');
+    if (canvas.clientWidth > 0 && key === lastMediaCardKey) return;
     var info = setupCanvas(canvas);
     if (!info) return;
+    if (canvas.clientWidth > 0) lastMediaCardKey = key;
     var ctx = info.ctx, w = info.w, h = info.h;
-    var tr = state.tracks[state.trackIndex];
 
     // Systemoverview_home_main.png: dark card, soft diagonal light, square artwork on the left.
     ctx.fillStyle = '#262423';
@@ -3314,15 +3336,22 @@ var stockSub = '';
   }
 
   function redrawMediaCover() {
+    lastMediaCardKey = '';
     drawMediaCardCanvas();
     drawAlbumArt(document.getElementById('detail-album-canvas'));
     drawAlbumArt(document.getElementById('bb-thumb-canvas'));
   }
 
   /* Draw Home Phone Card Art */
+  var lastPhoneCardKey = '';
   function drawPhoneCardCanvas() {
-    var info = setupCanvas(document.getElementById('home-phone-canvas'));
+    var canvas = document.getElementById('home-phone-canvas');
+    if (!canvas) return;
+    var key = canvas.clientWidth + 'x' + canvas.clientHeight;
+    if (canvas.clientWidth > 0 && key === lastPhoneCardKey) return;
+    var info = setupCanvas(canvas);
     if (!info) return;
+    if (canvas.clientWidth > 0) lastPhoneCardKey = key;
     var ctx = info.ctx, w = info.w, h = info.h;
     ctx.fillStyle = '#151925';
     ctx.fillRect(0, 0, w, h);
@@ -3466,11 +3495,15 @@ var stockSub = '';
   }
 
   function paintAppTiles(container) {
-    var canvases = (container || document.getElementById('view-apps')).querySelectorAll('canvas');
+    var rootEl = container || document.getElementById('view-apps');
+    var canvases = rootEl.querySelectorAll('canvas');
     for (var i = 0; i < canvases.length; i++) {
       var c = canvases[i];
+      // 숨겨진 상태(display:none)에서는 clientWidth/Height 가 0 이라 300x180 기본값으로 그려져 비율이 깨진다.
+      if (!(c.clientWidth > 0 && c.clientHeight > 0)) continue;
       var info = setupCanvas(c);
       if (!info) continue;
+      c.setAttribute('data-painted-size', Math.round(info.w) + 'x' + Math.round(info.h));
       var ctx = info.ctx, w = info.w, h = info.h;
       // ccNC all-features cards (E-gf_motion_swipe.gif): one flat dark tone for every app.
       ctx.fillStyle = '#25211f';
@@ -3489,13 +3522,40 @@ var stockSub = '';
     }
   }
 
+  function appsCanvasesNeedPaint(container) {
+    var rootEl = container || document.getElementById('view-apps');
+    var first = rootEl && rootEl.querySelector('canvas');
+    if (!first) return true;
+    if (!(first.clientWidth > 0 && first.clientHeight > 0)) return false;
+    return first.getAttribute('data-painted-size') !== Math.round(first.clientWidth) + 'x' + Math.round(first.clientHeight);
+  }
+
+  function copyCachedAppCanvases(dstContainer, srcContainer) {
+    var dst = dstContainer.querySelectorAll('canvas');
+    var src = srcContainer.querySelectorAll('canvas');
+    if (!dst.length || dst.length !== src.length) return false;
+    for (var i = 0; i < dst.length; i++) {
+      var d = dst[i], s = src[i];
+      if (!(d.clientWidth > 0 && d.clientHeight > 0)) return false;
+      var wantSize = Math.round(d.clientWidth) + 'x' + Math.round(d.clientHeight);
+      if (s.getAttribute('data-painted-size') !== wantSize || !(s.width > 0 && s.height > 0)) return false;
+    }
+    for (var j = 0; j < dst.length; j++) {
+      var dc = dst[j], sc = src[j];
+      dc.width = sc.width;
+      dc.height = sc.height;
+      dc.getContext('2d').drawImage(sc, 0, 0);
+      dc.setAttribute('data-painted-size', sc.getAttribute('data-painted-size'));
+    }
+    return true;
+  }
+
   var lastRenderedAppsPage = '';
   /* ====== Build & Render Views ====== */
   function renderAppTilesPage(container, page) {
     var preview = !!container;
     var targetPage = page || state.page;
     container = container || document.getElementById('view-apps');
-    if (!preview) lastRenderedAppsPage = targetPage;
     container.innerHTML = '';
     setClass(container, 'reordering', state.reordering);
     var startIdx = appPages.indexOf(targetPage) * tilesPerPage;
@@ -3549,7 +3609,12 @@ var stockSub = '';
 
       container.appendChild(el);
     });
-    paintAppTiles(container);
+    if (!preview && appsSlideCache[targetPage] && copyCachedAppCanvases(container, appsSlideCache[targetPage])) {
+      // 미리 그려 둔 캐시 캔버스를 그대로 복사해 전환 끝 프레임 스파이크를 없앤다.
+    } else {
+      paintAppTiles(container);
+    }
+    if (!preview && container.offsetWidth > 0) lastRenderedAppsPage = targetPage;
   }
 
   function layoutHomeCards() {
@@ -3814,6 +3879,8 @@ var stockSub = '';
      로고는 차에 깔린 순정 라디오 앱의 그림을 방송국 이름으로 찾아 읽는다(StockRadio.logo). */
   var radioLists = {};      // 'fav' | 'fm' | 'am' -> [{kHz, fm, name}]
   var radioLogos = {};      // 방송국 이름 -> data: URL ('' = 없음)
+  var radioNameByKHz = {};  // kHz -> 방송국 이름 (즐겨찾기·오른쪽 로고 보조용)
+  var radioLastNow = { kHz: 0, name: '' };
   function radioKHz(value, fmHint) {
     var n = parseFloat(value);
     if (!(n > 0)) return 0;
@@ -3827,18 +3894,55 @@ var stockSub = '';
   function radioLabel(kHz) {
     return kHz >= 76000 ? 'FM ' + (kHz / 1000).toFixed(1) : 'AM ' + kHz;
   }
+  function parseRadioListRows(rawRows, isAm) {
+    var rows = [], seen = {};
+    (rawRows || []).forEach(function (r) {
+      var raw = r.frequency || r.fm_frequency || r.am_frequency || r.freq;
+      var kHz = radioKHz(raw, isAm ? false : undefined);
+      if (!kHz || seen[kHz]) return;
+      seen[kHz] = true;
+      var name = r.station_name_with_region || r.disp_name || r.station_name || r.chname || r.psname || r.name || '';
+      var region = r.region2_cd || '';
+      var local = region && region !== '0xFF' && region !== '000';
+      if (name && !radioNameByKHz[kHz]) radioNameByKHz[kHz] = name;
+      rows.push({ kHz: kHz, fm: kHz >= 76000, name: name, local: !!local });
+    });
+    rows.sort(function (a, b) {
+      if (a.local !== b.local) return a.local ? -1 : 1;
+      return a.kHz - b.kHz;
+    });
+    return rows;
+  }
   function radioRows(view) {
     if (radioLists[view]) return radioLists[view];
     var rows = [];
     if (inVehicle && window.K8Host.radioList) {
-      var data = parseHostJson(window.K8Host.radioList(view === 'fav' ? 'presets' : view + '_stations'), {});
-      (data.rows || []).forEach(function (r) {
-        var raw = r.frequency || r.fm_frequency || r.am_frequency || r.freq;
-        var kHz = radioKHz(raw, view === 'am' ? false : undefined);
-        if (!kHz) return;
-        var name = r.disp_name || r.station_name || r.chname || r.psname || r.name || '';
-        rows.push({ kHz: kHz, fm: kHz >= 76000, name: name });
-      });
+      if (view === 'fav') {
+        // presets 테이블에는 이름 열이 없으므로 가용 방송국 목록에서 kHz -> 방송국 이름을 보충한다.
+        if (!radioLists.fm) radioRows('fm');
+        if (!radioLists.am) radioRows('am');
+        var pdata = parseHostJson(window.K8Host.radioList('presets'), {});
+        var pseen = {};
+        (pdata.rows || []).forEach(function (r) {
+          var band = String(r.band || '');
+          var isAm = band === '1' || band.toUpperCase() === 'AM';
+          var raw = r.frequency || r.fm_frequency || r.am_frequency || r.freq;
+          var kHz = radioKHz(raw, isAm ? false : undefined);
+          if (!kHz || pseen[kHz]) return;
+          pseen[kHz] = true;
+          var name = r.station_name_with_region || r.disp_name || r.station_name || r.rbds_ps_name || radioNameByKHz[kHz] || '';
+          rows.push({ kHz: kHz, fm: kHz >= 76000, name: name });
+        });
+      } else {
+        var primary = view === 'am' ? 'am_audible_stations' : 'fm_audible_stations';
+        var fallback = view === 'am' ? 'am_avail_stations' : 'fm_avail_stations';
+        var data = parseHostJson(window.K8Host.radioList(primary), {});
+        rows = parseRadioListRows(data.rows, view === 'am');
+        if (!rows.length) {
+          data = parseHostJson(window.K8Host.radioList(fallback), {});
+          rows = parseRadioListRows(data.rows, view === 'am');
+        }
+      }
     } else if (!inVehicle) {
       // PC 미리보기 전용(차에서는 쓰지 않음).
       rows = view === 'am' ? [{ kHz: 711, fm: false, name: 'KBS 제1라디오' }, { kHz: 603, fm: false, name: 'KBS 제2라디오 (Happy FM)' }]
@@ -3858,21 +3962,29 @@ var stockSub = '';
     var tr = state.tracks[state.trackIndex];
     var playing = state.mediaSource === 'fm' || state.mediaSource === 'am' || state.mediaSource === 'radio';
     var m = playing && tr ? /^([\d.]+)\s*(MHz|kHz)$/.exec(tr.title || '') : null;
-    return { on: playing, kHz: m ? radioKHz(m[1], m[2] === 'MHz') : 0, name: playing && tr ? (m ? tr.artist : tr.title) || '' : '' };
+    var kHz = m ? radioKHz(m[1], m[2] === 'MHz') : 0;
+    var name = playing && tr ? (m ? tr.artist : '') || '' : '';
+    if (kHz && !name) name = radioNameByKHz[kHz] || '';
+    if (kHz && name) radioLastNow = { kHz: kHz, name: name };
+    else if (playing && !kHz && radioLastNow.kHz) {
+      kHz = radioLastNow.kHz;
+      name = radioLastNow.name;
+    }
+    return { on: playing, kHz: kHz, name: name };
   }
 
   function renderCcncRadio() {
-    var now = radioNow();
     if (!state.radioView) state.radioView = state.radioBand === 'am' ? 'am' : 'fm';
     var view = state.radioView;
+    var favs = {};
+    radioRows('fav').forEach(function (r) { favs[r.kHz] = true; });
+    var rows = radioRows(view);
+    var now = radioNow();
     var h = '<span class="ccnc-pos cc-r-panel" style="left:22px;top:104px;width:393px;height:398px"></span>';
     [['fav', '즐겨찾기'], ['fm', 'FM'], ['am', 'AM']].forEach(function (m, i) {
       h += '<button type="button" class="ccnc-pos cc-r-menu' + (view === m[0] ? ' on' : '') + '" style="top:' + (118 + i * 96) + 'px" data-rview="' + m[0] + '">' +
         (view === m[0] ? '<i class="cc-r-bar"></i>' : '') + '<span>' + m[1] + '</span></button>';
     });
-    var favs = {};
-    radioRows('fav').forEach(function (r) { favs[r.kHz] = true; });
-    var rows = radioRows(view);
     h += '<div class="ccnc-pos cc-r-list" id="cc-r-list">';
     if (!rows.length) {
       h += '<div class="cc-r-empty">' + (view === 'fav' ? '즐겨찾기한 방송이 없습니다' : '방송국 목록을 기다리는 중입니다') + '</div>';
@@ -3889,7 +4001,8 @@ var stockSub = '';
         '</button>';
     });
     h += '</div>';
-    var art = radioLogo(now.name);
+    var artName = now.name || (now.kHz ? radioNameByKHz[now.kHz] || '' : '');
+    var art = radioLogo(artName);
     h += '<span class="ccnc-pos cc-r-art">' + (art ? '<img src="' + art + '" alt="">' : ccRadioArt()) + '</span>';
     h += ccButton(1520, 486, 'data-cc="prev"', CC_ICONS.prevCh, '이전 방송');
     h += ccButton(1708, 486, 'data-cc="next"', CC_ICONS.nextCh, '다음 방송');
@@ -3914,8 +4027,18 @@ var stockSub = '';
     Array.prototype.forEach.call(canvas.querySelectorAll('[data-tune]'), function (b) {
       b.addEventListener('click', function () {
         var kHz = parseInt(b.getAttribute('data-tune'), 10);
+        var rowName = (b.querySelector('.cc-r-name') && b.querySelector('.cc-r-name').textContent) || radioNameByKHz[kHz] || '';
+        state.mediaSource = kHz >= 76000 ? 'fm' : 'am';
+        state.radioBand = state.mediaSource;
+        radioLastNow = { kHz: kHz, name: rowName };
+        var tr = state.tracks[state.trackIndex];
+        if (tr) {
+          tr.title = kHz >= 76000 ? (kHz / 1000).toFixed(1) + ' MHz' : kHz + ' kHz';
+          tr.artist = rowName;
+        }
         if (inVehicle && window.K8Host.radioTune) window.K8Host.radioTune(kHz >= 76000, kHz);
-        else { state.mediaSource = kHz >= 76000 ? 'fm' : 'am'; state.tracks[state.trackIndex].title = (kHz >= 76000 ? (kHz / 1000).toFixed(1) + ' MHz' : kHz + ' kHz'); state.tracks[state.trackIndex].artist = b.querySelector('.cc-r-name').textContent; renderCcncScreen(); }
+        renderCcncScreen();
+        renderBottomBar();
       });
     });
   }
@@ -6158,7 +6281,8 @@ var stockSub = '';
       drawMediaCardCanvas();
       drawPhoneCardCanvas();
     } else if (isAppsPage(state.page)) {
-      renderAppTilesPage();
+      if (lastRenderedAppsPage !== state.page || state.reordering) renderAppTilesPage();
+      else if (appsCanvasesNeedPaint()) paintAppTiles();
     } else if (state.page === 'navi') {
       if (!livePreview) drawMapCanvas(document.getElementById('detail-map-canvas'), true);
     } else if (state.page === 'media') {
@@ -6192,6 +6316,7 @@ var stockSub = '';
 
   function showPage(next) {
     clearPageSlide();
+    if (!(gesture && gesture.held)) clearDragCopies();
     if (state.page === 'memo' && next !== 'memo' && inVehicle) host('memo-stop');
     if (next !== 'settings') setClass(shell, 'sound-mode', false);
     if (next !== 'settings') setClass(shell, 'detail-settings', false);
@@ -6206,7 +6331,7 @@ var stockSub = '';
     setClass(shell, 'in-detail', detail);
     setClass(shell, 'in-navi', next === 'navi');
     setClass(shell, 'cc-tint', next === 'radio');   // ccNC 라디오: 상단바도 화면과 같은 푸른 회색 바탕
-    if (next === 'radio') radioLists = {};   // 들어올 때마다 순정 목록을 새로 읽는다
+    if (next === 'radio') { radioLists = {}; if (inVehicle) host('media-refresh'); }   // 들어올 때마다 순정 목록·현재 방송을 새로 읽는다
     setClass(shell, 'aux-mode', next === 'search' || next === 'memo');
     var standby = document.getElementById('view-standby');
     standby.style.backgroundImage = state.standbyMode === 'frame' && photo.standby ? 'url("' + photo.standby + '")' : '';
@@ -6357,14 +6482,41 @@ var stockSub = '';
   // Re-send the map slot whenever its box moves or resizes (fonts, legacy layout, pager settle), so the
   // navigation surface never keeps stale bounds.
   var lastSlotKey = '';
-  var mapOffsetFrame = 0;
-  var mapOffsetPending = null;
+  var lastClipKey = '';
   var mapOffsetLast = 0;
+  var mapAlive = false;
+  var mapLiveShown = true;
+  var homeMapRect = null;
+
+  function setMapLiveVisible(visible) {
+    visible = !!visible;
+    if (mapLiveShown === visible) return;
+    mapLiveShown = visible;
+    if (window.K8Host && window.K8Host.setMapLiveVisible) {
+      window.K8Host.setMapLiveVisible(visible);
+    }
+  }
+
+  function requestMapSnapshot() {
+    if (window.K8Host && window.K8Host.captureMapSnapshot && mapAlive && liveMapReady) {
+      window.K8Host.captureMapSnapshot();
+    }
+  }
+
+  function syncNativeMapClip() {
+    if (!window.K8Host || !window.K8Host.setMapClip || !deck) return;
+    var dr = deck.getBoundingClientRect();
+    if (!(dr.width > 0 && dr.height > 0)) return;
+    var vw = document.documentElement.clientWidth;
+    var l = Math.round(dr.left), t = Math.round(dr.top), w = Math.round(dr.width), h = Math.round(dr.height);
+    var key = [vw, l, t, w, h].join(',');
+    if (key === lastClipKey) return;
+    lastClipKey = key;
+    window.K8Host.setMapClip(vw, l, t, w, h);
+  }
 
   function sendMapOffsetNow(dx) {
-    dx = Math.round(dx || 0);
-    if (mapOffsetFrame) { window.cancelAnimationFrame(mapOffsetFrame); mapOffsetFrame = 0; }
-    mapOffsetPending = null;
+    dx = Math.round((dx || 0) * 10) / 10;
     if (dx === mapOffsetLast) return;
     mapOffsetLast = dx;
     if (window.K8Host && window.K8Host.setMapOffset) {
@@ -6372,20 +6524,13 @@ var stockSub = '';
     }
   }
 
-  function scheduleMapOffset(dx) {
-    mapOffsetPending = Math.round(dx || 0);
-    if (mapOffsetFrame) return;
-    mapOffsetFrame = window.requestAnimationFrame(function () {
-      mapOffsetFrame = 0;
-      if (mapOffsetPending === null) return;
-      var val = mapOffsetPending;
-      mapOffsetPending = null;
-      if (val === mapOffsetLast) return;
-      mapOffsetLast = val;
-      if (window.K8Host && window.K8Host.setMapOffset) {
-        window.K8Host.setMapOffset(document.documentElement.clientWidth, val);
-      }
-    });
+  function hideNativeMapSlot() {
+    mapAlive = false;
+    mapLiveShown = false;
+    mapOffsetLast = 0;
+    if (window.K8Host) {
+      window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
+    }
   }
 
   window.setInterval(function () {
@@ -6393,31 +6538,80 @@ var stockSub = '';
     var slot = document.getElementById('map-slot');
     if (!slot || !window.K8Host) return;
     var r = slot.getBoundingClientRect();
-    var key = [state.page, Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join(',');
+    var key = [state.page, document.getElementById('qc-drawer').hidden, Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join(',');
     if (key !== lastSlotKey) { lastSlotKey = key; syncNativeMapSlot(); }
   }, 700);
+
+  var lastTouchAt = 0;
+  var lastInputAt = 0;
+  // 홈 화면이 아무 조작 없이 정지해 있을 때만 가끔(8초 주기, 마지막 터치 후 3.5초 이상 경과)
+  // 라이브 지도 스냅샷을 갱신해 넘김 첫 순간의 getBitmap() UI 스레드 프리즈(230ms)를 없앤다.
+  window.setInterval(function () {
+    if (!slide && !gesture && state.page === 'home' && document.getElementById('qc-drawer').hidden &&
+        Date.now() - lastInputAt > 3500) {
+      requestMapSnapshot();
+    }
+  }, 8000);
+
+  // 초기 로드 유휴 시점에 첫 앱 페이지(apps1)를 화면 밖 실제 크기로 1회만 미리 그려
+  // 고정된 홈 화면에서 앱 페이지로 처음 넘길 때의 첫 프레임 끊김을 없앤다.
+  function warmupAppsPage() {
+    if (slide || gesture || state.page !== 'home' || lastRenderedAppsPage === 'apps1') return;
+    var el = document.getElementById('view-apps');
+    if (!el || !el.hidden) return;
+    el.style.visibility = 'hidden';
+    el.classList.add('pager-preview');
+    offsetPanel(el, deck.clientWidth * 2);
+    el.hidden = false;
+    renderAppTilesPage(null, 'apps1');
+    el.hidden = true;
+    el.classList.remove('pager-preview');
+    el.style.webkitTransform = el.style.transform = '';
+    el.style.visibility = '';
+  }
+  window.setTimeout(warmupAppsPage, 900);
 
   function syncNativeMapSlot() {
     syncNativeSplitMap();
     if (!window.K8Host) return;
+    syncNativeMapClip();
     var slot = document.getElementById('map-slot');
-    var homeSliding = !!(slide && (state.page === 'home' || slide.next === 'home'));
-    if (homeSliding && slot && document.getElementById('qc-drawer').hidden) {
-      // 홈 화면이 넘김의 한쪽이면 지도를 끄지 않고 위치(setMapOffset)만 따라 움직인다.
+    var qcHidden = document.getElementById('qc-drawer').hidden;
+    var inDeck = homeOrder.indexOf(state.page) >= 0;
+    if (slide && (state.page === 'home' || slide.next === 'home') && slot && qcHidden) {
+      // 넘김 중에는 라이브 지도(mapSlot)를 끄지 않고 표시만 숨겨 웹뷰 카드 스냅샷이 카드와 함께 움직이게 한다.
+      setMapLiveVisible(false);
       return;
     }
-    if (state.page !== 'home' || !slot || slide || !document.getElementById('qc-drawer').hidden) {
-      sendMapOffsetNow(0);
-      window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
+    if (!slot || !qcHidden || !inDeck) {
+      hideNativeMapSlot();
       return;
     }
-    sendMapOffsetNow(0);
-    var rect = slot.getBoundingClientRect();
-    window.K8Host.updateBounds(
-      document.documentElement.clientWidth,
-      Math.round(rect.left), Math.round(rect.top),
-      Math.round(rect.right - rect.left), Math.round(rect.bottom - rect.top)
-    );
+    if (state.page === 'home') {
+      var rect = slot.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        homeMapRect = {
+          vw: document.documentElement.clientWidth,
+          l: Math.round(rect.left),
+          t: Math.round(rect.top),
+          w: Math.round(rect.right - rect.left),
+          h: Math.round(rect.bottom - rect.top)
+        };
+        sendMapOffsetNow(0);
+        mapLiveShown = true;
+        if (window.K8Host.setMapLiveVisible) window.K8Host.setMapLiveVisible(true);
+        window.K8Host.updateBounds(homeMapRect.vw, homeMapRect.l, homeMapRect.t, homeMapRect.w, homeMapRect.h);
+        mapAlive = true;
+      }
+      return;
+    }
+    // 홈 덱의 다른 페이지(standby, apps1, apps2)에서는 지도를 끄지 않고 표시만 숨겨 두어
+    // 홈으로 돌아올 때 순정 지도 재시작·깜빡임을 없앤다.
+    if (mapAlive && homeMapRect) {
+      setMapLiveVisible(false);
+    } else {
+      hideNativeMapSlot();
+    }
   }
 
   window.K8Home = {
@@ -6527,6 +6721,13 @@ var stockSub = '';
       var prompt = document.querySelector('#map-slot .map-art-status');
       if (prompt) prompt.hidden = liveMapReady;
       if (state.page === 'home') updateHomeRoute();
+    },
+    mapSnapshotReady: function (uri) {
+      var img = document.getElementById('home-map-snap');
+      if (!img) return;
+      if (!uri || uri.indexOf('data:image/') !== 0) return;
+      img.src = uri;
+      img.hidden = false;
     },
     coverArtChanged: function (uri) {
       requestedCover = null;
@@ -7416,17 +7617,29 @@ var stockSub = '';
     scheduleEdge();
   }
 
+  function clearDragCopies() {
+    Array.prototype.forEach.call(document.querySelectorAll('.card-drag-copy'), function (el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.card-held'), function (el) {
+      el.classList.remove('card-held');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.card-target'), function (el) {
+      el.classList.remove('card-target');
+    });
+  }
+
   function finishHold(g, ev) {
     window.clearTimeout(g.edgeTimer);
     g.edgeTimer = 0;
     g.edgeDir = 0;
     if (g.copy && g.copy.parentNode) g.copy.parentNode.removeChild(g.copy);
+    g.copy = null;
     if (g.targetCard) g.targetCard.classList.remove('card-target');
-    if (!g.held) return false;
+    if (!g.held) { clearDragCopies(); return false; }
     // The card under the finger while dragging; the lift-off point is a fallback (some WebViews report 0,0).
     var target = ev && (g.targetCard || cardAt(document.elementFromPoint(ev.clientX, ev.clientY)));
-    if (g.card) g.card.classList.remove('card-held');
-    Array.prototype.forEach.call(document.querySelectorAll('.card-held'), function (el) { el.classList.remove('card-held'); });
+    clearDragCopies();
     var quickId = g.card && g.card.getAttribute('data-qc');
     var widgetId = g.card && g.card.getAttribute('data-widget-card');
     if (quickId || widgetId) {
@@ -7504,7 +7717,7 @@ var stockSub = '';
     if (!slide) return;
     window.clearTimeout(slide.timer);
     window.cancelAnimationFrame(slide.frame);
-    if (slide.mapFrame) window.cancelAnimationFrame(slide.mapFrame);
+    if (slide.moveFrame) window.cancelAnimationFrame(slide.moveFrame);
     slide.current.style.transform = slide.current.style.webkitTransform = '';
     slide.current.style.transition = slide.current.style.webkitTransition = '';
     if (slide.isReal) {
@@ -7512,19 +7725,26 @@ var stockSub = '';
       slide.preview.style.transform = slide.preview.style.webkitTransform = '';
       slide.preview.style.transition = slide.preview.style.webkitTransition = '';
       if (slide.preview !== panelFor(state.page)) slide.preview.hidden = true;
+    } else if (slide.cached) {
+      slide.preview.style.transform = slide.preview.style.webkitTransform = '';
+      slide.preview.style.transition = slide.preview.style.webkitTransition = '';
+      slide.preview.hidden = true;
     } else if (slide.preview.parentNode) {
       slide.preview.parentNode.removeChild(slide.preview);
     }
     deck.classList.remove('is-sliding');
+    var endPage = slide.committing ? slide.next : state.page;
     var hadMap = !!slide.mapHome;
-    // 넘김이 홈에서 끝나지 않으면 지도를 먼저 끈다(제자리로 옮긴 뒤 끄면 다른 화면 위에 한 프레임 비친다).
-    // 홈에서 끝나면 끄지 않아 순정 지도가 다시 시작하지 않는다.
-    var endsOnHome = slide.committing ? slide.next === 'home' : state.page === 'home';
-    if (hadMap && !endsOnHome && window.K8Host) {
-      window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
-    }
     slide = null;
-    if (hadMap) sendMapOffsetNow(0);
+    if (hadMap) {
+      if (endPage === 'home' && mapAlive && document.getElementById('qc-drawer').hidden) {
+        setMapLiveVisible(true);
+      } else if (homeOrder.indexOf(endPage) >= 0 && mapAlive) {
+        setMapLiveVisible(false);
+      } else if (endPage !== 'home') {
+        hideNativeMapSlot();
+      }
+    }
   }
 
   function offsetPanel(panel, x) {
@@ -7556,51 +7776,57 @@ var stockSub = '';
     var current = panelFor(state.page);
     var real = panelFor(next);
     var useReal = real !== current;
+    var cached = false;
     var width = deck.clientWidth;
     var preview;
     if (useReal) {
-      if (isAppsPage(next) && lastRenderedAppsPage !== next) renderAppTilesPage(null, next);
-      if (next === 'home') layoutHomeCards();
       preview = real;
-      preview.hidden = false;
       preview.classList.add('pager-preview');
-      preview.style.webkitTransform = preview.style.transform = '';
-      if (next === 'home' && window.K8Host && document.getElementById('qc-drawer').hidden) {
-        var slot = document.getElementById('map-slot');
-        if (slot) {
-          var r = slot.getBoundingClientRect();
-          if (r.width > 0 && r.height > 0) {
-            window.K8Host.updateBounds(
-              document.documentElement.clientWidth,
-              Math.round(r.left), Math.round(r.top),
-              Math.round(r.right - r.left), Math.round(r.bottom - r.top)
-            );
-            sendMapOffsetNow(direction * width);
-          }
-        }
+      offsetPanel(preview, direction * width);
+      // 반드시 hidden=false 로 먼저 보이게 한 뒤 캔버스를 그려야 clientWidth/Height 가 실제 크기로 측정되어 아이콘 비율이 안 깨진다.
+      preview.hidden = false;
+      if (isAppsPage(next)) {
+        if (lastRenderedAppsPage !== next) renderAppTilesPage(null, next);
+        else if (appsCanvasesNeedPaint()) paintAppTiles();
       }
-      offsetPanel(preview, direction * width);
     } else {
-      preview = document.createElement('section');
-      preview.className = 'apps-view pager-preview';
-      preview.setAttribute('aria-hidden', 'true');
-      offsetPanel(preview, direction * width);
-      deck.appendChild(preview);
-      renderAppTilesPage(preview, next);
+      cached = true;
+      preview = appsSlideCache[next];
+      if (!preview) {
+        preview = document.createElement('section');
+        preview.className = 'apps-view pager-preview';
+        preview.setAttribute('aria-hidden', 'true');
+        offsetPanel(preview, direction * width);
+        deck.appendChild(preview);
+        renderAppTilesPage(preview, next);
+        appsSlideCache[next] = preview;
+      } else {
+        offsetPanel(preview, direction * width);
+        preview.hidden = false;
+        if (appsCanvasesNeedPaint(preview)) paintAppTiles(preview);
+      }
     }
     deck.classList.add('is-sliding');
     var mapHome = state.page === 'home' ? 'current' : (next === 'home' ? 'preview' : '');
     slide = { next: next, direction: direction, width: width, current: current, preview: preview,
-      isReal: useReal, offset: 0, mapHome: mapHome, mapFrame: 0 };
-    if (!mapHome) syncNativeMapSlot();
+      isReal: useReal, cached: cached, offset: 0, mapHome: mapHome };
+    if (mapHome) {
+      // 넘김 동안 네이티브 지도는 끄지 않고 표시만 숨긴다 → 웹뷰 카드 안의 최신 지도 스냅샷이 카드와 100% 칼싱크로 움직인다.
+      setMapLiveVisible(false);
+    } else {
+      syncNativeMapSlot();
+    }
+  }
+
+  function applySlidePosition(s, x) {
+    offsetPanel(s.current, x);
+    offsetPanel(s.preview, x + s.direction * s.width);
+    s.offset = x;
   }
 
   function moveSlide(x) {
-    offsetPanel(slide.current, x);
-    offsetPanel(slide.preview, x + slide.direction * slide.width);
-    slide.offset = x;
-    if (slide.mapHome === 'current') scheduleMapOffset(x);
-    else if (slide.mapHome === 'preview') scheduleMapOffset(x + slide.direction * slide.width);
+    if (!slide || slide.settling) return;
+    applySlidePosition(slide, x);
   }
 
   function settleSlide(commit, velocity) {
@@ -7608,38 +7834,41 @@ var stockSub = '';
     var pending = slide;
     var end = commit ? -pending.direction * pending.width : 0;
     var remaining = Math.abs(end - pending.offset);
-    var ms = Math.round(Math.max(130, Math.min(360, remaining / Math.max(.85, Math.abs(velocity)))));
+    var ms = Math.round(Math.max(150, Math.min(280, remaining / Math.max(1.2, Math.abs(velocity) * 1.1))));
     if (reducedMotion || !remaining) {
       if (commit) { pending.committing = true; showPage(pending.next); }
       else { clearPageSlide(); syncNativeMapSlot(); }
       return;
     }
     pending.settling = true;
-    var startOff = pending.offset;
+    pending.commitTarget = commit ? pending.next : '';
     pending.frame = window.requestAnimationFrame(function () {
-      var transition = ms + 'ms cubic-bezier(.2,.75,.3,1)';
+      if (slide !== pending) return;
+      var transition = ms + 'ms cubic-bezier(0.22, 1, 0.36, 1)';
       pending.current.style.transition = pending.preview.style.transition = 'transform ' + transition;
       pending.current.style.webkitTransition = pending.preview.style.webkitTransition = '-webkit-transform ' + transition;
       offsetPanel(pending.current, end);
       offsetPanel(pending.preview, end + pending.direction * pending.width);
       pending.offset = end;
-      if (pending.mapHome && window.K8Host && window.K8Host.setMapOffset) {
-        var startAt = Date.now();
-        var stepMap = function () {
-          if (slide !== pending) return;
-          var t = Math.min(1, (Date.now() - startAt) / ms);
-          var ease = 1 - Math.pow(1 - t, 3);
-          var cur = startOff + (end - startOff) * ease;
-          scheduleMapOffset(pending.mapHome === 'current' ? cur : cur + pending.direction * pending.width);
-          if (t < 1) pending.mapFrame = window.requestAnimationFrame(stepMap);
-        };
-        pending.mapFrame = window.requestAnimationFrame(stepMap);
-      }
       pending.timer = window.setTimeout(function () {
+        if (slide !== pending) return;
         if (commit) { pending.committing = true; showPage(pending.next); }
         else { clearPageSlide(); syncNativeMapSlot(); }
-      }, ms);
+      }, ms + 20);
     });
+  }
+
+  function flickVelocity(g, now) {
+    var list = g.samples;
+    if (!list || list.length < 2) return g.speed || 0;
+    var last = list[list.length - 1];
+    if (now - last.t > 120) return 0;
+    var first = list[0];
+    for (var i = list.length - 1; i >= 0; i--) {
+      if (last.t - list[i].t >= 45) { first = list[i]; break; }
+    }
+    var dt = last.t - first.t;
+    return dt > 0 ? (last.x - first.x) / dt : (g.speed || 0);
   }
 
   var splitTouchTimer = 0;
@@ -7647,12 +7876,26 @@ var stockSub = '';
     if (gesture) {
       window.clearTimeout(gesture.holdTimer);
       window.clearTimeout(gesture.edgeTimer);
+      finishHold(gesture, null);
+      gesture = null;
     }
-    if (slide) clearPageSlide();
+    clearDragCopies();
+    if (slide) {
+      // 이전 전환 애니메이션 중에 다시 손가락이 닿으면, 커밋 예정이던 페이지 전환을 먼저 끝내 연속 스와이프를 살린다.
+      if (slide.settling && slide.commitTarget) {
+        slide.committing = true;
+        showPage(slide.commitTarget);
+      } else {
+        clearPageSlide();
+      }
+    }
     suppressClick = false;
+    var now = Date.now();
+    lastInputAt = now;
     gesture = {
       x: ev.clientX,
       y: ev.clientY,
+      startAt: now,
       target: ev.target,
       inSplit: document.getElementById('split-card').contains(ev.target),
       inMediaBox: document.getElementById('bb-media-btn').contains(ev.target),
@@ -7661,17 +7904,14 @@ var stockSub = '';
       lastX: ev.clientX,
       lastClientX: ev.clientX,
       lastClientY: ev.clientY,
-      lastAt: Date.now(),
+      lastAt: now,
+      samples: [{ x: ev.clientX, t: now }],
       speed: 0,
       holdTimer: 0,
       edgeTimer: 0,
       edgeDir: 0
     };
     var g = gesture;
-    // 홈에서 손가락이 닿을 때 첫 앱 페이지가 아직 안 그려져 있으면 미리 한 번만 준비해 첫 프레임 끊김을 줄인다.
-    if (g.deck && state.page === 'home' && lastRenderedAppsPage !== 'apps1') {
-      renderAppTilesPage(null, 'apps1');
-    }
     // Chrome 30 has no touch-action: unless every touchmove is cancelled from the first one, the
     // WebView starts its own scroll and then delivers touchmove only every ~200 ms (choppy swipes).
     // Pages that never scroll (home pager, app tiles) and held cards cancel all moves.
@@ -7713,9 +7953,15 @@ var stockSub = '';
     if (!g) return false;
     var dx = ev.clientX - g.x;
     var dy = ev.clientY - g.y;
+    var now = Date.now();
     g.lastClientX = ev.clientX;
     g.lastClientY = ev.clientY;
-    if (g.holdTimer && (Math.abs(dx) > HOLD_SLOP || Math.abs(dy) > HOLD_SLOP)) {
+    var idx = homeOrder.indexOf(state.page);
+    var canSwipe = g.deck && idx >= 0 && !state.reordering && qcDrawer.hidden;
+    // 누른 직후(180ms 이내) 가로로 10px 넘게 분명히 밀면 꾹 누르기 대신 즉시 페이지 넘김으로 전환한다.
+    // 180ms 넘게 가만히 대고 있으면 꾹 누르기 손떨림 허용(24px)을 유지한다.
+    var quickSwipe = canSwipe && !g.held && (now - g.startAt < 180) && Math.abs(dx) > 10 && Math.abs(dx) > 1.15 * Math.abs(dy);
+    if (g.holdTimer && (quickSwipe || Math.abs(dx) > HOLD_SLOP || Math.abs(dy) > HOLD_SLOP)) {
       window.clearTimeout(g.holdTimer);
       g.holdTimer = 0;
     }
@@ -7725,22 +7971,28 @@ var stockSub = '';
       updateHeldEdge(g, ev.clientX);
       return true;
     }
-    // 꾹 누르기 손떨림 허용(24px) 안에서는 가로 넘김으로 보지 않는다.
     if (g.holdTimer) return false;
-    var idx = homeOrder.indexOf(state.page);
-    if (!g.deck || idx < 0 || state.reordering || !qcDrawer.hidden) return false;
-    var swipeMin = g.card ? HOLD_SLOP : 12;
-    if (!g.horizontal && Math.abs(dx) > swipeMin && Math.abs(dx) > 1.35 * Math.abs(dy)) g.horizontal = true;
+    if (!canSwipe) return false;
+    var swipeMin = quickSwipe ? 10 : (g.card ? HOLD_SLOP : 10);
+    if (!g.horizontal && Math.abs(dx) > swipeMin && Math.abs(dx) > 1.15 * Math.abs(dy)) {
+      g.horizontal = true;
+      g.dragStartX = g.x + (dx > 0 ? swipeMin : -swipeMin);
+    }
     if (!g.horizontal) return false;
-    var now = Date.now();
+    var dragDx = ev.clientX - g.dragStartX;
     g.speed = (ev.clientX - g.lastX) / Math.max(8, now - g.lastAt);
     g.lastAt = now;
     g.lastX = ev.clientX;
-    var dir = dx < 0 ? 1 : -1;
+    g.samples.push({ x: ev.clientX, t: now });
+    while (g.samples.length > 2 && now - g.samples[0].t > 120) g.samples.shift();
+    var dir = dragDx < 0 ? 1 : (dragDx > 0 ? -1 : (dx < 0 ? 1 : -1));
     var next = homeOrder[idx + dir];
-    if (!next || !dx) { clearPageSlide(); syncNativeMapSlot(); return true; }
+    if (!next || !dragDx) {
+      if (slide && !next) { clearPageSlide(); syncNativeMapSlot(); }
+      return true;
+    }
     if (!slide || slide.next !== next) createSlide(next, dir);
-    moveSlide(Math.max(-slide.width, Math.min(slide.width, dx)));
+    moveSlide(Math.max(-slide.width, Math.min(slide.width, dragDx)));
     return true;
   }
 
@@ -7756,11 +8008,11 @@ var stockSub = '';
     var dy = ev.clientY - g.y;
     if (finishHold(g, ev)) return true;
     if (g.horizontal) {
-      var velocity = Date.now() - g.lastAt > 110 ? 0 : g.speed;
+      var velocity = flickVelocity(g, Date.now());
       if (slide) {
         var distance = Math.abs(slide.offset);
-        var commit = distance >= slide.width * .24 ||
-          (distance > 48 && velocity * slide.direction < -.35);
+        var commit = distance >= slide.width * .14 ||
+          (distance > 22 && velocity * slide.direction < -.22);
         settleSlide(commit, velocity);
       }
       return true;
@@ -7768,11 +8020,13 @@ var stockSub = '';
 
     if (g.fromTop && dy > 45 && Math.abs(dy) > Math.abs(dx)) {
       qcDrawer.hidden = false;
+      syncNativeMapSlot();
       return true;
     }
     if (!qcDrawer.hidden && dy < -45 && Math.abs(dy) > Math.abs(dx)) {
       closeQuickEditor();
       qcDrawer.hidden = true;
+      syncNativeMapSlot();
       return true;
     }
     // 하단 미디어 칸의 좌우 스와이프: 왼쪽=다음 곡, 오른쪽=이전 곡(60px 이상).
@@ -7805,19 +8059,31 @@ var stockSub = '';
     }
     return false;
   }
-  document.addEventListener('mousedown', function (ev) { if (ev.button === 0) beginGesture(ev); });
-  window.addEventListener('mousemove', moveGesture);
-  window.addEventListener('mouseup', function (ev) { suppressClick = endGesture(ev); });
+  document.addEventListener('mousedown', function (ev) {
+    if (Date.now() - lastTouchAt < 800) return;
+    if (ev.button === 0) beginGesture(ev);
+  });
+  window.addEventListener('mousemove', function (ev) {
+    if (Date.now() - lastTouchAt < 800) return;
+    moveGesture(ev);
+  });
+  window.addEventListener('mouseup', function (ev) {
+    if (Date.now() - lastTouchAt < 800) return;
+    suppressClick = endGesture(ev);
+  });
   document.addEventListener('touchstart', function (ev) {
+    lastTouchAt = Date.now();
     if (ev.touches.length === 1) beginGesture(ev.touches[0]);
     else cancelGesture();
   });
   document.addEventListener('touchmove', function (ev) {
+    lastTouchAt = Date.now();
     var noScroll = gesture && gesture.noScroll;
     if (ev.touches.length === 1 && moveGesture(ev.touches[0])) ev.preventDefault();
     else if (noScroll) ev.preventDefault();
   }, { passive:false });
   document.addEventListener('touchend', function (ev) {
+    lastTouchAt = Date.now();
     var start = gesture;
     var end = ev.changedTouches[0];
     if (endGesture(end)) { ev.preventDefault(); return; }
@@ -7847,11 +8113,13 @@ var stockSub = '';
       finishHold(gesture, null);
       gesture = null;
     }
+    clearDragCopies();
     clearPageSlide();
     syncNativeMapSlot();
   }
   document.addEventListener('touchcancel', cancelGesture);
   window.addEventListener('blur', cancelGesture);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) cancelGesture(); });
   document.addEventListener('click', function (ev) {
     if (!suppressClick || !ev.detail) return;
     suppressClick = false;

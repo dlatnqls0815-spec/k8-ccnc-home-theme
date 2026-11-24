@@ -1,5 +1,6 @@
 package io.github.k8home;
 
+import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -66,8 +67,21 @@ public final class HomeActivity extends Activity {
         "음성 메모", "Kia Connect", "알림", "블루투스 오디오", "USB 오디오", "FM 라디오", "AM 라디오", "자연의 소리",
         "네메시스", "K8 마이드라이브", "유튜브"};
     private FrameLayout root;
+    private FrameLayout mapClip;
     private FrameLayout mapSlot;
     private StockMapPreview stockMapPreview;
+    private int mapAbsX = -1, mapAbsY = -1, mapW = -1, mapH = -1;
+    private int clipX = 0, clipY = 0, clipW = -1, clipH = -1;
+    private int appliedRelX = Integer.MIN_VALUE, appliedRelY = Integer.MIN_VALUE, appliedW = -1, appliedH = -1;
+    private float mapTranslationX = 0f;
+    private boolean mapLiveVisible = true;
+    private volatile boolean capturingMapSnap;
+    private static final TimeInterpolator MAP_EASE_OUT = new TimeInterpolator() {
+        @Override public float getInterpolation(float t) {
+            float u = 1f - t;
+            return 1f - u * u * u;
+        }
+    };
     private FrameLayout splitSlot;
     private StockMapPreview splitMapPreview;
     private boolean splitFrameReady;
@@ -223,9 +237,13 @@ public final class HomeActivity extends Activity {
             }
         });
         root.addView(web, new FrameLayout.LayoutParams(-1, -1));
+        mapClip = new FrameLayout(this);
+        mapClip.setClipChildren(true);
+        mapClip.setClipToPadding(true);
+        root.addView(mapClip, new FrameLayout.LayoutParams(-1, -1));
         mapSlot = new FrameLayout(this);
         mapSlot.setVisibility(View.GONE);
-        root.addView(mapSlot, new FrameLayout.LayoutParams(0, 0));
+        mapClip.addView(mapSlot, new FrameLayout.LayoutParams(0, 0));
         splitSlot = new FrameLayout(this);
         splitSlot.setVisibility(View.GONE);
         root.addView(splitSlot, new FrameLayout.LayoutParams(0, 0));
@@ -234,6 +252,11 @@ public final class HomeActivity extends Activity {
             @Override public void frameChanged(boolean ready) {
                 mapFrameReady = ready;
                 syncMapFrame();
+                if (ready) {
+                    web.postDelayed(new Runnable() {
+                        @Override public void run() { pushMapSnapshot(); }
+                    }, 350);
+                }
             }
         });
         setMapContent(stockMapPreview);
@@ -708,6 +731,37 @@ public final class HomeActivity extends Activity {
         }
     }
 
+    private void pushMapSnapshot() {
+        if (isFinishing() || isDestroyed() || !pageReady || capturingMapSnap || stockMapPreview == null) return;
+        final Bitmap snap = stockMapPreview.captureSnapshot(320);
+        if (snap == null) return;
+        capturingMapSnap = true;
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try {
+                    ByteArrayOutputStream jpeg = new ByteArrayOutputStream();
+                    snap.compress(Bitmap.CompressFormat.JPEG, 75, jpeg);
+                    snap.recycle();
+                    final String dataUrl = "data:image/jpeg;base64,"
+                        + Base64.encodeToString(jpeg.toByteArray(), Base64.NO_WRAP);
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            if (!isFinishing() && !isDestroyed() && pageReady) {
+                                web.evaluateJavascript(
+                                    "window.K8Home.mapSnapshotReady && window.K8Home.mapSnapshotReady("
+                                        + javascriptString(dataUrl) + ")", null);
+                            }
+                        }
+                    });
+                } catch (RuntimeException ignored) {
+                    if (!snap.isRecycled()) snap.recycle();
+                } finally {
+                    capturingMapSnap = false;
+                }
+            }
+        }, "k8home-map-snap").start();
+    }
+
     private void syncMapFrame() {
         if (pageReady) web.evaluateJavascript("window.K8Home.mapFrameChanged(" + mapFrameReady + ")", null);
     }
@@ -824,15 +878,87 @@ public final class HomeActivity extends Activity {
             });
         }
 
+        private void applyMapSlotLayout() {
+            if (mapW <= 0 || mapH <= 0) return;
+            int relX = mapAbsX - clipX;
+            int relY = mapAbsY - clipY;
+            if (relX == appliedRelX && relY == appliedRelY && mapW == appliedW && mapH == appliedH) return;
+            FrameLayout.LayoutParams bounds = new FrameLayout.LayoutParams(mapW, mapH);
+            bounds.leftMargin = relX;
+            bounds.topMargin = relY;
+            mapSlot.setLayoutParams(bounds);
+            appliedRelX = relX; appliedRelY = relY; appliedW = mapW; appliedH = mapH;
+        }
+
+        private void applyMapLiveVisibility() {
+            if (mapSlot.getVisibility() != View.VISIBLE) return;
+            if (mapLiveVisible) {
+                mapSlot.setTranslationX(mapTranslationX);
+                mapSlot.setAlpha(1f);
+            } else {
+                mapSlot.setAlpha(0f);
+                mapSlot.setTranslationX(-(web.getWidth() + 200f));
+            }
+        }
+
+        /** 넘김 중 순정 지도 미리보기(Surface)는 끄지 않고 표시만 숨겨 웹뷰 카드 스냅샷과 100% 칼싱크로 넘긴다. */
+        @JavascriptInterface public void setMapLiveVisible(final boolean visible) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
+                    mapSlot.animate().cancel();
+                    mapLiveVisible = visible;
+                    applyMapLiveVisibility();
+                }
+            });
+        }
+
+        /** 현재 순정 지도 미리보기 프레임을 JPEG 스냅샷으로 웹뷰(#home-map-snap)에 보낸다. */
+        @JavascriptInterface public void captureMapSnapshot() {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    pushMapSnapshot();
+                }
+            });
+        }
+
+        /** deck 영역에 맞춰 네이티브 지도 클립 경계를 고정한다(넘김 중 카드 테두리와 동일하게 잘림). */
+        @JavascriptInterface public void setMapClip(final int viewport, final int left, final int top,
+                                                    final int width, final int height) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed() || mapClip == null || viewport <= 0 || width <= 0 || height <= 0) return;
+                    float scale = web.getWidth() / (float) viewport;
+                    int x = Math.max(0, Math.round(left * scale));
+                    int y = Math.max(0, Math.round(top * scale));
+                    int w = Math.min(Math.round(width * scale), web.getWidth() - x);
+                    int h = Math.min(Math.round(height * scale), web.getHeight() - y);
+                    if (w <= 0 || h <= 0) return;
+                    if (x != clipX || y != clipY || w != clipW || h != clipH) {
+                        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(w, h);
+                        lp.leftMargin = x;
+                        lp.topMargin = y;
+                        mapClip.setLayoutParams(lp);
+                        clipX = x; clipY = y; clipW = w; clipH = h;
+                        applyMapSlotLayout();
+                    }
+                }
+            });
+        }
+
         @JavascriptInterface public void updateBounds(final int viewport, final int left, final int top,
                                                        final int width, final int height) {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
                     if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
                     if (viewport <= 0 || width <= 0 || height <= 0 || left < 0 || top < 0) {
+                        mapSlot.animate().cancel();
                         stockMapPreview.setActive(false);
+                        mapTranslationX = 0f;
                         mapSlot.setTranslationX(0f);
                         mapSlot.setVisibility(View.GONE);
+                        mapAbsX = mapAbsY = mapW = mapH = -1;
+                        appliedRelX = appliedRelY = Integer.MIN_VALUE; appliedW = appliedH = -1;
                         return;
                     }
                     float scale = web.getWidth() / (float) viewport;
@@ -841,32 +967,60 @@ public final class HomeActivity extends Activity {
                     int w = Math.min(Math.round(width * scale), web.getWidth() - x);
                     int h = Math.min(Math.round(height * scale), web.getHeight() - y);
                     if (w <= 0 || h <= 0) {
+                        mapSlot.animate().cancel();
                         stockMapPreview.setActive(false);
+                        mapTranslationX = 0f;
                         mapSlot.setTranslationX(0f);
                         mapSlot.setVisibility(View.GONE);
+                        mapAbsX = mapAbsY = mapW = mapH = -1;
+                        appliedRelX = appliedRelY = Integer.MIN_VALUE; appliedW = appliedH = -1;
                         return;
                     }
-                    FrameLayout.LayoutParams bounds = new FrameLayout.LayoutParams(w, h);
-                    bounds.leftMargin = x;
-                    bounds.topMargin = y;
-                    mapSlot.setLayoutParams(bounds);
-                    mapSlot.setTranslationX(0f);
-                    mapSlot.setVisibility(View.VISIBLE);
+                    mapAbsX = x; mapAbsY = y; mapW = w; mapH = h;
+                    applyMapSlotLayout();
+                    if (mapSlot.getVisibility() != View.VISIBLE) {
+                        mapSlot.setVisibility(View.VISIBLE);
+                    }
+                    applyMapLiveVisibility();
                     stockMapPreview.setActive(activityResumed && hasWindowFocus());
                 }
             });
         }
 
         /** 홈 화면 좌우 넘김 중 레이아웃·미리보기 재시작 없이 지도 슬롯 위치만 가로로 옮긴다. */
-        @JavascriptInterface public void setMapOffset(final int viewport, final int dx) {
+        @JavascriptInterface public void setMapOffset(final int viewport, final float dx) {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
                     if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
-                    if (viewport <= 0 || dx == 0) {
-                        mapSlot.setTranslationX(0f);
+                    mapSlot.animate().cancel();
+                    float px = (viewport <= 0 || dx == 0f) ? 0f : dx * (web.getWidth() / (float) viewport);
+                    mapTranslationX = px;
+                    mapSlot.setTranslationX(px);
+                }
+            });
+        }
+
+        /** 손을 뗀 뒤 웹뷰 CSS 전환과 같은 ease-out 곡선으로 네이티브 지도 슬롯을 한 번에 미끄러뜨린다. */
+        @JavascriptInterface public void animateMapOffset(final int viewport, final int fromDx, final int toDx,
+                                                          final int durationMs) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
+                    mapSlot.animate().cancel();
+                    float scale = viewport > 0 ? web.getWidth() / (float) viewport : 0f;
+                    float fromPx = fromDx * scale;
+                    float toPx = toDx * scale;
+                    mapSlot.setTranslationX(fromPx);
+                    mapTranslationX = toPx;
+                    if (durationMs <= 0) {
+                        mapSlot.setTranslationX(toPx);
                         return;
                     }
-                    mapSlot.setTranslationX(dx * (web.getWidth() / (float) viewport));
+                    mapSlot.animate()
+                        .translationX(toPx)
+                        .setDuration(durationMs)
+                        .setInterpolator(MAP_EASE_OUT)
+                        .start();
                 }
             });
         }
@@ -934,6 +1088,8 @@ public final class HomeActivity extends Activity {
             // ccNC bottom tabs: change the audio source in place; open the stock player only if refused.
             String source = action.substring("source-direct-".length());
             if (!StockRadio.changeSource(this, source)) handleAction("source-" + source);
+        } else if ("media-refresh".equals(action)) {
+            sendBroadcast(new Intent(StockMedia.REQUEST));
         } else if ("media-player".equals(action)) {
             if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {

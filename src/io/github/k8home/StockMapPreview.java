@@ -4,6 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.SurfaceTexture;
 import android.os.IBinder;
 import android.os.Parcel;
@@ -96,9 +100,34 @@ final class StockMapPreview extends TextureView implements TextureView.SurfaceTe
             return;
         }
         float zoom = width / (float) HOME_DRAW_MAX_WIDTH;
-        android.graphics.Matrix matrix = new android.graphics.Matrix();
+        Matrix matrix = new Matrix();
         matrix.setScale(zoom, zoom, 0, height / 2f);
         setTransform(matrix);
+    }
+
+    /** 현재 라이브 순정 지도 텍스처를 fitHomeDrawing 과 동일한 구도로 1장 캡처한다. */
+    Bitmap captureSnapshot(int maxWidth) {
+        if (!active || !frameReady || !isAvailable()) return null;
+        int w = getWidth(), h = getHeight();
+        if (w <= 0 || h <= 0) return null;
+        int tw = Math.min(w, Math.max(160, maxWidth));
+        int th = Math.max(80, Math.round(h * (tw / (float) w)));
+        try {
+            Bitmap raw = Bitmap.createBitmap(tw, th, Bitmap.Config.RGB_565);
+            getBitmap(raw);
+            if (split || w <= HOME_DRAW_MAX_WIDTH) return raw;
+            float zoom = w / (float) HOME_DRAW_MAX_WIDTH;
+            Bitmap out = Bitmap.createBitmap(tw, th, Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(out);
+            Matrix matrix = new Matrix();
+            matrix.setScale(zoom, zoom, 0, th / 2f);
+            Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+            canvas.drawBitmap(raw, matrix, paint);
+            raw.recycle();
+            return out;
+        } catch (RuntimeException ignored) {
+            return null;
+        }
     }
 
     @Override public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {

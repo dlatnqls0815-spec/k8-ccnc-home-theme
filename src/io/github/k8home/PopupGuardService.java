@@ -41,10 +41,14 @@ public final class PopupGuardService extends Service {
             }
             StockMedia next = media.update(intent.getAction(), intent.getExtras());
             if (next == media) return;
-            if ("bt".equals(next.source) && !next.title.isEmpty()
-                    && (media.title.isEmpty() || !"bt".equals(media.source) || !next.title.equals(media.title))) {
+            boolean radioSrc = "fm".equals(next.source) || "am".equals(next.source) || "radio".equals(next.source);
+            boolean mediaSrc = "bt".equals(next.source) || radioSrc || "usb".equals(next.source) || "nature".equals(next.source);
+            if (mediaSrc && !next.title.isEmpty()
+                    && (media.title.isEmpty() || !next.source.equals(media.source)
+                        || !next.title.equals(media.title)
+                        || (radioSrc && !next.artist.equals(media.artist)))) {
                 MediaKeys.cancelStockPopup(PopupGuardService.this);
-                Log.i(TAG, "track changed: stock popup cancel sent");
+                Log.i(TAG, next.source + " changed: stock popup cancel sent");
             }
             media = next;
         }
