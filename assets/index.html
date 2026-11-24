@@ -838,6 +838,8 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .bb-tab-btn[aria-selected="true"] {
   background: #279480; color: #fff;
 }
+/* ccNC 소스 탭(D-media_fmradio_channel): 지금 탭은 푸른 알약. */
+.bb-tab-btn[data-msrc][aria-selected="true"] { background: #367193; border-radius: 999px; }
 .bb-tab-btn.phone-active[aria-selected="true"] {
   background: #678776; color: #fff;
 }
@@ -1385,6 +1387,8 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .bb-tab-btn .ico-cut-fill { fill: #181a1d; }
 .bb-tab-btn[aria-selected="true"] .ico-cut { stroke: #279480; }
 .bb-tab-btn[aria-selected="true"] .ico-cut-fill { fill: #279480; }
+.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut { stroke: #367193; }
+.bb-tab-btn[data-msrc][aria-selected="true"] .ico-cut-fill { fill: #367193; }
 .ico-grey { color: #8e8e8e; }
 .circle-btn .ico { width: 2.2vw; height: 2.2vw; }
 
@@ -2035,94 +2039,76 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .ccnc-key { border: 6px solid #dcdcdc; border-radius: 16px; background: rgba(255,255,255,.05); }
 .ccnc-ico { fill: none; stroke: #e8e8e8; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 
-/* 라디오(FM/AM) */
-.ccnc-radio-back { left: 96px; top: 104px; width: 34px; height: 34px; }
-.ccnc-radio-back svg { position: absolute; left: 0; top: 0; width: 30px; height: 30px; }
-.ccnc-radio-sub { left: 165px; top: 104px; font-size: 30px; color: #f0f0f0; line-height: 1.3; }
-.ccnc-radio-freq { left: 175px; top: 218px; font-size: 46px; color: #f6f6f6; line-height: 1.25; }
-.ccnc-radio-station { left: 177px; top: 292px; font-size: 26px; color: #b6b6b6; line-height: 1.3; }
-.ccnc-radio-ant { left: 176px; top: 470px; width: 8px; height: 32px; background: #46c295; }
-.ccnc-radio-tower { left: 188px; top: 462px; width: 34px; height: 46px; stroke: #7f9c8e; }
-.ccnc-radio-prev { left: 283px; top: 448px; width: 79px; height: 88px; }
-.ccnc-radio-next { left: 455px; top: 448px; width: 81px; height: 88px; }
-.ccnc-radio-chev { left: 305px; top: 468px; width: 32px; height: 46px; }
-.ccnc-radio-chev2 { left: 480px; top: 468px; width: 32px; height: 46px; }
-.ccnc-radio-star { left: 378px; top: 450px; width: 36px; height: 42px; }
-.ccnc-radio-star-am { left: 244px; top: 466px; width: 40px; height: 46px; }
-.ccnc-radio-note { left: 1076px; top: 460px; width: 34px; height: 44px; fill: #d8b33c; stroke: #d8b33c; }
-.ccnc-radio-favtext { left: 1055px; top: 506px; font-size: 16px; color: #c8a83a; }
-.ccnc-radio-list { left: 1178px; top: 460px; width: 36px; height: 44px; }
-.ccnc-radio-logo { left: 1385px; top: 165px; width: 456px; height: 457px; background: #ffffff; }
-.ccnc-radio-logo-kbs { left: 1400px; top: 288px; width: 426px; font-size: 52px; font-weight: 700; color: #1b2a63; text-align: center; }
-.ccnc-radio-logo-cool { left: 1400px; top: 356px; width: 426px; font-size: 46px; font-weight: 700; color: #1e88c8; text-align: center; }
-.ccnc-radio-photo { left: 1382px; top: 165px; width: 459px; height: 448px; }
-
-/* 자연의 소리 */
-.ccnc-nature-back { left: 96px; top: 104px; width: 34px; height: 34px; }
-.ccnc-nature-back svg { position: absolute; left: 0; top: 0; width: 30px; height: 30px; }
-.ccnc-nature-sub { left: 165px; top: 104px; font-size: 30px; color: #f0f0f0; line-height: 1.3; }
-.ccnc-nature-title { left: 175px; top: 228px; font-size: 56px; color: #f4f4f4; line-height: 1.25; }
-.ccnc-nature-prev { left: 194px; top: 462px; width: 58px; height: 70px; }
-.ccnc-nature-pause { left: 350px; top: 462px; width: 46px; height: 70px; }
-.ccnc-nature-next { left: 496px; top: 462px; width: 58px; height: 70px; }
-.ccnc-nature-line { left: 171px; top: 617px; width: 1054px; height: 3px; background: #4d4d4d; }
-.ccnc-nature-line-fill { left: 0; top: 0; width: 530px; height: 3px; background: #c98a4b; }
-.ccnc-nature-list { left: 1184px; top: 444px; width: 46px; height: 46px; }
-.ccnc-nature-photo { left: 1382px; top: 165px; width: 459px; height: 448px; }
-
-/* 날씨 */
-.ccnc-weather-loc { left: 22px; top: 100px; width: 22px; height: 30px; fill: #d8d8d8; stroke: none; }
-.ccnc-weather-loc-text { left: 44px; top: 98px; font-size: 24px; color: #dcdcdc; }
-.ccnc-weather-brand { left: 1620px; top: 100px; width: 270px; font-size: 22px; color: #4f4f4f; text-align: right; letter-spacing: 3px; }
-.ccnc-wcol-day { font-size: 28px; color: #e8e8e8; }
-.ccnc-wcol-icon { top: 244px; width: 120px; height: 100px; }
-.ccnc-wcol-cond { top: 392px; width: 300px; font-size: 30px; color: #e8e8e8; text-align: center; }
-.ccnc-wcol-temp { top: 468px; width: 300px; font-size: 36px; color: #f2f2f2; text-align: center; }
-.ccnc-wcol-rain { top: 530px; width: 300px; font-size: 26px; color: #c9c9c9; text-align: center; }
-.ccnc-wcol-rain svg { position: absolute; left: 58px; top: 2px; width: 30px; height: 30px; fill: #b9b9b9; stroke: none; }
-
+/* 0.5.0-test39: 라디오·자연의 소리·날씨·하이브리드(1920x720 도판, 통째로 줄여 그림).
+   위 82px 은 테마 상단바, 아래 625px 부터는 테마 하단바(가운데 비어 있음)라 내용은 그 사이에 둔다.
+   설명서 그림의 흰 테두리 상자는 설명용 표시라 그리지 않는다. 바탕은 설정 화면과 같은 #000. */
+.ccnc-canvas { background: #000; }
+.cc-back { left: 84px; top: 100px; width: 300px; height: 48px; color: #f0f0f0; font-size: 30px; text-align: left; background: none; border: 0; }
+.cc-back svg { position: absolute; left: 12px; top: 10px; width: 30px; height: 30px; }
+.cc-back span { position: absolute; left: 66px; top: 4px; white-space: nowrap; }
+.cc-big { left: 175px; top: 196px; width: 1150px; font-size: 54px; color: #f6f6f6; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; }
+.cc-sub { left: 177px; top: 282px; width: 1150px; font-size: 28px; color: #a9adb2; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; }
+.cc-btn { width: 96px; height: 96px; background: none; border: 0; }
+.cc-btn svg { position: absolute; left: 50%; top: 50%; width: 40px; height: 52px; margin: -26px 0 0 -20px; }
+.cc-btn.cc-wide svg { width: 56px; height: 52px; margin-left: -28px; }
+.cc-btn:active { background: rgba(255,255,255,.08); border-radius: 12px; }
+.cc-listen { left: 175px; top: 452px; width: 320px; height: 84px; border: 2px solid #8a8d92; border-radius: 42px; background: none; color: #f0f0f0; font-size: 30px; text-align: center; }
+.cc-listen:active { background: rgba(255,255,255,.08); }
+.cc-preset { left: 600px; top: 486px; font-size: 24px; color: #4cc08c; }
+.cc-art { left: 1406px; top: 168px; width: 435px; height: 435px; border-radius: 16px; overflow: hidden; }
+.cc-art > svg { display: block; width: 435px; height: 435px; }
+.cc-line { left: 175px; top: 590px; width: 1085px; height: 3px; background: #4d4d4d; }
+.cc-line span { position: absolute; left: 0; top: 0; height: 3px; background: #c9a25a; }
+/* 날씨(오늘 날씨) */
+.cc-w-place { left: 40px; top: 100px; font-size: 24px; color: #dcdcdc; }
+.cc-w-place svg { position: absolute; left: 0; top: 2px; width: 20px; height: 28px; }
+.cc-w-place span { position: absolute; left: 32px; top: 0; white-space: nowrap; }
+.cc-w-brand { left: 1480px; top: 102px; width: 400px; font-size: 22px; color: #6a6d72; text-align: right; }
+.cc-w-icon { left: 250px; top: 205px; width: 200px; height: 200px; }
+.cc-w-icon svg { display: block; width: 200px; height: 200px; }
+.cc-w-temp { left: 500px; top: 200px; font-size: 128px; color: #f4f4f4; line-height: 1; }
+.cc-w-temp small { font-size: 48px; vertical-align: 56px; margin-left: 6px; }
+.cc-w-label { left: 506px; top: 350px; font-size: 30px; color: #a9adb2; }
+.cc-w-rows { left: 1120px; top: 190px; width: 700px; }
+.cc-w-row { position: relative; height: 70px; border-bottom: 1px solid #26282b; font-size: 30px; line-height: 70px; }
+.cc-w-row b { position: absolute; left: 0; top: 0; font-weight: 400; color: #9a9da2; }
+.cc-w-row span { position: absolute; right: 0; top: 0; color: #f0f0f0; }
+.cc-w-note { left: 40px; top: 560px; width: 1840px; font-size: 24px; color: #8a8d92; }
 /* 하이브리드 */
-.ccnc-hev-panel { border: 4px solid #d5d5d5; border-radius: 20px; background: rgba(255,255,255,.04); }
-.ccnc-hev-left { left: 32px; top: 85px; width: 941px; height: 521px; }
-.ccnc-hev-right { left: 1007px; top: 85px; width: 884px; height: 521px; }
-.ccnc-hev-label { font-size: 26px; color: #e4e4e4; }
-.ccnc-hev-graph { left: 55px; width: 590px; height: 150px; }
-.ccnc-hev-value { font-size: 56px; color: #f4f4f4; text-align: right; }
-.ccnc-hev-unit { font-size: 26px; color: #d8d8d8; }
-.ccnc-hev-sub { font-size: 22px; color: #c6c6c6; }
-.ccnc-hev-mode { left: 1007px; top: 98px; width: 884px; font-size: 28px; color: #e8e8e8; text-align: center; }
-.ccnc-hev-car { left: 1060px; top: 160px; width: 780px; height: 360px; }
-.ccnc-hev-tag { font-size: 26px; color: #ececec; }
+.cc-h-panel { top: 98px; height: 510px; border-radius: 14px; background: #1b1916; }
+.cc-h-label { font-size: 28px; color: #e4e4e4; }
+.cc-h-graph { left: 60px; width: 600px; height: 140px; }
+.cc-h-graph svg { display: block; width: 600px; height: 140px; }
+.cc-h-wait { left: 60px; width: 600px; font-size: 22px; color: #6f7378; text-align: center; }
+.cc-h-axis { font-size: 18px; color: #7d8085; }
+.cc-h-value { left: 690px; width: 230px; font-size: 64px; color: #f4f4f4; text-align: right; line-height: 1; }
+.cc-h-unit { left: 690px; width: 230px; font-size: 24px; color: #c8c8c8; text-align: right; }
+.cc-h-mode { left: 1007px; top: 122px; width: 884px; font-size: 32px; color: #e8e8e8; text-align: center; }
+.cc-h-flow { left: 1129px; top: 186px; width: 640px; height: 400px; }
+.ccnc-canvas .cc-h-flow .hybrid-flow { width: 640px; height: 400px; max-height: none; }
 
-/* 설명서 안 아이콘·그림 크기(SVG 크기는 CSS 한 곳에서만 지정) */
-.ccnc-pos > svg { display: block; width: 100%; height: 100%; }
-.ccnc-radio-antenna { left: 158px; top: 448px; width: 100px; height: 88px; }
-.ccnc-radio-prev-am { left: 153px; top: 448px; width: 81px; height: 88px; }
-.ccnc-radio-next-am { left: 325px; top: 448px; width: 80px; height: 88px; }
-.ccnc-radio-chev-am { left: 176px; top: 468px; width: 32px; height: 46px; }
-.ccnc-radio-chev2-am { left: 348px; top: 468px; width: 32px; height: 46px; }
-.ccnc-w-ico { width: 120px; height: 100px; }
-.ccnc-photo-svg { width: 459px; height: 448px; }
-.ccnc-hev-car-svg { width: 780px; height: 360px; }
-.ccnc-hev-graph-svg { width: 590px; height: 150px; }
-
-/* ccNC 앱 화면 하단 바(설명서 D-weather_main.png / D-hev_main.png) */
-.ccnc-appbar { position: absolute; left: 0; top: 588px; width: 1920px; height: 112px; background: #131313; }
-.ccnc-appbar-key { top: 646px; width: 44px; height: 44px; }
-.ccnc-appbar-back { left: 60px; }
-.ccnc-appbar-home { left: 210px; }
-.ccnc-appbar-menu { left: 360px; }
-.ccnc-appbar-key svg { width: 40px; height: 40px; }
-.ccnc-appbar-seg { left: 701px; top: 593px; width: 488px; height: 57px; border: 3px solid #d8d8d8; border-radius: 29px; }
-.ccnc-appbar-seg-a { left: 729px; top: 606px; font-size: 26px; color: #3fd0b4; }
-.ccnc-appbar-seg-b { left: 951px; top: 606px; font-size: 26px; color: #e8e8e8; }
-.ccnc-appbar-green { left: 701px; top: 634px; width: 195px; height: 50px; background: #2bb79b; }
-.ccnc-appbar-gear { left: 1040px; top: 640px; width: 40px; height: 40px; }
-.ccnc-appbar-gear svg { width: 40px; height: 40px; }
-.ccnc-appbar-thumb { left: 1420px; top: 630px; width: 82px; height: 56px; background: #1d2a1f; }
-.ccnc-appbar-title { left: 1518px; top: 640px; font-size: 28px; color: #e8e8e8; }
-/* 강수율 앞 작은 구름(전체 폭을 덮지 않도록 크기를 다시 지정) */
-.ccnc-wcol-rain svg { width: 30px; height: 30px; vertical-align: -7px; margin-right: 10px; }
+/* 0.5.0-test40 라디오(ccNC D-media_fmradio_channel): 푸른 회색 바탕 위에 반투명 칸 두 개와 로고 그림. */
+.ccnc-canvas[data-page="radio"] { background: #26303d; background: -webkit-linear-gradient(left, #26303d 0%, #2c3442 55%, #363642 100%); background: linear-gradient(90deg, #26303d 0%, #2c3442 55%, #363642 100%); }
+.shell.in-detail.cc-tint .top { background: transparent; }
+/* 설명서 사진의 갈색 칸은 설명용 강조라 그리지 않는다(사용자 확인 2026-11-24): 칸 바탕 = 화면 바탕. */
+.cc-r-panel { display: none; }
+.cc-r-menu { left: 22px; width: 393px; height: 96px; padding: 0; border: 0; background: none; color: #b9b9bd; font-size: 36px; }
+.cc-r-menu span { position: absolute; left: 46px; top: 24px; white-space: nowrap; }
+.cc-r-menu.on { color: #4db3e6; }
+.cc-r-bar { position: absolute; left: -22px; top: 28px; width: 8px; height: 40px; background: #3fb2e6; }
+.cc-r-list { left: 498px; top: 104px; width: 921px; height: 521px; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.cc-r-row { position: relative; display: block; width: 100%; height: 124px; padding: 0; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .08); background: none; text-align: left; }
+.cc-r-row:active { background: rgba(255, 255, 255, .06); }
+.cc-r-logo { position: absolute; left: 28px; top: 17px; width: 90px; height: 90px; border-radius: 10px; overflow: hidden; background: #efe9e3; text-align: center; }
+.cc-r-logo img { display: block; width: 90px; height: 90px; }
+.cc-r-logo b { font-size: 26px; line-height: 90px; color: #6a6a6a; font-weight: 600; }
+.cc-r-freq { position: absolute; left: 148px; top: 20px; font-size: 32px; color: #f2f2f2; font-weight: 500; white-space: nowrap; }
+.cc-r-row.cur .cc-r-freq { color: #3fb2e6; }
+.cc-r-name { position: absolute; left: 148px; top: 68px; width: 640px; font-size: 28px; color: #a8a8ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.cc-r-mark { position: absolute; right: 40px; top: 44px; width: 36px; height: 36px; }
+.cc-r-empty { padding: 200px 0 0; font-size: 28px; color: #9a9ca2; text-align: center; }
+.cc-r-art { left: 1504px; top: 127px; width: 320px; height: 320px; border-radius: 14px; overflow: hidden; background: #efe9e3; }
+.cc-r-art > img, .cc-r-art > svg { display: block; width: 320px; height: 320px; }
 
 /* ccNC 설정 모양 맞추기(ccncTidySettings): 숨김, 왼쪽 스위치 줄, 맨 아래 순정 설정 줄. */
 .ccnc-hide-value { display: none !important; }
@@ -3503,13 +3489,16 @@ var stockSub = '';
     }
   }
 
+  var lastRenderedAppsPage = '';
   /* ====== Build & Render Views ====== */
   function renderAppTilesPage(container, page) {
     var preview = !!container;
+    var targetPage = page || state.page;
     container = container || document.getElementById('view-apps');
+    if (!preview) lastRenderedAppsPage = targetPage;
     container.innerHTML = '';
     setClass(container, 'reordering', state.reordering);
-    var startIdx = appPages.indexOf(page || state.page) * tilesPerPage;
+    var startIdx = appPages.indexOf(targetPage) * tilesPerPage;
     var slice = state.appTiles.slice(startIdx, startIdx + tilesPerPage);
 
     slice.forEach(function (tile, localIdx) {
@@ -3578,11 +3567,12 @@ var stockSub = '';
   function handleTileAction(tile) {
     if (inVehicle && tile.action === 'search') { host('nav-search'); return; }
     if (tile.action === 'navi' || tile.action === 'media' || tile.action === 'phone' ||
-        tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo') {
+        tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo' ||
+        isCcncPage(tile.action)) {
       navigateTo(tile.action === 'voicememo' ? 'memo' : tile.action);
       return;
     }
-    if (['projection','configure','radio','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0 ||
+    if (['projection','configure','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0 ||
         tile.action.indexOf('pkg:') === 0) {
       if (!inVehicle && tile.action.indexOf('pkg:') === 0) { showNotice(tile.label + ' · 차에서 순정 앱을 엽니다'); return; }
       host(tile.action);
@@ -3751,13 +3741,17 @@ var stockSub = '';
     });
   }
 
-  /* ===== 0.5.0-test18: ccNC 라디오·자연의 소리·날씨·하이브리드 화면 =====
-     설명서 그림(D-media_fmradio_main.png, D-media_amradio_main.png,
-     D-media_sounds_nature_main.png, D-weather_main.png, D-hev_main.png)을
-     1920x720 좌표(px 고정값) 도판에 그리고 화면 폭에 맞춰 통째로 줄여 그린다. */
-  /* 0.5.0-test19: 미니맥스가 test18 에 넣은 설명서 그림 따라 그린 화면(라디오·자연의 소리·날씨·하이브리드)은 값이
-     코드에 박힌 가짜(연비 20.5, 서울시 서초구 예보 등)라 쓰지 않는다. 실제 값과 이어질 때까지 순정 앱·안내로 둔다. */
-  var CCNC_PAGES = [];
+  /* ===== 0.5.0-test39: ccNC 라디오·자연의 소리·날씨·하이브리드 화면 =====
+     설명서 그림(D-media_fmradio_main, D-media_sounds_nature_main, D-weather_main, D-hev_main)의 자리를
+     1920x720 도판에 옮기고 화면 폭에 맞춰 통째로 줄인다(Chrome 30 의 vw 계산 차이를 피함).
+     값은 모두 차에서 받은 것만 쓴다(test18 의 고정 값·가짜 하단바는 쓰지 않는다).
+     - 라디오·자연의 소리: 순정 위젯 방송(StockMedia). 이전/다음·재생은 순정 위젯과 같은 명령(StockTransport).
+       지금 다른 소스가 나오고 있으면 "○○ 듣기"로 순정 앱을 열어 소스를 바꾼다(테마가 소스를 직접 바꿀 길은 없다).
+       채널 목록·즐겨찾기 저장은 순정 앱에서 한다(목록 단추).
+     - 날씨: Kia Connect 오늘 날씨(StockWeather)와 공조 바깥 기온. 예보는 받을 길이 없어 그리지 않는다.
+     - 하이브리드: 에너지 흐름·배터리(StockHybrid), 평균 연비(차량 서비스, km/L), 모터 사용 값(단위 확인 전).
+       그래프는 설명서처럼 2분 30초마다 한 칸, 최근 40분. 테마가 켜진 동안 받은 값만 그린다. */
+  var CCNC_PAGES = ['radio', 'nature', 'weather', 'hybrid'];
 
   function isCcncPage(page) { return CCNC_PAGES.indexOf(page) >= 0; }
 
@@ -3770,211 +3764,310 @@ var stockSub = '';
     canvas.style.transform = 'scale(' + s + ')';
   }
 
-  function ccncSvgChevron() {
-    return '<svg class="ccnc-ico" viewBox="0 0 32 46"><path d="M25 4 7 23l18 19"/></svg>';
+  var CC_ICONS = {
+    down: '<svg viewBox="0 0 30 30"><path d="M7 11l8 8 8-8" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"/></svg>',
+    prevCh: '<svg viewBox="0 0 40 52"><path d="M28 6 10 26l18 20" style="fill:none;stroke:#e8e8e8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/></svg>',
+    nextCh: '<svg viewBox="0 0 40 52"><path d="M12 6l18 20-18 20" style="fill:none;stroke:#e8e8e8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/></svg>',
+    list: '<svg viewBox="0 0 40 52"><path d="M12 16h22M12 26h22M12 36h22" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/><circle cx="6" cy="16" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="26" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="36" r="2" style="fill:#e8e8e8"/></svg>',
+    antenna: '<svg viewBox="0 0 56 52"><rect x="4" y="12" width="5" height="28" rx="2" style="fill:#4cc08c"/><path d="M36 22v26M28 48h16" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/><circle cx="36" cy="18" r="3" style="fill:#e8e8e8"/><path d="M28 12a11 11 0 0 1 16 0M24 6a17 17 0 0 1 24 0" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/></svg>',
+    prev: '<svg viewBox="0 0 40 52"><path d="M8 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M36 8 14 26l22 18z" style="fill:#e8e8e8"/></svg>',
+    next: '<svg viewBox="0 0 40 52"><path d="M32 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M4 8l22 18L4 44z" style="fill:#e8e8e8"/></svg>',
+    pause: '<svg viewBox="0 0 40 52"><path d="M11 8v36M29 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:7"/></svg>',
+    play: '<svg viewBox="0 0 40 52"><path d="M8 6l28 20L8 46z" style="fill:#e8e8e8"/></svg>',
+    pin: '<svg viewBox="0 0 20 28"><path d="M10 1a9 9 0 0 1 9 9c0 7-9 17-9 17S1 17 1 10a9 9 0 0 1 9-9z" style="fill:#d8d8d8"/><circle cx="10" cy="10" r="3.5" style="fill:#000"/></svg>',
+    thermo: '<svg viewBox="0 0 200 200"><path d="M86 30a14 14 0 0 1 28 0v86a30 30 0 1 1-28 0z" style="fill:none;stroke:#d8d8d8;stroke-width:6;stroke-linejoin:round"/><circle cx="100" cy="142" r="16" style="fill:#e2b43a"/><path d="M100 62v76" style="fill:none;stroke:#e2b43a;stroke-width:8;stroke-linecap:round"/><path d="M124 52h18M124 72h12M124 92h18" style="fill:none;stroke:#8a8d92;stroke-width:4;stroke-linecap:round"/></svg>'
+  };
+
+  // 라디오 그림: 우리가 그린 추상 그림(설명서 그림을 옮기지 않는다).
+  function ccRadioArt() {
+    return '<svg viewBox="0 0 435 435"><defs><linearGradient id="ccRadioBg" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#c3b2dd"/><stop offset=".55" stop-color="#93b4e2"/><stop offset="1" stop-color="#6aa4dc"/></linearGradient></defs>' +
+      '<rect width="435" height="435" fill="url(#ccRadioBg)"/>' +
+      '<g style="fill:none;stroke:rgba(255,255,255,.55);stroke-width:3">' +
+      '<circle cx="250" cy="200" r="40"/><circle cx="250" cy="200" r="90"/><circle cx="250" cy="200" r="150"/>' +
+      '<circle cx="80" cy="110" r="38"/><path d="M40 420 400 30M120 435 435 90"/></g></svg>';
   }
-  function ccncSvgStar() {
-    return '<svg class="ccnc-ico" viewBox="0 0 36 42"><path d="M18 2 22.8 11.7 33.5 13.3 25.8 20.9 27.6 31.6 18 26.4 8.4 31.6 10.2 20.9 2.5 13.3 13.2 11.7Z" style="fill:#4cc08c;stroke:none"/></svg>';
-  }
-  function ccncSvgList() {
-    return '<svg class="ccnc-ico" viewBox="0 0 36 44"><path d="M8 11h24M8 22h24M8 33h24"/></svg>';
-  }
-  function ccncSvgNote() {
-    return '<svg class="ccnc-ico" viewBox="0 0 34 44"><path d="M12 36V10l18-4v26" style="fill:none;stroke:#d8b33c;stroke-width:3"/><circle cx="8" cy="37" r="5" style="fill:#d8b33c;stroke:none"/><circle cx="26" cy="33" r="5" style="fill:#d8b33c;stroke:none"/></svg>';
-  }
-  function ccncSvgTower() {
-    return '<svg class="ccnc-ico" viewBox="0 0 34 46"><path d="M17 8v34M9 44h16" style="fill:none;stroke:#7f9c8e;stroke-width:2.4"/><circle cx="17" cy="6" r="3" style="fill:#7f9c8e;stroke:none"/><path d="M9 20a11 11 0 0 1 16 0M5 27a17 17 0 0 1 24 0" style="fill:none;stroke:#7f9c8e;stroke-width:2.4"/></svg>';
-  }
-  function ccncSvgBack() {
-    return '<svg class="ccnc-ico" viewBox="0 0 30 30"><path d="M7 11l8 8 8-8"/></svg>';
-  }
-  function ccncSvgCloud(rain) {
-    var body = '<path d="M12 34a10 10 0 0 1 1-20 14 14 0 0 1 26-2 9 9 0 0 1-1 18z" style="fill:none;stroke:#d8d8d8;stroke-width:3"/>';
-    if (!rain) return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' + body + '</svg>';
-    return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' + body +
-      '<path d="M34 46l-8 18M56 46l-8 18M78 46l-8 18" style="fill:none;stroke:#9fc4de;stroke-width:4"/></svg>';
-  }
-  function ccncSvgSun() {
-    return '<svg class="ccnc-w-ico" viewBox="0 0 120 100">' +
-      '<circle cx="60" cy="50" r="22" style="fill:none;stroke:#e2b43a;stroke-width:3"/>' +
-      '<path d="M60 12v12M60 76v12M22 50h12M86 50h12M33 23l8 8M79 69l8 8M87 23l-8 8M41 69l-8 8" style="fill:none;stroke:#e2b43a;stroke-width:3"/></svg>';
-  }
-  function ccncSvgRainDrop() {
-    return '<svg class="ccnc-w-rain-ico" viewBox="0 0 30 30"><path d="M10 8a7 7 0 0 1 1-14 10 10 0 0 1 18-2 7 7 0 0 1-1 13z" style="fill:#b9b9b9;stroke:none"/><path d="M9 17l-4 9M17 17l-4 9M25 17l-4 9" style="fill:none;stroke:#b9b9b9;stroke-width:2"/></svg>';
-  }
-  function ccncSvgMountain() {
-    return '<svg class="ccnc-photo-svg" viewBox="0 0 459 448" preserveAspectRatio="none">' +
-      '<defs><linearGradient id="ccncMtnSky" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#123a5e"/><stop offset="1" stop-color="#2b6a8c"/></linearGradient></defs>' +
-      '<rect width="459" height="448" fill="url(#ccncMtnSky)"/>' +
-      '<path d="M0 250 90 120l60 90 70-120 90 150 60-80 89 110v178H0z" fill="#2b3038"/>' +
-      '<path d="M90 120l60 90 70-120 40 66-50-14-30 42-40-30z" fill="#4a515c"/>' +
-      '<path d="M170 90l20 34-16 12-14-16z" fill="#e8eef4"/>' +
-      '<rect y="300" width="459" height="148" fill="#16324a"/>' +
-      '<path d="M0 300h459" stroke="#3d6f92" stroke-width="3" fill="none"/>' +
-      '<path d="M60 330h70M150 350h60M240 330h90M330 360h70M20 370h60" stroke="#2a5a7d" stroke-width="6" fill="none"/></svg>';
-  }
-  function ccncSvgForest() {
-    return '<svg class="ccnc-photo-svg" viewBox="0 0 459 448" preserveAspectRatio="none">' +
-      '<defs><linearGradient id="ccncForestBg" x1="0" y1="0" x2="0" y2="1">' +
+  function ccForestArt() {
+    return '<svg viewBox="0 0 435 435"><defs><linearGradient id="ccForestBg" x1="0" y1="0" x2="0" y2="1">' +
       '<stop offset="0" stop-color="#d7e8c4"/><stop offset="1" stop-color="#4e7a3a"/></linearGradient></defs>' +
-      '<rect width="459" height="448" fill="url(#ccncForestBg)"/>' +
-      '<path d="M0 0h459v140L0 190z" fill="#9dc06e"/>' +
-      '<path d="M40 0 70 0 52 448H24zM150 0h24l-8 448h-30zM300 0h22l4 448h-26zM400 0h20l10 448h-30z" fill="#3c2c1c"/>' +
-      '<path d="M0 300 459 250v198H0z" fill="#3f6a2f"/>' +
-      '<path d="M0 360 459 320v128H0z" fill="#2f5224"/></svg>';
-  }
-  function ccncSvgCar() {
-    return '<svg class="ccnc-hev-car-svg" viewBox="0 0 780 360">' +
-      '<path d="M40 232c0-34 10-52 34-64l84-40c22-10 46-16 72-16h150c46 0 86 10 122 30l72 40c26 14 42 32 46 56l4 24v18H40z" ' +
-      'style="fill:#6d6f74;stroke:#c9ccd2;stroke-width:3"/>' +
-      '<path d="M150 116h96v-38h-40c-22 0-40 14-56 38zM262 78h132c34 0 62 8 88 26l44 30H262z" style="fill:#8d9099;stroke:#c9ccd2;stroke-width:2"/>' +
-      '<circle cx="140" cy="252" r="54" style="fill:#23252a;stroke:#c9ccd2;stroke-width:3"/>' +
-      '<circle cx="140" cy="252" r="26" style="fill:#4a4d55;stroke:#c9ccd2;stroke-width:2"/>' +
-      '<circle cx="640" cy="252" r="54" style="fill:#23252a;stroke:#c9ccd2;stroke-width:3"/>' +
-      '<circle cx="640" cy="252" r="26" style="fill:#4a4d55;stroke:#c9ccd2;stroke-width:2"/>' +
-      '<rect x="470" y="180" width="150" height="70" rx="6" style="fill:#2f3238;stroke:#c9ccd2;stroke-width:3"/>' +
-      '<rect x="478" y="188" width="26" height="54" rx="3" style="fill:#7fd6a4;stroke:none"/>' +
-      '<path d="M520 196v40l16-10 16 10v-40z" style="fill:#e8eef4;stroke:none"/></svg>';
-  }
-  function ccncSvgGraph(kind) {
-    if (kind === 'fuel') {
-      return '<svg class="ccnc-hev-graph-svg" viewBox="0 0 590 150" preserveAspectRatio="none">' +
-        '<path d="M0 150 40 118 80 126 120 96 160 104 200 78 240 86 280 66 320 74 360 58 400 70 440 52 480 62 520 46 560 56 590 48V150Z" style="fill:#9d9a2e;stroke:none" opacity=".85"/>' +
-        '<path d="M0 150 40 118 80 126 120 96 160 104 200 78 240 86 280 66 320 74 360 58 400 70 440 52 480 62 520 46 560 56 590 48" style="fill:none;stroke:#d6d24a;stroke-width:3"/>' +
-        '<path d="M0 20h590M0 60h590M0 100h590M0 140h590" style="fill:none;stroke:#3a3a3a;stroke-width:1"/>' +
-        '</svg>';
-    }
-    return '<svg class="ccnc-hev-graph-svg" viewBox="0 0 590 150" preserveAspectRatio="none">' +
-      '<path d="M0 150 40 60 80 96 120 52 160 104 200 70 240 108 280 64 320 96 360 48 400 88 440 66 480 100 520 58 560 82 590 72V150Z" style="fill:#5f9c9a;stroke:none" opacity=".8"/>' +
-      '<path d="M0 150 40 60 80 96 120 52 160 104 200 70 240 108 280 64 320 96 360 48 400 88 440 66 480 100 520 58 560 82 590 72" style="fill:none;stroke:#7fd0cb;stroke-width:3"/>' +
-      '<path d="M0 20h590M0 60h590M0 100h590M0 140h590" style="fill:none;stroke:#3a3a3a;stroke-width:1"/>' +
-      '</svg>';
+      '<rect width="435" height="435" fill="url(#ccForestBg)"/>' +
+      '<path d="M0 0h435v132L0 180z" fill="#9dc06e"/>' +
+      '<path d="M38 0h28L50 435H22zM142 0h22l-8 435h-28zM284 0h21l4 435h-25zM380 0h19l9 435h-28z" fill="#3c2c1c"/>' +
+      '<path d="M0 285 435 237v198H0z" fill="#3f6a2f"/><path d="M0 342 435 304v131H0z" fill="#2f5224"/></svg>';
   }
 
-  /* ccNC 앱 화면 하단 바(설명서 그림의 뒤로/홈/메뉴 + 앱 가운데 + 미디어) */
-  function ccncAppBar(extra) {
+  function ccBack(label) {
+    return '<button type="button" class="ccnc-pos cc-back" data-ccnc-back aria-label="뒤로">' + CC_ICONS.down +
+      '<span>' + label + '</span></button>';
+  }
+  function ccButton(left, top, attr, icon, label, wide) {
+    return '<button type="button" class="ccnc-pos cc-btn' + (wide ? ' cc-wide' : '') + '" style="left:' + left + 'px;top:' + top + 'px" ' +
+      attr + ' aria-label="' + label + '">' + icon + '</button>';
+  }
+  function ccNowPlaying() {
     var tr = state.tracks[state.trackIndex];
-    var h = '<div class="ccnc-appbar"></div>';
-    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-back" data-ccnc-back aria-label="뒤로">' +
-      '<svg viewBox="0 0 40 40"><path d="M30 6 12 20l18 14" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-home" data-ccnc-home aria-label="홈">' +
-      '<svg viewBox="0 0 40 40"><path d="M8 19 20 8l12 11v12H8z" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linejoin="round"/></svg></button>';
-    h += '<button type="button" class="ccnc-pos ccnc-appbar-key ccnc-appbar-menu" data-ccnc-menu aria-label="전체 메뉴">' +
-      '<svg viewBox="0 0 40 40"><path d="M6 12h28M6 20h28M6 28h28" style="fill:none;stroke:#e8e8e8;stroke-width:3.4" stroke-linecap="round"/></svg></button>';
-    h += extra || '';
-    h += '<span class="ccnc-pos ccnc-appbar-thumb"></span>';
-    h += '<span class="ccnc-pos ccnc-appbar-title ccnc-txt">' + escapeText(tr.title) + '</span>';
-    return h;
+    return livePreview && state.mediaSource ? (sourceLabel(state.mediaSource) || '다른 소스') : tr ? tr.title : '';
+  }
+
+  /* 0.5.0-test40: ccNC 라디오(사용자 사진 "FM 라디오 실행하기" D-media_fmradio_channel): 왼쪽 즐겨찾기/FM/AM,
+     가운데 방송국 목록(순정 RadioProvider 값, 누르면 그 주파수로 바로), 오른쪽 지금 방송국 로고와 ‹ ›.
+     로고는 차에 깔린 순정 라디오 앱의 그림을 방송국 이름으로 찾아 읽는다(StockRadio.logo). */
+  var radioLists = {};      // 'fav' | 'fm' | 'am' -> [{kHz, fm, name}]
+  var radioLogos = {};      // 방송국 이름 -> data: URL ('' = 없음)
+  function radioKHz(value, fmHint) {
+    var n = parseFloat(value);
+    if (!(n > 0)) return 0;
+    if (n >= 76 && n <= 108) return Math.round(n * 1000);          // 89.1 (MHz)
+    if (n >= 760 && n <= 1080 && fmHint !== false) return n * 100;  // 891 (0.1 MHz)
+    if (n >= 7600 && n <= 10800) return n * 10;                     // 8910 (10 kHz)
+    if (n >= 76000 && n <= 108000) return Math.round(n);            // 89100 (kHz)
+    if (n >= 522 && n <= 1629) return Math.round(n);                // AM kHz
+    return 0;
+  }
+  function radioLabel(kHz) {
+    return kHz >= 76000 ? 'FM ' + (kHz / 1000).toFixed(1) : 'AM ' + kHz;
+  }
+  function radioRows(view) {
+    if (radioLists[view]) return radioLists[view];
+    var rows = [];
+    if (inVehicle && window.K8Host.radioList) {
+      var data = parseHostJson(window.K8Host.radioList(view === 'fav' ? 'presets' : view + '_stations'), {});
+      (data.rows || []).forEach(function (r) {
+        var raw = r.frequency || r.fm_frequency || r.am_frequency || r.freq;
+        var kHz = radioKHz(raw, view === 'am' ? false : undefined);
+        if (!kHz) return;
+        var name = r.disp_name || r.station_name || r.chname || r.psname || r.name || '';
+        rows.push({ kHz: kHz, fm: kHz >= 76000, name: name });
+      });
+    } else if (!inVehicle) {
+      // PC 미리보기 전용(차에서는 쓰지 않음).
+      rows = view === 'am' ? [{ kHz: 711, fm: false, name: 'KBS 제1라디오' }, { kHz: 603, fm: false, name: 'KBS 제2라디오 (Happy FM)' }]
+        : view === 'fav' ? [{ kHz: 89100, fm: true, name: 'KBS 2FM (Cool FM) [수도권]' }] : [{ kHz: 89100, fm: true, name: 'KBS 2FM (Cool FM) [수도권]' }, { kHz: 91900, fm: true, name: 'MBC FM4U [수도권]' },
+           { kHz: 93100, fm: true, name: 'KBS 1FM (Classic FM) [수도권]' }, { kHz: 95100, fm: true, name: 'TBS FM [수도권]' },
+           { kHz: 107700, fm: true, name: 'SBS 파워FM [수도권]' }];
+    }
+    radioLists[view] = rows;
+    return rows;
+  }
+  function radioLogo(name) {
+    if (!name || !inVehicle || !window.K8Host.radioLogo) return '';
+    if (!(name in radioLogos)) radioLogos[name] = window.K8Host.radioLogo(name) || '';
+    return radioLogos[name];
+  }
+  function radioNow() {
+    var tr = state.tracks[state.trackIndex];
+    var playing = state.mediaSource === 'fm' || state.mediaSource === 'am' || state.mediaSource === 'radio';
+    var m = playing && tr ? /^([\d.]+)\s*(MHz|kHz)$/.exec(tr.title || '') : null;
+    return { on: playing, kHz: m ? radioKHz(m[1], m[2] === 'MHz') : 0, name: playing && tr ? (m ? tr.artist : tr.title) || '' : '' };
   }
 
   function renderCcncRadio() {
-    var am = state.radioBand === 'am';
-    var h = '';
-    h += '<button type="button" class="ccnc-pos ccnc-radio-back" data-ccnc-back aria-label="뒤로">' + ccncSvgBack() + '</button>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-radio-sub">라디오</span>';
-    if (am) {
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-freq">AM 531</span>';
-      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-prev-am" data-radio="prev" aria-label="이전 채널"></button>';
-      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-next-am" data-radio="next" aria-label="다음 채널"></button>';
-      h += '<span class="ccnc-pos ccnc-radio-chev-am">' + ccncSvgChevron() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-chev2-am">' + ccncSvgChevron() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-star-am">' + ccncSvgStar() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-list">' + ccncSvgList() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-photo">' + ccncSvgMountain() + '</span>';
-    } else {
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-freq">FM 89.1</span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-station">I FM) [수도권] KBS 2FM (</span>';
-      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-antenna" data-radio="antenna" aria-label="방송 모드"></button>';
-      h += '<span class="ccnc-pos ccnc-radio-ant"></span>';
-      h += '<span class="ccnc-pos ccnc-radio-tower">' + ccncSvgTower() + '</span>';
-      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-prev" data-radio="prev" aria-label="이전 채널"></button>';
-      h += '<button type="button" class="ccnc-pos ccnc-key ccnc-radio-next" data-radio="next" aria-label="다음 채널"></button>';
-      h += '<span class="ccnc-pos ccnc-radio-chev">' + ccncSvgChevron() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-chev2">' + ccncSvgChevron() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-star">' + ccncSvgStar() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-note">' + ccncSvgNote() + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-favtext">즐겨찾기</span>';
-      h += '<span class="ccnc-pos ccnc-radio-list">' + ccncSvgList() + '</span>';
-      h += '<span class="ccnc-pos ccnc-radio-logo"></span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-logo-kbs">KBS RADIO</span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-radio-logo-cool">Cool FM</span>';
+    var now = radioNow();
+    if (!state.radioView) state.radioView = state.radioBand === 'am' ? 'am' : 'fm';
+    var view = state.radioView;
+    var h = '<span class="ccnc-pos cc-r-panel" style="left:22px;top:104px;width:393px;height:398px"></span>';
+    [['fav', '즐겨찾기'], ['fm', 'FM'], ['am', 'AM']].forEach(function (m, i) {
+      h += '<button type="button" class="ccnc-pos cc-r-menu' + (view === m[0] ? ' on' : '') + '" style="top:' + (118 + i * 96) + 'px" data-rview="' + m[0] + '">' +
+        (view === m[0] ? '<i class="cc-r-bar"></i>' : '') + '<span>' + m[1] + '</span></button>';
+    });
+    var favs = {};
+    radioRows('fav').forEach(function (r) { favs[r.kHz] = true; });
+    var rows = radioRows(view);
+    h += '<div class="ccnc-pos cc-r-list" id="cc-r-list">';
+    if (!rows.length) {
+      h += '<div class="cc-r-empty">' + (view === 'fav' ? '즐겨찾기한 방송이 없습니다' : '방송국 목록을 기다리는 중입니다') + '</div>';
     }
+    rows.forEach(function (r) {
+      var logo = radioLogo(r.name), cur = now.on && now.kHz === r.kHz;
+      h += '<button type="button" class="cc-r-row' + (cur ? ' cur' : '') + '" data-tune="' + r.kHz + '">' +
+        '<span class="cc-r-logo">' + (logo ? '<img src="' + logo + '" alt="">' : '<b>' + escapeText(r.fm ? 'FM' : 'AM') + '</b>') + '</span>' +
+        '<span class="cc-r-freq">' + radioLabel(r.kHz) + '</span>' +
+        '<span class="cc-r-name">' + escapeText(r.name) + '</span>' +
+        (cur ? '<svg class="cc-r-mark" viewBox="0 0 30 30"><path d="M8 5l16 10L8 25z" style="fill:#3fb2e6"/></svg>'
+          : '<svg class="cc-r-mark" viewBox="0 0 30 30"><path d="M15 3l3.6 7.4 8.1 1.2-5.9 5.7 1.4 8.1L15 21.6l-7.2 3.8 1.4-8.1-5.9-5.7 8.1-1.2z" style="' +
+            (favs[r.kHz] ? 'fill:#3fb2e6;stroke:none' : 'fill:none;stroke:#9a9ca2;stroke-width:1.6') + '"/></svg>') +
+        '</button>';
+    });
+    h += '</div>';
+    var art = radioLogo(now.name);
+    h += '<span class="ccnc-pos cc-r-art">' + (art ? '<img src="' + art + '" alt="">' : ccRadioArt()) + '</span>';
+    h += ccButton(1520, 486, 'data-cc="prev"', CC_ICONS.prevCh, '이전 방송');
+    h += ccButton(1708, 486, 'data-cc="next"', CC_ICONS.nextCh, '다음 방송');
     return h;
   }
 
+  function bindCcncRadio(canvas) {
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-rview]'), function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-rview');
+        state.radioView = v;
+        // FM/AM 은 순정 라디오 대역도 바로 바꾼다(즐겨찾기는 목록만).
+        if (v !== 'fav') {
+          state.radioBand = v;
+          delete radioLists[v];
+          if (state.mediaSource !== v) { if (inVehicle) host('source-direct-' + v); state.mediaSource = v; }
+        }
+        renderCcncScreen();
+        renderBottomBar();
+      });
+    });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-tune]'), function (b) {
+      b.addEventListener('click', function () {
+        var kHz = parseInt(b.getAttribute('data-tune'), 10);
+        if (inVehicle && window.K8Host.radioTune) window.K8Host.radioTune(kHz >= 76000, kHz);
+        else { state.mediaSource = kHz >= 76000 ? 'fm' : 'am'; state.tracks[state.trackIndex].title = (kHz >= 76000 ? (kHz / 1000).toFixed(1) + ' MHz' : kHz + ' kHz'); state.tracks[state.trackIndex].artist = b.querySelector('.cc-r-name').textContent; renderCcncScreen(); }
+      });
+    });
+  }
+
   function renderCcncNature() {
-    var h = '';
-    h += '<button type="button" class="ccnc-pos ccnc-nature-back" data-ccnc-back aria-label="뒤로">' + ccncSvgBack() + '</button>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-nature-sub">자연의 소리</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-nature-title">생기 넘치는 숲</span>';
-    h += '<button type="button" class="ccnc-pos ccnc-nature-prev" data-nature="prev" aria-label="이전 곡">' +
-      '<svg class="ccnc-ico" viewBox="0 0 58 70"><path d="M14 8v54" style="fill:none;stroke:#e8e8e8;stroke-width:7"/><path d="M54 8 22 35l32 27z" style="fill:#e8e8e8;stroke:none"/></svg></button>';
-    h += '<button type="button" class="ccnc-pos ccnc-nature-pause" data-nature="pause" aria-label="일시정지">' +
-      '<svg class="ccnc-ico" viewBox="0 0 46 70"><path d="M12 6v58M34 6v58" style="fill:none;stroke:#e8e8e8;stroke-width:8"/></svg></button>';
-    h += '<button type="button" class="ccnc-pos ccnc-nature-next" data-nature="next" aria-label="다음 곡">' +
-      '<svg class="ccnc-ico" viewBox="0 0 58 70"><path d="M44 8v54" style="fill:none;stroke:#e8e8e8;stroke-width:7"/><path d="M4 8l32 27L4 62z" style="fill:#e8e8e8;stroke:none"/></svg></button>';
-    h += '<span class="ccnc-pos ccnc-nature-line"><span class="ccnc-nature-line-fill"></span></span>';
-    h += '<button type="button" class="ccnc-pos ccnc-nature-list" data-nature="list" aria-label=" natur 목록">' + ccncSvgList() + '</button>';
-    h += '<span class="ccnc-pos ccnc-nature-photo">' + ccncSvgForest() + '</span>';
+    var tr = state.tracks[state.trackIndex];
+    var active = state.mediaSource === 'nature';
+    var h = ccBack('자연의 소리');
+    if (active) {
+      h += '<span class="ccnc-pos ccnc-txt cc-big" style="top:214px">' + escapeText(tr.title && tr.title !== '미디어 정보 대기' ? tr.title : '자연의 소리') + '</span>';
+      h += ccButton(175, 470, 'data-cc="prev"', CC_ICONS.prev, '이전');
+      h += ccButton(338, 470, 'data-cc="toggle"', state.playing ? CC_ICONS.pause : CC_ICONS.play, state.playing ? '일시정지' : '재생');
+      h += ccButton(496, 470, 'data-cc="next"', CC_ICONS.next, '다음');
+      h += '<span class="ccnc-pos cc-line"><span style="width:' + (tr.pct > 0 ? Math.round(tr.pct * 10.85) : 0) + 'px"></span></span>';
+    } else {
+      h += '<span class="ccnc-pos ccnc-txt cc-big" style="color:#8a8d92">자연의 소리</span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-sub">' + escapeText(ccNowPlaying() ? '지금은 ' + ccNowPlaying() + ' 재생 중' : '자연의 소리가 꺼져 있습니다') + '</span>';
+      h += '<button type="button" class="ccnc-pos cc-listen" data-cc="listen">자연의 소리 듣기</button>';
+    }
+    h += ccButton(1184, 446, 'data-cc="list"', CC_ICONS.list, '목록(순정 자연의 소리)');
+    h += '<span class="ccnc-pos cc-art">' + ccForestArt() + '</span>';
     return h;
   }
 
   function renderCcncWeather() {
-    var days = [
-      { d: '오늘 (금)', icon: 'rain', cond: '비', temp: '18°C', low: ' / 8°C', rain: '60%' },
-      { d: '내일 (토)', icon: 'rain', cond: '비', temp: '19°C', low: ' / 10°C', rain: '60%' },
-      { d: '모레 (일)', icon: 'sun', cond: '맑음', temp: '19°C', low: ' / 7°C', rain: '0%' },
-      { d: '10월 19일 (월)', icon: 'cloud', cond: '구름 많음', temp: '20°C', low: ' / 8°C', rain: '20%' },
-      { d: '10월 20일 (화)', icon: 'sun', cond: '맑음', temp: '21°C', low: ' / 8°C', rain: '0%' },
-      { d: '10월 21일 (수)', icon: 'cloud', cond: '구름 많음', temp: '19°C', low: ' / 10°C', rain: '30%' }
-    ];
-    var centers = [190, 497, 804, 1112, 1421, 1728];
-    var h = '';
-    h += '<span class="ccnc-pos ccnc-weather-loc"><svg viewBox="0 0 22 30"><path d="M11 1a10 10 0 0 1 10 10c0 7-10 18-10 18S1 18 1 11A10 10 0 0 1 11 1z" style="fill:#d8d8d8;stroke:none"/><circle cx="11" cy="11" r="4" style="fill:#1a1a1a;stroke:none"/></svg></span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-weather-loc-text">서울시 서초구</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-weather-brand">K O WEATHER</span>';
-    days.forEach(function (item, i) {
-      var left = centers[i] - 150;
-      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-day" style="left:' + left + 'px;top:165px;width:300px;text-align:center">' + item.d + '</span>';
-      var ico = item.icon === 'sun' ? ccncSvgSun() : ccncSvgCloud(item.icon === 'rain');
-      h += '<span class="ccnc-pos ccnc-wcol-icon" style="left:' + (centers[i] - 60) + 'px">' + ico + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-cond" style="left:' + left + 'px">' + item.cond + '</span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-temp" style="left:' + left + 'px">' + item.temp +
-        '<span style="color:#9a9a9a">' + item.low + '</span></span>';
-      h += '<span class="ccnc-pos ccnc-txt ccnc-wcol-rain" style="left:' + left + 'px">' + ccncSvgRainDrop() + item.rain + '</span>';
-    });
-    var seg = '<span class="ccnc-pos ccnc-appbar-seg"></span>' +
-      '<span class="ccnc-pos ccnc-txt ccnc-appbar-seg-a">일기 예보</span>' +
-      '<span class="ccnc-pos ccnc-txt ccnc-appbar-seg-b">오늘 날씨</span>';
-    h += ccncAppBar(seg);
+    var climate = climateLabels(climateInfo);
+    var hasTemp = weatherInfo.ok && typeof weatherInfo.temp === 'number';
+    var h = '<span class="ccnc-pos cc-w-place">' + CC_ICONS.pin + '<span>' + escapeText(routeData.road || '현재 위치') + '</span></span>';
+    h += '<span class="ccnc-pos ccnc-txt cc-w-brand">Kia Connect 오늘 날씨</span>';
+    h += '<span class="ccnc-pos cc-w-icon">' + CC_ICONS.thermo + '</span>';
+    if (hasTemp) {
+      h += '<span class="ccnc-pos ccnc-txt cc-w-temp">' + Math.round(weatherInfo.temp) + '<small>°C</small></span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-w-label">현재 기온</span>';
+    } else if (climate.climateOutside) {
+      h += '<span class="ccnc-pos ccnc-txt cc-w-temp">' + escapeText(String(climate.climateOutside).replace(/\s*°?C?$/, '')) + '<small>°C</small></span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-w-label">바깥 기온(차량 센서)</span>';
+    } else {
+      h += '<span class="ccnc-pos ccnc-txt cc-w-temp" style="color:#6a6d72">--<small>°C</small></span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-w-label">기온 대기</span>';
+    }
+    var rows = [];
+    if (hasTemp && typeof weatherInfo.rain === 'number') rows.push(['강수', weatherInfo.rain + '%']);
+    if (weatherInfo.sunrise) rows.push(['일출', weatherInfo.sunrise]);
+    if (weatherInfo.sunset) rows.push(['일몰', weatherInfo.sunset]);
+    if (hasTemp && climate.climateOutside) rows.push(['바깥 기온(차량 센서)', climate.climateOutside]);
+    if (climate.climateDriver || climate.climatePassenger) rows.push(['실내 설정 온도', [climate.climateDriver, climate.climatePassenger].filter(Boolean).join(' / ')]);
+    if (climate.climateAc) rows.push(['에어컨', climate.climateAc]);
+    if (rows.length) {
+      h += '<div class="ccnc-pos cc-w-rows">' + rows.map(function (r) {
+        return '<div class="cc-w-row"><b>' + escapeText(r[0]) + '</b><span>' + escapeText(r[1]) + '</span></div>';
+      }).join('') + '</div>';
+    }
+    var note = weatherInfo.error === 'unavailable' ? '날씨 서비스를 사용할 수 없습니다(Kia Connect 연결 확인).'
+      : weatherInfo.error ? '날씨를 갱신하지 못했습니다.'
+      : !hasTemp ? 'Kia Connect 날씨를 기다리는 중입니다.'
+      : typeof weatherInfo.at === 'number' ? new Date(weatherInfo.at).toTimeString().slice(0, 5) + ' 갱신 · 일기 예보는 받을 수 없어 오늘 날씨만 표시합니다.' : '';
+    if (note) h += '<span class="ccnc-pos ccnc-txt cc-w-note">' + escapeText(note) + '</span>';
     return h;
   }
 
+  /* 하이브리드 그래프 값: 2분 30초마다 한 칸, 17칸(최근 40분). 테마가 켜진 동안 받은 값만. */
+  var hevSamples = { fuel: [], motor: [] };
+  function hevCurrent() {
+    return {
+      fuel: typeof vehicleInfo.avgEconomy === 'number' && vehicleInfo.avgEconomy > 0 ? vehicleInfo.avgEconomy : null,
+      motor: typeof hybridInfo.motorUse === 'number' && hybridInfo.motorUse >= 0 ? hybridInfo.motorUse : null
+    };
+  }
+  function sampleHybrid(onlyFirst) {
+    var now = hevCurrent();
+    ['fuel', 'motor'].forEach(function (key) {
+      var list = hevSamples[key];
+      if (now[key] === null || (onlyFirst && list.length)) return;
+      list.push(now[key]);
+      if (list.length > 17) list.shift();
+    });
+  }
+  setInterval(function () {
+    sampleHybrid(false);
+    if (state.page === 'hybrid') renderCcncScreen();
+  }, 150000);
+
+  function ccGraph(list, fill, stroke) {
+    if (list.length < 2) return '';
+    var min = Math.min.apply(null, list), max = Math.max.apply(null, list);
+    if (max - min < 1) { max += 1; min -= 1; }
+    var pad = (max - min) * 0.15; min -= pad; max += pad;
+    var step = 600 / 16;
+    var x0 = 600 - (list.length - 1) * step;
+    var pts = list.map(function (v, i) {
+      return (x0 + i * step).toFixed(1) + ' ' + (140 - (v - min) / (max - min) * 130).toFixed(1);
+    });
+    return '<svg viewBox="0 0 600 140" preserveAspectRatio="none">' +
+      '<path d="M0 10h600M0 75h600M0 139h600" style="fill:none;stroke:#3a3733;stroke-width:1"/>' +
+      '<path d="M' + x0.toFixed(1) + ' 140L' + pts.join('L') + 'L600 140Z" style="fill:' + fill + ';stroke:none"/>' +
+      '<path d="M' + pts.join('L') + '" style="fill:none;stroke:' + stroke + ';stroke-width:3"/></svg>';
+  }
+
   function renderCcncHybrid() {
-    var h = '';
-    h += '<span class="ccnc-pos ccnc-hev-panel ccnc-hev-left"></span>';
-    h += '<span class="ccnc-pos ccnc-hev-panel ccnc-hev-right"></span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-label" style="left:55px;top:108px">하이브리드 연비</span>';
-    h += '<span class="ccnc-pos ccnc-hev-graph" style="top:170px">' + ccncSvgGraph('fuel') + '</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-value" style="left:640px;top:186px;width:270px">20.5</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-unit" style="left:800px;top:212px;width:110px">km/L</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-sub" style="left:700px;top:258px;width:210px;text-align:right">주유 후 연비</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-label" style="left:55px;top:374px">전기가 모터 사용량</span>';
-    h += '<span class="ccnc-pos ccnc-hev-graph" style="top:418px">' + ccncSvgGraph('power') + '</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-value" style="left:640px;top:492px;width:270px">13.4</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-unit" style="left:800px;top:518px;width:110px">kW</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-mode">대기 모드</span>';
-    h += '<span class="ccnc-pos ccnc-hev-car">' + ccncSvgCar() + '</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1060px;top:288px">엔진</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1292px;top:266px">모터</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1590px;top:278px">배터리</span>';
-    h += '<span class="ccnc-pos ccnc-txt ccnc-hev-tag" style="left:1160px;top:528px">휠</span>';
-    var extra = '<span class="ccnc-pos ccnc-appbar-green"></span>' +
-      '<span class="ccnc-pos ccnc-appbar-gear"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7" style="fill:none;stroke:#e8e8e8;stroke-width:3.4"/>' +
-      '<path d="M20 3v6M20 31v6M3 20h6M31 20h6M8 8l4 4M28 28l4 4M32 8l-4 4M12 28l-4 4" style="fill:none;stroke:#e8e8e8;stroke-width:3.4"/></svg></span>';
-    h += ccncAppBar(extra);
+    sampleHybrid(true);
+    var now = hevCurrent();
+    var h = '<span class="ccnc-pos cc-h-panel" style="left:32px;width:941px"></span>';
+    h += '<span class="ccnc-pos cc-h-panel" style="left:1007px;width:884px"></span>';
+    var blocks = [
+      { top: 120, label: '하이브리드 연비', key: 'fuel', fill: 'rgba(157,154,46,.75)', stroke: '#d6d24a',
+        value: now.fuel === null ? '--' : String(now.fuel), unit: vehicleInfo.distanceUnit === 2 ? 'mpg · 평균 연비' : 'km/L · 평균 연비' },
+      { top: 362, label: '전기 모터 사용량', key: 'motor', fill: 'rgba(95,156,154,.7)', stroke: '#7fd0cb',
+        value: now.motor === null ? '--' : String(now.motor), unit: '차 값 · 단위 확인 전' }
+    ];
+    blocks.forEach(function (b) {
+      h += '<span class="ccnc-pos ccnc-txt cc-h-label" style="left:60px;top:' + b.top + 'px">' + b.label + '</span>';
+      var graph = ccGraph(hevSamples[b.key], b.fill, b.stroke);
+      if (graph) {
+        h += '<span class="ccnc-pos cc-h-graph" style="top:' + (b.top + 50) + 'px">' + graph + '</span>';
+        h += '<span class="ccnc-pos ccnc-txt cc-h-axis" style="left:60px;top:' + (b.top + 196) + 'px">' + (hevSamples[b.key].length - 1) * 2.5 + '분 전</span>';
+        h += '<span class="ccnc-pos ccnc-txt cc-h-axis" style="left:610px;top:' + (b.top + 196) + 'px">지금</span>';
+      } else {
+        h += '<span class="ccnc-pos ccnc-txt cc-h-wait" style="top:' + (b.top + 104) + 'px">' +
+          (b.value === '--' ? '값 대기' : '기록 중 · 2분 30초마다 한 칸') + '</span>';
+      }
+      h += '<span class="ccnc-pos ccnc-txt cc-h-value" style="top:' + (b.top + 70) + 'px">' + escapeText(b.value) + '</span>';
+      h += '<span class="ccnc-pos ccnc-txt cc-h-unit" style="top:' + (b.top + 146) + 'px">' + b.unit + '</span>';
+    });
+    var hasMode = typeof hybridInfo.mode === 'number';
+    h += '<span class="ccnc-pos ccnc-txt cc-h-mode">' + escapeText(hasMode ? (HYBRID_MODE_NAMES[hybridInfo.mode] || '상태 ' + hybridInfo.mode) : '하이브리드 정보 대기') + '</span>';
+    h += '<span class="ccnc-pos cc-h-flow">' + hybridFlowSvg(hybridInfo) + '</span>';
     return h;
+  }
+
+  function ccncAction(what) {
+    var page = state.page;
+    var band = state.radioBand === 'am' ? 'am' : 'fm';
+    if (what === 'prev' || what === 'next' || what === 'toggle') {
+      if (livePreview) { host('media-' + what); return; }
+      if (what === 'toggle') state.playing = !state.playing;
+      renderCcncScreen();
+      return;
+    }
+    if (what === 'band') {
+      // 대역 바꾸기는 순정 라디오에서만 된다(테마가 대역 명령을 보낼 길 없음).
+      host('source-' + (band === 'fm' ? 'am' : 'fm'));
+      return;
+    }
+    var source = page === 'nature' ? 'nature' : band;
+    if (what === 'listen' && !livePreview) {
+      state.mediaSource = source;
+      state.trackIndex = source === 'nature' ? 1 : 3;
+      state.playing = true;
+      renderCcncScreen();
+      return;
+    }
+    host('source-' + source);   // 듣기·목록: 순정 앱을 열고 소스를 바꾼다.
   }
 
   function renderCcncScreen() {
@@ -3985,22 +4078,20 @@ var stockSub = '';
     else if (state.page === 'nature') html = renderCcncNature();
     else if (state.page === 'weather') html = renderCcncWeather();
     else if (state.page === 'hybrid') html = renderCcncHybrid();
+    var list = document.getElementById('cc-r-list'), scroll = list ? list.scrollTop : 0;
+    canvas.setAttribute('data-page', state.page);
     canvas.innerHTML = html;
     fitCcncCanvas();
+    if (state.page === 'radio') {
+      bindCcncRadio(canvas);
+      list = document.getElementById('cc-r-list');
+      if (list) list.scrollTop = scroll;   // 값이 올 때마다 다시 그려도 목록 위치 유지
+    }
     Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-back]'), function (b) {
       b.addEventListener('click', function () { window.K8Home.back(); });
     });
-    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-home]'), function (b) {
-      b.addEventListener('click', function () { state.history.length = 0; showPage('home'); });
-    });
-    Array.prototype.forEach.call(canvas.querySelectorAll('[data-ccnc-menu]'), function (b) {
-      b.addEventListener('click', function () { navigateTo('apps1'); });
-    });
-    Array.prototype.forEach.call(canvas.querySelectorAll('[data-radio]'), function (b) {
-      b.addEventListener('click', function () { host('radio-' + b.getAttribute('data-radio')); });
-    });
-    Array.prototype.forEach.call(canvas.querySelectorAll('[data-nature]'), function (b) {
-      b.addEventListener('click', function () { host('nature-' + b.getAttribute('data-nature')); });
+    Array.prototype.forEach.call(canvas.querySelectorAll('[data-cc]'), function (b) {
+      b.addEventListener('click', function () { ccncAction(b.getAttribute('data-cc')); });
     });
   }
 
@@ -5106,18 +5197,42 @@ var stockSub = '';
       rows: [{ label: 'Android Auto', nav: true, sub: 'sound-devices' }, { label: 'Apple CarPlay', nav: true, sub: 'sound-devices' }] }
   ];
 
-  /* 사운드 직접 변경 상태와 앰프 원시 값(단위 확인용). soundWriteResult 가 결과로 바꾼다. */
+  /* 사운드 직접 변경: 마지막 입력 뒤 500ms 멈추면 한 번만 보내고, 실패 시에만 짧은 안내를 보인다. */
+  var SOUND_DEBOUNCE_MS = 500;
   var soundLastResult = '';
+  var soundDebounceTimer = 0;
+  var soundPendingWrite = false;
+  var soundPendingSince = 0;
+  var soundEditing = false;
+  var soundNeedsSync = false;
+
+  function isSoundInputBusy() {
+    if (soundPendingWrite && Date.now() - soundPendingSince > 4000) soundPendingWrite = false;
+    return !!(soundEditing || soundDebounceTimer || soundPendingWrite);
+  }
+
+  function cancelSoundDebounce() {
+    if (!soundDebounceTimer) return;
+    window.clearTimeout(soundDebounceTimer);
+    soundDebounceTimer = 0;
+  }
+
+  function scheduleSoundWrite(fn) {
+    cancelSoundDebounce();
+    soundLastResult = '';
+    var note = document.getElementById('sound-write-note');
+    if (note) { note.textContent = ''; note.hidden = true; }
+    soundDebounceTimer = window.setTimeout(function () {
+      soundDebounceTimer = 0;
+      soundPendingWrite = true;
+      soundPendingSince = Date.now();
+      fn();
+    }, SOUND_DEBOUNCE_MS);
+  }
+
   function soundWriteNote() {
-    var raw = vehicleSettings.soundRaw || {};
-    var parts = [];
-    if (typeof raw.mTreble === 'number') parts.push('고/중/저 ' + raw.mTreble + '/' + raw.mMiddle + '/' + raw.mBass);
-    if (typeof raw.mFade === 'number') parts.push('전후/좌우 ' + raw.mFade + '/' + raw.mBalance);
-    if (typeof raw.offset === 'number') parts.push(raw.offset === 10 ? '단위 0~20' : raw.offset === 0 ? '단위 -10~10' : '단위 확인 전');
-    var state = flags.soundWrite ? '사운드 직접 변경 켜짐(시험): 손을 떼면 순정 사운드에 바로 씁니다.' : '';
-    var text = (soundLastResult ? soundLastResult + ' · ' : state ? state + ' · ' : '') +
-      (parts.length ? '앰프 값 ' + parts.join(', ') : '');
-    return '<p class="settings-write-note" id="sound-write-note">' + escapeText(text) + '</p>';
+    return '<p class="settings-write-note" id="sound-write-note"' + (soundLastResult ? '' : ' hidden') + '>' +
+      escapeText(soundLastResult) + '</p>';
   }
 
   function renderSoundControls(pane) {
@@ -5231,28 +5346,24 @@ var stockSub = '';
       '<button type="button" class="theme-control" data-host="settings-sound">순정 사운드 설정 열기</button></div>';
     detailSettings(pane, '사운드 설정 메뉴', nav, main, ccncArt(selected.art), ' stock-settings-layout');
     /* 고음/중음/저음·전후/좌우 그림은 차 값을 보여 준다. 테마 설정 › 화면구성 › 테마 설정의
-       "사운드 직접 변경(시험)" 스위치(기본 꺼짐)가 꺼져 있으면 그림·단추를 눌러도 순정 사운드 설정을 연다.
-       켜져 있으면(차에서만) 손을 뗄 때 K8Host.setSoundTone / setSoundFadeBalance 로 순정 사운드 서비스에 쓴다.
-       Java 쪽(StockSound)이 앰프 단위를 확인하지 못하면 쓰지 않고 이유를 아래 줄에 보인다.
-       쓰고 나면 Java 가 값을 다시 읽어 화면을 새로 그린다. vehicleSettings 는 여기서 바꾸지 않는다. */
+       "사운드 직접 변경" 스위치가 꺼져 있으면 그림·단추를 눌러도 순정 사운드 설정을 연다.
+       켜져 있으면(차에서만) 그림은 바로 움직이고 마지막 입력 뒤 500ms 멈출 때 한 번만
+       K8Host.setSoundTone / setSoundFadeBalance 로 보낸다. */
+    soundEditing = false;
     var soundLive = !!(flags.soundWrite && inVehicle && window.K8Host && window.K8Host.setSoundTone);
     var openStockSound = function () { host('settings-sound'); };
-    var soundBusy = function () {
-      var note = document.getElementById('sound-write-note');
-      if (note) note.textContent = '순정 사운드에 보내는 중…';
-    };
     if (soundLive) {
       Array.prototype.forEach.call(pane.querySelectorAll('.ccnc-tone-btn, .ccnc-tone-reset, .ccnc-pos-dbtn'), function (btn) {
         btn.removeAttribute('data-host');
       });
     }
-    // 끌기: 누르는 동안 그림만 움직이고, 손을 떼면 onEnd 를 한 번 부른다.
+    // 끌기: 누르는 동안 그림만 즉시 움직이고, 손을 떼면 디바운스 전송(onEnd)을 예약한다.
     var dragOn = function (el, onMove, onEnd) {
       var active = false;
       var point = function (e) { return e.touches && e.touches.length ? e.touches[0] : e.changedTouches && e.changedTouches.length ? e.changedTouches[0] : e; };
-      var down = function (e) { active = true; onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
-      var move = function (e) { if (!active) return; onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
-      var up = function () { if (!active) return; active = false; onEnd(); };
+      var down = function (e) { active = true; soundEditing = true; cancelSoundDebounce(); onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
+      var move = function (e) { if (!active) return; soundEditing = true; onMove(point(e)); if (e.preventDefault) e.preventDefault(); };
+      var up = function () { if (!active) return; active = false; soundEditing = false; onEnd(); };
       el.addEventListener('touchstart', down);
       el.addEventListener('touchmove', move);
       el.addEventListener('touchend', up);
@@ -5287,8 +5398,12 @@ var stockSub = '';
         fill.style.width = Math.abs(pct - 50) + '%';
       };
       var sendTone = function () {
-        soundBusy();
-        window.K8Host.setSoundTone(toneShown.soundBass || 0, toneShown.soundMiddle || 0, toneShown.soundTreble || 0);
+        var bVal = toneShown.soundBass || 0;
+        var mVal = toneShown.soundMiddle || 0;
+        var tVal = toneShown.soundTreble || 0;
+        scheduleSoundWrite(function () {
+          window.K8Host.setSoundTone(bVal, mVal, tVal);
+        });
       };
       var groups = pane.querySelectorAll('.ccnc-tone-group');
       for (var ti = 0; ti < groups.length; ti++) {
@@ -5332,7 +5447,7 @@ var stockSub = '';
       var posKnown = fadeVal !== null && balVal !== null;
       var f = posKnown ? fadeVal : 0, b = posKnown ? balVal : 0;
       var focusLabel = function () {
-        if (!posKnown) return '순정 값 확인 전';
+        if (!posKnown) return '';
         if (f === 0 && b === 0) return '차량 중앙 집중';
         if (f >= 3 && b <= -3) return '운전석 집중';
         if (f >= 3 && b >= 3) return '조수석 집중';
@@ -5364,7 +5479,10 @@ var stockSub = '';
       if (!soundLive) {
         gridEl.addEventListener('click', openStockSound);
       } else {
-        var sendPos = function () { soundBusy(); window.K8Host.setSoundFadeBalance(f, b); };
+        var sendPos = function () {
+          var sf = f, sb = b;
+          scheduleSoundWrite(function () { window.K8Host.setSoundFadeBalance(sf, sb); });
+        };
         dragOn(gridEl, function (p) {
           var r = gridEl.getBoundingClientRect();
           if (!r.width || !r.height) return;
@@ -5560,8 +5678,8 @@ var stockSub = '';
           slExternal('home-settings', '<span>차량 홈 화면 설정</span>', 'detail-settings-row') +
         stockWriteSwitch() +
           '<button type="button" class="detail-settings-row" data-host="sound-write-toggle" data-switch-desc="' +
-          '사운드 › 고음/중음/저음·전후/좌우를 순정 설정을 열지 않고 테마에서 바로 바꿉니다. 시험이 끝나면 끄세요.">' +
-          '<span>사운드 직접 변경(시험)</span><output id="theme-sound-write">' + (flags.soundWrite ? '켜짐' : '꺼짐') + '</output></button>';
+          '사운드 › 고음/중음/저음·전후/좌우를 순정 설정을 열지 않고 테마에서 바로 바꿉니다.">' +
+          '<span>사운드 직접 변경</span><output id="theme-sound-write">' + (flags.soundWrite ? '켜짐' : '꺼짐') + '</output></button>';
       updateControlLabels();
       panel.onclick = function (event) {
         var b = event.target;
@@ -5930,33 +6048,40 @@ var stockSub = '';
             '</div>' +
           '</div>';
       }
-    } else if (state.page === 'media') {
-      // Media_btmusic_3.png 5 monochrome SVG media source tabs
+    } else if (state.page === 'media' || state.page === 'radio' || state.page === 'nature') {
+      // Media_btmusic_3.png 5 monochrome SVG media source tabs (ccNC 라디오 화면 하단 가운데도 같은 탭)
+      // ccNC 순서(D-media_fmradio_channel): 맨 앞 칸 | FM AM USB 자연의 소리(잎). 맨 앞은 블루투스.
       var sources = [
-        { id: 'nature', trackIdx: 1, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M5.5 4.5h13v2h-13zM4.6 7.6h14.8V9H4.6z"/><path d="M3.5 10h17v10.5h-17z"/><path class="ico-cut-fill" d="M13.8 11.8v5.2a1.9 1.9 0 1 1-1.2-1.8v-2.6l-3 .7v4.2a1.9 1.9 0 1 1-1.2-1.8v-3.4z"/></svg>' },
         { id: 'bt',     trackIdx: 0, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M10.5 2.5a6.5 6.5 0 0 1 6.5 6.5v5.4a6.5 6.5 0 0 1-13 0V9a6.5 6.5 0 0 1 6.5-6.5z"/><path class="ico-cut" d="m7.6 8.4 5.6 5.4-2.7 2.6V5.6l2.7 2.6-5.6 5.4"/><path d="M19 13.5v5.7a1.6 1.6 0 1 1-1.1-1.5M19 13.5l2.2 1.2" style="fill:none;stroke:currentColor;stroke-width:1.5"/></svg>' },
         { id: 'fm',     trackIdx: 3, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M3 8.5h18v11.5H3z"/><path d="M6.5 7.8 17 4.2l.4 1.1L8.6 8.4z"/><text class="ico-cut-fill" x="6.6" y="17.6" font-size="7" font-weight="bold">FM</text></svg>' },
         { id: 'am',     trackIdx: 3, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M3 8.5h18v11.5H3z"/><path d="M6.5 7.8 17 4.2l.4 1.1L8.6 8.4z"/><text class="ico-cut-fill" x="6.3" y="17.6" font-size="7" font-weight="bold">AM</text></svg>' },
-        { id: 'usb',    trackIdx: 2, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M8.5 2.5h7v4.2h-7z"/><path d="M6 7.5h12V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20z"/><path class="ico-cut-fill" d="M13.6 10.5v5.4a1.8 1.8 0 1 1-1.1-1.7v-3.7z"/><path class="ico-cut" d="M10.4 4.2v1M13.6 4.2v1"/></svg>' }
+        { id: 'usb',    trackIdx: 2, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M8.5 2.5h7v4.2h-7z"/><path d="M6 7.5h12V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20z"/><path class="ico-cut-fill" d="M13.6 10.5v5.4a1.8 1.8 0 1 1-1.1-1.7v-3.7z"/><path class="ico-cut" d="M10.4 4.2v1M13.6 4.2v1"/></svg>' },
+        { id: 'nature', trackIdx: 1, svg: '<svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M20.5 3.5C11 3.5 4.5 8 4.5 15c0 1.6.4 3 1 4.2l-2 1.8 1.1 1.1 2-1.9c1.2.7 2.6 1 4.2 1 6.6 0 9.7-7 9.7-17.7z"/><path class="ico-cut" d="M7 19c3-4.5 6.5-8 10-10.5"/></svg>' }
       ];
+      // 지금 탭: 라디오 화면은 고른 대역, 자연의 소리 화면은 자연의 소리, 미디어 화면은 나오는 소스.
+      var current = state.page === 'radio' ? (state.radioBand === 'am' ? 'am' : 'fm') : state.page === 'nature' ? 'nature' : state.mediaSource;
       var shtml = '<div class="bb-icon-tabs" role="tablist">';
       sources.forEach(function (s) {
         var label = {nature:'자연의 소리',bt:'블루투스',fm:'FM',am:'AM',usb:'USB'}[s.id];
-        shtml += '<button type="button" class="bb-tab-btn" data-msrc="' + s.id + '" data-tidx="' + s.trackIdx + '" aria-label="' + label + '" aria-selected="' + (state.mediaSource === s.id) + '">' + s.svg + '<span class="tab-name">' + label + '</span></button>';
+        shtml += '<button type="button" class="bb-tab-btn" data-msrc="' + s.id + '" data-tidx="' + s.trackIdx + '" aria-label="' + label + '" aria-selected="' + (current === s.id) + '">' + s.svg + '<span class="tab-name">' + label + '</span></button>';
       });
       shtml += '</div>';
       slot.innerHTML = shtml;
       Array.prototype.forEach.call(slot.querySelectorAll('[data-msrc]'), function (b) {
         b.addEventListener('click', function () {
           var id = b.getAttribute('data-msrc');
-          if (livePreview) {
-            host('source-' + id);
-          } else {
-            state.mediaSource = id;
+          /* 0.5.0-test40: 탭을 누르면 순정 소스를 바로 바꾸고(ModeManager, 거부되면 순정 앱) 그 소스의
+             테마 화면으로 간다: FM·AM → ccNC 라디오, 자연의 소리 → ccNC 자연의 소리, 블루투스·USB → 미디어. */
+          if (inVehicle) host('source-direct-' + id);
+          state.mediaSource = id;   // 누른 탭을 바로 강조(차에서는 순정 방송이 오면 실제 소스로 맞춰짐)
+          if (!livePreview) {
             state.trackIndex = parseInt(b.getAttribute('data-tidx'), 10);
             state.playing = true;
           }
-          updateAllStatuses();
+          if (id === 'fm' || id === 'am') { state.radioBand = id; state.radioView = id; delete radioLists[id]; }
+          var target = id === 'fm' || id === 'am' ? 'radio' : id === 'nature' ? 'nature' : 'media';
+          if (state.page !== target) navigateTo(target);
+          else { updateAllStatuses(); renderBottomBar(); }
         });
       });
     } else if (state.page === 'phone') {
@@ -6051,6 +6176,8 @@ var stockSub = '';
     if (isDetailPage(state.page)) {
       renderSplitWidget();
       renderBottomBar();
+    } else if (isCcncPage(state.page)) {
+      renderBottomBar();   // 다른 화면과 같은 테마 하단바(가운데 비어 있음)
     }
     syncNativeMapSlot();
   }
@@ -6078,6 +6205,8 @@ var stockSub = '';
     var detail = isDetailPage(next) || isCcncPage(next);
     setClass(shell, 'in-detail', detail);
     setClass(shell, 'in-navi', next === 'navi');
+    setClass(shell, 'cc-tint', next === 'radio');   // ccNC 라디오: 상단바도 화면과 같은 푸른 회색 바탕
+    if (next === 'radio') radioLists = {};   // 들어올 때마다 순정 목록을 새로 읽는다
     setClass(shell, 'aux-mode', next === 'search' || next === 'memo');
     var standby = document.getElementById('view-standby');
     standby.style.backgroundImage = state.standbyMode === 'frame' && photo.standby ? 'url("' + photo.standby + '")' : '';
@@ -6099,7 +6228,7 @@ var stockSub = '';
     document.getElementById('view-ccnc').hidden = !ccnc;
 
     document.getElementById('home-pager').hidden = detail || ccnc;
-    document.getElementById('detail-bottom-bar').hidden = !detail || ccnc;
+    document.getElementById('detail-bottom-bar').hidden = !detail;
 
     var showTopSearch = (detail && next !== 'navi' && next !== 'search') || ccnc;
     document.getElementById('profile-btn').hidden = detail || ccnc;
@@ -6228,7 +6357,39 @@ var stockSub = '';
   // Re-send the map slot whenever its box moves or resizes (fonts, legacy layout, pager settle), so the
   // navigation surface never keeps stale bounds.
   var lastSlotKey = '';
+  var mapOffsetFrame = 0;
+  var mapOffsetPending = null;
+  var mapOffsetLast = 0;
+
+  function sendMapOffsetNow(dx) {
+    dx = Math.round(dx || 0);
+    if (mapOffsetFrame) { window.cancelAnimationFrame(mapOffsetFrame); mapOffsetFrame = 0; }
+    mapOffsetPending = null;
+    if (dx === mapOffsetLast) return;
+    mapOffsetLast = dx;
+    if (window.K8Host && window.K8Host.setMapOffset) {
+      window.K8Host.setMapOffset(document.documentElement.clientWidth, dx);
+    }
+  }
+
+  function scheduleMapOffset(dx) {
+    mapOffsetPending = Math.round(dx || 0);
+    if (mapOffsetFrame) return;
+    mapOffsetFrame = window.requestAnimationFrame(function () {
+      mapOffsetFrame = 0;
+      if (mapOffsetPending === null) return;
+      var val = mapOffsetPending;
+      mapOffsetPending = null;
+      if (val === mapOffsetLast) return;
+      mapOffsetLast = val;
+      if (window.K8Host && window.K8Host.setMapOffset) {
+        window.K8Host.setMapOffset(document.documentElement.clientWidth, val);
+      }
+    });
+  }
+
   window.setInterval(function () {
+    if (slide) return;
     var slot = document.getElementById('map-slot');
     if (!slot || !window.K8Host) return;
     var r = slot.getBoundingClientRect();
@@ -6240,10 +6401,17 @@ var stockSub = '';
     syncNativeSplitMap();
     if (!window.K8Host) return;
     var slot = document.getElementById('map-slot');
+    var homeSliding = !!(slide && (state.page === 'home' || slide.next === 'home'));
+    if (homeSliding && slot && document.getElementById('qc-drawer').hidden) {
+      // 홈 화면이 넘김의 한쪽이면 지도를 끄지 않고 위치(setMapOffset)만 따라 움직인다.
+      return;
+    }
     if (state.page !== 'home' || !slot || slide || !document.getElementById('qc-drawer').hidden) {
+      sendMapOffsetNow(0);
       window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
       return;
     }
+    sendMapOffsetNow(0);
     var rect = slot.getBoundingClientRect();
     window.K8Host.updateBounds(
       document.documentElement.clientWidth,
@@ -6298,9 +6466,19 @@ var stockSub = '';
       note.textContent = (ok ? '저장됨: ' : '저장 안 됨: ') + (message || '') + (key ? ' (' + key + ')' : '');
     },
     soundWriteResult: function (ok, message) {
+      soundPendingWrite = false;
+      soundPendingSince = 0;
+      soundLastResult = ok ? '' : (message || '적용되지 않았습니다.');
       var note = document.getElementById('sound-write-note');
-      soundLastResult = ok ? (message || '보냄') : '쓰지 않음: ' + (message || '');
-      if (note) note.textContent = soundLastResult;
+      if (note) {
+        note.textContent = soundLastResult;
+        note.hidden = !soundLastResult;
+      }
+      if (!soundEditing && !soundDebounceTimer && (soundNeedsSync || !ok) &&
+          state.page === 'settings' && settingsSection === 'sound') {
+        soundNeedsSync = false;
+        renderSettingsControls();
+      }
     },
     stockWriteChanged: function (on) {
       updateStockWriteUi(on === true);
@@ -6447,9 +6625,11 @@ var stockSub = '';
       var shown = en.length ? en[state.splitActiveIdx % en.length] : null;
       if (shown && shown.id === 'car') renderSplitWidget();
       if (state.page === 'settings' && settingsSection === 'sound' && soundSection !== 'volume') renderSettingsControls();
+      if (state.page === 'hybrid') renderCcncScreen();
     },
     weatherChanged: function (info) {
       weatherInfo = parseHostJson(info, {});
+      if (state.page === 'weather') renderCcncScreen();
       // Standby screen: show the stock temperature with the current road; air quality has no source.
       var standby = document.querySelector('.standby-weather');
       if (standby && weatherInfo.ok && typeof weatherInfo.temp === 'number') {
@@ -6467,18 +6647,25 @@ var stockSub = '';
       hybridInfo = parseHostJson(info, {});
       updateSystemLabels();
       renderSplitWidget();
+      if (state.page === 'hybrid') renderCcncScreen();
     },
     climateChanged: function (info) {
       climateInfo = parseHostJson(info, {});
       updateSystemLabels();
       renderSplitWidget();
+      if (state.page === 'weather') renderCcncScreen();
     },
     systemSettingsChanged: function (settings, vehicle) {
       systemSettings = parseHostJson(settings, {});
       vehicleSettings = parseHostJson(vehicle, {});
       updateClock();
       updateSystemLabels();
-      if (state.page === 'settings' && (settingsSection === 'sound' || (settingsSection === 'general' && generalSection === 'date'))) renderSettingsControls();
+      if (state.page === 'settings' && settingsSection === 'sound') {
+        if (isSoundInputBusy()) soundNeedsSync = true;
+        else { soundNeedsSync = false; renderSettingsControls(); }
+      } else if (state.page === 'settings' && settingsSection === 'general' && generalSection === 'date') {
+        renderSettingsControls();
+      }
     },
     pairedDevicesChanged: function (names) {
       pairedDevices = Array.isArray(names) ? names : null;
@@ -7175,15 +7362,73 @@ var stockSub = '';
     return null;
   }
 
+  var HOLD_MS = 500;
+  var HOLD_SLOP = 24;
+  var EDGE_RATIO = 0.06;
+  var EDGE_HOLD_MS = 500;
+
+  function updateHeldTarget(g, clientX, clientY) {
+    var target = cardAt(document.elementFromPoint(clientX, clientY));
+    if (g.targetCard) g.targetCard.classList.remove('card-target');
+    var valid = target && target !== g.card;
+    if (valid && g.cardType === 'app') valid = target.hasAttribute('data-idx') && Number(target.getAttribute('data-idx')) !== g.heldIdx;
+    else if (valid && g.cardType === 'home') valid = target.hasAttribute('data-card') && target.getAttribute('data-card') !== g.heldCardId;
+    else if (valid && g.cardType === 'qc') valid = target.hasAttribute('data-qc');
+    else if (valid && g.cardType === 'widget') valid = target.hasAttribute('data-widget-card');
+    g.targetCard = valid ? target : null;
+    if (g.targetCard) g.targetCard.classList.add('card-target');
+  }
+
+  function updateHeldEdge(g, clientX) {
+    if (g.cardType !== 'app' && g.cardType !== 'home') return;
+    var vw = window.innerWidth || document.documentElement.clientWidth || 1280;
+    var edgeW = vw * EDGE_RATIO;
+    var dir = clientX <= edgeW ? -1 : (clientX >= vw - edgeW ? 1 : 0);
+    var curIdx = homeOrder.indexOf(state.page);
+    if (!dir || curIdx < 0 || !homeOrder[curIdx + dir]) dir = 0;
+    if (dir === (g.edgeDir || 0)) return;
+    window.clearTimeout(g.edgeTimer);
+    g.edgeTimer = 0;
+    g.edgeDir = dir;
+    if (!dir) return;
+    var scheduleEdge = function () {
+      g.edgeTimer = window.setTimeout(function () {
+        g.edgeTimer = 0;
+        if (gesture !== g || !g.held || g.edgeDir !== dir) return;
+        var idxNow = homeOrder.indexOf(state.page);
+        var dest = idxNow >= 0 ? homeOrder[idxNow + dir] : null;
+        if (!dest) { g.edgeDir = 0; return; }
+        if (g.targetCard) { g.targetCard.classList.remove('card-target'); g.targetCard = null; }
+        showPage(dest);
+        if (g.cardType === 'app' && isAppsPage(state.page)) {
+          var sameApp = document.querySelector('#view-apps [data-idx="' + g.heldIdx + '"]');
+          if (sameApp) sameApp.classList.add('card-held');
+        } else if (g.cardType === 'home' && state.page === 'home') {
+          var sameHome = document.querySelector('#view-home [data-card="' + g.heldCardId + '"]');
+          if (sameHome) sameHome.classList.add('card-held');
+        }
+        updateHeldTarget(g, g.lastClientX, g.lastClientY);
+        var nextIdx = homeOrder.indexOf(state.page);
+        if (nextIdx >= 0 && homeOrder[nextIdx + dir]) scheduleEdge();
+        else g.edgeDir = 0;
+      }, EDGE_HOLD_MS);
+    };
+    scheduleEdge();
+  }
+
   function finishHold(g, ev) {
-    if (g.copy) document.body.removeChild(g.copy);
+    window.clearTimeout(g.edgeTimer);
+    g.edgeTimer = 0;
+    g.edgeDir = 0;
+    if (g.copy && g.copy.parentNode) g.copy.parentNode.removeChild(g.copy);
     if (g.targetCard) g.targetCard.classList.remove('card-target');
     if (!g.held) return false;
     // The card under the finger while dragging; the lift-off point is a fallback (some WebViews report 0,0).
     var target = ev && (g.targetCard || cardAt(document.elementFromPoint(ev.clientX, ev.clientY)));
-    g.card.classList.remove('card-held');
-    var quickId = g.card.getAttribute('data-qc');
-    var widgetId = g.card.getAttribute('data-widget-card');
+    if (g.card) g.card.classList.remove('card-held');
+    Array.prototype.forEach.call(document.querySelectorAll('.card-held'), function (el) { el.classList.remove('card-held'); });
+    var quickId = g.card && g.card.getAttribute('data-qc');
+    var widgetId = g.card && g.card.getAttribute('data-widget-card');
     if (quickId || widgetId) {
       var targetId = target && target.getAttribute(quickId ? 'data-qc' : 'data-widget-card');
       if (targetId && targetId !== (quickId || widgetId)) {
@@ -7201,21 +7446,52 @@ var stockSub = '';
       }
       return true;
     }
-    if (target && target !== g.card && g.card.hasAttribute('data-idx') === target.hasAttribute('data-idx')) {
-      var value = g.card.getAttribute('data-card');
-      var order = value ? state.homeCards : state.appTiles;
-      var from = value ? order.indexOf(value) : Number(g.card.getAttribute('data-idx'));
-      var to = value ? order.indexOf(target.getAttribute('data-card')) : Number(target.getAttribute('data-idx'));
-      if (from >= 0 && to >= 0 && from !== to) {
-        order.splice(to, 0, order.splice(from, 1)[0]);
+    if (g.cardType === 'home') {
+      if (state.page === 'home' && target && target.hasAttribute('data-card')) {
+        var fromH = state.homeCards.indexOf(g.heldCardId);
+        var toH = state.homeCards.indexOf(target.getAttribute('data-card'));
+        if (fromH >= 0 && toH >= 0 && fromH !== toH) {
+          state.homeCards.splice(toH, 0, state.homeCards.splice(fromH, 1)[0]);
+          saveDisplay();
+          showPage('home');
+          showNotice('카드 위치를 저장했습니다.');
+        }
+      }
+      return true;
+    }
+    if (g.cardType === 'app') {
+      var fromA = g.heldIdx;
+      var moved = false;
+      if (isAppsPage(state.page)) {
+        if (target && target.hasAttribute('data-idx')) {
+          var toA = Number(target.getAttribute('data-idx'));
+          if (fromA >= 0 && toA >= 0 && fromA !== toA) {
+            state.appTiles.splice(toA, 0, state.appTiles.splice(fromA, 1)[0]);
+            moved = true;
+          }
+        } else if (ev) {
+          var sameSpot = state.page === g.startPage &&
+            Math.abs(ev.clientX - g.x) <= HOLD_SLOP && Math.abs(ev.clientY - g.y) <= HOLD_SLOP;
+          if (sameSpot) {
+            state.reordering = true;
+            document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', 'true');
+            renderAppTilesPage();
+            return true;
+          }
+          var pIdx = appPages.indexOf(state.page);
+          var toEnd = Math.min(state.appTiles.length - 1, (pIdx + 1) * tilesPerPage - 1);
+          if (fromA >= 0 && toEnd >= 0 && fromA !== toEnd) {
+            state.appTiles.splice(toEnd, 0, state.appTiles.splice(fromA, 1)[0]);
+            moved = true;
+          }
+        }
+      }
+      if (moved) {
         saveDisplay();
         showPage(state.page);
         showNotice('카드 위치를 저장했습니다.');
       }
-    } else if (ev && g.card.hasAttribute('data-idx')) {
-      state.reordering = true;
-      document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', 'true');
-      renderAppTilesPage();
+      return true;
     }
     return true;
   }
@@ -7228,11 +7504,27 @@ var stockSub = '';
     if (!slide) return;
     window.clearTimeout(slide.timer);
     window.cancelAnimationFrame(slide.frame);
+    if (slide.mapFrame) window.cancelAnimationFrame(slide.mapFrame);
     slide.current.style.transform = slide.current.style.webkitTransform = '';
     slide.current.style.transition = slide.current.style.webkitTransition = '';
-    deck.removeChild(slide.preview);
+    if (slide.isReal) {
+      slide.preview.classList.remove('pager-preview');
+      slide.preview.style.transform = slide.preview.style.webkitTransform = '';
+      slide.preview.style.transition = slide.preview.style.webkitTransition = '';
+      if (slide.preview !== panelFor(state.page)) slide.preview.hidden = true;
+    } else if (slide.preview.parentNode) {
+      slide.preview.parentNode.removeChild(slide.preview);
+    }
     deck.classList.remove('is-sliding');
+    var hadMap = !!slide.mapHome;
+    // 넘김이 홈에서 끝나지 않으면 지도를 먼저 끈다(제자리로 옮긴 뒤 끄면 다른 화면 위에 한 프레임 비친다).
+    // 홈에서 끝나면 끄지 않아 순정 지도가 다시 시작하지 않는다.
+    var endsOnHome = slide.committing ? slide.next === 'home' : state.page === 'home';
+    if (hadMap && !endsOnHome && window.K8Host) {
+      window.K8Host.updateBounds(document.documentElement.clientWidth, 0, 0, 0, 0);
+    }
     slide = null;
+    if (hadMap) sendMapOffsetNow(0);
   }
 
   function offsetPanel(panel, x) {
@@ -7261,31 +7553,54 @@ var stockSub = '';
 
   function createSlide(next, direction) {
     clearPageSlide();
+    var current = panelFor(state.page);
     var real = panelFor(next);
-    var preview = real.cloneNode(true);
-    preview.removeAttribute('id');
-    preview.hidden = false;
-    preview.setAttribute('aria-hidden','true');
-    preview.classList.add('pager-preview');
-    Array.prototype.forEach.call(preview.querySelectorAll('[id]'), function (node) { node.removeAttribute('id'); });
-    Array.prototype.forEach.call(preview.querySelectorAll('button'), function (button) { button.tabIndex = -1; });
+    var useReal = real !== current;
     var width = deck.clientWidth;
-    offsetPanel(preview, direction * width);
-    deck.appendChild(preview);
+    var preview;
+    if (useReal) {
+      if (isAppsPage(next) && lastRenderedAppsPage !== next) renderAppTilesPage(null, next);
+      if (next === 'home') layoutHomeCards();
+      preview = real;
+      preview.hidden = false;
+      preview.classList.add('pager-preview');
+      preview.style.webkitTransform = preview.style.transform = '';
+      if (next === 'home' && window.K8Host && document.getElementById('qc-drawer').hidden) {
+        var slot = document.getElementById('map-slot');
+        if (slot) {
+          var r = slot.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) {
+            window.K8Host.updateBounds(
+              document.documentElement.clientWidth,
+              Math.round(r.left), Math.round(r.top),
+              Math.round(r.right - r.left), Math.round(r.bottom - r.top)
+            );
+            sendMapOffsetNow(direction * width);
+          }
+        }
+      }
+      offsetPanel(preview, direction * width);
+    } else {
+      preview = document.createElement('section');
+      preview.className = 'apps-view pager-preview';
+      preview.setAttribute('aria-hidden', 'true');
+      offsetPanel(preview, direction * width);
+      deck.appendChild(preview);
+      renderAppTilesPage(preview, next);
+    }
     deck.classList.add('is-sliding');
-    if (isAppsPage(next)) renderAppTilesPage(preview, next);
-    else Array.prototype.forEach.call(preview.querySelectorAll('canvas'), function (canvas, i) {
-      var original = real.querySelectorAll('canvas')[i];
-      if (original && original.width && original.height) canvas.getContext('2d').drawImage(original, 0, 0);
-    });
-    slide = { next:next, direction:direction, width:width, current:panelFor(state.page), preview:preview, offset:0 };
-    syncNativeMapSlot();
+    var mapHome = state.page === 'home' ? 'current' : (next === 'home' ? 'preview' : '');
+    slide = { next: next, direction: direction, width: width, current: current, preview: preview,
+      isReal: useReal, offset: 0, mapHome: mapHome, mapFrame: 0 };
+    if (!mapHome) syncNativeMapSlot();
   }
 
   function moveSlide(x) {
     offsetPanel(slide.current, x);
     offsetPanel(slide.preview, x + slide.direction * slide.width);
     slide.offset = x;
+    if (slide.mapHome === 'current') scheduleMapOffset(x);
+    else if (slide.mapHome === 'preview') scheduleMapOffset(x + slide.direction * slide.width);
   }
 
   function settleSlide(commit, velocity) {
@@ -7295,18 +7610,33 @@ var stockSub = '';
     var remaining = Math.abs(end - pending.offset);
     var ms = Math.round(Math.max(130, Math.min(360, remaining / Math.max(.85, Math.abs(velocity)))));
     if (reducedMotion || !remaining) {
-      if (commit) showPage(pending.next);
+      if (commit) { pending.committing = true; showPage(pending.next); }
       else { clearPageSlide(); syncNativeMapSlot(); }
       return;
     }
     pending.settling = true;
+    var startOff = pending.offset;
     pending.frame = window.requestAnimationFrame(function () {
       var transition = ms + 'ms cubic-bezier(.2,.75,.3,1)';
       pending.current.style.transition = pending.preview.style.transition = 'transform ' + transition;
       pending.current.style.webkitTransition = pending.preview.style.webkitTransition = '-webkit-transform ' + transition;
-      moveSlide(end);
+      offsetPanel(pending.current, end);
+      offsetPanel(pending.preview, end + pending.direction * pending.width);
+      pending.offset = end;
+      if (pending.mapHome && window.K8Host && window.K8Host.setMapOffset) {
+        var startAt = Date.now();
+        var stepMap = function () {
+          if (slide !== pending) return;
+          var t = Math.min(1, (Date.now() - startAt) / ms);
+          var ease = 1 - Math.pow(1 - t, 3);
+          var cur = startOff + (end - startOff) * ease;
+          scheduleMapOffset(pending.mapHome === 'current' ? cur : cur + pending.direction * pending.width);
+          if (t < 1) pending.mapFrame = window.requestAnimationFrame(stepMap);
+        };
+        pending.mapFrame = window.requestAnimationFrame(stepMap);
+      }
       pending.timer = window.setTimeout(function () {
-        if (commit) showPage(pending.next);
+        if (commit) { pending.committing = true; showPage(pending.next); }
         else { clearPageSlide(); syncNativeMapSlot(); }
       }, ms);
     });
@@ -7314,7 +7644,10 @@ var stockSub = '';
 
   var splitTouchTimer = 0;
   function beginGesture(ev) {
-    if (gesture) window.clearTimeout(gesture.holdTimer);
+    if (gesture) {
+      window.clearTimeout(gesture.holdTimer);
+      window.clearTimeout(gesture.edgeTimer);
+    }
     if (slide) clearPageSlide();
     suppressClick = false;
     gesture = {
@@ -7326,10 +7659,19 @@ var stockSub = '';
       fromTop: ev.clientY < 48,
       deck: deck.contains(ev.target),
       lastX: ev.clientX,
+      lastClientX: ev.clientX,
+      lastClientY: ev.clientY,
       lastAt: Date.now(),
-      speed: 0
+      speed: 0,
+      holdTimer: 0,
+      edgeTimer: 0,
+      edgeDir: 0
     };
     var g = gesture;
+    // 홈에서 손가락이 닿을 때 첫 앱 페이지가 아직 안 그려져 있으면 미리 한 번만 준비해 첫 프레임 끊김을 줄인다.
+    if (g.deck && state.page === 'home' && lastRenderedAppsPage !== 'apps1') {
+      renderAppTilesPage(null, 'apps1');
+    }
     // Chrome 30 has no touch-action: unless every touchmove is cancelled from the first one, the
     // WebView starts its own scroll and then delivers touchmove only every ~200 ms (choppy swipes).
     // Pages that never scroll (home pager, app tiles) and held cards cancel all moves.
@@ -7349,11 +7691,20 @@ var stockSub = '';
         (!stacked || !card.hasAttribute('data-card'))) {
       g.card = card;
       g.holdTimer = window.setTimeout(function () {
+        g.holdTimer = 0;
         if (gesture !== g || !document.documentElement.contains(card)) return;
         g.held = true;
+        g.startPage = state.page;
+        g.cardType = card.hasAttribute('data-card') ? 'home' :
+          card.hasAttribute('data-idx') ? 'app' :
+          card.hasAttribute('data-qc') ? 'qc' :
+          card.hasAttribute('data-widget-card') ? 'widget' : '';
+        g.heldCardId = card.getAttribute('data-card') || '';
+        g.heldIdx = card.hasAttribute('data-idx') ? Number(card.getAttribute('data-idx')) : -1;
         card.classList.add('card-held');
+        drawHeldCard(g, g.lastClientX - g.x, g.lastClientY - g.y);
         showNotice('카드를 원하는 위치로 끌어 놓으세요.');
-      }, 1000);
+      }, HOLD_MS);
     }
   }
 
@@ -7362,18 +7713,24 @@ var stockSub = '';
     if (!g) return false;
     var dx = ev.clientX - g.x;
     var dy = ev.clientY - g.y;
-    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) window.clearTimeout(g.holdTimer);
+    g.lastClientX = ev.clientX;
+    g.lastClientY = ev.clientY;
+    if (g.holdTimer && (Math.abs(dx) > HOLD_SLOP || Math.abs(dy) > HOLD_SLOP)) {
+      window.clearTimeout(g.holdTimer);
+      g.holdTimer = 0;
+    }
     if (g.held) {
       drawHeldCard(g, dx, dy);
-      var target = cardAt(document.elementFromPoint(ev.clientX, ev.clientY));
-      if (g.targetCard) g.targetCard.classList.remove('card-target');
-      g.targetCard = target && target !== g.card ? target : null;
-      if (g.targetCard) g.targetCard.classList.add('card-target');
+      updateHeldTarget(g, ev.clientX, ev.clientY);
+      updateHeldEdge(g, ev.clientX);
       return true;
     }
+    // 꾹 누르기 손떨림 허용(24px) 안에서는 가로 넘김으로 보지 않는다.
+    if (g.holdTimer) return false;
     var idx = homeOrder.indexOf(state.page);
     if (!g.deck || idx < 0 || state.reordering || !qcDrawer.hidden) return false;
-    if (!g.horizontal && Math.abs(dx) > 12 && Math.abs(dx) > 1.35 * Math.abs(dy)) g.horizontal = true;
+    var swipeMin = g.card ? HOLD_SLOP : 12;
+    if (!g.horizontal && Math.abs(dx) > swipeMin && Math.abs(dx) > 1.35 * Math.abs(dy)) g.horizontal = true;
     if (!g.horizontal) return false;
     var now = Date.now();
     g.speed = (ev.clientX - g.lastX) / Math.max(8, now - g.lastAt);
@@ -7391,6 +7748,9 @@ var stockSub = '';
     if (!gesture) return false;
     var g = gesture;
     window.clearTimeout(g.holdTimer);
+    window.clearTimeout(g.edgeTimer);
+    g.holdTimer = 0;
+    g.edgeTimer = 0;
     gesture = null;
     var dx = ev.clientX - g.x;
     var dy = ev.clientY - g.y;
@@ -7461,7 +7821,7 @@ var stockSub = '';
     var start = gesture;
     var end = ev.changedTouches[0];
     if (endGesture(end)) { ev.preventDefault(); return; }
-    if (!start || Math.abs(end.clientX - start.x) >= 12 || Math.abs(end.clientY - start.y) >= 12) return;
+    if (!start || Math.abs(end.clientX - start.x) >= HOLD_SLOP || Math.abs(end.clientY - start.y) >= HOLD_SLOP) return;
     var target = start.target;
     while (target && target.nodeType === 1) {
       if (target.tagName === 'INPUT' || target.tagName === 'SELECT') return;
@@ -7481,6 +7841,9 @@ var stockSub = '';
   function cancelGesture() {
     if (gesture) {
       window.clearTimeout(gesture.holdTimer);
+      window.clearTimeout(gesture.edgeTimer);
+      gesture.holdTimer = 0;
+      gesture.edgeTimer = 0;
       finishHold(gesture, null);
       gesture = null;
     }

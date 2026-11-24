@@ -1,4 +1,69 @@
 # K8 Gen5W 홈
+## 0.5.0-test41 제미나이 작업 검수 (2026-11-24, Claude)
+
+- 제미나이 변경(아래 절)만 골라 봤다(test40 상태를 `C:/AI-Work/2026-11-24-k8-ccnc-theme/checks/before-gemini-test40.patch` 로 떠 두고 비교). 커밋 없음, test40 파일 그대로.
+- **고친 것: 넘김 끝에 지도가 한 프레임 비침.** `settleSlide` 가 commit/cancel 전에 `sendMapOffsetNow(0)` 을 먼저 보내 지도가 제자리로 돌아온 뒤에야 꺼졌다(홈→앱 넘김, 앱→홈 취소).
+  그 줄을 지우고 `clearPageSlide` 가 "넘김이 홈에서 끝나지 않으면 먼저 updateBounds(0) 으로 끈 뒤 offset 0" 하게 했다(`slide.committing` 표시). 홈에서 끝나면 끄지 않아 순정 지도가 다시 시작하지 않는다.
+- **흉내 검사(가짜 K8Host 로 다리 호출 기록, `captures/review41.cjs`·`review41-sound.cjs`)**: 홈→앱 넘김 = 끈 뒤 제자리, 앱→홈 취소 = 끈 뒤 제자리, 앱→홈·홈→대기 취소 = 지도 끄기 0번.
+  18px 흔들며 꾹 누르기 → 들림, 앱 타일을 오른쪽 끝 0.8초 → 다음 페이지에 놓기·저장. 저음 − 6번 빠르게 → setSoundTone 1번(마지막 값). 사운드 화면 개발용 글자 0.
+- c30 0곳, bar_guard 88곳(weather·hybrid, 승인 대기) 그대로, c30_preview 화면 오류 0, test41 APK 빌드 통과.
+- 사용자 승인(2026-11-24 "새로 쓰고 커밋")으로 `bar_guard --update`: 바뀐 화면은 weather·hybrid(원본·차흉내) 4개뿐임을 확인(설정 화면과 같은 상단바·하단바). 하단바 색은 그대로(사용자 결정).
+- 묶음: `deliverables/K8-ccNC-Home-NEMESIS-0.5.0-test41-USB.zip` sha256 `ecfa63c0b6fc687d96b91d4b7d6bce7a9f669659d1417fba2f17b3fb247719b1`(빌드 안 검사 c30·bar_guard 통과), APK `deliverables/검수전/k8home-0.5.0-test41.apk`. 차 설치 전.
+- 남은 판단: 홈 카드(`data-card`)도 가장자리로 페이지가 넘어가지만 다른 페이지엔 놓을 곳이 없다(놓으면 아무 일 없음). 차에서 거슬리면 앱 타일만 넘기게 줄인다.
+
+## 제미나이: 0.5.0-test41 홈 지도 동반 넘김·카드 페이지 간 이동·꾹 누르기·사운드 디바운스 (2026-11-24, Gemini)
+
+- **바꾼 파일·함수**:
+  - `src/io/github/k8home/HomeActivity.java`: `HomeBridge.setMapOffset`, `HomeBridge.updateBounds`(`translationX` 초기화).
+  - `assets/index.html`: `sendMapOffsetNow`/`scheduleMapOffset`/`syncNativeMapSlot`, `createSlide`/`moveSlide`/`settleSlide`/`clearPageSlide`, `beginGesture`/`moveGesture`/`endGesture`/`cancelGesture`/`finishHold`/`updateHeldTarget`/`updateHeldEdge`, `renderAppTilesPage`(`lastRenderedAppsPage`), `soundWriteNote`/`scheduleSoundWrite`/`isSoundInputBusy`/`renderSoundControls`/`soundWriteResult`/`systemSettingsChanged`, 화면구성 › 테마 설정 스위치 문구.
+  - 버전: `AndroidManifest.xml`(code 102, `0.5.0-test41`), `tools/build_nemesis.py`(`HOME_PACKAGE_VERSION = "0.5.0-test41"`).
+- **원인과 고친 방법**:
+  1. **홈 넘김 지도 사라짐·버벅임**: `createSlide`가 `syncNativeMapSlot`→`updateBounds(...,0,0,0,0)`로 지도를 끄고 `cloneNode(true)`+캔버스 복사를 매번 하던 것이 원인. Java `setMapOffset(viewport, dx)`로 `mapSlot.setTranslationX`만 이동하게 하고, 홈이 한쪽인 넘김에서는 지도를 끄지 않고 `requestAnimationFrame`으로 `moveSlide`·`settleSlide` 동안 같이 움직인 뒤 끝나면 `0`+`syncNativeMapSlot()`. 다른 패널 간 넘김(`home↔standby`, `home↔apps1`)은 복제 없이 실제 DOM 패널을 직접 슬라이드하고, `home` 터치 시 `apps1` 미렌더면 미리 준비하며 `apps↔apps`도 빈 `<section>`만 생성해 복제 제거.
+  2. **카드 페이지 간 이동**: `g.held` 중 화면 양 끝 6% 폭에 500ms 머무르면 `homeOrder` 다음/이전 페이지로 전환(`updateHeldEdge`)하고 손을 떼지 않은 채 계속 끌어 다른 앱 페이지 타일 자리나 빈 페이지 끝 자리에 놓을 수 있게 함(홈 카드·앱 타일 혼합 금지, `saveDisplay()` 저장).
+  3. **꾹 누르기 개선**: 1000ms/10px → 500ms/24px(`HOLD_MS`/`HOLD_SLOP`). `holdTimer` 대기(24px 손떨림 안) 중에는 가로 넘김으로 진입하지 않도록 순서 정리.
+  4. **사운드 렉·튐 방지**: 끌기·±·초기값·방향 단추 모두 그림은 즉시 갱신하고 마지막 입력 뒤 500ms 멈출 때 한 번만 `setSoundTone`/`setSoundFadeBalance` 호출(`scheduleSoundWrite`). 입력·대기·응답 전(`isSoundInputBusy`)에는 `systemSettingsChanged`로 다시 그리지 않아 튐을 막고, `soundWriteResult` 뒤 차 값으로 한 번 맞춤.
+  5. **확인용 문구 정리**: `soundWriteNote()`의 앰프 원시 값·단위·시험 안내 제거(실패 시 짧은 안내만 표시, 성공 숨김), 전후/좌우 `"순정 값 확인 전"` 제거(흐리게만), 테마 설정 스위치 `"사운드 직접 변경(시험)"` → `"사운드 직접 변경"`.
+- **확인 결과**: `c30_check.py` 0곳, `bar_guard.cjs` weather·hybrid 알려진 88곳 외 신규 차이 0, `c30_preview.cjs` 화면 오류 0, JDK 21 APK 빌드(`0.5.0-test41`, code 102) 통과. PC Chrome 30 흉내 시나리오(홈↔앱·홈↔대기 `setMapOffset` 동반 이동 및 `bounds` 유지, 18px 흔들며 500ms 꾹 누르기→가장자리 0.5초 `apps1→apps2` 이동·놓기, 사운드 ± 4연타→500ms 뒤 1회 전송·중간 갱신 튐 없음·실패만 표시·문구 제거) 전부 통과.
+- **차에서 볼 것**: 홈↔대기·홈↔앱 넘김 시 순정 지도 미리보기 `translationX`가 WebView 카드와 어긋남 없이 같이 움직이는지(특히 `apps1→home` 진입), 카드 꾹 누르기 체감(500ms/24px)과 가장자리 페이지 넘김, 사운드 연속 조작 뒤 0.5초 후 1회 반영 및 튐 없음.
+
+## 0.5.0-test40 ccNC 라디오 화면을 순정과 직접 연동 (2026-11-24, Claude, 차 확인 전)
+
+사용자 요청(ccNC 설명서 "FM 라디오 실행하기" 사진): 가운데 방송 목록에 5W 라디오 정보를 띄우고 누르면 바로 동작, 오른쪽은 지금 방송국 배너(로고), 왼쪽 FM/AM 은 순정 대역도 바꿈, 하단 가운데 탭은 블루투스 등으로 바로 넘김.
+사용자 승인(2026-11-24): 순정 라디오·모드 관리자에 직접 신호 보내기, 로고는 차에서 읽기(APK·저장소에 그림 넣지 않음).
+
+- **근거(순정 라디오 `HKMC_RadioGE`, `C:/AI-Work/2026-11-21-k8-ccnc-on-car/checks/radio-live.txt` dexdump)**:
+  - RadioProvider(exported, 권한 없음) `content://com.hkmc.av.app.radioge/` 경로 fm_stations·am_stations·presets(표 열: preset_no, band, frequency, disp_name …). 방송국 목록의 열 이름은 차에서만 확인된다 → 모든 열을 그대로 넘기고 화면이 frequency/fm_frequency/am_frequency/freq, disp_name/station_name/chname/psname/name 중 있는 것을 쓴다.
+  - 주파수 맞추기: `GeRadioBroadcastReceiver` 의 `android.intent.action.VIT_NOTI_AV_RADIO_SET_FREQUENCY`, Value1 대역(1 FM, 2 AM), Value2 주파수 kHz(FM 89.1 → 89100, 범위 = MICOM_RADIO_FREQ_* ×100), Value3 foregroundOption(0 으로 보냄, 뜻은 차에서 확인), Value5 프리셋(-1).
+  - 로고: 순정 앱 안 `img_radio_logo_0xNN` 그림을 방송국 이름으로 찾는 표(클래스 b/j 의 HashMap, 116개) → `assets/radio_logos.tsv`(이름만). 위젯 방송 `broad_name`("KBS 2FM (Cool FM) [수도권]")에서 " [지역]"을 떼고 찾는다. 그림은 `createPackageContext` 로 차에서 읽어 data: URL 로 넘긴다.
+  - 소스 바꾸기: `com.hkmc.mode.ModeManager(Context).changeMode(Integer, boolean isAuto)` 리플렉션(FM 0x2, AM 0x4, 블루투스 0x36, USB 0x21, 자연의 소리 0x81). false 면 예전처럼 순정 앱을 연다. BTAudio 는 VIT_NOTI_AV_MODE_CHANGE 를 받지 않아 이 길을 쓴다.
+- **Java**: `StockRadio`(list/tune/logo/changeSource), `HomeBridge.radioList/radioLogo/radioTune`, 동작 `source-direct-<소스>`. logcat 태그 `K8Radio`.
+- **화면**(ccNC D-media_fmradio_channel 자리 그대로 1920×720 도판): 푸른 회색 바탕(상단바도 투명, `#shell.cc-tint`), 왼쪽 반투명 칸 즐겨찾기/FM/AM(고른 것 하늘색 + 왼쪽 끝 막대), 가운데 목록(로고 90px·주파수·방송국·별/재생 표시, 누르면 `radioTune`), 오른쪽 지금 방송국 로고(없으면 기본 그림)와 ‹ ›.
+  FM/AM 을 누르면 순정 대역도 바꾼다(`source-direct-fm/am`). 하단바 가운데는 미디어 화면과 같은 소스 탭이며, 미디어·라디오·자연의 소리 어디서든 누르면 바로 소스를 바꾸고 그 소스 화면으로 간다(블루투스·USB → 미디어).
+- **확인**: c30 0곳, 화면 오류 0, 차 흉내 사진(`captures/ccnc/radio-fm-c30.png`) ccNC 사진과 자리 대조. Java 빌드 통과(JDK 21 로 시험 빌드). bar_guard 는 test39 의 weather·hybrid 만 다름(사용자 승인 대기).
+- **차에서 볼 것**(차시험 2-8 14번): 목록이 오는지·열 이름(logcat `K8Radio list … first=`), 누르면 바뀌는지와 순정 화면이 앞으로 뜨는지(Value3), 로고, changeMode 결과(`changeMode 0x36 -> true/false`).
+- test40(code 101).
+- 사용자 지적 반영(같은 날): 설명서 사진의 갈색 칸은 설명용 강조라 칸 바탕을 화면 바탕과 같게(칸 없음). 하단 소스 탭은 ccNC 순서(블루투스 | FM AM USB 자연의 소리-잎 그림), 지금 탭은 푸른 알약(#367193). 강조는 라디오 화면이면 고른 대역, 자연의 소리 화면이면 자연의 소리, 미디어 화면이면 나오는 소스. 탭·왼쪽 FM/AM 을 누르면 바로 강조가 옮겨 간다.
+  하단바 바탕색(ccNC 사진은 남색 #2e3f51, 테마는 #1b1a1b)은 기준값이 걸린 부분이라 바꾸지 않았다(사용자에게 물음).
+
+## 0.5.0-test39 라디오·자연의 소리·날씨·하이브리드 화면을 실제 값으로 다시 켬 (2026-11-24, Claude)
+
+사용자 결정(2026-11-24): FM·AM·자연의 소리 탭은 테마 화면으로 연다. 날씨는 받을 수 있는 오늘 날씨만 보인다.
+
+- test18 화면을 새로 썼다(`CCNC_PAGES` 다시 켬). 고정 값(FM 89.1, 연비 20.5, 서초구 예보)과 따로 만든 가짜 하단바(112px)를 없앴다.
+  설명서 그림의 흰 테두리 상자는 설명용 표시라서 그리지 않는다. 도판은 그대로 1920×720 px 이고 통째로 줄인다. 내용은 상단바(82px)와 하단바(625px~) 사이에만 둔다.
+- **하단바**: 다른 상세 화면과 같은 `#detail-bottom-bar`(가운데 비어 있음). 바탕이 #000 이라 규칙 ①을 지킨다.
+  bar_guard 에서 weather·hybrid 4항목만 바뀌었다(예전엔 빈 홈 화면을 재고 있었음). 새 값은 설정 화면의 상단바·하단바와 같다. 다른 34화면은 기준값과 같다.
+- **라디오**: 순정 위젯 방송(`StockMedia`)의 주파수("89.1 MHz"→"FM 89.1")·방송국·프리셋을 쓴다. ‹ › 버튼은 `media-prev/next`(순정 위젯과 같은 명령), 안테나 버튼은 반대 대역 순정 라디오, 목록 버튼은 순정 라디오를 연다.
+  고른 대역이 지금 나오는 소스가 아니면 조작 버튼 대신 "FM 듣기"/"AM 듣기"를 보인다. 누르면 순정 앱을 열어 소스를 바꾼다(테마가 소스를 직접 바꿀 길은 없음).
+- **자연의 소리**: 제목·재생 상태·진행선. 이전/재생·일시정지/다음은 `media-prev/toggle/next`. 다른 소스가 나오는 중이면 "자연의 소리 듣기"를 보인다.
+- **날씨**: Kia Connect 오늘 날씨(`StockWeather`: 기온·강수·일출·일몰). 값이 없으면 공조의 바깥 기온 센서 값을 보인다. 실내 설정 온도·에어컨 줄도 있다. 예보 칸은 없다.
+  날씨 종류 번호는 뜻을 몰라서 그림을 온도계로 두었다.
+- **하이브리드**: 에너지 흐름·배터리(`hybridFlowSvg`, 분할 위젯과 같은 그림), 주행 상태 이름을 보인다. 연비는 차량 서비스 `avgEconomy`(km/L), 모터 사용은 `motorUse` 원시 값("단위 확인 전")이다.
+  그래프는 설명서처럼 2분 30초마다 한 칸, 최근 40분이다. 테마가 켜진 동안 받은 값만 그리고, 두 칸 전에는 "기록 중"으로 보인다.
+- 들어가는 곳: 전체 메뉴의 하이브리드·날씨 타일, 미디어 화면 하단바의 FM·AM·자연의 소리 탭. 값이 오면(`mediaChanged`·`weatherChanged`·`climateChanged`·`hybridChanged`·`vehicleChanged`) 다시 그린다.
+- **확인**: c30 0곳, 화면 오류 0, 차 흉내 사진 6장(라디오 켬/꺼짐, 자연의 소리, 날씨 값 있음/대기, 하이브리드)이 정상이다. 그래프 함수를 따로 시험했다(1칸이면 안 그림, 같은 값 여러 칸도 정상).
+  Java·도우미는 바꾸지 않았다. 앱 동작이 바뀌어 test39(code 100)로 올렸다. 차 확인은 차시험 2-8 13번이다.
+
 ## 0.5.0-test38 업데이트 뒤 도우미 겹침 (2026-11-23, Claude, 실차)
 
 - test37 실차: 목록 버튼 세 번 → 2번째 접힘·3번째 펼침 모두 내비 그대로(미디어 화면으로 안 넘어감) ✓. 1번째는 "도우미가 필요합니다" 안내.

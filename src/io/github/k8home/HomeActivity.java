@@ -88,6 +88,7 @@ public final class HomeActivity extends Activity {
     private StockRoute route;
     private StockPhone phone;
     private StockTransport transport;
+    private StockRadio radio;
     private StockClimate climate;
     private StockHybrid hybrid;
     private StockWeather weather;
@@ -130,6 +131,7 @@ public final class HomeActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         transport = new StockTransport(this);
+        radio = new StockRadio(this);
         vehicle = new StockVehicle(this, new Runnable() {
             @Override public void run() { syncVehicle(); }
         });
@@ -748,6 +750,22 @@ public final class HomeActivity extends Activity {
             });
         }
 
+        /** Stock radio provider rows: "fm_stations", "am_stations" or "presets" (StockRadio). */
+        @JavascriptInterface public String radioList(String path) {
+            return radio.list(path);
+        }
+
+        /** Stock radio logo (data: URL) for a station name, "" when the radio app has none. */
+        @JavascriptInterface public String radioLogo(String station) {
+            synchronized (radio) { return radio.logo(station); }
+        }
+
+        @JavascriptInterface public void radioTune(final boolean fm, final int kHz) {
+            if (!radio.tune(fm, kHz)) runOnUiThread(new Runnable() {
+                @Override public void run() { toast("이 주파수로 맞출 수 없습니다."); }
+            });
+        }
+
         @JavascriptInterface public void performAction(final String action) {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
@@ -813,6 +831,7 @@ public final class HomeActivity extends Activity {
                     if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
                     if (viewport <= 0 || width <= 0 || height <= 0 || left < 0 || top < 0) {
                         stockMapPreview.setActive(false);
+                        mapSlot.setTranslationX(0f);
                         mapSlot.setVisibility(View.GONE);
                         return;
                     }
@@ -823,6 +842,7 @@ public final class HomeActivity extends Activity {
                     int h = Math.min(Math.round(height * scale), web.getHeight() - y);
                     if (w <= 0 || h <= 0) {
                         stockMapPreview.setActive(false);
+                        mapSlot.setTranslationX(0f);
                         mapSlot.setVisibility(View.GONE);
                         return;
                     }
@@ -830,8 +850,23 @@ public final class HomeActivity extends Activity {
                     bounds.leftMargin = x;
                     bounds.topMargin = y;
                     mapSlot.setLayoutParams(bounds);
+                    mapSlot.setTranslationX(0f);
                     mapSlot.setVisibility(View.VISIBLE);
                     stockMapPreview.setActive(activityResumed && hasWindowFocus());
+                }
+            });
+        }
+
+        /** 홈 화면 좌우 넘김 중 레이아웃·미리보기 재시작 없이 지도 슬롯 위치만 가로로 옮긴다. */
+        @JavascriptInterface public void setMapOffset(final int viewport, final int dx) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed() || mapSlot.getChildCount() == 0) return;
+                    if (viewport <= 0 || dx == 0) {
+                        mapSlot.setTranslationX(0f);
+                        return;
+                    }
+                    mapSlot.setTranslationX(dx * (web.getWidth() / (float) viewport));
                 }
             });
         }
@@ -895,6 +930,10 @@ public final class HomeActivity extends Activity {
             if (!open(new ComponentName("com.daudio.app.voicememo", "com.daudio.app.voicememo.MainActivity"))) {
                 toast("순정 음성 메모를 열 수 없습니다.");
             }
+        } else if (action.startsWith("source-direct-")) {
+            // ccNC bottom tabs: change the audio source in place; open the stock player only if refused.
+            String source = action.substring("source-direct-".length());
+            if (!StockRadio.changeSource(this, source)) handleAction("source-" + source);
         } else if ("media-player".equals(action)) {
             if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {
