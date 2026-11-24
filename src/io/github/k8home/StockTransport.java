@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcel;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -15,17 +17,63 @@ import java.util.ArrayDeque;
 
 /** Sends only the media commands used by the stock widgets. */
 final class StockTransport {
+    private static final String TAG = "K8Transport";
     private static final String ACTION = "android.intent.action.REMOTE_";
     private static final String API = "com.hkmc.remote.media.IRemote";
+    private static final String NATURE_DIRECT_ACTION = "android.intent.action.NATURE_SOUND_REMOTE_SERVICE";
+    private static final String NATURE_DIRECT_COMPONENT = "com.hkmc.av.app.naturesound/.service.NatureSoundService";
+    private static final String NATURE_DIRECT_DESCRIPTOR =
+        "com.hkmc.av.app.naturesound.remoteservice.aidl.INatureSoundServiceListener";
+    // HKMC_NatureSound.odex 분석: INatureSoundServiceListener.u(int index) -> FilePlayerManager.playByIndex(index)
+    private static final int NATURE_TX_PLAY_BY_INDEX = 19;
     private static final long CONNECT_TIMEOUT_MS = 1500;
 
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ArrayDeque<Integer> pending = new ArrayDeque<>();
     private Remote remote;
+    private NatureDirect natureDirect;
+    private int pendingNatureIndex = -1;
 
     StockTransport(Context context) {
         this.context = context;
+    }
+
+    /** 자연의 소리 특정 트랙(0~9)을 하나씩 넘기지 않고 순정 원격 서비스로 즉시 재생한다. */
+    boolean selectNature(int index) {
+        if (index < 0 || index > 20) return false;
+        pendingNatureIndex = index;
+        if (natureDirect != null) {
+            if (natureDirect.binder != null) return natureDirect.flush();
+            return true;
+        }
+        try {
+            NatureDirect conn = new NatureDirect();
+            Intent intent = new Intent(NATURE_DIRECT_ACTION)
+                .setComponent(ComponentName.unflattenFromString(NATURE_DIRECT_COMPONENT));
+            if (!context.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
+                pendingNatureIndex = -1;
+                return false;
+            }
+            natureDirect = conn;
+            handler.postDelayed(conn.timeout, CONNECT_TIMEOUT_MS);
+            return true;
+        } catch (RuntimeException failure) {
+            Log.w(TAG, "selectNature bind failed", failure);
+            pendingNatureIndex = -1;
+            return false;
+        }
+    }
+
+    void closeNatureDirect() {
+        pendingNatureIndex = -1;
+        if (natureDirect == null) return;
+        NatureDirect conn = natureDirect;
+        natureDirect = null;
+        handler.removeCallbacks(conn.timeout);
+        try {
+            context.unbindService(conn);
+        } catch (IllegalArgumentException ignored) { }
     }
 
     boolean send(String source, int key) {
@@ -79,6 +127,7 @@ final class StockTransport {
     }
 
     void close() {
+        closeNatureDirect();
         pending.clear();
         if (remote == null) return;
         Remote connection = remote;
@@ -87,6 +136,52 @@ final class StockTransport {
         try {
             context.unbindService(connection);
         } catch (IllegalArgumentException ignored) { }
+    }
+
+    private final class NatureDirect implements ServiceConnection {
+        IBinder binder;
+        final Runnable timeout = new Runnable() {
+            @Override public void run() {
+                if (natureDirect == NatureDirect.this) {
+                    Log.w(TAG, "selectNature bind timeout");
+                    closeNatureDirect();
+                }
+            }
+        };
+
+        @Override public void onServiceConnected(ComponentName name, IBinder service) {
+            if (natureDirect != this) return;
+            handler.removeCallbacks(timeout);
+            binder = service;
+            flush();
+        }
+
+        @Override public void onServiceDisconnected(ComponentName name) {
+            if (natureDirect == this) closeNatureDirect();
+        }
+
+        boolean flush() {
+            if (binder == null || pendingNatureIndex < 0) return false;
+            int idx = pendingNatureIndex;
+            pendingNatureIndex = -1;
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(NATURE_DIRECT_DESCRIPTOR);
+                data.writeInt(idx);
+                boolean ok = binder.transact(NATURE_TX_PLAY_BY_INDEX, data, reply, 0);
+                reply.readException();
+                Log.i(TAG, "selectNature direct index=" + idx + " ok=" + ok);
+                return ok;
+            } catch (Exception failure) {
+                Log.w(TAG, "selectNature transact failed", failure);
+                closeNatureDirect();
+                return false;
+            } finally {
+                data.recycle();
+                reply.recycle();
+            }
+        }
     }
 
     private final class Remote implements ServiceConnection {

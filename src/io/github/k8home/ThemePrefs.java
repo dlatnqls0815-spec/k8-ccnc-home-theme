@@ -15,6 +15,7 @@ final class ThemePrefs {
     private static final String NAVI_SKIN = "stock-navi-ccnc-buttons";
     private static final String STOCK_WRITE = "stock-settings-write";
     private static final String SOUND_WRITE = "stock-sound-write";
+    private static final String CUSTOM_KEY_HOME = "custom-key-home";
 
     private ThemePrefs() { }
 
@@ -77,5 +78,14 @@ final class ThemePrefs {
 
     static void setStockWrite(Context context, boolean value) {
         of(context).edit().putBoolean(STOCK_WRITE, value).commit();
+    }
+
+    /** 즐겨찾기(☆) 버튼으로 짧게 ccNC 테마 / 길게 순정 5W 홈 전환 사용 여부. 기본 꺼짐. */
+    static boolean customKeyHome(Context context) {
+        return of(context).getBoolean(CUSTOM_KEY_HOME, false);
+    }
+
+    static void setCustomKeyHome(Context context, boolean value) {
+        of(context).edit().putBoolean(CUSTOM_KEY_HOME, value).commit();
     }
 }

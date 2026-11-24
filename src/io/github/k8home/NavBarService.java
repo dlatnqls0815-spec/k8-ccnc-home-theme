@@ -343,7 +343,7 @@ public final class NavBarService extends Service {
         if ("home".equals(action) || "menu".equals(action)) {
             endSession();
             try {
-                startActivity(new Intent(this, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(new Intent(this, com.android.launcher3.view.Launcher.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     .putExtra(HomeActivity.EXTRA_OPEN_APPS, "menu".equals(action)));
             } catch (RuntimeException failure) {
                 Log.w(TAG, "Theme home unavailable", failure);
@@ -399,7 +399,7 @@ public final class NavBarService extends Service {
         endSession();
         boolean opened = false;
         try {
-            startActivity(new Intent(this, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(new Intent(this, com.android.launcher3.view.Launcher.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .putExtra(HomeActivity.EXTRA_OPEN_MEDIA, true)
                 .putExtra(HomeActivity.EXTRA_OPEN_MEDIA_SOURCE, media.source));
             opened = true;

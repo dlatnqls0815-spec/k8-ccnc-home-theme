@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "private" / "nemesis"
 PACKAGE_ID = "k8home.shortcuts"
 PACKAGE_VERSION = "0.4.13"
-HOME_PACKAGE_VERSION = "0.5.0-test46"
+HOME_PACKAGE_VERSION = "0.5.0-test55"
 HOME_PACKAGE_ID = "k8home.install"
 HOME_APP_ID = "io.github.k8home"
 ZIP_TIME = (2026, 11, 21, 0, 0, 0)
@@ -164,7 +164,7 @@ def build_home(out, apk, helper_dex):
         "kind=apk",
         f"path={apk_path}",
         f"package={HOME_APP_ID}",
-        f"component={HOME_APP_ID}/.HomeActivity",
+        f"component={HOME_APP_ID}/com.android.launcher3.view.Launcher",
         "",
         "[service.0]",
         "name=keys",

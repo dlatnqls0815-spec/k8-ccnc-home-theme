@@ -10,13 +10,13 @@ final class StockMedia {
     static final String REQUEST = "com.hkmc.request.widgetupdate";
     private static final String BT = "com.hkmc.audio.btaudio.widgetupdate";
     private static final String USB = "com.hkmc.audio.usb.widgetupdate";
-    private static final String RADIO = "com.hkmc.radio.widgetupdate";
+    static final String RADIO = "com.hkmc.radio.widgetupdate";
     private static final String NATURE = "com.hkmc.nature_sound.widgetupdate";
     private static final String CARPLAY = "com.hkmc.dipoaudio.widgetupdate";
 
     /** ModeManager.ACTION_MODE_CHANGED with ModeConstants$ModeType in EXTRA_MODE_TYPE (automotive.odex). */
-    private static final String MODE_CHANGED = "com.hkmc.intent.action.MODE_CHANGED";
-    private static final String MODE_TYPE = "com.hkmc.mode.EXTRA_MODE_TYPE";
+    static final String MODE_CHANGED = "com.hkmc.intent.action.MODE_CHANGED";
+    static final String MODE_TYPE = "com.hkmc.mode.EXTRA_MODE_TYPE";
 
     static final StockMedia EMPTY = new StockMedia("", "", "", "", null, -1, -1, -1, -1);
 
@@ -89,7 +89,9 @@ final class StockMedia {
         boolean sameTitle = sameSource && nextTitle.equals(title);
         String nextArtist = data.containsKey("artist_name") ? text(data.get("artist_name")) : sameTitle ? artist : "";
         boolean sameTrack = sameTitle && nextArtist.equals(artist);
-        Boolean nextPlaying = data.containsKey("playstate") ? flag(data.get("playstate")) : sameSource ? playing : null;
+        // 자연의 소리는 playstate=1 바로 뒤에 -1(바뀜 없음)을 보낸다(2026-11-24 실차): 0/1 이 아니면 앞 값을 유지한다.
+        Boolean sentPlaying = data.containsKey("playstate") ? flag(data.get("playstate")) : null;
+        Boolean nextPlaying = sentPlaying != null ? sentPlaying : sameSource ? playing : null;
         long nextPosition = data.containsKey("audio_current_time") ? time(data.get("audio_current_time"))
             : sameTrack ? position : -1;
         long nextDuration = data.containsKey("audio_total_time") ? time(data.get("audio_total_time"))

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.k8home"
-    android:versionCode="107"
-    android:versionName="0.5.0-test46">
+    android:versionCode="116"
+    android:versionName="0.5.0-test55">
     <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -16,7 +18,9 @@
         android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         <uses-library android:name="automotive" android:required="false" />
         <uses-library android:name="com.broadcom.bt" android:required="false" />
-        <activity android:name=".HomeActivity" android:exported="true" android:launchMode="singleTask"
+        <!-- 순정 라디오·자연의 소리는 앞 화면 클래스가 순정 홈(com.android.launcher3.view.Launcher)이면 오른쪽 팝업을 띄우지 않는다.
+             테마 화면을 그 이름으로 둔다(별칭으로 열면 앞 화면 이름이 별칭이 되므로 모든 실행 경로는 진짜 이름을 쓴다). .HomeActivity 는 예전 바로가기용 별칭. -->
+        <activity android:name="com.android.launcher3.view.Launcher" android:exported="true" android:launchMode="singleTask"
             android:screenOrientation="landscape" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +33,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity-alias android:name=".HomeActivity" android:targetActivity="com.android.launcher3.view.Launcher" android:exported="true" />
         <service android:name=".NavBarService" android:exported="false" />
         <service android:name=".CornerService" android:exported="false" />
         <service android:name=".PopupGuardService" android:exported="false" />

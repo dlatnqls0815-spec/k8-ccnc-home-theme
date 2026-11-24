@@ -1,4 +1,15 @@
 # K8 Gen5W 홈
+## 0.5.0-test55 제미나이 작업 검수 (2026-11-24, Claude, 커밋 전·차 확인 전)
+
+- 비교: 20:07 차에 깐 Claude 판(test49 개발판 APK)을 풀어 지금 파일과 맞댐. 검사 c30 0곳, 화면 오류 0, bar_guard 는 media-bt·usb 16곳(승인 대기) 그대로, APK 빌드 통과.
+- 제미나이 추가: `CustomKeyGuard`(☆ 279 키: 짧게 = 테마, 길게 = 순정 5W 홈, 설정 스위치 `custom-key-home`, `ModeManager.registerModeKeyListener` ALLKEY 121 + `CUSTOM_SHORTCUT` 방송 예비, `PopupGuardService` 에서 시작),
+  `StockTransport.selectNature`(자연의 소리 원격 서비스 transact 19 = playByIndex 라고 추정), 집·회사 버튼 1초 꾹 → 등록 메뉴(순정 내비 등록 위치·지금 위치·내비 검색), 소스 탭 바로 전환(블루투스는 BTAudio 에 VIT_NOTI_AV_MODE_CHANGE 13/2).
+- 사용자 결정: ☆ 방향은 제미나이 것(짧게 테마·길게 순정 홈)으로 둔다.
+- 고친 것: "내비 검색으로 등록" 뒤 길안내를 시작하지 않고 돌아오면 목적지 표의 예전 목적지가 저장될 수 있었다 → 길안내 중(StockRoute active)일 때만 저장, 아니면 1.5초씩 4번 기다린 뒤 버림(`checkPendingSavedPlace`).
+- **차에서 할 것**: ① ☆ 짧게 누를 때 순정 동작(지금 폰 연결 화면)과 테마가 번갈아 뜨는지, `ModeManager.disableCustomKeyAction(String[])`/`enableCustomKeyAction()` 으로 스위치 켜진 동안 순정 동작을 막을 수 있는지(인자 뜻 모름, 시험 전 사용자 승인). 길게 누를 때 테마가 잠깐 비치는지.
+  ② 자연의 소리 줄마다 눌러 그 소리로 바뀌는지, logcat `selectNature direct index=… ok=true`(19 번이 맞는지). PC 에선 순정 dex 가 깨져 확인 못 함.
+  ③ 전화: 프라이버시 모드가 꺼진 상태에서 최근 통화·연락처 열 이름(logcat `K8PhoneBook list … columns=`)과 줄 그리기. 누르면 바로 걸리므로 시험 발신은 사용자 허락 뒤.
+
 ## 0.5.0-test41 제미나이 작업 검수 (2026-11-24, Claude)
 
 - 제미나이 변경(아래 절)만 골라 봤다(test40 상태를 `C:/AI-Work/2026-11-24-k8-ccnc-theme/checks/before-gemini-test40.patch` 로 떠 두고 비교). 커밋 없음, test40 파일 그대로.

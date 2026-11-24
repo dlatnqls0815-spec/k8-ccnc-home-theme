@@ -2,11 +2,13 @@ package io.github.k8home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -36,14 +39,51 @@ import java.util.Map;
 final class StockRadio {
     private static final String TAG = "K8Radio";
     static final String PACKAGE = "com.hkmc.av.app.radioge";
+    private static final String BT_PACKAGE = "com.daudio.av.app.btaudio.ui";
     private static final String MODE_CHANGE = "android.intent.action.VIT_NOTI_AV_MODE_CHANGE";
     private static final String SET_FREQUENCY = "android.intent.action.VIT_NOTI_AV_RADIO_SET_FREQUENCY";
     private static final int MAX_ROWS = 120;
+
+    private static Handler modeWorker;
+    private static Object cachedModeManager;
+    private static Method launchModeByWidgetMethod;
+    private static Method changeModeMethod;
+    private static Method getCurrentModeMethod;
+    private static boolean modeReflectionLoaded;
+    private static int sourceSwitchSeq;
 
     private final Context app;
     private Map<String, String> logoNames;
     private Map<String, String> logoNamesLower;
     private final Map<String, String> logoCache = new HashMap<>();
+
+    private static synchronized Handler modeWorker() {
+        if (modeWorker == null) {
+            HandlerThread thread = new HandlerThread("k8home-mode");
+            thread.start();
+            modeWorker = new Handler(thread.getLooper());
+        }
+        return modeWorker;
+    }
+
+    private static synchronized Object modeManager(Context context) {
+        if (cachedModeManager != null) return cachedModeManager;
+        if (modeReflectionLoaded) return null;
+        modeReflectionLoaded = true;
+        try {
+            Class<?> type = Class.forName("com.hkmc.mode.ModeManager");
+            cachedModeManager = type.getConstructor(Context.class).newInstance(context.getApplicationContext());
+            try { launchModeByWidgetMethod = type.getMethod("launchModeByWidget", int.class, boolean.class); }
+            catch (NoSuchMethodException ignored) { }
+            try { changeModeMethod = type.getMethod("changeMode", Integer.class, boolean.class); }
+            catch (NoSuchMethodException ignored) { }
+            try { getCurrentModeMethod = type.getMethod("getCurrentMode"); }
+            catch (NoSuchMethodException ignored) { }
+        } catch (Exception | LinkageError failure) {
+            Log.w(TAG, "ModeManager init failed: " + failure);
+        }
+        return cachedModeManager;
+    }
 
     StockRadio(Context context) {
         app = context.getApplicationContext();
@@ -107,18 +147,27 @@ final class StockRadio {
         }
     }
 
-    private static void requestMediaRefresh(final Context context) {
-        final Context appCtx = context.getApplicationContext();
-        try { appCtx.sendBroadcast(new Intent(StockMedia.REQUEST)); } catch (RuntimeException ignored) { }
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override public void run() {
-                try { appCtx.sendBroadcast(new Intent(StockMedia.REQUEST)); } catch (RuntimeException ignored) { }
-            }
-        }, 320);
+    static void requestMediaRefresh(final Context context) {
+        requestMediaRefresh(context, false);
     }
 
-    /** Stock audio source change without opening the player. */
-    static boolean changeSource(Context context, String source) {
+    private static void requestMediaRefresh(final Context context, boolean bluetooth) {
+        final Context appCtx = context.getApplicationContext();
+        try { appCtx.sendBroadcast(new Intent(StockMedia.REQUEST)); } catch (RuntimeException ignored) { }
+        Handler main = new Handler(Looper.getMainLooper());
+        long[] delays = bluetooth ? new long[] { 200, 500, 950, 1500 } : new long[] { 280, 650 };
+        for (long delay : delays) {
+            main.postDelayed(new Runnable() {
+                @Override public void run() {
+                    try { appCtx.sendBroadcast(new Intent(StockMedia.REQUEST)); } catch (RuntimeException ignored) { }
+                }
+            }, delay);
+        }
+    }
+
+    /** Stock audio source change without opening the player (runs ModeManager IPC off the UI thread). */
+    static boolean changeSource(Context context, final String source) {
+        final Context appCtx = context.getApplicationContext();
         if ("fm".equals(source) || "am".equals(source)) {
             // ModeManager.changeMode 는 FM1_SHORTCUT(EXTRA_RUNNING_STATE=1)을 보내 순정 라디오 화면이 앞으로 뜬다.
             // 순정 라디오의 VIT_NOTI_AV_MODE_CHANGE(Value2=0, DealerMode=1)는 화면을 띄우지 않고 소리만 바꾼다.
@@ -127,9 +176,10 @@ final class StockRadio {
                 .putExtra("Value2", 0)
                 .putExtra("DealerMode", 1);
             try {
-                context.getApplicationContext().sendBroadcast(intent);
-                MediaKeys.cancelStockPopup(context);
-                requestMediaRefresh(context);
+                appCtx.sendBroadcast(MediaKeys.homePageZero());   // 팝업이 뜰 틈을 주지 않게 먼저 알린다
+                appCtx.sendBroadcast(intent);
+                MediaKeys.cancelStockPopup(appCtx);
+                requestMediaRefresh(appCtx, false);
                 Log.i(TAG, "changeSource radio bg " + source);
                 return true;
             } catch (RuntimeException failure) {
@@ -137,23 +187,143 @@ final class StockRadio {
                 return false;
             }
         }
-        int mode;
+        final int mode;
         switch (source) {
             case "bt": mode = 0x36; break;
             case "usb": mode = 0x21; break;
             case "nature": mode = 0x81; break;
             default: return false;
         }
+        final int seq = ++sourceSwitchSeq;
         try {
-            Class<?> type = Class.forName("com.hkmc.mode.ModeManager");
-            Object manager = type.getConstructor(Context.class).newInstance(context.getApplicationContext());
-            Object result = type.getMethod("changeMode", Integer.class, boolean.class).invoke(manager, mode, false);
-            MediaKeys.cancelStockPopup(context);
-            Log.i(TAG, "changeMode 0x" + Integer.toHexString(mode) + " -> " + result);
-            return Boolean.TRUE.equals(result);
+            appCtx.sendBroadcast(MediaKeys.homePageZero());
+        } catch (RuntimeException ignored) { }
+        MediaKeys.cancelStockPopup(appCtx);
+        requestMediaRefresh(appCtx, "bt".equals(source));
+
+        if ("bt".equals(source)) {
+            // 순정 BTAudio 는 VIT_NOTI_AV_MODE_CHANGE(Value1=13, Value2=2)를 받으면 100ms+350ms 숏컷 지연 없이
+            // 즉시 오디오 포커스를 요청하고 백그라운드로 BT 오디오를 시작한다(BTAudio.odex service/d 확인).
+            try {
+                Intent btBg = new Intent(MODE_CHANGE).setPackage(BT_PACKAGE)
+                    .putExtra("Value1", 13)
+                    .putExtra("Value2", 2);
+                appCtx.sendBroadcast(btBg);
+                Log.i(TAG, "changeSource bt fast broadcast sent");
+            } catch (RuntimeException failure) {
+                Log.w(TAG, "changeSource bt fast broadcast failed: " + failure);
+            }
+            // 서비스 미기동 등으로 120ms 안에 BT 모드로 안 바뀌었으면 ModeManager.launchModeByWidget 으로 폴백한다.
+            modeWorker().postDelayed(new Runnable() {
+                @Override public void run() {
+                    if (seq != sourceSwitchSeq) return;
+                    if (currentMode(appCtx) == 0x36) {
+                        Log.i(TAG, "changeSource bt already active via fast broadcast");
+                        return;
+                    }
+                    invokeModeSwitch(appCtx, source, mode);
+                }
+            }, 120);
+            return true;
+        }
+
+        modeWorker().post(new Runnable() {
+            @Override public void run() {
+                if (seq != sourceSwitchSeq) return;
+                invokeModeSwitch(appCtx, source, mode);
+            }
+        });
+        return true;
+    }
+
+    private static void invokeModeSwitch(Context appCtx, String source, int mode) {
+        Object manager = modeManager(appCtx);
+        if (manager == null) return;
+        if (launchModeByWidgetMethod != null) {
+            try {
+                launchModeByWidgetMethod.invoke(manager, mode, false);
+                MediaKeys.cancelStockPopup(appCtx);
+                Log.i(TAG, "launchModeByWidget 0x" + Integer.toHexString(mode) + " bg");
+                return;
+            } catch (Exception | LinkageError widgetFailure) {
+                Log.w(TAG, "launchModeByWidget " + source + " failed: " + widgetFailure);
+            }
+        }
+        if (changeModeMethod != null) {
+            try {
+                Object result = changeModeMethod.invoke(manager, mode, false);
+                MediaKeys.cancelStockPopup(appCtx);
+                Log.i(TAG, "changeMode 0x" + Integer.toHexString(mode) + " -> " + result);
+            } catch (Exception | LinkageError failure) {
+                Log.w(TAG, "changeMode " + source + " failed: " + failure);
+            }
+        }
+    }
+
+    /**
+     * 자연의 소리 목록(차의 순정 HKMC_NatureSound, 2026-11-24 실차 순정 목록 화면을 그대로 읽음): 10개, 이 순서.
+     * 이름(차 언어)과 배경 사진은 순정 앱에서 읽는다(그림을 테마에 넣지 않는다). [{name, art(data: URL)}]
+     */
+    private static final String NATURE = "com.hkmc.av.app.naturesound";
+    private static final String[][] NATURE_SOUNDS = {
+        {"forest_sound", "sound_bg_forest"}, {"waves_sound", "sound_bg_sea_wave"}, {"city_sound", "sound_bg_city"},
+        {"space_sound", "sound_bg_space"}, {"rain_sound", "sound_bg_rain"}, {"cathedral_sound", "sound_bg_cathedral"},
+        {"meditation_sound", "sound_bg_temple"}, {"spring_sound", "sound_bg_spring"}, {"summer_sound", "sound_bg_summer"},
+        {"autumn_sound", "sound_bg_autumn"}};
+    private volatile String natureJson;
+
+    /** 첫 자연의 소리 진입 때 UI가 멈추지 않도록 백그라운드에서 목록·배경을 미리 준비한다. */
+    void preloadNatureList() {
+        if (natureJson != null) return;
+        modeWorker().post(new Runnable() {
+            @Override public void run() { natureList(); }
+        });
+    }
+
+    synchronized String natureList() {
+        if (natureJson != null) return natureJson;
+        JSONArray out = new JSONArray();
+        try {
+            Resources res = app.createPackageContext(NATURE, 0).getResources();
+            for (String[] sound : NATURE_SOUNDS) {
+                int name = res.getIdentifier(sound[0], "string", NATURE);
+                if (name == 0) continue;
+                int art = sound[1].isEmpty() ? 0 : res.getIdentifier(sound[1], "drawable", NATURE);
+                out.put(new JSONObject().put("name", res.getString(name)).put("art", art == 0 ? "" : jpeg(res, art, 960)));
+            }
+        } catch (Exception failure) {
+            Log.w(TAG, "nature list failed: " + failure);
+        }
+        Log.i(TAG, "nature list " + out.length());
+        if (out.length() > 0) natureJson = out.toString();
+        return out.toString();
+    }
+
+    /** Drawable as a data: URL, decoded at about maxWidth (the stock photos are 1~2 MB PNGs). */
+    private static String jpeg(Resources res, int id, int maxWidth) {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, id, bounds);
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inSampleSize = 1;
+        while (bounds.outWidth / (opts.inSampleSize * 2) >= maxWidth) opts.inSampleSize *= 2;
+        Bitmap bitmap = BitmapFactory.decodeResource(res, id, opts);
+        if (bitmap == null) return "";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+        bitmap.recycle();
+        return "data:image/jpeg;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
+    }
+
+    /** Stock current audio mode (ModeManager.getCurrentMode, same as the stock home widget), -1 when unknown. */
+    static int currentMode(Context context) {
+        try {
+            Object manager = modeManager(context);
+            if (manager == null || getCurrentModeMethod == null) return -1;
+            return ((Number) getCurrentModeMethod.invoke(manager)).intValue();
         } catch (Exception | LinkageError failure) {
-            Log.w(TAG, "changeMode " + source + " failed: " + failure);
-            return false;
+            Log.w(TAG, "getCurrentMode failed: " + failure);
+            return -1;
         }
     }
 

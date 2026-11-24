@@ -26,7 +26,7 @@ public final class BootReceiver extends BroadcastReceiver {
         if (OPEN_HOME.equals(action)) {
             if (!launcherInFront(context)) return;
             try {
-                context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, com.android.launcher3.view.Launcher.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             } catch (RuntimeException failure) {
                 Log.w("K8HomeBoot", "Could not open theme home", failure);
             }

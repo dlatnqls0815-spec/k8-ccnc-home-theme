@@ -21,6 +21,8 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -45,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class HomeActivity extends Activity {
+public class HomeActivity extends Activity {
     private static final String PAGE = "file:///android_asset/index.html";
     static final String EXTRA_OPEN_APPS = "io.github.k8home.extra.OPEN_APPS";
     static final String EXTRA_OPEN_MEDIA = "io.github.k8home.extra.OPEN_MEDIA";
@@ -99,10 +101,26 @@ public final class HomeActivity extends Activity {
     private boolean pendingHome;
     private boolean pendingApps, pendingMedia;
     private String pendingMediaSource = "";
+    private String pendingPlaceKey = "";
+    private String pendingPlacePrevCoord = "";
+    private int pendingNatureIndex = -1;
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+    private final Runnable applyPendingNature = new Runnable() {
+        @Override public void run() {
+            if (isDestroyed() || pendingNatureIndex < 0) return;
+            int idx = pendingNatureIndex;
+            pendingNatureIndex = -1;
+            if (transport.selectNature(idx)) {
+                MediaKeys.cancelStockPopup(HomeActivity.this);
+                StockRadio.requestMediaRefresh(HomeActivity.this);
+            }
+        }
+    };
     private StockRoute route;
     private StockPhone phone;
     private StockTransport transport;
     private StockRadio radio;
+    private StockPhoneBook phoneBook;
     private StockClimate climate;
     private StockHybrid hybrid;
     private StockWeather weather;
@@ -138,14 +156,35 @@ public final class HomeActivity extends Activity {
             // 곡이 바뀔 때 순정 곡 팝업 닫기는 항상 떠 있는 PopupGuardService 가 맡는다.
             media = next;
             coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "");
+            if ("nature".equals(media.source) && pendingNatureIndex >= 0) {
+                int idx = pendingNatureIndex;
+                pendingNatureIndex = -1;
+                uiHandler.removeCallbacks(applyPendingNature);
+                if (transport.selectNature(idx)) {
+                    MediaKeys.cancelStockPopup(HomeActivity.this);
+                    StockRadio.requestMediaRefresh(HomeActivity.this);
+                }
+            }
             syncMedia();
         }
     };
 
+    private boolean relaunching;
+
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        android.content.ComponentName opened = getIntent().getComponent();
+        if (opened != null && opened.getClassName().endsWith(".HomeActivity")) {
+            // 예전 이름(별칭)으로 처음 열리면 순정 앱이 보는 앞 화면 이름도 별칭이 되어 팝업 막기가 안 된다: 진짜 이름으로 다시 연다.
+            startActivity(new Intent(getIntent()).setClass(this, com.android.launcher3.view.Launcher.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));   // 별칭 기록을 지우고 진짜 이름으로 새로
+            relaunching = true;
+            return;
+        }
         transport = new StockTransport(this);
         radio = new StockRadio(this);
+        radio.preloadNatureList();
+        phoneBook = new StockPhoneBook(this);
         vehicle = new StockVehicle(this, new Runnable() {
             @Override public void run() { syncVehicle(); }
         });
@@ -228,6 +267,7 @@ public final class HomeActivity extends Activity {
                     syncWeather();
                     syncVehicle();
                     syncFlags();
+                    syncSavedPlaces();
                     syncPhoto("standby");
                     syncPhoto("split");
                     syncPhoto("profile0");
@@ -333,6 +373,12 @@ public final class HomeActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         activityResumed = true;
+        // 순정 라디오·자연의 소리는 "앞 화면이 순정 홈(com.android.launcher3.view.Launcher)이고 홈이 미디어 위젯 페이지(0)"면
+        // 오른쪽 팝업을 띄우지 않는다(위젯이 이미 보여 준다, RadioUtils.isDisabledAVWidget). 테마가 앞에 올 때 홈 0쪽이라고 알린다.
+        sendBroadcast(MediaKeys.homePageZero());
+        if (media.source.isEmpty()) syncVehicle();   // 테마가 다시 켜진 뒤 소스를 모르면(자연의 소리는 바뀔 때만 알림) 순정 모드를 읽는다
+        checkPendingSavedPlace();
+        syncSavedPlaces();
         syncSystemSettings();
         refreshVehicleSettings();
         stockMapPreview.setActive(hasWindowFocus() && mapSlot.getVisibility() == View.VISIBLE);
@@ -386,6 +432,7 @@ public final class HomeActivity extends Activity {
         // Before any media widget broadcast arrives, start from the stock current audio mode.
         if (media.source.isEmpty()) {
             int mode = vehicle.snapshot().optInt("audioMode", -1);
+            if (mode <= 0) mode = StockRadio.currentMode(this);
             if (mode > 0) {
                 android.os.Bundle extras = new android.os.Bundle();
                 extras.putInt("com.hkmc.mode.EXTRA_MODE_TYPE", mode);
@@ -551,7 +598,8 @@ public final class HomeActivity extends Activity {
         if (!pageReady) return;
         web.evaluateJavascript("window.K8Home.systemFlagsChanged("
             + ThemePrefs.autoStart(this) + "," + ThemePrefs.navBar(this) + "," + ThemePrefs.corners(this) + ","
-            + ThemePrefs.naviSkin(this) + "," + ThemePrefs.stockWrite(this) + "," + ThemePrefs.soundWrite(this) + ")", null);
+            + ThemePrefs.naviSkin(this) + "," + ThemePrefs.stockWrite(this) + "," + ThemePrefs.soundWrite(this) + ","
+            + ThemePrefs.customKeyHome(this) + ")", null);
     }
 
     private interface SoundWrite { StockSound.Result run(); }
@@ -796,12 +844,20 @@ public final class HomeActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
                     if (isFinishing() || isDestroyed()) return;
+                    // 순정 블루투스 전화가 받는 바로 걸기(OutgoingCallBroadcaster, BLUETOOTH 권한). 안 되면 다이얼 화면.
+                    Intent call = new Intent("android.bluetooth.intent.action.CALL", Uri.fromParts("tel", number, null))
+                        .setClassName(STOCK_PHONE, "com.android.phone.OutgoingCallBroadcaster");
                     Intent dial = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null));
-                    if (!open(new Intent(dial).setPackage(STOCK_PHONE)) && !open(dial) && !open(StockApps.PHONE)) {
+                    if (!open(call) && !open(new Intent(dial).setPackage(STOCK_PHONE)) && !open(dial) && !open(StockApps.PHONE)) {
                         toast("이 기기에서 전화 걸기 화면을 열 수 없습니다.");
                     }
                 }
             });
+        }
+
+        /** Car phone book of the connected phone: "recent", "favorites" or "contacts" (StockPhoneBook, JSON). */
+        @JavascriptInterface public String phoneBook(String list) {
+            return phoneBook.list(String.valueOf(list));
         }
 
         /** Stock radio provider rows: "fm_stations", "am_stations" or "presets" (StockRadio). */
@@ -812,6 +868,33 @@ public final class HomeActivity extends Activity {
         /** Stock radio logo (data: URL) for a station name, "" when the radio app has none. */
         @JavascriptInterface public String radioLogo(String station) {
             synchronized (radio) { return radio.logo(station); }
+        }
+
+        /** Stock nature sounds [{name, art}] read from the car's nature sound app. */
+        @JavascriptInterface public String natureList() {
+            return radio.natureList();
+        }
+
+        /** 자연의 소리 특정 트랙(0~9)을 하나씩 넘기지 않고 바로 재생한다. */
+        @JavascriptInterface public void selectNature(final int index) {
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (isFinishing() || isDestroyed()) return;
+                    if ("nature".equals(media.source)) {
+                        pendingNatureIndex = -1;
+                        uiHandler.removeCallbacks(applyPendingNature);
+                        if (transport.selectNature(index)) {
+                            MediaKeys.cancelStockPopup(HomeActivity.this);
+                            StockRadio.requestMediaRefresh(HomeActivity.this);
+                        }
+                    } else {
+                        pendingNatureIndex = index;
+                        StockRadio.changeSource(HomeActivity.this, "nature");
+                        uiHandler.removeCallbacks(applyPendingNature);
+                        uiHandler.postDelayed(applyPendingNature, 280);
+                    }
+                }
+            });
         }
 
         @JavascriptInterface public void radioTune(final boolean fm, final int kHz) {
@@ -1087,13 +1170,19 @@ public final class HomeActivity extends Activity {
         } else if (action.startsWith("source-direct-")) {
             // ccNC bottom tabs: change the audio source in place; open the stock player only if refused.
             String source = action.substring("source-direct-".length());
+            if (!"nature".equals(source)) {
+                pendingNatureIndex = -1;
+                uiHandler.removeCallbacks(applyPendingNature);
+            }
             if (!StockRadio.changeSource(this, source)) handleAction("source-" + source);
         } else if ("media-refresh".equals(action)) {
             sendBroadcast(new Intent(StockMedia.REQUEST));
         } else if ("media-player".equals(action)) {
             if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {
-            savedPlace("nav-home".equals(action) ? "home" : "work");
+            savedPlace("nav-home".equals(action) ? "home" : "work", false);
+        } else if ("nav-home-edit".equals(action) || "nav-work-edit".equals(action)) {
+            savedPlace("nav-home-edit".equals(action) ? "home" : "work", true);
         } else if ("media-prev".equals(action)) {
             sendMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
         } else if ("media-next".equals(action)) {
@@ -1161,6 +1250,13 @@ public final class HomeActivity extends Activity {
             syncFlags();
             toast(on ? "고음/중음/저음·전후/좌우를 테마에서 직접 바꿉니다(시험). 되돌리려면 순정 사운드 설정을 쓰세요."
                     : "사운드 값은 보기만 합니다. 바꾸려면 순정 사운드 설정을 여세요.");
+        } else if ("custom-key-home-toggle".equals(action)) {
+            boolean on = !ThemePrefs.customKeyHome(this);
+            ThemePrefs.setCustomKeyHome(this, on);
+            if (on) PopupGuardService.start(this);
+            syncFlags();
+            toast(on ? "즐겨찾기 버튼: 짧게 ccNC 테마 · 길게 순정 5W 홈"
+                    : "즐겨찾기 버튼 홈 전환을 껐습니다.");
         } else if ("home-settings".equals(action)) {
             if (!open(new Intent("android.settings.HOME_SETTINGS"))) {
                 toast("이 기기에서 홈 화면 설정을 열 수 없습니다.");
@@ -1296,63 +1392,200 @@ public final class HomeActivity extends Activity {
     }
 
     /**
-     * Home / work buttons. The navi keeps its own saved points in a provider other apps cannot read,
-     * so the theme saves a point from the current destination (DestinationInfo LAT/LON) when asked,
-     * then starts guidance with the navi's route-search intent.
+     * 홈 화면 '우리 집' / '회사' 원형 버튼 처리.
+     * - 이미 등록되어 있고 짧게 누르면(forceEdit=false): 팝업 없이 순정 내비로 즉시 길안내를 시작한다.
+     * - 미등록 상태이거나 1초 이상 꾹 눌렀을 때(forceEdit=true): 등록/변경 선택 창을 연다.
      */
-    private void savedPlace(final String key) {
+    private void savedPlace(final String key, boolean forceEdit) {
         final String label = "home".equals(key) ? "우리 집" : "회사";
         final String latitude = shortcuts.getString("place-" + key + "-lat", "");
         final String longitude = shortcuts.getString("place-" + key + "-lon", "");
         final String name = shortcuts.getString("place-" + key + "-name", label);
-        StockRoute.Snapshot data = route == null ? null : route.snapshot();
-        final String nowLat = data == null ? "" : StockNavigation.degrees(data.destLat);
-        final String nowLon = data == null ? "" : StockNavigation.degrees(data.destLon);
-        final String nowName = data == null ? "" : data.destination;
         boolean saved = !latitude.isEmpty() && !longitude.isEmpty();
-        boolean canSave = !nowLat.isEmpty() && !nowLon.isEmpty();
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this).setTitle(label);
+        if (!forceEdit && saved) {
+            startSavedPlaceGuidance(label, name, latitude, longitude);
+            return;
+        }
+        editSavedPlace(key, label, saved, name, latitude, longitude);
+    }
+
+    private void startSavedPlaceGuidance(String label, String name, String latitude, String longitude) {
+        if (!StockNavigation.routeTo(this, name, latitude, longitude)) {
+            toast("순정 내비가 경로 요청을 받지 않았습니다.");
+            return;
+        }
+        String shown = name == null || name.isEmpty() || name.equals(label)
+            ? label : label + "(" + name + ")";
+        toast(shown + " 길안내를 시작합니다.");
+        if (ThemePrefs.navBar(this)) {
+            try {
+                startService(new Intent(this, NavBarService.class).setAction(NavBarService.OPENED_MAP));
+            } catch (RuntimeException ignored) {
+            }
+        }
+        // NaviOpenAPIRecevier가 자체적으로 NaviApp을 전면으로 올린다. 600ms 뒤에도 홈에 남아 있으면 직접 연다.
+        uiHandler.postDelayed(new Runnable() {
+            @Override public void run() {
+                if (activityResumed && !isDestroyed()) openNavigation(false);
+            }
+        }, 600);
+    }
+
+    private void editSavedPlace(final String key, final String label, final boolean saved,
+            final String savedName, final String savedLat, final String savedLon) {
+        final StockNavigation.Place currentDest = readCurrentDestination();
+        final StockNavigation.Place stockSpecial = StockNavigation.stockSpecialPlace(this, key);
+        StockRoute.Snapshot data = route == null ? null : route.snapshot();
+        final String hereLat = data == null ? "" : StockNavigation.degrees(data.curLat);
+        final String hereLon = data == null ? "" : StockNavigation.degrees(data.curLon);
+        final String hereName = data == null || data.road == null || data.road.isEmpty() ? label : data.road;
+
+        final ArrayList<String> items = new ArrayList<>();
+        final ArrayList<Runnable> actions = new ArrayList<>();
+
+        if (currentDest != null && currentDest.hasCoords()) {
+            final String destName = currentDest.displayName(label);
+            items.add((saved ? "현재 안내 목적지로 변경 (" : "현재 안내 목적지로 등록 (") + destName + ")");
+            actions.add(new Runnable() {
+                @Override public void run() {
+                    savePlace(key, destName, currentDest.latitude, currentDest.longitude);
+                    toast(label + "을(를) '" + destName + "'(으)로 저장했습니다.");
+                }
+            });
+        }
+
+        if (stockSpecial != null && stockSpecial.hasCoords()) {
+            final String spName = stockSpecial.displayName(label);
+            String spInfo = stockSpecial.address.isEmpty() || stockSpecial.address.equals(spName)
+                ? spName : spName + " · " + stockSpecial.address;
+            items.add("순정 내비 등록 위치 불러오기 (" + spInfo + ")");
+            actions.add(new Runnable() {
+                @Override public void run() {
+                    savePlace(key, spName, stockSpecial.latitude, stockSpecial.longitude);
+                    toast(label + "을(를) 순정 내비 등록 위치('" + spName + "')(으)로 저장했습니다.");
+                }
+            });
+        }
+
+        items.add("순정 내비 검색으로 " + (saved ? "변경" : "등록"));
+        actions.add(new Runnable() {
+            @Override public void run() {
+                pendingPlaceKey = key;
+                pendingPlaceTries = 0;
+                pendingPlacePrevCoord = currentDest != null && currentDest.hasCoords()
+                    ? (currentDest.latitude + "," + currentDest.longitude) : "";
+                toast("순정 내비에서 길안내를 시작한 뒤 홈으로 돌아오면 " + label + "(으)로 자동 저장됩니다.");
+                openNavigationCommand(StockNavigation.SEARCH);
+            }
+        });
+
+        if (!hereLat.isEmpty() && !hereLon.isEmpty()) {
+            items.add("지금 현재 위치로 " + (saved ? "변경" : "등록"));
+            actions.add(new Runnable() {
+                @Override public void run() {
+                    savePlace(key, hereName, hereLat, hereLon);
+                    toast(label + "을(를) 지금 위치로 저장했습니다.");
+                }
+            });
+        }
+
         if (saved) {
-            dialog.setMessage(name + "(으)로 길안내를 시작합니다.")
-                .setPositiveButton("안내 시작", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface d, int index) {
-                        if (StockNavigation.routeTo(HomeActivity.this, name, latitude, longitude)) openNavigation(false);
-                        else toast("순정 내비가 경로 요청을 받지 않았습니다.");
-                    }
-                });
-        } else {
-            dialog.setMessage(canSave ? "지금 안내 중인 목적지(" + nowName + ")를 " + label + "(으)로 저장할 수 있습니다."
-                : "아직 저장된 " + label + "이(가) 없습니다. " + label + "에 있을 때 '지금 위치 저장'을 누르거나, 순정 내비에서 "
-                    + label + "으로 길안내를 시작한 뒤 다시 누르면 저장할 수 있습니다.")
-                .setPositiveButton("순정 검색 열기", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface d, int index) {
-                        openNavigationCommand(StockNavigation.SEARCH);
-                    }
-                });
-        }
-        // Without a destination with coordinates, the current navi GPS position can be saved instead
-        // (press the key while parked at home / work).
-        final String hereLat = data == null ? "" : data.curLat;
-        final String hereLon = data == null ? "" : data.curLon;
-        if (!canSave && !hereLat.isEmpty() && !hereLon.isEmpty()) {
-            dialog.setNeutralButton(saved ? "지금 위치로 바꾸기" : "지금 위치 저장", new DialogInterface.OnClickListener() {
-                @Override public void onClick(DialogInterface d, int index) {
-                    shortcuts.edit().putString("place-" + key + "-lat", hereLat).putString("place-" + key + "-lon", hereLon)
-                        .putString("place-" + key + "-name", label).apply();
-                    toast(label + " 위치를 지금 위치로 저장했습니다.");
+            items.add("지금 바로 길안내 시작 (" + savedName + ")");
+            actions.add(new Runnable() {
+                @Override public void run() {
+                    startSavedPlaceGuidance(label, savedName, savedLat, savedLon);
+                }
+            });
+            items.add(label + " 등록 해제");
+            actions.add(new Runnable() {
+                @Override public void run() {
+                    shortcuts.edit()
+                        .remove("place-" + key + "-lat")
+                        .remove("place-" + key + "-lon")
+                        .remove("place-" + key + "-name")
+                        .apply();
+                    syncSavedPlaces();
+                    toast(label + " 등록을 해제했습니다.");
                 }
             });
         }
-        if (canSave) {
-            dialog.setNeutralButton(saved ? "현재 목적지로 바꾸기" : "현재 목적지 저장", new DialogInterface.OnClickListener() {
-                @Override public void onClick(DialogInterface d, int index) {
-                    shortcuts.edit().putString("place-" + key + "-lat", nowLat).putString("place-" + key + "-lon", nowLon)
-                        .putString("place-" + key + "-name", nowName.isEmpty() ? label : nowName).apply();
-                    toast(label + " 위치를 저장했습니다.");
+
+        String title = saved ? (label + " 변경 · " + savedName) : (label + " 목적지 등록");
+        new AlertDialog.Builder(this)
+            .setTitle(title)
+            .setItems(items.toArray(new CharSequence[items.size()]), new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface dialog, int which) {
+                    if (which >= 0 && which < actions.size()) actions.get(which).run();
                 }
-            });
+            })
+            .setNegativeButton("닫기", null)
+            .show();
+    }
+
+    private StockNavigation.Place readCurrentDestination() {
+        StockNavigation.Place fromProvider = StockNavigation.currentDestination(this);
+        if (fromProvider != null && fromProvider.hasCoords()) return fromProvider;
+        StockRoute.Snapshot data = route == null ? null : route.snapshot();
+        if (data == null) return null;
+        String lat = StockNavigation.degrees(data.destLat);
+        String lon = StockNavigation.degrees(data.destLon);
+        if (lat.isEmpty() || lon.isEmpty()) return null;
+        return new StockNavigation.Place(data.destination, data.address, lat, lon);
+    }
+
+    private void savePlace(String key, String name, String latitude, String longitude) {
+        String label = "home".equals(key) ? "우리 집" : "회사";
+        String cleanName = name == null || name.trim().isEmpty() ? label : name.trim();
+        shortcuts.edit()
+            .putString("place-" + key + "-lat", latitude)
+            .putString("place-" + key + "-lon", longitude)
+            .putString("place-" + key + "-name", cleanName)
+            .apply();
+        syncSavedPlaces();
+    }
+
+    private int pendingPlaceTries;
+    private final Runnable retryPendingPlace = new Runnable() {
+        @Override public void run() { if (!isDestroyed()) checkPendingSavedPlace(); }
+    };
+
+    private void checkPendingSavedPlace() {
+        if (pendingPlaceKey.isEmpty()) return;
+        uiHandler.removeCallbacks(retryPendingPlace);
+        // 내비에서 길안내를 시작하지 않고 돌아오면 목적지 표엔 예전 목적지가 남아 있다: 안내 중일 때만 저장한다.
+        // 길 정보는 테마가 다시 보일 때 들어오므로 1.5초씩 4번(6초) 기다려 본다.
+        StockRoute.Snapshot guide = route == null ? null : route.snapshot();
+        if (guide == null || !guide.active) {
+            if (++pendingPlaceTries <= 4) uiHandler.postDelayed(retryPendingPlace, 1500);
+            else { pendingPlaceKey = ""; pendingPlacePrevCoord = ""; pendingPlaceTries = 0; }
+            return;
         }
-        dialog.setNegativeButton("취소", null).show();
+        pendingPlaceTries = 0;
+        String key = pendingPlaceKey;
+        String prevCoord = pendingPlacePrevCoord;
+        pendingPlaceKey = "";
+        pendingPlacePrevCoord = "";
+        StockNavigation.Place current = readCurrentDestination();
+        if (current == null || !current.hasCoords()) return;
+        String nowCoord = current.latitude + "," + current.longitude;
+        if (!prevCoord.isEmpty() && prevCoord.equals(nowCoord)) return;
+        String label = "home".equals(key) ? "우리 집" : "회사";
+        String name = current.displayName(label);
+        savePlace(key, name, current.latitude, current.longitude);
+        toast(label + "을(를) '" + name + "'(으)로 등록했습니다. 이제 짧게 누르면 바로 길안내를 시작합니다.");
+    }
+
+    private void syncSavedPlaces() {
+        if (!pageReady) return;
+        boolean homeSaved = !shortcuts.getString("place-home-lat", "").isEmpty()
+            && !shortcuts.getString("place-home-lon", "").isEmpty();
+        boolean workSaved = !shortcuts.getString("place-work-lat", "").isEmpty()
+            && !shortcuts.getString("place-work-lon", "").isEmpty();
+        String homeName = shortcuts.getString("place-home-name", "");
+        String workName = shortcuts.getString("place-work-name", "");
+        web.evaluateJavascript("window.K8Home.savedPlacesChanged("
+            + homeSaved + "," + javascriptString(homeName) + ","
+            + workSaved + "," + javascriptString(workName) + ")", null);
     }
 
     private void openNavigationCommand(String action) {
@@ -1369,7 +1602,10 @@ public final class HomeActivity extends Activity {
     }
 
     private void sendMediaKey(int key) {
-        if (!transport.send(media.source, key) && !MediaKeys.dispatch(this, key)) {
+        if (transport.send(media.source, key)) {
+            MediaKeys.cancelStockPopup(this);
+            if ("nature".equals(media.source)) StockRadio.requestMediaRefresh(this);
+        } else if (!MediaKeys.dispatch(this, key)) {
             toast("이 기기에서 미디어 키를 전달할 수 없습니다.");
         }
     }
@@ -1437,6 +1673,9 @@ public final class HomeActivity extends Activity {
      */
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         int code = event.getKeyCode();
+        if (code == CustomKeyGuard.KEYCODE_SHORTCUT_CUSTOM && CustomKeyGuard.handleActivityKey(this, event)) {
+            return true;
+        }
         if (code == MediaKeys.WHEEL_PREVIOUS || code == MediaKeys.WHEEL_NEXT || code == MediaKeys.WHEEL_PLAY_PAUSE) {
             // 곡 넘기기 키면 순정 팝업이 1~1.5초 뒤 뜬다: 지금부터 닫기 창을 연다.
             if (code != MediaKeys.WHEEL_PLAY_PAUSE && event.getAction() == KeyEvent.ACTION_DOWN) MediaKeys.cancelStockPopup(this);
@@ -1451,6 +1690,7 @@ public final class HomeActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        if (relaunching) { super.onDestroy(); return; }
         pageReady = false;
         coverArt.close();
         stockMapPreview.setActive(false);
