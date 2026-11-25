@@ -51,6 +51,7 @@ final class BluetoothCoverArt {
         String previousFile = lastFile.isEmpty() ? cachedFile : lastFile;
         long earliest = System.currentTimeMillis() - 4000;
         long deadline = SystemClock.elapsedRealtime() + 10000;
+        final boolean[] retried = {false};
         worker.post(new Runnable() {
             @Override public void run() {
                 File cover = newestCover(earliest);
@@ -68,6 +69,10 @@ final class BluetoothCoverArt {
                             listener.changed(image);
                         } else if (SystemClock.elapsedRealtime() < deadline) {
                             worker.postDelayed(lookup, 600);
+                        } else if (!retried[0]) {
+                            // 폰이 커버를 늦게 보낼 때가 있다(10초 뒤): 15초 뒤 한 번만 더 본다(곡 시작 뒤 파일이면 받음).
+                            retried[0] = true;
+                            worker.postDelayed(lookup, 15000);
                         }
                     }
                 });

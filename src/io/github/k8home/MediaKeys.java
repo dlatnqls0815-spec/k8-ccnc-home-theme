@@ -94,6 +94,11 @@ final class MediaKeys {
         return askHelper("back");
     }
 
+    /** Opens the connected phone projection screen ("aa" or "carplay") through the system-uid helper; blocking. */
+    static String openProjection(String which) {
+        return askHelper(which);
+    }
+
     private static String askHelper(String command) {
         LocalSocket socket = new LocalSocket();
         try {
@@ -203,11 +208,17 @@ final class MediaKeys {
     /** 비동기 스레드에서 라디오·블루투스 팝업을 즉시 닫는다. */
     static void cancelMediaOsdAsync(Context context) {
         final Context app = context.getApplicationContext();
-        osdWorker().post(new Runnable() {
+        Runnable check = new Runnable() {
             @Override public void run() {
                 boolean radioShowing = false;
                 boolean mediaShowing = false;
                 Object mgr = splitScreenManager(app);
+                // 자연의 소리는 먼저 보고 바로 닫는다(다른 확인 2~3번 뒤에 닫으면 팝업이 잠깐 보였다, 실차 2026-11-25).
+                if (natureOsdShowing(mgr)) {
+                    app.sendBroadcast(homePageZero());
+                    Log.i(TAG, "nature OSD showing -> home page 0");
+                    return;
+                }
                 if (mgr != null && isOsdShowingMethod != null) {
                     try {
                         radioShowing = Boolean.TRUE.equals(isOsdShowingMethod.invoke(mgr, OSD_TYPE_RADIO));
@@ -222,19 +233,33 @@ final class MediaKeys {
                 if (mediaShowing) {
                     app.sendBroadcast(new Intent(SPLIT_CONTROL_ACTION).putExtra(EXTRA_CANCEL_OSD, true));
                 }
-                boolean natureShowing = false;
-                try {
-                    natureShowing = mgr != null && isOsdShowingMethod != null
-                        && Boolean.TRUE.equals(isOsdShowingMethod.invoke(mgr, OSD_TYPE_NATURESOUND));
-                } catch (Exception ignored) { }
-                if (natureShowing || radioShowing || mediaShowing) {
+                if (radioShowing || mediaShowing) {
                     // 순정 SplitScreen 은 홈 0쪽 방송을 받으면 떠 있는 미디어 팝업을 닫는다("current page == 0 -> SS OSD canceled",
                     // RightScreenHome, 2026-11-24 실차: 자연의 소리 팝업이 이것으로 닫힘). 자연의 소리는 다른 닫기 신호를 받지 않는다.
                     app.sendBroadcast(homePageZero());
-                    Log.i(TAG, "media OSD showing (nature=" + natureShowing + ", radio=" + radioShowing + ") -> home page 0");
+                    Log.i(TAG, "media OSD showing (radio=" + radioShowing + ") -> home page 0");
                 }
             }
-        });
+        };
+        osdWorker().post(check);
+        // onOsdShow 가 '보이는 중' 표시보다 먼저 올 수 있어 잠시 뒤 한 번 더 본다. shortcut: 150ms 는 어림값, 차 로그로 재기.
+        osdWorker().postDelayed(new Runnable() {
+            @Override public void run() {
+                if (natureOsdShowing(splitScreenManager(app))) {
+                    app.sendBroadcast(homePageZero());
+                    Log.i(TAG, "nature OSD showing (recheck) -> home page 0");
+                }
+            }
+        }, 150);
+    }
+
+    private static boolean natureOsdShowing(Object mgr) {
+        try {
+            return mgr != null && isOsdShowingMethod != null
+                && Boolean.TRUE.equals(isOsdShowingMethod.invoke(mgr, OSD_TYPE_NATURESOUND));
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     /** Closes the stock BT/radio popup: sends BT cancel broadcast and SplitRadioManager.setRadioRightNotification(false). */

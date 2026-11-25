@@ -11,9 +11,12 @@ html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; f
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
 #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 658px; -webkit-transform-origin: 0 0; transform-origin: 0 0; }
+/* test60: 3D 이동이라 GPU 층에서 미끄러진다(2D translateY 는 Chrome 30 에서 프레임마다 다시 그려 뻑뻑했다). */
 #panel { position: absolute; left: 16px; top: 0; width: 1888px; height: 658px; background: #262626; border-radius: 18px 18px 0 0;
-  -webkit-transform: translateY(100%); transform: translateY(100%); -webkit-transition: -webkit-transform .25s ease-out; transition: transform .25s ease-out; }
-#panel.open { -webkit-transform: translateY(0); transform: translateY(0); }
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 100%, 0); transform: translate3d(0, 100%, 0);
+  -webkit-transition: -webkit-transform .34s cubic-bezier(.2, .8, .25, 1); transition: transform .34s cubic-bezier(.2, .8, .25, 1); }
+#panel.open { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
 .p { position: absolute; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f0f0f0; }
 button { position: absolute; padding: 0; margin: 0; border: 0; background: none; outline: none; }
 button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
@@ -34,11 +37,11 @@ button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
   <span class="p" id="device" style="left:161px;top:96px;width:1100px;font-size:28px;color:#c9c9cc"></span>
   <span class="p" id="title" style="left:159px;top:136px;width:1150px;font-size:54px;line-height:1.25;color:#f6f6f6">타이틀 정보 없음</span>
   <span class="p" id="artist" style="left:161px;top:228px;width:1100px;font-size:32px;color:#ececec">아티스트 정보 없음</span>
-  <span class="p" style="left:161px;top:278px;width:1100px;font-size:28px;color:#8a8d92">앨범 정보 없음</span>
+  <span class="p" id="album" style="left:161px;top:278px;width:1100px;font-size:28px;color:#8a8d92">앨범 정보 없음</span>
   <button type="button" class="btn" style="left:159px;top:384px" data-act="previous" aria-label="이전"><svg viewBox="0 0 40 52"><path d="M8 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M36 8 14 26l22 18z" style="fill:#e8e8e8"/></svg></button>
   <button type="button" class="btn" style="left:322px;top:384px" data-act="play" aria-label="재생 또는 일시정지" id="toggle"></button>
   <button type="button" class="btn" style="left:480px;top:384px" data-act="next" aria-label="다음"><svg viewBox="0 0 40 52"><path d="M32 8v36" style="fill:none;stroke:#e8e8e8;stroke-width:6"/><path d="M4 8l22 18L4 44z" style="fill:#e8e8e8"/></svg></button>
-  <button type="button" class="btn" style="left:1168px;top:384px" id="list" aria-label="닫기"><svg viewBox="0 0 40 52"><path d="M12 16h22M12 26h22M12 36h22" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/><circle cx="6" cy="16" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="26" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="36" r="2" style="fill:#e8e8e8"/></svg></button>
+  <button type="button" class="btn" style="left:1168px;top:384px" id="list" aria-label="미디어 화면"><svg viewBox="0 0 40 52"><path d="M12 16h22M12 26h22M12 36h22" style="fill:none;stroke:#e8e8e8;stroke-width:3;stroke-linecap:round"/><circle cx="6" cy="16" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="26" r="2" style="fill:#e8e8e8"/><circle cx="6" cy="36" r="2" style="fill:#e8e8e8"/></svg></button>
   <span id="line"><span id="played" style="width:0"></span></span>
   <span class="p" id="cur" style="left:159px;top:538px;font-size:22px;color:#b9b9bd"></span>
   <span class="p" id="dur" style="left:1144px;top:538px;width:100px;text-align:right;font-size:22px;color:#b9b9bd"></span>
@@ -69,10 +72,31 @@ button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
     if (closing) return;
     closing = true;
     panel.className = '';
-    setTimeout(function () { send('sheet-close'); }, 260);
+    setTimeout(function () { send('sheet-close'); }, 350);
   }
   document.getElementById('back').onclick = close;
-  document.getElementById('list').onclick = close;
+  document.getElementById('list').onclick = function () { send('media-page'); };
+  // 아래로 끌어 닫기: 손가락을 따라 내려가고, 120px 넘게 내리면 닫힘, 아니면 제자리로.
+  var dragY = null, dragDy = 0, SLIDE = '-webkit-transform .34s cubic-bezier(.2, .8, .25, 1)';
+  function move(y) { panel.style.webkitTransform = panel.style.transform = y === null ? '' : 'translate3d(0,' + y + 'px,0)'; }
+  panel.addEventListener('touchstart', function (e) {
+    if (closing) return;
+    dragY = e.touches[0].screenY; dragDy = 0;
+  }, false);
+  panel.addEventListener('touchmove', function (e) {
+    if (dragY === null) return;
+    e.preventDefault();   // Chrome 30: 막지 않으면 스크롤로 가져감
+    dragDy = Math.max(0, (e.touches[0].screenY - dragY) / ((window.innerWidth || 1920) / 1920));
+    if (dragDy > 8) { panel.style.webkitTransition = 'none'; move(dragDy); }
+  }, false);
+  function endDrag() {
+    if (dragY === null) return;
+    dragY = null;
+    panel.style.webkitTransition = SLIDE;
+    if (dragDy > 120) { move(null); close(); } else move(null);
+  }
+  panel.addEventListener('touchend', endDrag, false);
+  panel.addEventListener('touchcancel', endDrag, false);
   Array.prototype.forEach.call(document.querySelectorAll('[data-act]'), function (b) {
     b.onclick = function () {
       var act = b.getAttribute('data-act');
@@ -83,7 +107,8 @@ button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
   });
   setInterval(function () { if (playing && dur > 0) { pos += 1000; progress(); } }, 1000);
   window.K8Sheet = {
-    media: function (title, artist, isPlaying, position, duration, source, device) {
+    media: function (title, artist, isPlaying, position, duration, source, device, album) {
+      document.getElementById('album').textContent = album || '앨범 정보 없음';
       playing = isPlaying === true;
       pos = position > 0 ? position : 0;
       dur = duration > 0 ? duration : 0;
@@ -104,7 +129,10 @@ button:active { background: rgba(255,255,255,.08); border-radius: 12px; }
   document.getElementById('toggle').innerHTML = PLAY;
   fit();
   window.addEventListener('resize', fit);
-  setTimeout(function () { panel.className = 'open'; }, 30);
+  // 창이 막 붙은 첫 프레임들은 그리기로 바쁘다: 두 번 그린 뒤 조금 기다렸다 올린다(바로 올리면 처음이 끊겼다).
+  requestAnimationFrame(function () { requestAnimationFrame(function () {
+    setTimeout(function () { panel.className = 'open'; }, 60);
+  }); });
 })();
 </script>
 </body>

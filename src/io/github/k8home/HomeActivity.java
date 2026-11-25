@@ -51,6 +51,8 @@ public class HomeActivity extends Activity {
     private static final String PAGE = "file:///android_asset/index.html";
     static final String EXTRA_OPEN_APPS = "io.github.k8home.extra.OPEN_APPS";
     static final String EXTRA_OPEN_MEDIA = "io.github.k8home.extra.OPEN_MEDIA";
+    /** Saved photos are loaded from this asset-looking address, answered by shouldInterceptRequest. */
+    static final String PHOTO_URL = "file:///android_asset/k8photo/";
     /** Which source the media screen should open on ("bt", "usb", "fm", ...). */
     static final String EXTRA_OPEN_MEDIA_SOURCE = "io.github.k8home.extra.OPEN_MEDIA_SOURCE";
     private static final String STOCK_PHONE = "com.hkmc.bluetooth";
@@ -87,7 +89,7 @@ public class HomeActivity extends Activity {
     private FrameLayout splitSlot;
     private StockMapPreview splitMapPreview;
     private boolean splitFrameReady;
-    private boolean activityResumed;
+    private volatile boolean activityResumed;   // projection 스레드도 읽음
     private boolean mapFrameReady;
     private WebView web;
     private SharedPreferences shortcuts;
@@ -137,6 +139,21 @@ public class HomeActivity extends Activity {
     private final BroadcastReceiver mediaReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            if (PopupGuardService.BT_POSITION.equals(action)) {
+                Object pos = intent.getExtras() == null ? null : intent.getExtras().get("POSITION");
+                if (pageReady && pos instanceof Number && ((Number) pos).longValue() >= 0 && "bt".equals(media.source)) {
+                    web.evaluateJavascript("window.K8Home.mediaPosition(" + ((Number) pos).longValue() + ")", null);
+                }
+                return;
+            }
+            if (StockPhoneBook.ACTION_PRIVACY_CHANGED.equals(action)
+                    || StockPhoneBook.ACTION_MAP_CONNECTED.equals(action)
+                    || StockPhoneBook.ACTION_MAP_STATUS.equals(action)) {
+                if (pageReady) {
+                    web.evaluateJavascript("window.K8Home && window.K8Home.phoneBookInvalidated && window.K8Home.phoneBookInvalidated()", null);
+                }
+                return;
+            }
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)
                     || BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)
                     || StockPhone.isConnectionAction(action)) {
@@ -255,6 +272,25 @@ public class HomeActivity extends Activity {
                 return true;
             }
 
+            /** Saved photos are served here as JPEG bytes (see syncPhoto); runs on a WebView worker thread. */
+            @Override public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                if (url.startsWith(StockRadio.NATURE_ART_URL)) {
+                    byte[] art = radio == null ? null : radio.natureArt(url);
+                    return art == null ? null : new android.webkit.WebResourceResponse("image/jpeg", null, new java.io.ByteArrayInputStream(art));
+                }
+                if (!url.startsWith(PHOTO_URL)) return null;
+                String target = url.substring(PHOTO_URL.length()).replaceAll("[-?].*$", "");
+                String data = shortcuts.getString("photo-" + target, "");
+                int comma = data.indexOf(',');
+                if (!data.startsWith("data:image/jpeg;base64,") || comma < 0) return null;
+                try {
+                    byte[] jpeg = Base64.decode(data.substring(comma + 1), Base64.DEFAULT);
+                    return new android.webkit.WebResourceResponse("image/jpeg", null, new java.io.ByteArrayInputStream(jpeg));
+                } catch (IllegalArgumentException bad) {
+                    return null;
+                }
+            }
+
             @Override public void onPageFinished(WebView view, String url) {
                 if (PAGE.equals(url)) {
                     pageReady = true;
@@ -321,6 +357,10 @@ public class HomeActivity extends Activity {
         StockPhone.addActions(filter);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        filter.addAction(PopupGuardService.BT_POSITION);   // 1초마다 오는 정확한 재생 위치: 가사 줄 맞추기
+        filter.addAction(StockPhoneBook.ACTION_PRIVACY_CHANGED);
+        filter.addAction(StockPhoneBook.ACTION_MAP_CONNECTED);
+        filter.addAction(StockPhoneBook.ACTION_MAP_STATUS);
         registerReceiver(mediaReceiver, filter);
         route = StockRoute.of(this);
         route.start(routeListener);
@@ -343,7 +383,7 @@ public class HomeActivity extends Activity {
             script = "window.K8Home.openHome(); window.K8Home.showPage('apps1')";
         } else if (pendingMedia) {
             script = "window.K8Home.setMediaSource(" + javascriptString(pendingMediaSource)
-                + "); window.K8Home.openHome(); window.K8Home.showPage('media')";
+                + "); window.K8Home.openMedia()";
         } else {
             script = "window.K8Home.openHome()";
         }
@@ -378,6 +418,8 @@ public class HomeActivity extends Activity {
         // 순정 라디오·자연의 소리는 "앞 화면이 순정 홈(com.android.launcher3.view.Launcher)이고 홈이 미디어 위젯 페이지(0)"면
         // 오른쪽 팝업을 띄우지 않는다(위젯이 이미 보여 준다, RadioUtils.isDisabledAVWidget). 테마가 앞에 올 때 홈 0쪽이라고 알린다.
         sendBroadcast(MediaKeys.homePageZero());
+        // 단추를 누르자마자 다른 화면(내비·플레이어)으로 가면 손 뗌이 안 와 눌림 색이 남았다: 돌아오면 지운다.
+        if (pageReady) web.evaluateJavascript("window.K8Home && window.K8Home.resumed && window.K8Home.resumed()", null);
         if (media.source.isEmpty()) syncVehicle();   // 테마가 다시 켜진 뒤 소스를 모르면(자연의 소리는 바뀔 때만 알림) 순정 모드를 읽는다
         checkPendingSavedPlace();
         syncSavedPlaces();
@@ -590,9 +632,16 @@ public class HomeActivity extends Activity {
         syncControls();
     }
 
+    /**
+     * Sends a short link, not the photo: each saved photo is ~0.7 MB of base64, and pushing four of them through
+     * evaluateJavascript at start kept Chrome 30 busy so swipes stalled (car log 2026-11-25). The link changes
+     * with the photo so the page reloads it.
+     */
     private void syncPhoto(String target) {
-        if (pageReady) web.evaluateJavascript("window.K8Home.photoChanged(" + javascriptString(target)
-            + "," + javascriptString(shortcuts.getString("photo-" + target, "")) + ")", null);
+        if (!pageReady) return;
+        String data = shortcuts.getString("photo-" + target, "");
+        String link = data.isEmpty() ? "" : PHOTO_URL + target + "-" + Integer.toHexString(data.hashCode()) + ".jpg";
+        web.evaluateJavascript("window.K8Home.photoChanged(" + javascriptString(target) + "," + javascriptString(link) + ")", null);
     }
 
     /** Sends the two switches of the general settings screen to the page. */
@@ -817,6 +866,15 @@ public class HomeActivity extends Activity {
     }
 
     public final class HomeBridge {
+        /** Home layout (cards, tile order, hidden tiles…) written at once, so an update right after a change keeps it. */
+        @JavascriptInterface public void saveDisplay(String json) {
+            if (json != null && json.length() < 200000) getSharedPreferences("display", MODE_PRIVATE).edit().putString("layout", json).commit();
+        }
+
+        @JavascriptInterface public String loadDisplay() {
+            return getSharedPreferences("display", MODE_PRIVATE).getString("layout", "");
+        }
+
         @JavascriptInterface public void setBrightness(final int level) {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
@@ -872,9 +930,23 @@ public class HomeActivity extends Activity {
             });
         }
 
-        /** Car phone book of the connected phone: "recent", "favorites" or "contacts" (StockPhoneBook, JSON). */
+        /** Car phone book of the connected phone: "recent", "favorites", "contacts" or "messages" (StockPhoneBook, JSON). */
         @JavascriptInterface public String phoneBook(String list) {
-            return phoneBook.list(String.valueOf(list));
+            return phoneBook.list(String.valueOf(list), phone.callAddress());
+        }
+
+        /** 순정 프라이버시 모드 조회·변경(BluetoothContactsProvider profile_privacy_mode). */
+        @JavascriptInterface public boolean privacyMode() {
+            return phoneBook.privacyMode();
+        }
+
+        @JavascriptInterface public boolean setPrivacyMode(boolean on) {
+            return phoneBook.setPrivacyMode(on);
+        }
+
+        /** 순정 블루투스 문자(MAP) 동기화 요청. */
+        @JavascriptInterface public void requestMessagesSync() {
+            phoneBook.requestMessagesSync();
         }
 
         /** Stock radio provider rows: "fm_stations", "am_stations" or "presets" (StockRadio). */
@@ -1174,6 +1246,10 @@ public class HomeActivity extends Activity {
             }, 1500);
         } else if ("nav-current".equals(action)) {
             if (openNavigation(true)) StockNavigation.requestWhenMapOpens(this, StockNavigation.CURRENT_POSITION);
+        } else if ("phone-messages".equals(action)) {
+            if (!open(new ComponentName(STOCK_PHONE, "com.android.contacts.MessageListActivity")) && !open(StockApps.PHONE)) {
+                toast("이 기기에서 순정 메시지 화면을 열 수 없습니다.");
+            }
         } else if ("phone-history".equals(action) || "phone-contacts".equals(action)) {
             String phoneAction = "phone-history".equals(action) ? "android.bluetooth.intent.action.RECENT_CALLS"
                 : "com.android.contacts.action.LIST_CONTACTS_WITH_PHONES";
@@ -1281,6 +1357,8 @@ public class HomeActivity extends Activity {
                     }
                 })
                 .setNegativeButton("닫기", null).show();
+        } else if ("androidauto".equals(action)) {
+            openProjectionScreen("aa");   // 순정 Android Auto 화면 바로(폰 프로젝션 설정 아님)
         } else {
             for (int i = 0; i < SHORTCUTS.length; i++) {
                 if (!SHORTCUTS[i].equals(action)) continue;
@@ -1323,8 +1401,8 @@ public class HomeActivity extends Activity {
                 if (openActivity(StockApps.BLUETOOTH_SETTINGS)) return true;
                 return openSettingsPanel(Settings.ACTION_BLUETOOTH_SETTINGS, label);
             case "projection":
-                return open(StockApps.PROJECTION) || openPackage("com.daudio.app.dipo");
-            case "settings-display":
+                openConnectedProjection();
+                return true;            case "settings-display":
                 if (openActivity(StockApps.DISPLAY)) return true;
                 return openSettingsPanel(Settings.ACTION_DISPLAY_SETTINGS, label);
             case "settings-profile":
@@ -1386,6 +1464,39 @@ public class HomeActivity extends Activity {
                 }
             })
             .setNegativeButton("취소", null).show();
+    }
+
+    /**
+     * Like the stock home: a connected Android Auto / CarPlay opens its screen (through the system-uid helper,
+     * the activities are not exported), otherwise the stock phone projection settings.
+     */
+    private void openConnectedProjection() {
+        String pkg = getSharedPreferences("projection", MODE_PRIVATE).getString("package", "");
+        final String which = "com.google.android.projection.sink".equals(pkg) ? "aa"
+            : "com.daudio.app.dipo".equals(pkg) ? "carplay" : "";
+        if (which.isEmpty()) {
+            if (!open(StockApps.PROJECTION)) openPackage("com.daudio.app.dipo");
+            return;
+        }
+        openProjectionScreen(which);
+    }
+
+    /** "aa" / "carplay" through the system-uid helper; the stock projection settings when the helper is missing. */
+    private void openProjectionScreen(final String which) {
+        new Thread(new Runnable() {
+            @Override public void run() {
+                if ("ok".equals(MediaKeys.openProjection(which))) {
+                    // 폰이 연결돼 있지 않으면 AA 화면이 바로 닫혀 테마로 돌아온다(실차): 그땐 순정 연결 설정을 연다.
+                    try { Thread.sleep(1500); } catch (InterruptedException ignored) { }
+                    if (!activityResumed) return;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        if (!open(StockApps.PROJECTION)) openPackage("com.daudio.app.dipo");
+                    }
+                });
+            }
+        }, "k8-projection").start();
     }
 
     private boolean openNavigation(boolean withBar) {

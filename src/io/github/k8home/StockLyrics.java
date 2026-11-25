@@ -30,22 +30,26 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * Lyrics for the playing Bluetooth/USB track from LRCLIB (lrclib.net, free, no key). Only title, artist and length
- * leave the car. Results (also "not found") are cached in the app's cache dir so a song is fetched once.
- * Result JSON for the page: {"synced": LRC text, "plain": text} or {"none": true}.
+ * Lyrics for the playing Bluetooth/USB track from LRCLIB (lrclib.net, free, no key), then NetEase Cloud Music
+ * (music.163.com, unofficial, has many Korean songs LRCLIB lacks). Only title, artist and length leave the car. Results (also "not found") are cached in the app's cache dir so a song is fetched once.
+ * Result JSON for the page: {"synced": LRC text, "plain": text, "album": name} or {"none": true}.
  */
 final class StockLyrics {
     interface Callback { void done(String key, String json); }
 
     private static final String TAG = "K8Lyrics";
     private static final String API = "https://lrclib.net/api/";
+    private static final String NETEASE = "https://music.163.com/api/";
+    // NetEase puts credits as timed lines ("[00:00.00] 作词 : …"); they are not lyrics.
+    private static final java.util.regex.Pattern CREDIT = java.util.regex.Pattern.compile(
+        "(?m)^\\[[^\\]]*\\][ \\t]*(作词|作曲|编曲|制作人|制作|混音|母带|监制|和声|吉他|贝斯|鼓|录音|出品|发行|词|曲)[^:：\\n]{0,8}[:：].*(\\n|$)");
     private static final String NONE = "{\"none\":true}";
 
     private final File dir;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
 
     StockLyrics(Context context) {
-        dir = new File(context.getCacheDir(), "lyrics");
+        dir = new File(context.getCacheDir(), "lyrics3");   // test60: NetEase·앨범 추가 전 저장분은 다시 찾는다
     }
 
     /** Fetches on a background thread; {@code callback} runs there too (caller moves it to the UI thread). */
@@ -72,22 +76,57 @@ final class StockLyrics {
         try {
             JSONObject hit = null;
             if (!artist.isEmpty() && seconds > 0) {
-                String body = get("get?track_name=" + enc(title) + "&artist_name=" + enc(artist) + "&duration=" + seconds);
+                String body = get(API + "get?track_name=" + enc(title) + "&artist_name=" + enc(artist) + "&duration=" + seconds);
                 if (body != null) hit = new JSONObject(body);
             }
             if (hit == null || !hasLyrics(hit)) {
                 String query = artist.isEmpty() ? "q=" + enc(title) : "track_name=" + enc(title) + "&artist_name=" + enc(artist);
-                String body = get("search?" + query);
+                String body = get(API + "search?" + query);
                 hit = body == null ? null : best(new JSONArray(body), seconds);
             }
             Log.i(TAG, "lyrics " + (hit == null ? "none" : hit.optString("syncedLyrics").isEmpty() ? "plain" : "synced"));
-            if (hit == null) return NONE;
+            if (hit == null) return netease(title, artist, seconds);
             return new JSONObject().put("synced", hit.optString("syncedLyrics", ""))
-                .put("plain", hit.optString("plainLyrics", "")).toString();
+                .put("plain", hit.optString("plainLyrics", "")).put("album", hit.optString("albumName", "")).toString();
         } catch (IOException | JSONException | RuntimeException failure) {
             Log.w(TAG, "lyrics fetch failed: " + failure);
             return null;
         }
+    }
+
+    /** NetEase search: a song with the same title and a length within 3 s (or the same artist when the length is unknown). */
+    private static String netease(String title, String artist, int seconds) throws IOException, JSONException {
+        String body = get(NETEASE + "search/get?type=1&limit=10&s=" + enc(artist.isEmpty() ? title : title + " " + artist));
+        JSONArray songs = body == null ? null : new JSONObject(body).optJSONObject("result") == null ? null
+            : new JSONObject(body).getJSONObject("result").optJSONArray("songs");
+        long id = -1;
+        String album = "";
+        for (int i = 0; songs != null && i < songs.length() && id < 0; i++) {
+            JSONObject o = songs.getJSONObject(i);
+            if (!same(o.optString("name"), title)) continue;
+            JSONArray artists = o.optJSONArray("artists");
+            boolean artistOk = artists != null && artists.length() > 0 && same(artists.getJSONObject(0).optString("name"), artist);
+            if (seconds > 0 ? Math.abs(o.optLong("duration") / 1000.0 - seconds) <= 3 : artistOk) {
+                id = o.optLong("id");
+                JSONObject al = o.optJSONObject("album");
+                album = al == null ? "" : al.optString("name", "");
+            }
+        }
+        if (id < 0) {
+            Log.i(TAG, "netease none");
+            return NONE;
+        }
+        String lyric = get(NETEASE + "song/lyric?lv=1&id=" + id);
+        JSONObject lrc = lyric == null ? null : new JSONObject(lyric).optJSONObject("lrc");
+        String text = lrc == null ? "" : CREDIT.matcher(lrc.optString("lyric", "")).replaceAll("").trim();
+        if (text.isEmpty()) return NONE;
+        boolean synced = text.matches("(?s)\\s*\\[\\d+:\\d+.*");
+        Log.i(TAG, "netease " + (synced ? "synced" : "plain"));
+        return new JSONObject().put("synced", synced ? text : "").put("plain", synced ? "" : text).put("album", album).toString();
+    }
+
+    private static boolean same(String a, String b) {
+        return a.replaceAll("\\s+", "").equalsIgnoreCase(b.replaceAll("\\s+", ""));
     }
 
     private static boolean hasLyrics(JSONObject o) {
@@ -108,12 +147,13 @@ final class StockLyrics {
     }
 
     /** Body of a 200 reply, null for 404; throws on network errors. */
-    private static String get(String path) throws IOException {
-        HttpURLConnection http = (HttpURLConnection) new URL(API + path).openConnection();
+    private static String get(String url) throws IOException {
+        HttpURLConnection http = (HttpURLConnection) new URL(url).openConnection();
         if (http instanceof HttpsURLConnection) ((HttpsURLConnection) http).setSSLSocketFactory(Tls12.INSTANCE);
         http.setConnectTimeout(8000);
         http.setReadTimeout(10000);
         http.setRequestProperty("User-Agent", "K8ccNCHome/0.5");
+        if (url.startsWith(NETEASE)) http.setRequestProperty("Referer", "https://music.163.com/");
         try {
             int code = http.getResponseCode();
             if (code == 404) return null;

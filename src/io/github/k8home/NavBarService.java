@@ -18,6 +18,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -36,6 +38,8 @@ public final class NavBarService extends Service {
     private static final String PAGE = "file:///android_asset/navbar.html";
     private static final String ROUTE_PAGE = "file:///android_asset/route_panel.html";
     private static final String SKIN_PAGE = "file:///android_asset/naviskin.html";
+    // The stock navi hides the stock split button the same way (NativeCall.controlSplitScreenStatus).
+    private static final String NAVI_SCREEN = "com.mnsoft.navi.NaviApp";
     private static final String SHEET_PAGE = "file:///android_asset/media_sheet.html";
     // 재생 상세 시트: 화면 위 62px(1920x720 기준)은 지도가 보이게 비운다(순정 ccNC 사진).
     private static final int SHEET_TOP = 62;
@@ -58,12 +62,14 @@ public final class NavBarService extends Service {
     private WebView web;
     private WebView panel;
     private WebView sheet;
+    private StockLyrics lyrics;
+    private String albumKey = "", sheetAlbum = "";
     private boolean sheetReady;
     private StockPhone phone;
     private String panelPage = "";
     private BluetoothCoverArt coverArt;
     private WebView skin;
-    private boolean skinAttached, naviBound;
+    private boolean skinAttached, naviBound, stockButtonHidden;
     private IBinder navi;
     private final ServiceConnection naviConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -146,7 +152,7 @@ public final class NavBarService extends Service {
                     endSession();
                     return;
                 }
-                syncSkin(!searchSuspended && !split);
+                syncSkin(!searchSuspended, !split);   // 손잡이는 분할 중에도 남는다
             } else if ((!searchSuspended || !navigationInFront())
                     && (attached || now >= entryDeadline)) {
                 endSession();
@@ -216,12 +222,32 @@ public final class NavBarService extends Service {
 
     /** 0.5.0-test58: ccNC split handle (a short vertical line) at the right edge of the map. A left swipe or a tap
      *  opens the stock split screen. */
-    private void syncSkin(boolean want) {
+    private void syncSkin(boolean want, boolean hideStock) {
         if (want && skin == null) {
             skin = createWebView();
             skin.setBackgroundColor(0);
             skin.setWebViewClient(new WebViewClient() {
                 @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    return true;
+                }
+            });
+            // Touch is read here, not in the page: Chrome 30 loses a swipe once the finger leaves the 60 px window.
+            skin.setOnTouchListener(new View.OnTouchListener() {
+                private float downX;
+                @Override public boolean onTouch(View view, MotionEvent event) {
+                    int act = event.getActionMasked();
+                    if (act == MotionEvent.ACTION_DOWN) downX = event.getRawX();
+                    if (act == MotionEvent.ACTION_DOWN || act == MotionEvent.ACTION_UP || act == MotionEvent.ACTION_CANCEL) {
+                        skin.evaluateJavascript("document.getElementById('stage').className='"
+                            + (act == MotionEvent.ACTION_DOWN ? "down" : "") + "'", null);
+                    }
+                    if (act != MotionEvent.ACTION_UP) return true;
+                    float dx = event.getRawX() - downX, slop = view.getWidth() * 0.4f;
+                    boolean open = splitScreenOn();
+                    // closed: tap or left swipe opens; open: tap or right swipe closes
+                    if ((open ? dx >= -slop : dx <= slop) && !requestSplitScreen(!open)) {
+                        toast("순정 분할 화면을 바꿀 수 없습니다.");
+                    }
                     return true;
                 }
             });
@@ -231,7 +257,14 @@ public final class NavBarService extends Service {
             detachSkin();
             return;
         }
-        if (skin == null || skinAttached) return;
+        if (skin == null) return;
+        if (!hideStock) {
+            showStockButton();   // 분할 중에 순정 손잡이를 끄면 순정이 분할을 닫는다(차 로그 isBtnOff). 그동안은 순정 ▶ 로 닫는다.
+        } else if (!stockButtonHidden || Boolean.TRUE.equals(split("isSplitButtonOn", new Class<?>[0]))) {
+            // 순정 회색 손잡이는 우리 창보다 높은 층이라 가린다(내비가 다시 켜도 다음 폴에서 또 끈다).
+            stockButtonHidden = Boolean.TRUE.equals(split("addBtnOffScreen", new Class<?>[] {String.class}, NAVI_SCREEN));
+        }
+        if (skinAttached) return;
         Point size = new Point();
         windows.getDefaultDisplay().getRealSize(size);
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -251,31 +284,36 @@ public final class NavBarService extends Service {
         }
     }
 
-    /** Stock SplitScreenManager.isSplitScreenOn(ignoreVR=false); false when the service is not there. */
-    private boolean splitScreenOn() {
+    /** Calls a stock SplitScreenManager method by reflection; null when the service or method is not there. */
+    private Object split(String name, Class<?>[] types, Object... args) {
         Object manager = MediaKeys.splitScreenManager(this);
-        if (manager == null) return false;
+        if (manager == null) return null;
         try {
-            return Boolean.TRUE.equals(manager.getClass().getMethod("isSplitScreenOn", boolean.class).invoke(manager, false));
+            return manager.getClass().getMethod(name, types).invoke(manager, args);
         } catch (Exception failure) {
-            return false;
+            Log.w(TAG, "Split screen call failed: " + name, failure);
+            return null;
         }
+    }
+
+    /** Stock isSplitScreenOn(ignoreVR=false). */
+    private boolean splitScreenOn() {
+        return Boolean.TRUE.equals(split("isSplitScreenOn", new Class<?>[] {boolean.class}, false));
     }
 
     /** Same request the stock split button makes: requestSplitScreenOn(isOn, isUser). */
     private boolean requestSplitScreen(boolean on) {
-        Object manager = MediaKeys.splitScreenManager(this);
-        if (manager == null) return false;
-        try {
-            return Boolean.TRUE.equals(manager.getClass().getMethod("requestSplitScreenOn", boolean.class, boolean.class)
-                .invoke(manager, on, true));
-        } catch (Exception failure) {
-            Log.w(TAG, "Split screen request failed", failure);
-            return false;
-        }
+        return Boolean.TRUE.equals(split("requestSplitScreenOn", new Class<?>[] {boolean.class, boolean.class}, on, true));
+    }
+
+    private void showStockButton() {
+        if (!stockButtonHidden) return;
+        stockButtonHidden = false;
+        split("removeBtnOffScreen", new Class<?>[] {String.class}, NAVI_SCREEN);
     }
 
     private void detachSkin() {
+        showStockButton();   // 우리 손잡이가 내려가면 순정 손잡이를 돌려준다
         if (!skinAttached) return;
         skinAttached = false;
         try {
@@ -378,10 +416,11 @@ public final class NavBarService extends Service {
         } else if ("media".equals(action)) {
             if ("bt".equals(media.source) || "usb".equals(media.source)) openSheet();
             else openThemeMedia();
-        } else if ("split-open".equals(action)) {
-            if (!requestSplitScreen(true)) toast("순정 분할 화면을 열 수 없습니다.");
         } else if ("sheet-close".equals(action)) {
             closeSheet();
+        } else if ("media-page".equals(action)) {   // 시트의 ≡: 테마 미디어 화면으로
+            closeSheet();
+            openThemeMedia();
         } else if ("route-details".equals(action) && route.snapshot().active) {
             togglePanel(ROUTE_PAGE, 432, 166);
         } else if ("route-close".equals(action)) {
@@ -517,12 +556,33 @@ public final class NavBarService extends Service {
         view.destroy();
     }
 
+    /** Album name from the lyrics lookup (LRCLIB/NetEase); the stock BT broadcast has none. Same cache key as the theme page. */
+    private void requestAlbum() {
+        String key = media.title + "\n" + media.artist;
+        if (key.equals(albumKey) || media.title.isEmpty()) return;
+        albumKey = key;
+        sheetAlbum = "";
+        if (lyrics == null) lyrics = new StockLyrics(this);
+        lyrics.request(key, media.title.trim(), media.artist.trim(), (int) (media.duration / 1000), new StockLyrics.Callback() {
+            @Override public void done(final String doneKey, final String json) {
+                handler.post(new Runnable() {
+                    @Override public void run() {
+                        if (!doneKey.equals(albumKey)) return;
+                        try { sheetAlbum = new org.json.JSONObject(json).optString("album", ""); } catch (org.json.JSONException ignored) { }
+                        pushSheet();
+                    }
+                });
+            }
+        });
+    }
+
     private void pushSheet() {
         if (sheet == null || !sheetReady) return;
+        requestAlbum();
         String device = phone == null ? "" : phone.audioDevices().optString(0, "");
         sheet.evaluateJavascript("window.K8Sheet.media(" + quote(media.title) + "," + quote(media.artist) + ","
             + Boolean.TRUE.equals(media.playing) + "," + media.position + "," + media.duration + ","
-            + quote(media.source) + "," + quote(device) + ");window.K8Sheet.cover(" + quote(coverImage) + ")", null);
+            + quote(media.source) + "," + quote(device) + "," + quote(sheetAlbum) + ");window.K8Sheet.cover(" + quote(coverImage) + ")", null);
     }
 
     private void dismissPanel() {

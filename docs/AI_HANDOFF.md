@@ -1,5 +1,61 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test60 ccNC 탭 누르면 상단바 서랍 내려오던 것, 자연의 소리 팝업 더 빨리 닫기 (2026-11-25, Claude)
+
+- 원인(실차·PC 확인): 라디오·음악·자연의 소리 ccNC 화면의 위 가운데 탭(재생 목록·가사 등, y 18~88)을 테마 상단바 `#top-bar`(z 10)가 덮고 있어 탭 대신 상단바와 그 서랍 손잡이 `#qc-open-btn`(x 876~1044)이 눌렸다. 위 48px 안 터치는 `fromTop`이라 조금만 끌려도 서랍이 내려왔다.
+- 수정: `.shell.cc-tint .top`은 pointer-events none(왼쪽 제목·오른쪽 시계만 받음), `cc-tint`에선 서랍 손잡이 숨김, `fromTop`은 `cc-m-tab` 위에서 시작한 터치면 false(`inCcTab`). 서랍은 탭 밖 위 끝에서 아래로 밀면 열린다.
+- 차 확인: 가사 탭을 누르면 가사로 바뀜, 탭에서 아래로 끌려도 서랍 안 내려옴.
+- bar_guard: media-bt·media-usb 등에서 `#qc-open-btn 사라짐`만 다름(의도). 기준값 갱신은 사용자 승인 대기. screenlayout 세로선 규칙은 가끔 한 번씩 실패(기존 들쭉날쭉).
+- 내비에서 플레이어를 눌러도 시트가 안 뜨던 것: `build.py`가 `assets/media_sheet.html`을 APK에 넣지 않았다(test57부터, 로그 `Unable to open asset URL`). 넣어서 차에서 시트가 뜨고 ⌄로 닫히는 것 확인.
+- 내비 재생 시트: 아래로 끌면 손가락을 따라 내려가고 120px 넘으면 닫힘(아니면 제자리). ≡ 는 `media-page` → 시트 닫고 테마 미디어 화면. 올라오기는 translate3d·0.34s 곡선, 첫 그리기 뒤 시작. 차 확인: 끌어 닫기·작게 끌면 복귀·≡ 로 테마 음악 화면.
+- 앨범: 순정 블루투스 위젯 방송엔 앨범이 없다(키 확인: filename·artist_name·audio_*·bluetooth_device_name 등). `PLAY_INFO`는 우리 수신기에 오지 않음. 그래서 가사 결과의 앨범(LRCLIB `albumName`, NetEase `album.name`)을 테마 음악 화면·내비 시트에 쓴다(가사 캐시 `lyrics3`). 커버는 10초 안에 못 받으면 15초 뒤 한 번 더 찾는다(`BluetoothCoverArt`). 앨범 표시는 가사 찾은 곡에서 차 확인 아직.
+- 주의(같은 날 내가 낸 사고): 시험용 로그 줄을 지우다 `registerReceiver(mediaReceiver…)`가 주석 줄에 붙어 수신기가 등록 안 됐고, 테마가 멈출 때 `unregisterReceiver`에서 죽어 하단바 서비스까지 내려갔다(약 17:42~17:52 설치본). 고침.
+- `adb install -r` 할 때마다 기본 홈 선택이 풀려 홈 버튼에서 "홈 앱 선택"이 뜬다. 선택창에서 K8 홈이 미리 선택된 상태로 "항상"을 누르면 고정된다(항목을 누르면 바로 한 번만 실행됨).
+
+- Android Auto 타일: 전엔 늘 순정 폰 프로젝션 설정(`DeviceConnectionSettings`)을 열었다. 순정 런처는 연결된 앱을 `com_phoneprojection_status_change` 방송(`PhoneProjection_PackageName`/`ClassName`)으로 알고 그 화면을 연다. AA 화면 `com.google.android.projection.sink/.ui.MainActivity`와 CarPlay `com.daudio.app.dipo/.ui.DipoActivity`는 export 안 됨(시스템 uid만, adb `am start`도 거부 확인). 그래서 `PopupGuardService`가 그 방송을 받아 패키지를 `projection` 설정에 저장하고, `projection` 동작은 AA/CarPlay면 NEMESIS 도우미(`KeyHelper`, uid system)에 `aa`/`carplay`를 보내 `am start` 한다(고정 컴포넌트만). 아니면 순정 설정. 도우미는 NEMESIS 패키지로만 바뀌므로 adb APK 설치만으로는 안 된다. 방송 extras 키는 로그 `K8HomePopup projection status`로 확인할 것. 차 확인 안 함(AA 미연결).
+- Android Auto 타일·홈 카드는 `projection`(폰 프로젝션 설정·연결 신호 의존) 대신 자기 동작 `androidauto`: `HomeActivity`가 바로 도우미 `aa`로 순정 AA 화면을 연다(도우미 없으면 순정 설정). 저장된 타일 순서는 id 만 저장해 그대로. 패키지 다시 만듦(sha256 2a8ad0e1…), 차 설치·확인 전(AA 연결 중이라 ADB 끊김).
+- 차 확인(19:16, NEMESIS 설치 성공·도우미 소켓 있음): AA 미연결에서 Android Auto 타일 → 도우미 `aa -> ok`로 AA 화면이 열렸다가 바로 닫힘 → 1.5초 뒤 테마가 앞이면 순정 연결 설정을 연다(확인). AA 연결 중 바로 AA 화면으로 가는지는 아직(연결하면 ADB 끊김).
+- 가사: 부르는 줄(`.cc-lyr p.now`)만 두 줄까지 내려 쓴다(줄높이 52, 위아래 9, 최대 122px, keep-all). 차에서 긴 줄로는 아직 확인 안 함.
+- 상단 상태 아이콘: 순정 ccNC(설명서 D-map_main)는 아이콘이 시계 숫자 높이만 하다. 1.6vw→2.4vw. 차 측정: 숫자 38px, 아이콘 35px(전 24px). bar_guard 기준값 그대로 통과.
+- 상태 아이콘 아래끝을 시계 숫자 아래끝에 맞춤(`.top-status` top .3vw). 차 측정: 둘 다 63px.
+- 전화 순정 연동(진행 중): 실차 통화 기록 `content://call_log/calls` 는 "모든 열"로 물으면 순정 기본 열의 `presentation` 이 없어 실패했다 → `StockPhoneBook`이 정한 열(`CALL_COLUMNS`)로 묻고 없는 열은 빼고 다시 묻는다. 차 확인(개수만): 최근 244, 즐겨찾기(`calls_fav`) 44. 연락처는 아직: `com.android.contacts_bt/contacts` 는 처음 `_id` 185행이었다가 나중엔 0, 순정 전화 앱(HKMC_BtPhoneContacts odex)은 `content://com.android.contacts/data/phones`(+`bt_address` 조건)를 쓴다 → 지금 그 주소로 바꿨지만 0행(폰북이 비었거나 폰 연결 상태 확인 필요). `StockPhone.callAddress()` 추가(아직 안 씀). 개인 정보라 차 로그·확인은 개수·열 이름만.
+- 남은 것(사용자 요청): 순정 ccNC 전화 화면(설명서 D-phone_calllist_main·contacts_main·keypad_main·message_list 등)과 같게, 하단 탭 연락처·키패드·메시지·프라이버시 순정 연동, 오른쪽 폰 칸에 연결된 블루투스 폰 정보.
+- 전화 탭 순정 연동(차 확인, 개수·고정 글자만 봄): 최근 통화 244줄, 키패드 "자주 통화한 번호"(calls_fav count 순 2개, 누르면 바로 검), 프라이버시 탭은 순정 `profile_privacy_mode` 상태(지금 꺼짐) + 순정 설정 열기, 오른쪽 폰 칸에 연결 폰 이름·신호·배터리. 연락처(`com.android.contacts/data/phones`)·메시지(`content://sms/inbox`, READ_SMS 추가)는 읽기는 되나 지금 0개 — 폰이 연락처·문자 접근을 차에 안 주고 있거나 다시 받기 전. 연락처 탭은 "전체 목록 (N)" 머리와 이름만(순정처럼), 메시지 탭은 순정 D-phone_message_list 처럼 왼쪽 목록·오른쪽 내용·통화/회신(회신은 순정 전화 앱). 데이터가 생긴 뒤 화면 모양은 아직 차에서 못 봄.
+- 연락처·전화 마무리(2026-11-25 20:20, Gemini 이어받기): Claude가 한도 초과로 중단한 직후 이어서 `StockPhoneBook`의 `content://com.android.contacts_bt/contacts`(185명, `phone1~5_number/type`) 변경분을 확인하고, `assets/index.html` 연락처 줄을 순정처럼 왼쪽 초성 머리글자(`contactInitialOf`) + 이름 + 오른쪽 번호별 종류 아이콘으로 다듬고, 키패드 "자주 통화한 번호" 카드 배경을 기아 회색(`rgba(255,255,255,.12)`)으로 통일, 메시지 이름 매칭을 `phone1~5_number` 전체로 넓힘. `c30_check` 0곳 → `0.5.0-test60` APK 빌드 및 차량 설치 완료. 실차 DevTools(개수·DOM만, 개인정보 미출력): 연락처 `전체 목록 (185)` 185줄(초성 20그룹·아이콘 185), 최근 통화 244줄, 키패드 자주 통화 2줄, 메시지 `content://sms/inbox` 정상 접근(error null, 0건 — 5W BT MAP은 연결 뒤 새로 받은 문자부터 저장).
+- 전화 연락처 비율·메시지·프라이버시 직접 연동·충전 표시(2026-11-25 20:36, Gemini):
+  1. **연락처 왼쪽 몰림·두 줄 꺾임 수정**: 실차 DevTools 실측에서 `<button class="phone-row">`가 Chrome 30 `flex/space-between` 버그로 909px 중 200px에 몰려 이름이 130px 두 줄로 꺾이던 것을 확인 → `<div role="button" class="phone-row">` + `position: absolute` 좌/우 고정 + 한 줄 말줄임(`.phone-row-left`/`right`)으로 수정.
+  2. **프라이버시 모드 직접 ON/OFF 연동**: `ContactsProvider.odex`(`BluetoothContactsProvider.smali`)에서 `content://com.android.contacts_bt/profile_privacy_mode` 쓰기 인자(`{userId, "1"/"0", "write"}`) 확인 → `StockPhoneBook.setPrivacyMode`·`HomeBridge.privacyMode/setPrivacyMode` + `ACTION_PRIVACY_MODE_CHANGED_ALERT` 수신 추가, 전화 프라이버시 탭에 순정 스타일 토글 스위치 구현.
+  3. **메시지 동기화 보강**: `StockPhoneBook`이 `sms/inbox` 0건 시 `content://sms`까지 조회 + `MAP_CONNECTION_START_REQUEST` 브로드캐스트(`requestMessagesSync`), `ACTION_MAP_CONNECTD`/`MAP_CONNECTED_STATUS` 수신, 빈 화면에 새로고침·순정 메시지(`MessageListActivity`) 바로가기 추가.
+  4. **휴대폰 무선충전 표시**: `SystemUI.odex`(`l.1.smali` `updateWirelessCharging`)에서 `wpc` 상태값 확정(`2`=충전 중, `3`=충전 완료, `5`=충전 오류) → `renderTopStatus` 상단바·전화 폰 상태 칸에 순정 무선충전 아이콘 + 배터리 안 번개 표시, 차량 설정 `carWpc` 문구 정리.
+  - 검사·빌드·실차 확인: `c30_check` 0곳, `0.5.0-test60` APK 설치 완료. 실차 DevTools 실측(개인정보 미출력): 연락처 `row0Left` 폭 173→706px, 이름 높이 52→24px(1줄), 오른쪽 아이콘 x 220→874(right 900/928 끝 정렬), 프라이버시 토글 정상(`hasToggle:true`, `mode:false`), 메시지 정상 접근(`error:null`, 0건).
+
+- 재배치(옮기기·숨기기) 중에만 "완료" 단추(오른쪽 아래 고정, 손가락 크기). 차 확인.
+- 가사 탭: 곡이 바뀌어도 고른 탭 유지(`requestLyrics`가 `state.musicTab`을 지우지 않음). 차 확인: 가사 탭에서 다음 곡 → 가사 탭 그대로, 긴 줄 두 줄 표시.
+- 내비 시트 ≡: `K8Home.openMedia()`(홈+`navigateTo('media')` 한 틱) → 지금 소스의 ccNC 재생 화면으로 바로. 차 확인.
+- 설정 유지: 홈 배치(`saveDisplay`)를 localStorage 와 함께 앱 설정(`display`/`layout`, `commit`)에도 저장하고 그쪽을 먼저 읽는다. Chrome 30 localStorage 는 늦게 디스크에 써서 바꾼 직후 업데이트하면 사라졌다. 처음엔 localStorage 값을 한 번 옮긴다. 차 확인: 타일 숨김 → 바로 재설치 → 숨김 유지(시험 뒤 원래 순서로 되돌림). 사용자가 숨긴 12개(dmb·findcar·weather·theme·rearcare·usbvideo·hev·connect·hmgapi·media·alerts·mods)는 그대로.
+
+- 아이콘 재배치 단추 숨김(사용자 요청): 재배치는 길게 눌러 시작, 뒤로 키(`K8Home.back`)나 앱 쪽 밖으로 넘기면 끝. 차 확인.
+
+- 카드 옮기기·숨긴 타일 재배치 화면 버벅임: 숨긴 타일 `opacity .35`, 잡은 카드 `.78`, 끌기 복사본 `.86` 반투명을 뺐다(Chrome 30·Mali 는 반투명 요소마다 따로 다시 그림). 숨긴 타일은 그림 칸 안 `.tile-shade`(불투명 어둠, ::before/::after 는 잘린 모서리가 씀)와 흐린 이름, 복사본은 backface-visibility 로 GPU 층. `updateHeldTarget`은 손가락 밑 카드가 바뀔 때만 테두리를 다시 그림(`g.lastHover`, 쪽 넘김 때 초기화). PC 미리보기로 모양 확인, 차에서 끌기 체감은 사용자 확인 필요(adb 로 길게 눌러 끌기 흉내 불가).
+- 홈 카드 동그란 단추가 청록으로 남던 것: 누르자마자 내비·플레이어로 넘어가 Chrome 30 이 손 뗌을 못 받아 `:active`/`.holding`이 남았다. `:active` 규칙을 빼고 누름은 `.holding`(문서 touchstart 에서 붙이고 touchend·touchcancel·`K8Home.resumed()`에서 지움). `HomeActivity.onResume`이 `resumed()`를 부른다.
+- `build_nemesis.py`는 bar_guard 를 돌려서 `#qc-open-btn 사라짐`(test60 의도) 기준값 갱신 승인 전엔 NEMESIS 패키지가 안 만들어진다.
+
+- 테마 첫 화면 스와이프가 뻑뻑하던 것(실차 로그): 시작 때 저장 사진 4장(각 ~0.7MB base64)을 `photoChanged`로, 자연의 소리 10장(960px, ~1.6MB)을 `natureList` 로 넘겨 Chrome 30 이 그걸 파싱·`atob`하느라 멈췄다(로그에 1.5→2.2→3.4MB 문자열 배열 증가 두 번). 이제 짧은 주소(`file:///android_asset/k8photo/<대상>-<해시>.jpg`, `…/k8nature/<번호>.jpg`)만 넘기고 `HomeActivity.shouldInterceptRequest`가 바이트로 답한다(파일 접근은 계속 꺼 둠). 차 확인: 큰 문자열 할당 사라짐, 열고 2초 뒤 스와이프부터 넘어감(1.2초 때는 아직 페이지 준비 전). 사진·자연의 소리 그림이 실제로 보이는지는 차에서 아직 확인 안 함. `Frame is dropped` 로그는 지도 미리보기 TextureView 쪽.
+
+- 자연의 소리 팝업: `MediaKeys.cancelMediaOsdAsync`가 자연의 소리를 먼저 확인해 바로 홈 0쪽 방송으로 닫고(전엔 라디오·미디어 확인 뒤), 150ms 뒤 한 번 더 확인한다. 차에서 아직 확인 안 함(자연의 소리 재생 필요).
+- 가사: LRCLIB에 없으면 NetEase(music.163.com, 비공식 API)에서 찾는다(`StockLyrics.netease`): 제목이 같고 길이 3초 안(길이 모르면 가수 같음), `作词 :` 같은 제작 줄은 지운다. 알송(`lyrics.alsong.co.kr`)은 2026-11-25 PC에서 요청을 받고 약 20초 뒤 연결을 끊어 못 씀. PC 확인: 달춤·밤양갱·Supernova 싱크 가사 있음. 캐시 폴더를 `lyrics2`로 바꿔 예전 "없음" 저장분을 다시 찾는다. 차 확인: 해외곡 LRCLIB 싱크 가사 표시(데이터 정상). 차에서 국내곡(베스티 Love Options) 가사 표시 확인.
+- 가사 줄 맞추기: 테마 재생 위치는 순정 위젯 방송에서만 받아 드문드문 갱신됐다. `HomeActivity`가 블루투스 1초 위치 방송(`CURRENT_PLAY_POSITION`)도 받아 `K8Home.mediaPosition(ms)`로 넘긴다(블루투스일 때만). 줄이 얼마나 더 맞는지는 사용자 체감 확인 필요.
+
+## 0.5.0-test59 분할 손잡이: 순정 회색 손잡이 가리기, 화면 끝에 붙임, 터치는 Java (2026-11-25, Claude, 차 확인)
+
+- 차 확인(test58): 순정 분할 버튼 창 `SS_Button_Window`(층 241000, 1840~1920 x 264~456)가 우리 TYPE_PHONE 손잡이 위에 있어 모든 터치를 순정이 받았다. 앱 권한으로 그 위에 창을 못 띄운다.
+- 그래서 순정 내비와 같은 방법 `SplitScreenManager.addBtnOffScreen("com.mnsoft.navi.NaviApp")`으로 순정 손잡이를 끈다(`NativeCall.controlSplitScreenStatus`). 손잡이 창이 내려가면 `removeBtnOffScreen`으로 돌려준다. 내비가 다시 켜면 `isSplitButtonOn()`으로 보고 다음 폴에서 또 끈다.
+- 분할 중에는 끄지 않는다: 차 로그에서 분할 중 `addBtnOffScreen`을 부르면 순정이 `isBtnOff`로 분할을 바로 닫았다. 분할 중엔 순정 ▶ 손잡이가 보이고(우리 선은 그 밑) 그걸로 닫는다. 하단바는 test58처럼 분할 중 숨김.
+- 손잡이 선은 화면 오른쪽 끝에 붙임(창 안 left 54px, 6px). 터치는 `NavBarService`의 OnTouchListener가 읽는다(Chrome 30 WebView는 손가락이 60px 창을 벗어나면 밀기를 놓칠 수 있음): 닫힘이면 누르기·왼쪽 밀기로 열기, 열림이면 누르기·오른쪽 밀기로 닫기. `split-open` 동작과 naviskin.html 의 터치 코드는 지웠다.
+- 차 확인: 순정 손잡이 숨김, 선이 끝에 붙음, 누르기·긴 왼쪽 밀기로 열림, 분할 유지, 순정 ▶로 닫으면 하단바·손잡이 복귀. 길게 눌러 재배치(test58) 정상.
+- 무선 AA 안 됨(같은 날 로그, 읽기만): 폰의 시작 요청에 차가 `STATUS_WIFI_DISABLED`(`isWifiApEnable = false`) 응답. `tcc.wifi.firmware.mode=sta`, `wpa_supplicant`만 돌고 `hostapd` 없음, `sys.kp.aa_ap` 비어 있음 — 무선 ADB용 Wi‑Fi 연결과 핫스팟 충돌. 테마와 무관.
+- 남은 확인: 눈 버튼 숨기기, ccNC 테마 설정 타일, 5W 설정 카드(설정을 바꾸므로 차에서 누르지 않음).
+
 ## 0.5.0-test58 ccNC 분할화면 손잡이, 열리면 하단바 숨김, 왼쪽 버튼 덮개 제거 (2026-11-25, Claude)
 
 - 지도 오른쪽 끝에 ccNC 분할화면 손잡이(짧은 세로선, `naviskin.html`, 창 60×220, `K8HomeSplitHandle`). 왼쪽으로 밀거나 누르면 순정 분할화면을 연다. 분할이 열리면 손잡이는 사라진다(닫기는 순정 분할 칸에서, 사용자 지정). 내비 자체의 교차로 확대 화면은 분할이 아니라 손잡이 그대로.

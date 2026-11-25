@@ -289,7 +289,12 @@ final class StockRadio {
                 int name = res.getIdentifier(sound[0], "string", NATURE);
                 if (name == 0) continue;
                 int art = sound[1].isEmpty() ? 0 : res.getIdentifier(sound[1], "drawable", NATURE);
-                out.put(new JSONObject().put("name", res.getString(name)).put("art", art == 0 ? "" : jpeg(res, art, 960)));
+                // 사진은 주소만 보낸다(바이트는 HomeActivity.shouldInterceptRequest 가 natureArt 로 답함):
+                // 960px 10장을 base64 로 넘기면 1.6MB 라 테마 첫 화면에서 스와이프가 멈췄다(실차 2026-11-25).
+                byte[] jpeg = art == 0 ? null : jpeg(res, art, 960);
+                if (jpeg != null) natureArt.put(out.length(), jpeg);
+                out.put(new JSONObject().put("name", res.getString(name))
+                    .put("art", jpeg == null ? "" : NATURE_ART_URL + out.length() + ".jpg"));
             }
         } catch (Exception failure) {
             Log.w(TAG, "nature list failed: " + failure);
@@ -299,8 +304,20 @@ final class StockRadio {
         return out.toString();
     }
 
-    /** Drawable as a data: URL, decoded at about maxWidth (the stock photos are 1~2 MB PNGs). */
-    private static String jpeg(Resources res, int id, int maxWidth) {
+    static final String NATURE_ART_URL = "file:///android_asset/k8nature/";
+    private final Map<Integer, byte[]> natureArt = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** JPEG bytes for a nature list picture link ("…/k8nature/3.jpg"), or null. */
+    byte[] natureArt(String url) {
+        try {
+            return natureArt.get(Integer.parseInt(url.substring(NATURE_ART_URL.length()).replaceAll("\\.jpg.*$", "")));
+        } catch (RuntimeException bad) {
+            return null;
+        }
+    }
+
+    /** Drawable as JPEG bytes, decoded at about maxWidth (the stock photos are 1~2 MB PNGs). */
+    private static byte[] jpeg(Resources res, int id, int maxWidth) {
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(res, id, bounds);
@@ -308,11 +325,11 @@ final class StockRadio {
         opts.inSampleSize = 1;
         while (bounds.outWidth / (opts.inSampleSize * 2) >= maxWidth) opts.inSampleSize *= 2;
         Bitmap bitmap = BitmapFactory.decodeResource(res, id, opts);
-        if (bitmap == null) return "";
+        if (bitmap == null) return null;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
         bitmap.recycle();
-        return "data:image/jpeg;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
+        return out.toByteArray();
     }
 
     /** Stock current audio mode (ModeManager.getCurrentMode, same as the stock home widget), -1 when unknown. */

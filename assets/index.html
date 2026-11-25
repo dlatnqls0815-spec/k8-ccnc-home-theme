@@ -49,6 +49,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   left: 0; right: 0; padding: 0 2.2%;
   background: #000000;
 }
+/* test60: ccNC 라디오·음악·자연의 소리는 위 가운데에 탭(재생 목록·가사 등)이 있다. 상단바가 그 위를 덮어 탭 대신
+   상단바 손잡이가 눌려 서랍이 내려왔다(실차). 가운데는 터치를 탭으로 넘기고 손잡이는 숨긴다(서랍은 탭 밖에서 아래로 밀면 열림). */
+.shell.cc-tint .top { pointer-events: none; }
+.shell.cc-tint .top > .top-left, .shell.cc-tint .top > .top-right { pointer-events: auto; }
+.shell.cc-tint #qc-open-btn { display: none; }
 /* In navigation detail, map fills full top and clock floats top-right (online_navi.jpeg & Map_1.png) */
 .shell.in-navi .top {
   background: transparent; pointer-events: none;
@@ -255,8 +260,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .circle-btn.warm-ring {
   border-color: rgba(196, 152, 116, 0.68);
 }
-/* 터치 화면은 :hover 가 손을 뗀 뒤에도 남아 멈춤 버튼이 계속 청록이었다: 누르는 동안(:active)만. */
-.circle-btn[aria-pressed="true"], .circle-btn:active {
+/* 터치 화면은 :hover 가 손을 뗀 뒤에도 남아 멈춤 버튼이 계속 청록이었다: 누르는 동안만.
+   test60: :active 도 누르자마자 다른 화면으로 가면 Chrome 30 에서 남았다 → 누름은 .holding(손 뗌·화면 복귀 때 지움). */
+.circle-btn[aria-pressed="true"] {
   background: rgba(83, 215, 192, 0.18);
   border-color: #53d7c0; color: #fff;
 }
@@ -316,7 +322,11 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 .apps-view.reordering .reorder-arrows { display: inline-flex; }
 /* 숨긴 타일: 평소엔 안 보이고, 아이콘 재배치 때만 맨 뒤에 흐리게. 눈 버튼으로 숨기기/되살리기. */
-.app-tile.tile-hidden { opacity: .35; }
+/* test60: 반투명(opacity)은 Chrome 30·Mali 에서 타일마다 따로 다시 그려 재배치 화면이 버벅였다 → 불투명 어둠 덮개. */
+/* (::before·::after 는 잘린 모서리가 쓴다 → 그림 칸 안에 덮개 span) */
+.app-tile.tile-hidden .app-tile-art { position: relative; }
+.tile-shade { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,.62); pointer-events: none; }
+.app-tile.tile-hidden .app-tile-caption strong { color: #6b6b6b; }
 .reorder-btn[data-hide] svg { display: block; width: 26px; height: 26px; margin: auto; fill: none; stroke: currentColor; stroke-width: 2; }
 .reorder-btn {
   width: 26px; height: 26px; border-radius: 4px;
@@ -348,7 +358,8 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .pager-bar[aria-current="true"] {
   background: #f0f6ff; width: 28px; width: 33.28px; /*c30*/ width: clamp(28px, 2.6vw, 44px);
 }
-.pager-nav-btn, .pager-bar[data-page="standby"], .pager-tools > .pager-tool-btn:not(#reorder-toggle-btn) { display: none; }
+/* test60: 아이콘 재배치 단추도 숨김(사용자 요청). 재배치는 길게 눌러 시작, 뒤로 키나 앱 쪽 밖으로 넘기면 끝. */
+.pager-nav-btn, .pager-bar[data-page="standby"], .pager-tools > .pager-tool-btn { display: none; }
 .pager-tools {
   position: absolute; right: 0; display: flex; align-items: center; gap: 6px; opacity: .78;
 }
@@ -361,6 +372,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .pager-tool-btn[aria-pressed="true"] {
   background: rgba(43, 183, 155, 0.25); border-color: #53d7c0; color: #fff;
 }
+/* test60: 재배치(옮기기·숨기기) 중에만 손가락 크기 "완료" 단추를 보인다. */
+.pager-tools > #reorder-toggle-btn[aria-pressed="true"]:not([hidden]) { display: block; position: fixed; right: 1.6vw; bottom: 6px; z-index: 30;
+  padding: 8px 34px; font-size: 24px; border-radius: 8px; background: #1e8a79; color: #fff; }   /* 하단 띠 아래로 잘려 화면 안쪽에 고정 */
 
 /* Detail Screen Layout (Main Area + Collapsible Right Split-Screen Widget) */
 .detail-view {
@@ -638,6 +652,30 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   display: flex; align-items: stretch; gap: 2%;
 }
 /* 3) Phone (Call History) Detail View (Phone_callhistory_3.png) */
+/* test60: 순정 ccNC 전화 — 목록 머리, 메시지 두 칸, 폰 칸 신호·배터리 */
+.phone-list-head { padding: 14px 22px 6px; font-size: 22px; color: #b9b2ab; }
+.msg-split { display: flex; height: 100%; }
+.msg-list { width: 38%; overflow-y: auto; border-right: 1px solid rgba(255,255,255,.08); }
+.msg-row { display: block; width: 100%; text-align: left; padding: 14px 22px; border: 0; border-bottom: 1px solid rgba(255,255,255,.06); background: none; color: #e9e4df; }
+.msg-row strong { display: block; font-size: 24px; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg-row small { font-size: 19px; color: #a39b93; }
+.msg-row.on { background: rgba(255,255,255,.08); }
+.msg-row.unread strong { color: #fff; font-weight: bold; }
+.msg-detail { flex: 1; display: flex; flex-direction: column; padding: 18px 26px; min-width: 0; }
+.msg-from { font-size: 26px; color: #fff; margin-bottom: 14px; }
+.msg-body { flex: 1; overflow-y: auto; font-size: 24px; line-height: 1.5; color: #e2ddd8; white-space: pre-wrap; word-break: break-all; }
+.msg-actions { display: flex; padding-top: 12px; }
+.msg-actions button + button { margin-left: 12px; }   /* Chrome 30: flex gap 없음 */
+.msg-actions button { flex: 1; height: 54px; border: 0; border-radius: 6px; background: #3a3633; color: #f2eee9; font-size: 22px; }
+.freq-box { margin-top: 16px; background: #1f1f1f; background: rgba(255,255,255,.12); border-radius: 6px; }
+.freq-head { padding: 12px 18px 4px; font-size: 19px; color: #a8afb7; }
+.freq-row { display: block; width: 100%; text-align: left; padding: 10px 18px; border: 0; border-top: 1px solid rgba(255,255,255,.06); background: none; color: #f0f0f0; }
+.freq-row strong { display: block; font-size: 23px; font-weight: 400; }
+.freq-row small { font-size: 19px; color: #a8afb7; }
+.contact-initial { display: inline-block; width: 2.4vw; text-align: center; font-size: 1.55vw; color: #a8afb7; font-weight: 400; }
+.phone-device-status { display: flex; justify-content: center; margin-top: 10px; color: #dfe5ec; }
+.phone-device-status svg + svg { margin-left: 10px; }
+.phone-device-status svg { width: 2vw; height: 2vw; fill: none; stroke: currentColor; stroke-width: 1.8; }
 .phone-list-box {
   flex: 1; background: #1f1f20; border-radius: 8px;
   border: 1px solid rgba(255,255,255,.14);
@@ -1054,9 +1092,10 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .deck.is-sliding { overflow: hidden; }
 .deck > .pager-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; -webkit-backface-visibility: hidden; }
 .map-snap-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: 1; }
-.card-held { outline: 3px solid #a4d5f8; outline-offset: -4px; opacity: .78; }
+.card-held { outline: 3px solid #a4d5f8; outline-offset: -4px; }
 .card-target { outline: 3px solid #7fa6c2; outline-offset: -4px; }
-.card-drag-copy { position: fixed !important; pointer-events: none; z-index: 50; margin: 0; opacity: .86; transition: none; }
+.card-drag-copy { position: fixed !important; pointer-events: none; z-index: 50; margin: 0; transition: none;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; }   /* 반투명 빼고 GPU 층으로만 움직인다 */
 .theme-control { min-height: 44px; margin: 5px; padding: 6px 14px; border: 1px solid #638195; border-radius: 8px; background: #213346; color: #f2f7fc; }
 .theme-control[aria-pressed=true] { background: #386888; }
 .theme-knob { margin: 12px 0; }
@@ -1285,7 +1324,10 @@ button.detail-settings-row[data-driver][aria-pressed=true]:after { content: '✓
 .device-switch-btn .ico { width: 1.25vw !important; height: 1.25vw !important; }
 .clock { font-size: 2.85vw; }
 .clock small { font-size: .52em; }
-.top-status svg { width: 1.6vw; height: 1.6vw; }
+/* test60: 순정 ccNC 는 상태 아이콘이 시계 숫자 높이만 하다(설명서 D-map_main). 1.6vw 는 숫자 38px 에 아이콘 24px 로 작았다. */
+.top-status svg { width: 2.4vw; height: 2.4vw; }
+/* 차 측정: 시계 숫자 아래끝 63px, 아이콘 아래끝 57px → 아이콘을 0.3vw(약 6px) 내려 아래를 맞춘다. */
+.top-status { position: relative; top: .3vw; }
 .top-tab { font-size: 1.5vw; }
 .sl-tab { font-size: 1.88vw; min-height: 4.95vw; padding: .6vw 1vw .6vw 2.3vw; display: flex; align-items: center; }
 .sl-tab[aria-selected="true"]::before { left: .3vw; width: .5vw; height: 2.1vw; }
@@ -2136,7 +2178,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .cc-lyr { padding: 34px 48px 0; }
 .cc-lyr p { margin: 0; font-size: 30px; line-height: 70px; color: #8a94a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cc-lyr p.past { color: #5d6672; }
-.cc-lyr p.now { color: #fff; font-size: 40px; font-weight: bold; }
+/* test60: 부르는 줄은 두 줄까지 내려 쓴다(한 줄이면 긴 가사가 "…"로 잘렸다). 한 줄일 땐 높이 70 그대로. */
+.cc-lyr p.now { color: #fff; font-size: 40px; font-weight: bold; white-space: normal; word-break: keep-all;
+  line-height: 52px; padding: 9px 0; max-height: 122px; }
 .cc-lyr.plain p { white-space: normal; line-height: 52px; color: #d0d4d9; }
 /* 0.5.0-test57: 재생 상세는 ccNC 처럼 지금 화면 위로 밑에서 올라오는 시트(차 사진: 위 62px 은 뒤 화면이 보임, 위 모서리 둥긂). */
 .cc-sheet { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 60; pointer-events: none; overflow: hidden;
@@ -2166,7 +2210,38 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .cc-k-art { left: 1503px; top: 186px; width: 327px; height: 327px; overflow: hidden; border: 0; padding: 0; background-color: #1a1a1a; background-position: center; background-size: cover; background-repeat: no-repeat; }
 .cc-k-art img, .cc-k-art svg { display: block; width: 100%; height: 100%; }
 /* 전화 목록 칸: 설명서 갈색은 강조 덧칠이라 음악 기기 카드와 같은 회색 카드(기아 검정 바탕). */
-.phone-list-box { background: #1f1f1f; background: rgba(255, 255, 255, .12); border: 0; border-radius: 6px; }
+.phone-list-box { background: #1f1f1f; background: rgba(255, 255, 255, .12); border: 0; border-radius: 6px; display: block; overflow-y: auto; overflow-x: hidden; }
+/* Chrome 30 은 <button> 안 flex/space-between 을 깨뜨려 연락처가 왼쪽으로 몰리고 두 줄로 꺾였다.
+   전화 목록 줄은 position/absolute 좌우 고정과 한 줄 말줄임으로 비율을 맞춘다. */
+.phone-list-head { display: block; padding: 1vw 2.2vw .5vw; font-size: 1.45vw; color: #a8afb7; }
+.phone-row { position: relative; display: block; width: 100%; height: 6.45vw; min-height: 56px; padding: 0; border: 0; border-bottom: 1px solid rgba(255,255,255,.08); background: none; text-align: left; cursor: pointer; }
+.phone-row-left { position: absolute; left: 2.2vw; right: 18vw; top: 0; height: 6.45vw; line-height: 6.45vw; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.phone-row.is-contact .phone-row-left { right: 14vw; }
+.phone-row-left .call-dir, .phone-row-left .contact-initial { display: inline-block; vertical-align: middle; margin-right: 1.4vw; }
+.phone-row-left .contact-initial { width: 2.4vw; text-align: center; font-size: 1.55vw; color: #a8afb7; font-weight: 400; }
+.phone-row-left .call-name { display: inline; vertical-align: middle; font-size: 1.65vw; font-weight: 400; color: #eeeeee; white-space: nowrap; }
+.phone-row-right { position: absolute; right: 2.2vw; top: 0; height: 6.45vw; line-height: 6.45vw; display: block; white-space: nowrap; text-align: right; color: #9a9a9a; font-size: 1.35vw; }
+.phone-row-right > * { display: inline-block; vertical-align: middle; }
+.phone-row-right > * + * { margin-left: 1vw; }
+.phone-row-right span { margin-left: 1.6vw; }
+.legacy .phone-row-left > * + * { margin-left: 0; }
+.legacy .phone-row-right > * + * { margin-left: 1vw; }
+/* 프라이버시 모드 직접 토글(순정 D-settings_connection_privacy) */
+.privacy-pane { padding: 2.4vw 2.8vw; color: #f0f0f0; }
+.privacy-toggle-row { display: block; width: 100%; padding: 1.6vw 0; border: 0; border-bottom: 1px solid rgba(255,255,255,.1); background: none; text-align: left; color: #f0f0f0; cursor: pointer; }
+.privacy-toggle-head { display: block; }
+.privacy-switch { position: relative; display: inline-block; vertical-align: middle; width: 4.8vw; height: 2.2vw; border-radius: 1.1vw; background: #4a4e54; margin-right: 1.4vw; }
+.privacy-switch.on { background: #1e8a79; }
+.privacy-switch i { position: absolute; left: .2vw; top: .2vw; width: 1.8vw; height: 1.8vw; border-radius: 50%; background: #fff; display: block; }
+.privacy-switch.on i { left: 2.8vw; }
+.privacy-title { display: inline-block; vertical-align: middle; font-size: 1.85vw; font-weight: 400; color: #f4f4f4; }
+.privacy-state { display: inline-block; vertical-align: middle; margin-left: 1vw; font-size: 1.4vw; color: #2fae9c; }
+.privacy-desc { display: block; margin: 1.1vw 0 0 6.2vw; font-size: 1.3vw; line-height: 1.5; color: #9aa1a9; white-space: normal; }
+.privacy-sub-btn { display: inline-block; margin-top: 2vw; padding: .9vw 1.8vw; border: 1px solid rgba(255,255,255,.16); border-radius: 6px; background: rgba(255,255,255,.06); color: #e2e6eb; font-size: 1.35vw; cursor: pointer; }
+.msg-empty-btns { margin-top: 14px; }
+.msg-empty-btns button + button { margin-left: 12px; }
+.top-status .is-charge, .phone-device-status .is-charge { color: #2fae9c; }
+.phone-device-status .is-warn { color: #f0a33c; }
 .theme-state .ico { color: #2fae9c; }
 .cc-k-tabline { left: 520px; top: 88px; width: 910px; height: 2px; background: #2a2a2a; }
 .cc-m-dev { left: 64px; top: 104px; width: 360px; font-size: 32px; color: #9a9ca2; overflow: hidden; text-overflow: ellipsis; }
@@ -2550,6 +2625,7 @@ button.detail-settings-row.switch-row .stock-row-note {
               </g>
             </svg>
             <strong class="phone-device-label" style="font-size: 17.28px; /*c30*/ font-size:clamp(15px,1.35vw,23px);color:#e4ebf3" id="phone-device-label">Phone Name</strong>
+            <div class="phone-device-status" id="phone-device-status"></div>
           </aside>
         </div>
 
@@ -2799,35 +2875,34 @@ button.detail-settings-row.switch-row .stock-row-note {
       { name: '우리 집', type: 'home', time: '02:18 PM', dir: 'in' }
     ],
 
-    // All Apps 12 tiles across 2 pages (5W mod video 6.2s, 14.2s, 16.5s)
+    // All Apps 기본 타일 순서(보이는 13개 → 숨김 12개; 재배치 눈 버튼으로 언제든 숨김 해제 가능)
     appTiles: [
-      { id: 'aa', label: 'Android Auto', color: '#3d7865', badge: '연결됨', action: 'projection' },
+      { id: 'aa', label: 'Android Auto', color: '#3d7865', badge: '연결됨', action: 'androidauto' },   // 순정 Android Auto 화면(폰 프로젝션 설정 아님)
       { id: 'navi', label: '지도', color: '#5c5b71', action: 'navi' },
       { id: 'search', label: '검색/경로', color: '#786752', action: 'search' },
       { id: 'phone', label: '전화', color: '#53676c', action: 'phone' },
       { id: 'projection', label: '폰 프로젝션', color: '#5d5c6f', action: 'projection' },
-      { id: 'voicememo', label: '음성 메모', color: '#6e5e4d', action: 'voicememo' },
       { id: 'settings', label: '설정', color: '#556777', action: 'settings' },
       { id: 'ccnctheme', label: 'ccNC 테마 설정', color: '#555', action: 'themesettings' },
-      { id: 'media', label: '미디어', color: '#5b5a70', action: 'media' },
-      { id: 'connect', label: 'Kia Connect', color: '#766652', action: 'connect' },
-      { id: 'alerts', label: '알림', color: '#53686d', action: 'alerts' },
-      { id: 'hmgapi', label: 'HMG API', color: '#5c5b6e', action: 'configure' },
-      { id: 'mods', label: '모드', color: '#6e5e4d', action: 'screenlayout' },
       { id: 'nemesis', label: '네메시스', color: '#505b70', action: 'nemesis' },
       { id: 'mydrive', label: 'K8 마이드라이브', color: '#536d66', action: 'nemesis-mydrive' },
       { id: 'youtube', label: '유튜브', color: '#704d54', action: 'nemesis-youtube' },
-      // Stock apps installed on the K8 (hmgapi app list) that the theme had no tile for.
       { id: 'dvrs', label: '빌트인 캠', color: '#555', action: 'pkg:com.daudio.app.dvrs' },
-      { id: 'hev', label: '하이브리드', color: '#555', action: 'hybrid' },
-      { id: 'dmb', label: 'DMB', color: '#555', action: 'pkg:com.daudio.av.app.dmb' },
-      { id: 'usbvideo', label: 'USB 동영상', color: '#555', action: 'pkg:com.daudio.av.app.usbvideo' },
       { id: 'streaming', label: '음악 스트리밍', color: '#555', action: 'pkg:com.daudio.app.musicstreaming' },
-      { id: 'rearcare', label: '후석 케어', color: '#555', action: 'pkg:com.android.rear_care' },
+      { id: 'voicememo', label: '음성 메모', color: '#6e5e4d', action: 'voicememo' },
+      // 기본 숨김 12개 (재배치 화면에서 눈 버튼으로 표시 전환 가능)
+      { id: 'dmb', label: 'DMB', color: '#555', action: 'pkg:com.daudio.av.app.dmb' },
       { id: 'findcar', label: '주차 위치', color: '#555', action: 'pkg:com.daudio.app.findmyvehicle' },
+      { id: 'weather', label: '날씨', color: '#555', action: 'weather' },
       { id: 'theme', label: '테마', color: '#555', action: 'pkg:com.android.themesettings' },
-      // 0.5.0-test18: ccNC 설명서 모양의 날씨 화면(D-weather_main.png).
-      { id: 'weather', label: '날씨', color: '#555', action: 'weather' }
+      { id: 'rearcare', label: '후석 케어', color: '#555', action: 'pkg:com.android.rear_care' },
+      { id: 'usbvideo', label: 'USB 동영상', color: '#555', action: 'pkg:com.daudio.av.app.usbvideo' },
+      { id: 'hev', label: '하이브리드', color: '#555', action: 'hybrid' },
+      { id: 'connect', label: 'Kia Connect', color: '#766652', action: 'connect' },
+      { id: 'hmgapi', label: 'HMG API', color: '#5c5b6e', action: 'configure' },
+      { id: 'media', label: '미디어', color: '#5b5a70', action: 'media' },
+      { id: 'alerts', label: '알림', color: '#53686d', action: 'alerts' },
+      { id: 'mods', label: '모드', color: '#6e5e4d', action: 'screenlayout' }
     ],
 
     // Settings & Split-screen Widget state (Settings_screenlayout_7.png)
@@ -2871,7 +2946,7 @@ var stockSub = '';
   var searchRecent = [];
   var profileMode = 'detail';
   /* Switches that the native side owns: boot auto start and the bar over the stock navigation. */
-  var flags = { autoStart:false, navBar:false, corners:false, naviSkin:false, stockWrite:false, soundWrite:false, customKeyHome:false };
+  var flags = { autoStart:true, navBar:true, corners:true, naviSkin:false, stockWrite:false, soundWrite:true, customKeyHome:true };
   var profileSelected = 0;
   var editingProfileName = false;
   var standbyClockOptions = false;
@@ -2929,7 +3004,7 @@ var stockSub = '';
       carFuelWarn: v.fuelLow === true ? '연료 부족' : v.fuelLow === false ? '정상' : '',
       carValet: typeof v.valet === 'boolean' ? (v.valet ? '사용 중' : '꺼짐') : '',
       carCoasting: n(v.ecoCoasting) ? (v.ecoCoasting === 0 ? '꺼짐' : '켜짐') : '',
-      carWpc: n(v.wpc) && v.wpc !== 7 ? (v.wpc === 0 ? '알림 없음' : '알림 ' + v.wpc) : '',
+      carWpc: n(v.wpc) && v.wpc !== 7 ? ({0:'대기', 1:'대기', 2:'충전 중', 3:'충전 완료', 5:'충전 오류'}[v.wpc] || '상태 ' + v.wpc) : '',
       carDriveMode: typeof v.driveMode === 'string' ? (DRIVE_MODE_NAMES[v.driveMode] || v.driveMode) : '',
       carPhoneSignal: n(v.phoneSignal) ? v.phoneSignal + ' / 5' : '',
       carPhoneBattery: n(v.phoneBattery) ? v.phoneBattery + ' / 5' : ''
@@ -2992,7 +3067,7 @@ var stockSub = '';
     document.documentElement.className = 'legacy';
   }
   /* 숨긴 앱 타일(id). state.appTiles 는 늘 "보이는 것 → 숨긴 것" 순서라 보이는 타일의 번호(data-idx)가 그대로 맞다. */
-  var hiddenTiles = [];
+  var hiddenTiles = ['dmb', 'findcar', 'weather', 'theme', 'rearcare', 'usbvideo', 'hev', 'connect', 'hmgapi', 'media', 'alerts', 'mods'];
   function tileHidden(tile) { return hiddenTiles.indexOf(tile.id) >= 0; }
   function sortHiddenLast() {
     state.appTiles = state.appTiles.filter(function (t) { return !tileHidden(t); })
@@ -3024,6 +3099,7 @@ var stockSub = '';
   function setReordering(on) {
     state.reordering = on;
     document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', String(on));
+    document.getElementById('reorder-toggle-btn').textContent = on ? '완료' : '아이콘 재배치';
     invalidateAppsCache();   // 숨긴 타일을 보이거나 빼려면 다시 그린다
     if (isAppsPage(state.page)) {
       if (!appsPageUsed(state.page)) showPage(lastAppsPage());
@@ -3174,7 +3250,7 @@ var stockSub = '';
     invalidateAppsCache();
     scheduleAppsWarmup(260);
     try {
-      localStorage.setItem(saveKey, JSON.stringify({
+      var saved = JSON.stringify({
         design: 2, bgMode: state.bgMode, graphicStyle: state.graphicStyle, gaugeStyle: state.gaugeStyle,
         standbyMode: state.standbyMode, settingsGrid6x1: state.settingsGrid6x1, clock24: state.clock24,
         standbyClock:state.standbyClock, warmth:state.warmth,
@@ -3184,12 +3260,18 @@ var stockSub = '';
         homeThirdTile: state.homeThirdTile,
         tiles: state.appTiles.map(function (item) { return item.id; }), hiddenTiles: hiddenTiles,
         widgets: state.splitWidgets.map(function (item) { return { id:item.id, enabled:item.enabled }; })
-      }));
+      });
+      localStorage.setItem(saveKey, saved);
+      // test60: Chrome 30 localStorage 는 디스크에 늦게 써서 업데이트로 앱이 곧 끝나면 바뀐 배치가 사라졌다 → 앱 설정에도 바로 저장.
+      if (window.K8Host && window.K8Host.saveDisplay) window.K8Host.saveDisplay(saved);
     } catch (ignored) {}
   }
   function restoreDisplay() {
     try {
-      var data = JSON.parse(localStorage.getItem(saveKey) || '{}');
+      var hostSaved = window.K8Host && window.K8Host.loadDisplay ? window.K8Host.loadDisplay() : '';
+      var localSaved = localStorage.getItem(saveKey) || '';
+      if (!hostSaved && localSaved && window.K8Host && window.K8Host.saveDisplay) window.K8Host.saveDisplay(localSaved);   // 처음 한 번 옮겨 둔다
+      var data = JSON.parse(hostSaved || localSaved || '{}');
       var bg = ['blue','dark'];
       if (data.design === 2 && bg.indexOf(data.bgMode) >= 0) state.bgMode = data.bgMode;
       if (['A','B','C'].indexOf(data.graphicStyle) >= 0) state.graphicStyle = data.graphicStyle;
@@ -3779,6 +3861,7 @@ var stockSub = '';
       el.innerHTML =
         '<div class="app-tile-art">' + badgeHtml +
           '<canvas data-tile-id="' + tile.id + '" data-color="' + tile.color + '"></canvas>' +
+          (tileHidden(tile) ? '<span class="tile-shade"></span>' : '') +
         '</div>' +
         '<div class="app-tile-caption">' +
           '<strong>' + tile.label + '</strong>' +
@@ -3877,7 +3960,7 @@ var stockSub = '';
       navigateTo(tile.action === 'voicememo' ? 'memo' : tile.action);
       return;
     }
-    if (['projection','configure','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0 ||
+    if (['projection','androidauto','configure','connect','alerts','nemesis','nemesis-mydrive','nemesis-youtube'].indexOf(tile.action) >= 0 ||
         tile.action.indexOf('pkg:') === 0) {
       if (!inVehicle && tile.action.indexOf('pkg:') === 0) { showNotice(tile.label + ' · 차에서 순정 앱을 엽니다'); return; }
       host(tile.action);
@@ -3981,7 +4064,7 @@ var stockSub = '';
           '<button type="button" data-dial-settings aria-label="기기 연결">⚙</button>' +
           '<button type="button" data-dial-confirm aria-label="전화 걸기"><svg class="ico" viewBox="0 0 24 24"><path d="M6.5 5 10 8.5 8 11a10 10 0 0 0 5 5l2.5-2L19 17.5c-.5 2-2 3-3.8 3C8.5 19.5 4.5 15.5 3.5 8.8 3.5 7 4.5 5.5 6.5 5z"/></svg></button></div></div>' +
           '<div class="dial-panel"><label for="theme-phone-number">전화번호 입력</label>' +
-          '<input class="phone-dial" id="theme-phone-number" type="tel" maxlength="24"><p>초록 단추를 누르면 연결된 휴대폰으로 바로 겁니다.</p></div></div>';
+          '<input class="phone-dial" id="theme-phone-number" type="tel" maxlength="24">' + frequentCallsHtml() + '</div></div>';
         var input = list.querySelector('input');
         input.value = dialNumber;
         input.oninput = function () { dialNumber = input.value; };
@@ -4005,10 +4088,42 @@ var stockSub = '';
           else if (inVehicle) window.K8Host.dial(number);
           else showNotice('전화 앱은 차량용 APK에서 열립니다.');
         };
+        Array.prototype.forEach.call(list.querySelectorAll('.freq-row'), function (row) {
+          row.onclick = function () { if (window.K8Host) window.K8Host.dial(row.getAttribute('data-call').replace(/[^0-9*#+]/g, '')); };
+        });
         return;
     }
     if (livePreview && (state.phoneTab === 'history' || state.phoneTab === 'contacts')) {
       renderPhoneBook(list, state.phoneTab === 'history' ? 'recent' : 'contacts');
+      return;
+    }
+    if (livePreview && state.phoneTab === 'messages') { renderPhoneMessages(list); return; }
+    if (livePreview && state.phoneTab === 'privacy') {
+      var pvOn = (window.K8Host && window.K8Host.privacyMode) ? !!window.K8Host.privacyMode() : !!phoneBookData('recent').privacy;
+      list.innerHTML = '<div class="privacy-pane">' +
+        '<button type="button" class="privacy-toggle-row" id="privacy-toggle-btn" aria-pressed="' + pvOn + '">' +
+          '<span class="privacy-toggle-head">' +
+            '<span class="privacy-switch' + (pvOn ? ' on' : '') + '"><i></i></span>' +
+            '<span class="privacy-title">프라이버시 모드</span>' +
+            '<span class="privacy-state">' + (pvOn ? '켜짐' : '꺼짐') + '</span>' +
+          '</span>' +
+          '<span class="privacy-desc">사생활 보호를 위해 프라이버시 모드로 설정합니다. 전화번호부·최근 통화·메시지 등 사적인 정보가 화면에 표시되지 않습니다.</span>' +
+        '</button>' +
+        '<button type="button" class="privacy-sub-btn" id="privacy-stock-btn">순정 프라이버시 설정 열기</button>' +
+      '</div>';
+      var tBtn = document.getElementById('privacy-toggle-btn');
+      if (tBtn) tBtn.onclick = function () {
+        if (window.K8Host && window.K8Host.setPrivacyMode) {
+          var nextOn = !!window.K8Host.setPrivacyMode(!pvOn);
+          phoneBookCache = {};
+          showNotice(nextOn ? '프라이버시 모드를 켰습니다.' : '프라이버시 모드를 껐습니다.');
+          renderPhoneStage();
+        } else {
+          host('settings-devices');
+        }
+      };
+      var sBtn = document.getElementById('privacy-stock-btn');
+      if (sBtn) sBtn.onclick = function () { host('settings-devices'); };
       return;
     }
     if (livePreview) {
@@ -4068,34 +4183,76 @@ var stockSub = '';
     if (clockUses24Hours()) return h + ':' + m;
     return ((h % 12) || 12) + ':' + m + (h < 12 ? ' AM' : ' PM');
   }
+  function contactInitialOf(label) {
+    var s = String(label || '').trim();
+    if (!s) return '#';
+    var code = s.charCodeAt(0);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      return 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'.charAt(Math.floor((code - 0xAC00) / 588));
+    }
+    var ch = s.charAt(0).toUpperCase();
+    return (ch >= 'A' && ch <= 'Z') ? ch : '#';
+  }
   function phoneBookRowsHtml(kind, data) {
     // 통화 방향: 1 받음, 2 건 전화, 3 부재중(Android CallLog.Calls.TYPE). 번호 종류: 1 집, 2 휴대폰, 3 회사.
     var typeOf = {'1':'home', '2':'mobile', '3':'office'};
-    var html = '';
+    var html = '', prevInitial = '';
     (data.rows || []).forEach(function (r) {
-      var number = phonePick(r, ['number', 'phone_number', 'data1', 'tel', 'phonenumber']);
+      var number = phonePick(r, ['number', 'phone_number', 'phone1_number', 'phone2_number', 'phone3_number', 'phone4_number', 'phone5_number', 'data1', 'tel', 'phonenumber']);
       if (!number) return;
       var name = phonePick(r, ['name', 'display_name', 'cached_name', 'contact_name', 'fullname']);
       var dir = String(phonePick(r, ['type', 'calltype', 'call_type']));
       var missed = kind === 'recent' && dir === '3';
-      var arrow = kind !== 'recent' ? '' : dir === '2'
-        ? '<path d="M13.5 6.5h7m-2.6-2.6 2.6 2.6-2.6 2.6" style="fill:none;stroke:#5bb974;stroke-width:1.9"/>'
-        : '<path d="M20.5 3.5l-7 7m0-4.6v4.6h4.6" style="fill:none;stroke:' + (missed ? '#e2554f' : '#5b9bd5') + ';stroke-width:1.9"/>';
-      html += '<button type="button" class="phone-row' + (missed ? ' missed' : '') + '" data-call="' + escapeText(number) + '">' +
-        '<div class="phone-row-left"><svg class="ico call-dir" viewBox="0 0 24 24">' +
+      var leftMark = '';
+      if (kind === 'contacts') {
+        var ini = contactInitialOf(name || number);
+        leftMark = '<span class="contact-initial">' + (ini !== prevInitial ? escapeText(ini) : '') + '</span>';
+        prevInitial = ini;
+      } else {
+        var arrow = dir === '2'
+          ? '<path d="M13.5 6.5h7m-2.6-2.6 2.6 2.6-2.6 2.6" style="fill:none;stroke:#5bb974;stroke-width:1.9"/>'
+          : '<path d="M20.5 3.5l-7 7m0-4.6v4.6h4.6" style="fill:none;stroke:' + (missed ? '#e2554f' : '#5b9bd5') + ';stroke-width:1.9"/>';
+        leftMark = '<svg class="ico call-dir" viewBox="0 0 24 24">' +
           '<path d="M6.6 3.2 9.9 7.6 8 10a12.6 12.6 0 0 0 6 6l2.4-1.9 4.4 3.3-1.6 2.6c-.5.7-1.3 1-2.1.9C10.6 20.1 3.9 13.4 3.1 6.9c-.1-.8.2-1.6.9-2.1z" style="fill:none;stroke:#a7c9b8;stroke-width:1.6"/>' +
-          arrow + '</svg>' +
-          '<span class="call-name">' + escapeText(name || number) + (name && kind === 'contacts' ? '<span class="call-num">' + escapeText(number) + '</span>' : '') + '</span></div>' +
-        '<div class="phone-row-right">' + (PHONE_TYPE_SVGS[typeOf[String(phonePick(r, ['numbertype', 'number_type', 'data2']))] || 'mobile']) +
-          (kind === 'recent' ? '<span>' + phoneTime(phonePick(r, ['date', 'time', 'calltime'])) + '</span>' : '') + '</div></button>';
+          arrow + '</svg>';
+      }
+      html += '<div role="button" tabindex="0" class="phone-row' + (kind === 'contacts' ? ' is-contact' : '') + (missed ? ' missed' : '') + '" data-call="' + escapeText(number) + '">' +
+        '<div class="phone-row-left">' + leftMark +
+          '<span class="call-name">' + escapeText(name || number) + '</span></div>' +
+        '<div class="phone-row-right">' + (kind === 'contacts' && r.phone1_number !== undefined
+          ? [1, 2, 3, 4, 5].filter(function (k) { return r['phone' + k + '_number']; })   // 순정 연락처: 번호마다 종류 아이콘
+              .map(function (k) { return PHONE_TYPE_SVGS[typeOf[String(r['phone' + k + '_type'])] || 'mobile']; }).join('')
+          : PHONE_TYPE_SVGS[typeOf[String(phonePick(r, ['numbertype', 'number_type', 'phone1_type', 'data2']))] || 'mobile']) +
+          (kind === 'recent' ? '<span>' + phoneTime(phonePick(r, ['date', 'time', 'calltime'])) + '</span>' : '') + '</div></div>';
     });
     return html;
   }
-  function renderPhoneBook(list, kind) {
+  /* 순정 키패드의 "자주 통화한 번호" 칸: 순정 즐겨찾기(calls_fav, count 많은 순) 두 개. 누르면 바로 건다. */
+  function frequentCallsHtml() {
+    var hint = '<p>초록 단추를 누르면 연결된 휴대폰으로 바로 겁니다.</p>';
+    if (!livePreview) return hint;
+    var data = phoneBookData('favorites');
+    var rows = data.privacy ? [] : (data.rows || []).slice().sort(function (a, b) { return (+b.count || 0) - (+a.count || 0); }).slice(0, 2);
+    if (!rows.length) return hint;
+    return '<div class="freq-box"><div class="freq-head">자주 통화한 번호</div>' + rows.map(function (r) {
+      var number = r.number || '';
+      return '<button type="button" class="freq-row" data-call="' + escapeText(number) + '"><strong>' + escapeText(r.name || number) +
+        '</strong><small>' + escapeText(r.formatted_number || number) + '</small></button>';
+    }).join('') + '</div>';
+  }
+  function phoneBookData(kind) {
     var data = phoneBookCache[kind];
-    if (!data) data = phoneBookCache[kind] = parseHostJson(window.K8Host && window.K8Host.phoneBook ? window.K8Host.phoneBook(kind) : '', {});
-    setTimeout(function () { delete phoneBookCache[kind]; }, 5000);   // 다음에 열 때 새로 읽는다
+    if (!data) {
+      data = phoneBookCache[kind] = parseHostJson(window.K8Host && window.K8Host.phoneBook ? window.K8Host.phoneBook(kind) : '', {});
+      setTimeout(function () { delete phoneBookCache[kind]; }, 5000);   // 다음에 열 때 새로 읽는다
+    }
+    return data;
+  }
+  function renderPhoneBook(list, kind) {
+    var data = phoneBookData(kind);
     var html = data.privacy ? '' : phoneBookRowsHtml(kind, data);
+    // 순정 연락처: 목록 위에 "전체 목록 (개수)"
+    if (html && kind === 'contacts') html = '<div class="phone-list-head">전체 목록 (' + (data.rows || []).length + ')</div>' + html;
     if (!html) {
       statusCard(list, 'phone', kind === 'recent' ? '최근 통화' : '연락처',
         data.privacy ? '프라이버시 모드라 표시하지 않습니다.' : data.error ? '연결된 휴대폰의 목록을 읽지 못했습니다.' : '연결된 휴대폰에서 받은 목록이 없습니다.',
@@ -4107,6 +4264,75 @@ var stockSub = '';
       var row = ev.target.closest ? ev.target.closest('[data-call]') : null;   // c30-ok: Chrome 30 도 closest 없으면 아래
       if (!row) { for (var n = ev.target; n && n !== list; n = n.parentNode) if (n.getAttribute && n.getAttribute('data-call')) { row = n; break; } }
       if (row && window.K8Host) window.K8Host.dial(row.getAttribute('data-call').replace(/[^0-9*#+]/g, ''));
+    };
+  }
+
+  /* test60: 메시지(순정 D-phone_message_list). 왼쪽 목록, 오른쪽 고른 문자와 통화·회신. 내용은 화면에만 쓴다. */
+  var phoneMsgIdx = 0, msgSyncTriedAt = 0;
+  function renderPhoneMessages(list) {
+    var data = phoneBookData('messages'), rows = data.privacy ? [] : (data.rows || []);
+    if (!rows.length) {
+      if (!data.privacy && window.K8Host && window.K8Host.requestMessagesSync && Date.now() - msgSyncTriedAt > 15000) {
+        msgSyncTriedAt = Date.now();
+        window.K8Host.requestMessagesSync();
+        setTimeout(function () {
+          delete phoneBookCache.messages;
+          if (state.page === 'phone' && state.phoneTab === 'messages') renderPhoneStage();
+        }, 1800);
+      }
+      var card = statusCard(list, 'phone', '메시지', data.privacy ? '프라이버시 모드라 표시하지 않습니다.' :
+        data.error ? '연결된 휴대폰의 메시지를 읽지 못했습니다.' : '받은 메시지가 없습니다. 블루투스 연결 후 새로 도착한 문자부터 표시됩니다.',
+        '메시지 새로고침', function () {
+          delete phoneBookCache.messages;
+          if (window.K8Host && window.K8Host.requestMessagesSync) window.K8Host.requestMessagesSync();
+          setTimeout(function () {
+            delete phoneBookCache.messages;
+            if (state.page === 'phone' && state.phoneTab === 'messages') renderPhoneStage();
+          }, 1200);
+        });
+      var stockBtn = document.createElement('button');
+      stockBtn.type = 'button';
+      stockBtn.className = 'privacy-sub-btn';
+      stockBtn.style.marginTop = '10px';
+      stockBtn.style.marginLeft = '12px';
+      stockBtn.textContent = '순정 메시지 열기';
+      stockBtn.onclick = function () { host('phone-messages'); };
+      if (card) card.appendChild(stockBtn);
+      return;
+    }
+    if (phoneMsgIdx >= rows.length) phoneMsgIdx = 0;
+    var names = {};
+    (phoneBookData('contacts').rows || []).forEach(function (r) {
+      ['phone1_number', 'phone2_number', 'phone3_number', 'phone4_number', 'phone5_number', 'data1'].forEach(function (k) {
+        var n = String(r[k] || '').replace(/[^0-9]/g, '');
+        if (n && r.display_name) names[n] = r.display_name;
+      });
+    });
+    function who(addr) { return names[String(addr || '').replace(/[^0-9]/g, '')] || addr || ''; }
+    function when(ms) {
+      var d = new Date(+ms);
+      if (!(+ms > 0)) return '';
+      var h = d.getHours(), m = ('0' + d.getMinutes()).slice(-2);
+      return d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate() + '. ' +
+        (clockUses24Hours() ? h + ':' + m : ((h % 12) || 12) + ':' + m + (h < 12 ? ' AM' : ' PM'));
+    }
+    var cur = rows[phoneMsgIdx];
+    var html = '<div class="msg-split"><div class="msg-list"><div class="phone-list-head">전체 목록 (' + rows.length + ')</div>';
+    rows.forEach(function (r, i) {
+      html += '<button type="button" class="msg-row' + (i === phoneMsgIdx ? ' on' : '') + (String(r.read) === '0' ? ' unread' : '') + '" data-msg="' + i + '">' +
+        '<strong>' + escapeText(who(r.address)) + '</strong><small>' + escapeText(when(r.date)) + '</small></button>';
+    });
+    html += '</div><div class="msg-detail"><div class="msg-from">' + escapeText(who(cur.address)) + '</div>' +
+      '<div class="msg-body">' + escapeText(cur.body || '') + '</div>' +
+      '<div class="msg-actions"><button type="button" data-msg-call>통화</button><button type="button" data-msg-stock>회신</button></div></div></div>';
+    list.innerHTML = html;
+    list.onclick = function (ev) {
+      for (var n = ev.target; n && n !== list; n = n.parentNode) {
+        if (!n.getAttribute) continue;
+        if (n.getAttribute('data-msg') !== null) { phoneMsgIdx = +n.getAttribute('data-msg'); renderPhoneMessages(list); return; }
+        if (n.hasAttribute('data-msg-call')) { if (window.K8Host) window.K8Host.dial(String(cur.address || '').replace(/[^0-9*#+]/g, '')); return; }
+        if (n.hasAttribute('data-msg-stock')) { host('phone'); return; }   // 회신(문자 보내기)은 순정 전화 앱
+      }
     };
   }
 
@@ -4696,13 +4922,15 @@ var stockSub = '';
     if ((state.mediaSource !== 'bt' && state.mediaSource !== 'usb') || !title || title === '미디어 정보 대기') return;
     var key = title + '\n' + artist;
     if (key === lyricsKey) return;
-    lyricsKey = key; lyricsState = 'wait'; lyricsLines = []; lyricsPlain = []; state.musicTab = null;
+    lyricsKey = key; lyricsState = 'wait'; lyricsLines = []; lyricsPlain = [];   // test60: 고른 탭(가사)은 곡이 바뀌어도 그대로
+    state.tracks[0].album = '';   // 순정 블루투스 방송엔 앨범이 없다: 가사 검색 결과(LRCLIB·NetEase)의 앨범을 쓴다
     if (inVehicle && window.K8Host && window.K8Host.lyrics) window.K8Host.lyrics(key, title, artist, duration > 0 ? Math.round(duration / 1000) : 0);
     else lyricsState = 'none';
   }
   function setLyrics(key, json) {
     if (key !== lyricsKey) return;
     var data = parseHostJson(json, {}), lines = [];
+    if (data.album && !state.tracks[0].album) { state.tracks[0].album = data.album; renderSheet(); }
     String(data.synced || '').split('\n').forEach(function (raw) {
       var text = raw.replace(/\[[^\]]*\]/g, '').trim(), m, re = /\[(\d+):(\d+(?:\.\d+)?)\]/g;
       while ((m = re.exec(raw))) lines.push({ t: (+m[1] * 60 + +m[2]) * 1000, text: text });
@@ -7089,7 +7317,8 @@ var stockSub = '';
     var box = document.getElementById('top-status');
     if (!box || !livePreview) return;
     var icons = [];
-    var sig = vehicleInfo.phoneSignal, bat = vehicleInfo.phoneBattery;
+    var sig = vehicleInfo.phoneSignal, bat = vehicleInfo.phoneBattery, wpc = vehicleInfo.wpc;
+    var charging = wpc === 2, chargeDone = wpc === 3, chargeErr = wpc === 5;
     if (typeof sig === 'number') {
       var bars = '';
       for (var si = 0; si < 4; si++) {
@@ -7100,9 +7329,21 @@ var stockSub = '';
     }
     if (typeof bat === 'number') {
       var w = Math.max(0, Math.min(5, bat)) / 5 * 13;
-      icons.push('<svg' + (bat <= 1 ? ' class="is-warn"' : '') + ' viewBox="0 0 24 24" aria-label="휴대폰 배터리 ' + bat + '"><rect x="3" y="7.5" width="17" height="9" rx="2"/><path d="M21.5 10.5v3"/>' +
-        '<rect x="5" y="9.5" width="' + w.toFixed(1) + '" height="5" rx=".8" style="fill:currentColor;stroke:none"/></svg>');
+      var bolt = charging ? '<path d="M12.5 5.5 9.2 12h3.1l-1 6.5 4-7h-3.1z" style="fill:#2fae9c;stroke:#000;stroke-width:.7"/>' : '';
+      icons.push('<svg' + (charging ? ' class="is-charge"' : bat <= 1 ? ' class="is-warn"' : '') + ' viewBox="0 0 24 24" aria-label="휴대폰 배터리 ' + bat + (charging ? ' 충전 중' : '') + '"><rect x="3" y="7.5" width="17" height="9" rx="2"/><path d="M21.5 10.5v3"/>' +
+        '<rect x="5" y="9.5" width="' + w.toFixed(1) + '" height="5" rx=".8" style="fill:currentColor;stroke:none"/>' + bolt + '</svg>');
     }
+    // 순정 ccNC 무선충전 아이콘(I-top_wireless_charging): wpc 2=충전 중, 3=충전 완료, 5=충전 오류(SystemUI l.1.smali 확인)
+    var wpcIcon = '';
+    if (charging) {
+      wpcIcon = '<svg class="is-charge" viewBox="0 0 24 24" aria-label="무선 충전 중"><rect x="8.5" y="4.5" width="7" height="15" rx="1.2"/><path d="M10.5 3h3"/><path d="M12.6 7.5 10 12.2h2.2l-.8 4.3 2.8-5h-2.1z" style="fill:currentColor;stroke:none"/><path d="M5.8 8.2a6.5 6.5 0 0 0 0 7.6M3.4 6.2a9.5 9.5 0 0 0 0 11.6M18.2 8.2a6.5 6.5 0 0 1 0 7.6M20.6 6.2a9.5 9.5 0 0 1 0 11.6"/></svg>';
+    } else if (chargeDone) {
+      wpcIcon = '<svg class="is-charge" viewBox="0 0 24 24" aria-label="무선 충전 완료"><rect x="8.5" y="4.5" width="7" height="15" rx="1.2"/><path d="M10.5 3h3"/><path d="M10.3 12.2l1.4 1.5 2.4-2.8"/><path d="M5.8 8.2a6.5 6.5 0 0 0 0 7.6M18.2 8.2a6.5 6.5 0 0 1 0 7.6"/></svg>';
+    } else if (chargeErr) {
+      wpcIcon = '<svg class="is-warn" viewBox="0 0 24 24" aria-label="무선 충전 오류"><rect x="8.5" y="4.5" width="7" height="15" rx="1.2"/><path d="M10.5 3h3"/><path d="M12 8.5v4.5"/><circle cx="12" cy="15.8" r=".9" style="fill:currentColor;stroke:none"/><path d="M5.8 8.2a6.5 6.5 0 0 0 0 7.6M18.2 8.2a6.5 6.5 0 0 1 0 7.6"/></svg>';
+    }
+    if (wpcIcon) icons.push(wpcIcon);
+    var phoneIconsCount = (typeof sig === 'number' ? 1 : 0) + (typeof bat === 'number' ? 1 : 0) + (wpcIcon ? 1 : 0);
     var calling = !!(phoneData && phoneData.state);
     // I-top_bt_calling: solid handset with sound waves; I-top_bt_phone: solid rounded block with a
     // Bluetooth cut-out and a small handset.
@@ -7113,6 +7354,9 @@ var stockSub = '';
     if (typeof vehicleInfo.rearSleep === 'number' && vehicleInfo.rearSleep > 0) icons.push('<svg class="st-fill" viewBox="0 0 24 24" aria-label="후석 취침 모드"><path d="M18.5 15.2A8 8 0 0 1 8.8 5.5a8 8 0 1 0 9.7 9.7z"/><path d="m17.2 3 .8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>');
     if (controls.volume === 0 || vehicleInfo.userMute === true) icons.push('<svg class="st-fill" viewBox="0 0 24 24" aria-label="음소거"><path d="M5 9.5h3.4L13 5.5v13l-4.6-4H5z"/><path d="M4 20 20 4" style="fill:none;stroke:#e8683f;stroke-width:1.8;stroke-linecap:round"/></svg>');
     box.innerHTML = icons.join('');
+    // 전화 화면 오른쪽 폰 칸: 순정 ccNC 처럼 연결된 폰의 신호·배터리·무선충전 표시
+    var pane = document.getElementById('phone-device-status');
+    if (pane) pane.innerHTML = icons.slice(0, phoneIconsCount).join('');
   }
 
   function syncSwitchRows(root) {
@@ -7318,8 +7562,14 @@ var stockSub = '';
       state.history.length = 0;
       showPage('home');
     },
+    // 내비 시트의 ≡: 홈을 거치지 않고(같은 틱이라 홈은 안 그려짐) 지금 소스의 ccNC 재생 화면으로 한 번에. 뒤로는 홈.
+    openMedia: function () {
+      window.K8Home.openHome();
+      navigateTo('media');
+    },
     back: function () {
       if (sheetOpen) { closeSheet(); return; }
+      if (state.reordering) { setReordering(false); return; }   // 재배치 단추를 없애 뒤로 키로 끝낸다
       if (!document.getElementById('qc-drawer').hidden) {
         if (qcDraft) { closeQuickEditor(); return; }
         document.getElementById('qc-drawer').hidden = true;
@@ -7468,6 +7718,10 @@ var stockSub = '';
           : (info.label + ' 목적지 등록'));
       }
     },
+    mediaPosition: function (ms) { mediaPos = ms; mediaPosAt = Date.now(); },   // 블루투스 1초 위치 방송(가사 줄 맞추기)
+    resumed: function () {   // 테마가 다시 앞에 옴: 다른 화면으로 가느라 못 지운 눌림 색을 지운다
+      Array.prototype.forEach.call(document.querySelectorAll('.circle-btn.holding'), function (b) { b.classList.remove('holding'); });
+    },
     mediaChanged: function (title, artist, playing, position, duration, source, settings) {
       if (!livePreview) return;
       trackKnown = playing !== null;
@@ -7526,6 +7780,10 @@ var stockSub = '';
       else document.getElementById('phone-device-label').textContent = phoneData.calls.join(', ') || state.devices[0];
       if (state.page === 'media') renderMediaStage();
       if (state.page === 'settings' && settingsSection === 'devices') updateControlLabels();
+    },
+    phoneBookInvalidated: function () {
+      phoneBookCache = {};
+      if (state.page === 'phone') renderPhoneStage();
     },
     vehicleChanged: function (info) {
       var wasLow = vehicleInfo.fuelLow === true;
@@ -7636,7 +7894,9 @@ var stockSub = '';
     },
     photoChanged: function (target, value) {
       if (!Object.prototype.hasOwnProperty.call(photo, target)) return;
-      photo[target] = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
+      // test60: 차에선 큰 base64 대신 짧은 주소(HomeActivity 가 사진 바이트로 답함)가 온다.
+      photo[target] = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(value) ||
+        /^file:\/\/\/android_asset\/k8photo\/[a-z0-9]+-[0-9a-f]+\.jpg$/.test(value) ? value : '';
       if (state.page === 'standby') showPage('standby');
       if (state.page === 'screenlayout' && state.slTab === 'frame') renderScreenLayoutStage();
       if (state.page === 'settings' && settingsSection === 'profile') renderSettingsControls();
@@ -8356,6 +8616,10 @@ var stockSub = '';
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var suppressClick = false;
+  function inCcTab(node) {
+    for (; node && node.nodeType === 1; node = node.parentNode) if (node.classList.contains('cc-m-tab')) return true;
+    return false;
+  }
   function cardAt(node) {
     while (node && node !== deck && node.nodeType === 1) {
       if (node.hasAttribute('data-idx') || node.hasAttribute('data-card') ||
@@ -8372,6 +8636,8 @@ var stockSub = '';
 
   function updateHeldTarget(g, clientX, clientY) {
     var target = cardAt(document.elementFromPoint(clientX, clientY));
+    if (target === g.lastHover) return;   // 손가락이 같은 카드 위면 아무것도 다시 그리지 않는다
+    g.lastHover = target;
     if (g.targetCard) g.targetCard.classList.remove('card-target');
     var valid = target && target !== g.card;
     if (valid && g.cardType === 'app') {
@@ -8410,6 +8676,7 @@ var stockSub = '';
         var dest = idxNow >= 0 ? deckPage(idxNow + dir) : null;
         if (!dest || dest === 'standby') { g.edgeDir = 0; return; }
         if (g.targetCard) { g.targetCard.classList.remove('card-target'); g.targetCard = null; }
+        g.lastHover = undefined;   // 새 쪽에선 손가락 밑 카드를 다시 찾는다
         createSlide(dest, dir);
         settleSlide(true, 1.0, function () {
           if (gesture !== g || !g.held) return;
@@ -8734,7 +9001,7 @@ var stockSub = '';
       target: ev.target,
       inSplit: document.getElementById('split-card').contains(ev.target),
       inMediaBox: document.getElementById('bb-media-btn').contains(ev.target),
-      fromTop: ev.clientY < 48,
+      fromTop: ev.clientY < 48 && !inCcTab(ev.target),   // ccNC 재생 목록·가사 탭은 위 끝이라 누르다 끌려도 상단바를 내리지 않는다
       deck: deck.contains(ev.target),
       lastX: ev.clientX,
       lastClientX: ev.clientX,
@@ -8907,11 +9174,19 @@ var stockSub = '';
     if (Date.now() - lastTouchAt < 800) return;
     suppressClick = endGesture(ev);
   });
+  function clearHolding() {
+    Array.prototype.forEach.call(document.querySelectorAll('.circle-btn.holding'), function (b) { b.classList.remove('holding'); });
+  }
   document.addEventListener('touchstart', function (ev) {
     lastTouchAt = Date.now();
+    for (var n = ev.target; n && n.nodeType === 1; n = n.parentNode) {
+      if (n.classList.contains('circle-btn')) { n.classList.add('holding'); break; }
+    }
     if (ev.touches.length === 1) beginGesture(ev.touches[0]);
     else cancelGesture();
   });
+  document.addEventListener('touchend', clearHolding);
+  document.addEventListener('touchcancel', clearHolding);
   document.addEventListener('touchmove', function (ev) {
     lastTouchAt = Date.now();
     var noScroll = gesture && gesture.noScroll;

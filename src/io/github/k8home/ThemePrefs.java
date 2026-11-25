@@ -25,7 +25,7 @@ final class ThemePrefs {
 
     /** Start the theme by itself after the head unit finished booting. */
     static boolean autoStart(Context context) {
-        return of(context).getBoolean(AUTO_START, false);
+        return of(context).getBoolean(AUTO_START, true);
     }
 
     static void setAutoStart(Context context, boolean value) {
@@ -34,7 +34,7 @@ final class ThemePrefs {
 
     /** Draw the theme bottom bar over the stock navigation app. */
     static boolean navBar(Context context) {
-        return of(context).getBoolean(NAV_BAR, false);
+        return of(context).getBoolean(NAV_BAR, true);
     }
 
     static void setNavBar(Context context, boolean value) {
@@ -43,7 +43,7 @@ final class ThemePrefs {
 
     /** Float the ccNC back/home/menu keys and the now-playing box over stock screens. */
     static boolean corners(Context context) {
-        return of(context).getBoolean(CORNERS, false);
+        return of(context).getBoolean(CORNERS, true);
     }
 
     static void setCorners(Context context, boolean value) {
@@ -67,9 +67,9 @@ final class ThemePrefs {
         return of(context).getBoolean(STOCK_WRITE, false);
     }
 
-    /** 고음/중음/저음·전후/좌우를 테마에서 직접 바꾸는지. 기본 꺼짐. */
+    /** 고음/중음/저음·전후/좌우를 테마에서 직접 바꾸는지. 기본 켜짐. */
     static boolean soundWrite(Context context) {
-        return of(context).getBoolean(SOUND_WRITE, false);
+        return of(context).getBoolean(SOUND_WRITE, true);
     }
 
     static void setSoundWrite(Context context, boolean value) {
@@ -80,9 +80,9 @@ final class ThemePrefs {
         of(context).edit().putBoolean(STOCK_WRITE, value).commit();
     }
 
-    /** 즐겨찾기(☆) 버튼으로 짧게 ccNC 테마 / 길게 순정 5W 홈 전환 사용 여부. 기본 꺼짐. */
+    /** 즐겨찾기(☆) 버튼으로 짧게 ccNC 테마 / 길게 순정 5W 홈 전환 사용 여부. 기본 켜짐. */
     static boolean customKeyHome(Context context) {
-        return of(context).getBoolean(CUSTOM_KEY_HOME, false);
+        return of(context).getBoolean(CUSTOM_KEY_HOME, true);
     }
 
     static void setCustomKeyHome(Context context, boolean value) {

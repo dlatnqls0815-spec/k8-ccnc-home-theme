@@ -41,6 +41,13 @@ public final class KeyHelper {
      */
     static final int GUIDE = 1000;
     static final int BACK = 1001;
+    /**
+     * "aa" / "carplay": open the connected projection screen. Their activities are not exported (system uid only);
+     * the stock launcher opens them the same way. Fixed components only.
+     */
+    static final int AA = 1002, CARPLAY = 1003;
+    static final String AA_COMPONENT = "com.google.android.projection.sink/.ui.MainActivity";
+    static final String CARPLAY_COMPONENT = "com.daudio.app.dipo/.ui.DipoActivity";
     static final float GUIDE_X = 1850f, GUIDE_Y = 675f;
     static final String NAVI_PACKAGE = "com.mnsoft.navi";
 
@@ -110,6 +117,8 @@ public final class KeyHelper {
                 return;
             }
             sendBackKey();
+        } else if (code == AA || code == CARPLAY) {
+            startActivity(code == AA ? AA_COMPONENT : CARPLAY_COMPONENT);
         } else {
             sendKey(code);
         }
@@ -125,7 +134,16 @@ public final class KeyHelper {
         if ("167".equals(s)) return 167;
         if ("guide".equals(s)) return GUIDE;
         if ("back".equals(s)) return BACK;
+        if ("aa".equals(s)) return AA;
+        if ("carplay".equals(s)) return CARPLAY;
         return -1;
+    }
+
+    /** am start as the system uid (allowed for these non-exported system activities). */
+    static void startActivity(String component) throws Exception {
+        Process p = Runtime.getRuntime().exec(new String[] {"am", "start", "-n", component});
+        int code = p.waitFor();
+        log("start " + component + " -> " + code);
     }
 
     static String readLine(InputStream in) throws IOException {

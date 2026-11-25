@@ -28,6 +28,7 @@ public final class PopupGuardService extends Service {
     /** 블루투스 서비스의 재생 위치 방송(1초마다). 곡이 바뀌면 위치 -1 이거나 길이가 바뀌거나 위치가 처음으로 돌아간다. */
     static final String BT_POSITION = "com.broadcom.bt.avrcp.profile.action.CURRENT_PLAY_POSITION";
     private long lastPos = Long.MIN_VALUE, lastLen = Long.MIN_VALUE;
+    static final String PROJECTION_STATUS = "com_phoneprojection_status_change";
     private Object splitOsdListener;
     private CustomKeyGuard customKeyGuard;
 
@@ -40,6 +41,14 @@ public final class PopupGuardService extends Service {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            if (PROJECTION_STATUS.equals(action)) {
+                // 순정 런처와 같은 방송: 연결된 폰 프로젝션 앱(Android Auto·CarPlay). 방송이 남지 않아(sticky 아님) 늘 떠 있는 여기서 기억한다.
+                Bundle e = intent.getExtras();
+                String pkg = e == null ? "" : String.valueOf(e.get("PhoneProjection_PackageName"));
+                Log.i(TAG, "projection status " + (e == null ? "{}" : e.keySet()) + " package=" + pkg);
+                getSharedPreferences("projection", MODE_PRIVATE).edit().putString("package", "null".equals(pkg) ? "" : pkg).apply();
+                return;
+            }
             if (CustomKeyGuard.ACTION_CUSTOM_SHORTCUT.equals(action)) {
                 CustomKeyGuard.handleCustomShortcutBroadcast(PopupGuardService.this, intent);
                 return;
@@ -158,6 +167,7 @@ public final class PopupGuardService extends Service {
         StockMedia.addActions(filter);
         filter.addAction(BT_POSITION);
         filter.addAction(CustomKeyGuard.ACTION_CUSTOM_SHORTCUT);
+        filter.addAction(PROJECTION_STATUS);
         registerReceiver(receiver, filter);
         MediaKeys.initRadioPopupGuard(this);
         registerSplitOsdListener();

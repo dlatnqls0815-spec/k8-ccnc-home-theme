@@ -148,6 +148,17 @@ final class StockPhone implements BluetoothProfile.ServiceListener {
     }
 
     JSONArray callDevices() { return preferredNames(oemHeadset, headset); }
+
+    /** Address of the connected call phone (the stock phone book is kept per phone, bt_address), or "". */
+    String callAddress() {
+        for (BluetoothProfile profile : new BluetoothProfile[] {oemHeadset, headset}) {
+            if (profile == null) continue;
+            try {
+                for (BluetoothDevice device : profile.getConnectedDevices()) return device.getAddress();
+            } catch (RuntimeException ignored) { }
+        }
+        return "";
+    }
     JSONArray audioDevices() { return preferredNames(oemAudio, a2dp); }
 
     private static JSONArray preferredNames(BluetoothProfile preferred, BluetoothProfile fallback) {

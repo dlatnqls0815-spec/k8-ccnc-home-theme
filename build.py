@@ -61,6 +61,7 @@ def build(sdk, jdk, output):
             apk.write(ROOT / "assets" / "naviskin.html", "assets/naviskin.html")
             apk.write(ROOT / "assets" / "marquee.js", "assets/marquee.js")
             apk.write(ROOT / "assets" / "route_panel.html", "assets/route_panel.html")
+            apk.write(ROOT / "assets" / "media_sheet.html", "assets/media_sheet.html")   # test57 내비 재생 상세 시트(빠져 있었음)
             apk.write(ROOT / "assets" / "radio_logos.tsv", "assets/radio_logos.tsv")
             for icon in sorted((ROOT / "assets" / "icons").glob("*.png")):
                 apk.write(icon, "assets/icons/" + icon.name)
