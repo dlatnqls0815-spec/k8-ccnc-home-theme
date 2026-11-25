@@ -841,8 +841,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 }
 /* ccNC 소스 탭(D-media_fmradio_channel): 지금 탭은 푸른 알약. */
 .bb-tab-btn[data-msrc][aria-selected="true"] { background: #1e8a79; border-radius: 999px; }
+/* 설명서 #678776 은 청록 탭에 갈색 강조가 덧칠된 색: 실제 기아 청록(소스 탭과 같음). */
 .bb-tab-btn.phone-active[aria-selected="true"] {
-  background: #678776; color: #fff;
+  background: #1e8a79; color: #fff;
 }
 /* ccNC source/phone tabs show icons only (D-media_bluetooth_main.png, D-phone_calllist_main.png). */
 .bb-tab-btn .tab-name, .media-view-switcher { display: none !important; }
@@ -2160,6 +2161,9 @@ html:not(.legacy) #media-single-pane .media-transport-btns { position: relative;
 .cc-k-time { top: 562px; width: 120px; font-size: 24px; color: #e0e0e0; }
 .cc-k-art { left: 1503px; top: 186px; width: 327px; height: 327px; overflow: hidden; border: 0; padding: 0; background-color: #1a1a1a; background-position: center; background-size: cover; background-repeat: no-repeat; }
 .cc-k-art img, .cc-k-art svg { display: block; width: 100%; height: 100%; }
+/* 전화 목록 칸: 설명서 갈색은 강조 덧칠이라 음악 기기 카드와 같은 회색 카드(기아 검정 바탕). */
+.phone-list-box { background: #1f1f1f; background: rgba(255, 255, 255, .12); border: 0; border-radius: 6px; }
+.theme-state .ico { color: #2fae9c; }
 .cc-k-tabline { left: 520px; top: 88px; width: 910px; height: 2px; background: #2a2a2a; }
 .cc-m-dev { left: 64px; top: 104px; width: 360px; font-size: 32px; color: #9a9ca2; overflow: hidden; text-overflow: ellipsis; }
 .cc-m-list { left: 498px; top: 104px; width: 921px; height: 521px; overflow-x: hidden; overflow-y: auto; }
