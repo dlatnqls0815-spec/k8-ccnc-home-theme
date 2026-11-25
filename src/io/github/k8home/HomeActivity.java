@@ -1241,11 +1241,6 @@ public class HomeActivity extends Activity {
             if (!on) stopService(new Intent(this, NavBarService.class));
             syncFlags();
             toast(on ? "테마에서 지도를 열면 하단바 시험이 시작됩니다." : "순정 하단줄을 사용합니다.");
-        } else if ("navi-skin-toggle".equals(action)) {
-            boolean on = !ThemePrefs.naviSkin(this);
-            ThemePrefs.setNaviSkin(this, on);
-            syncFlags();
-            toast(on ? "하단바 시험 중 순정 내비 왼쪽 버튼을 ccNC 모양으로 덮습니다." : "순정 내비 왼쪽 버튼을 그대로 둡니다.");
         } else if ("corners-toggle".equals(action)) {
             boolean on = !ThemePrefs.corners(this);
             ThemePrefs.setCorners(this, on);

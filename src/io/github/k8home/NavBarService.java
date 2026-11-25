@@ -42,9 +42,10 @@ public final class NavBarService extends Service {
     // Navigation IInterfaceService call 5 = isMapView_State() (vtable order of com.mnsoft.navi.g, 2026-11-22).
     private static final String NAVI_DESCRIPTOR = "com.mnsoft.navi.IInterfaceService";
     private static final int NAVI_IS_MAP_VIEW = 5;
-    // Skin window: the stock left button column above the bar, 140×632 of 1920×720.
-    private static final int SKIN_WIDTH = 140;
-    private static final int SKIN_HEIGHT = 632;
+    // Split handle window at the right screen edge (1920×720). Hidden while the system split screen is open
+    // (the stock panel closes itself); the navi's own junction close-up is not a split, the handle stays there.
+    // shortcut: handle height is an estimate, re-measure on the car.
+    private static final int HANDLE_WIDTH = 60, HANDLE_HEIGHT = 220, HANDLE_TOP = 230;
     private static final int REFERENCE_WIDTH = 1920;
     private static final int REFERENCE_HEIGHT = 720;
     // The live 1920×720 stock strip begins at y=627, including its upper edge.
@@ -62,10 +63,8 @@ public final class NavBarService extends Service {
     private String panelPage = "";
     private BluetoothCoverArt coverArt;
     private WebView skin;
-    private boolean skinReady, skinAttached, naviBound;
+    private boolean skinAttached, naviBound;
     private IBinder navi;
-    private String skinState = "";
-    private boolean lastMapView;
     private final ServiceConnection naviConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder binder) {
             try {
@@ -110,7 +109,6 @@ public final class NavBarService extends Service {
                 handler.removeCallbacks(cancelFallback);
             }
             pushRoute();
-            pushSkin();
         }
     };
 
@@ -141,11 +139,14 @@ public final class NavBarService extends Service {
                 return;
             }
             if (mapInFront() && pageReady) {
-                if (!searchSuspended && now >= resumeAfter && !attached && !attach()) {
+                boolean split = splitScreenOn();
+                if (split && attached) {
+                    detach();   // 분할화면이 열리면 하단바를 내리고 순정 하단줄을 보인다
+                } else if (!split && !searchSuspended && now >= resumeAfter && !attached && !attach()) {
                     endSession();
                     return;
                 }
-                syncSkin();
+                syncSkin(!searchSuspended && !split);
             } else if ((!searchSuspended || !navigationInFront())
                     && (attached || now >= entryDeadline)) {
                 endSession();
@@ -213,19 +214,9 @@ public final class NavBarService extends Service {
         web.loadUrl(PAGE);
     }
 
-    /** ccNC-shaped covers for the stock left buttons. The window never takes touches, so taps reach the
-     *  stock buttons underneath. Shown only while the navigation says its plain map view is up. */
-    private void syncSkin() {
-        if (!ThemePrefs.naviSkin(this)) {
-            detachSkin();
-            return;
-        }
-        boolean map = mapView();
-        if (map != lastMapView) {
-            lastMapView = map;
-            Log.i(TAG, "navi map view " + map + " (call " + NAVI_IS_MAP_VIEW + ")");
-        }
-        boolean want = attached && map;
+    /** 0.5.0-test58: ccNC split handle (a short vertical line) at the right edge of the map. A left swipe or a tap
+     *  opens the stock split screen. */
+    private void syncSkin(boolean want) {
         if (want && skin == null) {
             skin = createWebView();
             skin.setBackgroundColor(0);
@@ -233,36 +224,54 @@ public final class NavBarService extends Service {
                 @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     return true;
                 }
-
-                @Override public void onPageFinished(WebView view, String url) {
-                    if (view == skin && SKIN_PAGE.equals(url)) {
-                        skinReady = true;
-                        skinState = "";
-                        pushSkin();
-                    }
-                }
             });
             skin.loadUrl(SKIN_PAGE);
         }
-        if (want && !skinAttached && skin != null) {
-            Point size = new Point();
-            windows.getDefaultDisplay().getRealSize(size);
-            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                Math.round(size.x * SKIN_WIDTH / (float) REFERENCE_WIDTH),
-                Math.round(size.y * SKIN_HEIGHT / (float) REFERENCE_HEIGHT), WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
-            params.gravity = Gravity.TOP | Gravity.LEFT;
-            params.setTitle("K8HomeNaviSkin");
-            try {
-                windows.addView(skin, params);
-                skinAttached = true;
-                pushSkin();
-            } catch (RuntimeException failure) {
-                Log.w(TAG, "Navigation skin unavailable", failure);
-            }
-        } else if (!want) {
+        if (!want) {
             detachSkin();
+            return;
+        }
+        if (skin == null || skinAttached) return;
+        Point size = new Point();
+        windows.getDefaultDisplay().getRealSize(size);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+            Math.round(size.x * HANDLE_WIDTH / (float) REFERENCE_WIDTH),
+            Math.round(size.y * HANDLE_HEIGHT / (float) REFERENCE_HEIGHT), WindowManager.LayoutParams.TYPE_PHONE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.x = size.x - params.width;
+        params.y = Math.round(size.y * HANDLE_TOP / (float) REFERENCE_HEIGHT);
+        params.setTitle("K8HomeSplitHandle");
+        try {
+            windows.addView(skin, params);
+            skinAttached = true;
+        } catch (RuntimeException failure) {
+            Log.w(TAG, "Split handle unavailable", failure);
+        }
+    }
+
+    /** Stock SplitScreenManager.isSplitScreenOn(ignoreVR=false); false when the service is not there. */
+    private boolean splitScreenOn() {
+        Object manager = MediaKeys.splitScreenManager(this);
+        if (manager == null) return false;
+        try {
+            return Boolean.TRUE.equals(manager.getClass().getMethod("isSplitScreenOn", boolean.class).invoke(manager, false));
+        } catch (Exception failure) {
+            return false;
+        }
+    }
+
+    /** Same request the stock split button makes: requestSplitScreenOn(isOn, isUser). */
+    private boolean requestSplitScreen(boolean on) {
+        Object manager = MediaKeys.splitScreenManager(this);
+        if (manager == null) return false;
+        try {
+            return Boolean.TRUE.equals(manager.getClass().getMethod("requestSplitScreenOn", boolean.class, boolean.class)
+                .invoke(manager, on, true));
+        } catch (Exception failure) {
+            Log.w(TAG, "Split screen request failed", failure);
+            return false;
         }
     }
 
@@ -272,19 +281,6 @@ public final class NavBarService extends Service {
         try {
             windows.removeViewImmediate(skin);
         } catch (RuntimeException ignored) { }
-    }
-
-    private void pushSkin() {
-        if (skin == null || !skinReady) return;
-        StockRoute.Snapshot data = route.snapshot();
-        // DAYNIGHT_CHANGED daynight_status: true = night (uimode 2). Unknown → night, as the stock map at boot.
-        boolean night = !"false".equalsIgnoreCase(data.dayNight);
-        boolean muted = "true".equalsIgnoreCase(data.mute) || "1".equals(data.mute);
-        String next = night + "," + muted;
-        if (next.equals(skinState)) return;
-        skinState = next;
-        Log.i(TAG, "navi skin night,muted=" + next + " (raw " + data.dayNight + "/" + data.mute + ")");
-        skin.evaluateJavascript("window.K8NaviSkin && window.K8NaviSkin.state(" + next + ")", null);
     }
 
     private boolean mapView() {
@@ -382,6 +378,8 @@ public final class NavBarService extends Service {
         } else if ("media".equals(action)) {
             if ("bt".equals(media.source) || "usb".equals(media.source)) openSheet();
             else openThemeMedia();
+        } else if ("split-open".equals(action)) {
+            if (!requestSplitScreen(true)) toast("순정 분할 화면을 열 수 없습니다.");
         } else if ("sheet-close".equals(action)) {
             closeSheet();
         } else if ("route-details".equals(action) && route.snapshot().active) {

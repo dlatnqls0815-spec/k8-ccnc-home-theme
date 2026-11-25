@@ -315,6 +315,9 @@ strong, b, h1, h2, h3 { font-weight: 500; }
   display: none; gap: 4px;
 }
 .apps-view.reordering .reorder-arrows { display: inline-flex; }
+/* 숨긴 타일: 평소엔 안 보이고, 아이콘 재배치 때만 맨 뒤에 흐리게. 눈 버튼으로 숨기기/되살리기. */
+.app-tile.tile-hidden { opacity: .35; }
+.reorder-btn[data-hide] svg { display: block; width: 26px; height: 26px; margin: auto; fill: none; stroke: currentColor; stroke-width: 2; }
 .reorder-btn {
   width: 26px; height: 26px; border-radius: 4px;
   background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.3);
@@ -336,6 +339,7 @@ strong, b, h1, h2, h3 { font-weight: 500; }
 .pager-bars {
   display: flex; align-items: center; gap: 8px;
 }
+.pager-bar[hidden] { display: none !important; }
 .pager-bar {
   width: 22px; width: 26.88px; /*c30*/ width: clamp(22px, 2.1vw, 36px); height: 4px; border-radius: 2px;
   background: rgba(255,255,255,.28); padding: 0;
@@ -2643,6 +2647,7 @@ button.detail-settings-row.switch-row .stock-row-note {
       <button type="button" class="pager-bar" data-page="apps2" aria-label="전체 기능 2페이지" aria-current="false"></button>
       <button type="button" class="pager-bar" data-page="apps3" aria-label="전체 기능 3페이지" aria-current="false"></button>
       <button type="button" class="pager-bar" data-page="apps4" aria-label="전체 기능 4페이지" aria-current="false"></button>
+      <button type="button" class="pager-bar" data-page="apps5" aria-label="전체 기능 5페이지" aria-current="false"></button>
     </div>
     <button type="button" class="pager-nav-btn" id="pager-right-btn">전체 메뉴 ›</button>
 
@@ -2803,6 +2808,7 @@ button.detail-settings-row.switch-row .stock-row-note {
       { id: 'projection', label: '폰 프로젝션', color: '#5d5c6f', action: 'projection' },
       { id: 'voicememo', label: '음성 메모', color: '#6e5e4d', action: 'voicememo' },
       { id: 'settings', label: '설정', color: '#556777', action: 'settings' },
+      { id: 'ccnctheme', label: 'ccNC 테마 설정', color: '#555', action: 'themesettings' },
       { id: 'media', label: '미디어', color: '#5b5a70', action: 'media' },
       { id: 'connect', label: 'Kia Connect', color: '#766652', action: 'connect' },
       { id: 'alerts', label: '알림', color: '#53686d', action: 'alerts' },
@@ -2850,7 +2856,7 @@ button.detail-settings-row.switch-row .stock-row-note {
   };
 
   var shell = document.getElementById('shell');
-  var appPages = ['apps1', 'apps2', 'apps3', 'apps4'];
+  var appPages = ['apps1', 'apps2', 'apps3', 'apps4', 'apps5'];   // 타일 수만큼만 쓴다(appsPageUsed)
   var tilesPerPage = 6;
   var inVehicle = !!window.K8Host;
   var livePreview = inVehicle || /(?:^|[?&])vehicle=1(?:&|$)/.test(location.search);
@@ -2984,6 +2990,46 @@ var stockSub = '';
   var saveKey = 'k8-theme-ui-v1';
   if (!window.CSS || !window.CSS.supports || !window.CSS.supports('display', 'grid')) {
     document.documentElement.className = 'legacy';
+  }
+  /* 숨긴 앱 타일(id). state.appTiles 는 늘 "보이는 것 → 숨긴 것" 순서라 보이는 타일의 번호(data-idx)가 그대로 맞다. */
+  var hiddenTiles = [];
+  function tileHidden(tile) { return hiddenTiles.indexOf(tile.id) >= 0; }
+  function sortHiddenLast() {
+    state.appTiles = state.appTiles.filter(function (t) { return !tileHidden(t); })
+      .concat(state.appTiles.filter(tileHidden));
+  }
+  function setTileHidden(tile, hide) {
+    hiddenTiles = hiddenTiles.filter(function (id) { return id !== tile.id; });
+    if (hide) hiddenTiles.push(tile.id);
+    var rest = state.appTiles.filter(function (t) { return t !== tile; });
+    var visible = rest.filter(function (t) { return !tileHidden(t); }).length;
+    rest.splice(hide ? rest.length : visible, 0, tile);   // 숨기면 맨 뒤, 되살리면 보이는 것 끝
+    state.appTiles = rest;
+    sortHiddenLast();
+  }
+  /* 앱 페이지는 보이는 타일(재배치 중엔 숨긴 것까지)이 있는 데까지만 넘긴다. */
+  function appsPageUsed(page) {
+    var shown = state.reordering ? state.appTiles.length : state.appTiles.filter(function (t) { return !tileHidden(t); }).length;
+    var idx = appPages.indexOf(page);
+    return idx === 0 || (idx > 0 && idx * tilesPerPage < shown);
+  }
+  function lastAppsPage() {
+    for (var i = appPages.length - 1; i > 0; i--) if (appsPageUsed(appPages[i])) return appPages[i];
+    return appPages[0];
+  }
+  function deckPage(i) {
+    var page = homeOrder[i];
+    return page && (!isAppsPage(page) || appsPageUsed(page)) ? page : null;
+  }
+  function setReordering(on) {
+    state.reordering = on;
+    document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', String(on));
+    invalidateAppsCache();   // 숨긴 타일을 보이거나 빼려면 다시 그린다
+    if (isAppsPage(state.page)) {
+      if (!appsPageUsed(state.page)) showPage(lastAppsPage());
+      else renderAppTilesPage(state.page);
+    }
+    syncNativeMapSlot();
   }
   function closestMove(node) {
     while (node && node.nodeType === 1) {
@@ -3136,7 +3182,7 @@ var stockSub = '';
         driverNames: state.drivers.slice(0, 2), qcOrder:qcOrder, qcHidden:qcHidden, searchRecent:searchRecent,
         homeCards: state.homeCards,
         homeThirdTile: state.homeThirdTile,
-        tiles: state.appTiles.map(function (item) { return item.id; }),
+        tiles: state.appTiles.map(function (item) { return item.id; }), hiddenTiles: hiddenTiles,
         widgets: state.splitWidgets.map(function (item) { return { id:item.id, enabled:item.enabled }; })
       }));
     } catch (ignored) {}
@@ -3191,6 +3237,10 @@ var stockSub = '';
         return result.concat(items.filter(function (item) { return result.indexOf(item) < 0; }));
       };
       state.appTiles = order(state.appTiles, data.tiles, function (item) { return item; });
+      if (Array.isArray(data.hiddenTiles)) hiddenTiles = state.appTiles.filter(function (t) {
+        return t.id !== 'ccnctheme' && data.hiddenTiles.indexOf(t.id) >= 0;
+      }).map(function (t) { return t.id; });
+      sortHiddenLast();
       state.splitWidgets = order(state.splitWidgets, data.widgets, function (item) { return item && item.id; });
     } catch (ignored) {}
   }
@@ -3641,7 +3691,7 @@ var stockSub = '';
     } else if (id === 'findcar') {
       ctx.moveTo(35, 58); ctx.quadraticCurveTo(16, 36, 16, 29); ctx.arc(35, 29, 19, Math.PI, 0); ctx.quadraticCurveTo(54, 36, 35, 58);
       ctx.moveTo(31, 38); ctx.lineTo(31, 21); ctx.lineTo(37, 21); ctx.quadraticCurveTo(43, 21, 43, 26); ctx.quadraticCurveTo(43, 31, 37, 31); ctx.lineTo(31, 31);
-    } else if (id === 'theme') {
+    } else if (id === 'theme' || id === 'ccnctheme') {
       ctx.arc(35, 35, 21, 0, Math.PI * 2);
       ctx.moveTo(35, 14); ctx.lineTo(35, 56);
       ctx.moveTo(14, 35); ctx.arc(35, 35, 21, Math.PI, Math.PI / 2, true);
@@ -3715,12 +3765,13 @@ var stockSub = '';
     container.innerHTML = '';
     setClass(container, 'reordering', state.reordering);
     var startIdx = appPages.indexOf(targetPage) * tilesPerPage;
-    var slice = state.appTiles.slice(startIdx, startIdx + tilesPerPage);
+    var shown = state.reordering ? state.appTiles : state.appTiles.filter(function (t) { return !tileHidden(t); });
+    var slice = shown.slice(startIdx, startIdx + tilesPerPage);
 
     slice.forEach(function (tile, localIdx) {
       var globalIdx = startIdx + localIdx;
       var el = document.createElement('article');
-      el.className = 'app-tile chamfer-both';
+      el.className = 'app-tile chamfer-both' + (tileHidden(tile) ? ' tile-hidden' : '');
       // ccNC cards share one tone; per-app colours are no longer painted.
       el.setAttribute('data-idx', String(globalIdx));
 
@@ -3734,6 +3785,10 @@ var stockSub = '';
           '<div class="reorder-arrows">' +
             '<button type="button" class="reorder-btn" data-move="-1" title="앞으로 이동">‹</button>' +
             '<button type="button" class="reorder-btn" data-move="1" title="뒤로 이동">›</button>' +
+            (tile.id === 'ccnctheme' ? '' :   // 설정으로 돌아갈 길이라 숨기지 않는다
+              '<button type="button" class="reorder-btn" data-hide="1" title="' + (tileHidden(tile) ? '되살리기' : '숨기기') + '">' +
+              '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>' +
+              (tileHidden(tile) ? '<path d="M4 4l16 16"/>' : '') + '</svg></button>') +
           '</div>' +
         '</div>';
 
@@ -3748,11 +3803,16 @@ var stockSub = '';
         if (moveBtn) {
           if (!state.reordering) return;
           ev.stopPropagation();
-          var dir = parseInt(moveBtn.getAttribute('data-move'), 10);
-          var targetIdx = (globalIdx + dir + state.appTiles.length) % state.appTiles.length;
-          var tmp = state.appTiles[globalIdx];
-          state.appTiles[globalIdx] = state.appTiles[targetIdx];
-          state.appTiles[targetIdx] = tmp;
+          if (moveBtn.hasAttribute('data-hide')) {
+            setTileHidden(tile, !tileHidden(tile));
+          } else {
+            var dir = parseInt(moveBtn.getAttribute('data-move'), 10);
+            var targetIdx = (globalIdx + dir + state.appTiles.length) % state.appTiles.length;
+            var tmp = state.appTiles[globalIdx];
+            state.appTiles[globalIdx] = state.appTiles[targetIdx];
+            state.appTiles[targetIdx] = tmp;
+            sortHiddenLast();   // 숨긴 타일은 옮겨도 맨 뒤 무리에 남는다
+          }
           saveDisplay();
           renderAppTilesPage(state.page);
           return;
@@ -3809,6 +3869,7 @@ var stockSub = '';
   }
 
   function handleTileAction(tile) {
+    if (tile.action === 'themesettings') { state.slTab = 'theme'; navigateTo('screenlayout'); return; }   // 모드 화면의 테마 설정 탭
     if (inVehicle && tile.action === 'search') { host('nav-search'); return; }
     if (tile.action === 'navi' || tile.action === 'media' || tile.action === 'phone' ||
         tile.action === 'settings' || tile.action === 'screenlayout' || tile.action === 'search' || tile.action === 'voicememo' ||
@@ -4936,12 +4997,15 @@ var stockSub = '';
       { id: 'display', title: '디스플레이', svg: '<rect x="2.8" y="4" width="18.4" height="14.5" rx="1"/><circle cx="12" cy="11.2" r="2.1"/><path d="M12 6.8v1.1M12 14.5v1.1M7.6 11.2h1.1M15.3 11.2h1.1M8.9 8.1l.8.8M14.3 13.5l.8.8M8.9 14.3l.8-.8M14.3 8.9l.8-.8"/>' },
       { id: 'buttons', title: '버튼', svg: '<path d="M10.5 12V5.5a1.5 1.5 0 0 1 3 0v6l3.4.6a2 2 0 0 1 1.6 2.3l-.9 5.6h-7.2L7 15.3a1.4 1.4 0 0 1 2.1-1.8l1.4 1.3"/><path d="M8.3 8.5a3.8 3.8 0 0 1 7.4 0"/>' },
       { id: 'connect', title: 'Kia Connect', svg: '<path d="M3 13.5 6 8h1.6l-1.8 3.4L9.5 8h1.7l-3 5.5H6.6l1.6-3-3.6 3zM12 13.5 15 8h1.6l-3 5.5zM16.6 13.5 19.6 8h1.6l-3 5.5z"/><text x="12" y="19.5" text-anchor="middle" font-size="4.2" stroke="none" fill="currentColor">Connect</text>' },
-      { id: 'general', title: '일반', svg: '<path d="M10.3 3h3.4l.5 2.4 1.7.9 2.3-.9 1.7 2.9-1.8 1.6v2.2l1.8 1.6-1.7 2.9-2.3-.9-1.7.9-.5 2.4h-3.4l-.5-2.4-1.7-.9-2.3.9-1.7-2.9 1.8-1.6V9.9L3.6 8.3l1.7-2.9 2.3.9 1.7-.9z"/><path d="m9.6 12 1.7 1.7 3.2-3.4"/>' }
+      { id: 'general', title: '일반', svg: '<path d="M10.3 3h3.4l.5 2.4 1.7.9 2.3-.9 1.7 2.9-1.8 1.6v2.2l1.8 1.6-1.7 2.9-2.3-.9-1.7.9-.5 2.4h-3.4l-.5-2.4-1.7-.9-2.3.9-1.7-2.9 1.8-1.6V9.9L3.6 8.3l1.7-2.9 2.3.9 1.7-.9z"/><path d="m9.6 12 1.7 1.7 3.2-3.4"/>' },
+      // 6x2 의 남은 한 칸: 순정 5W 설정 앱으로 바로 넘어가기
+      { id: 'stock5w', title: '5W 설정', svg: '<path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5"/>' }
     ];
     var openCard = function (id) {
       if (id === 'screenlayout') { navigateTo('screenlayout'); return; }
       if (id === 'buttons') { settingsSection = 'buttons'; stockScreenGroup = ''; navigateTo('settings'); renderSettingsStage(); return; }
       if (id === 'connect') { host('connect'); return; }
+      if (id === 'stock5w') { if (inVehicle) host('settings'); else showNotice('차에서 순정 5W 설정을 엽니다'); return; }
       openSettingsSection(id);
     };
     grid.innerHTML = '';
@@ -6384,8 +6448,6 @@ var stockSub = '';
           '<span>즐겨찾기 버튼 홈 전환</span><output id="theme-custom-key-home">' + (flags.customKeyHome ? '켜짐' : '꺼짐') + '</output></button>' +
           '<button type="button" class="detail-settings-row" data-host="nav-bar-toggle"><span>순정 내비에서 ccNC 하단바 시험</span>' +
           '<output id="theme-nav-bar">' + (flags.navBar ? '켜짐' : '꺼짐') + '</output></button>' +
-          '<button type="button" class="detail-settings-row" data-host="navi-skin-toggle"><span>순정 내비 왼쪽 버튼 ccNC 모양 시험</span>' +
-          '<output id="theme-navi-skin">' + (flags.naviSkin ? '켜짐' : '꺼짐') + '</output></button>' +
           '<button type="button" class="detail-settings-row" data-host="corners-toggle"><span>순정 화면에도 하단 버튼 띄우기</span>' +
           '<output id="theme-corners">' + (flags.corners ? '켜짐' : '꺼짐') + '</output></button>' +
           slExternal('home-settings', '<span>차량 홈 화면 설정</span>', 'detail-settings-row') +
@@ -6918,7 +6980,8 @@ var stockSub = '';
     if (next !== 'settings') setClass(shell, 'sound-mode', false);
     if (next !== 'settings') setClass(shell, 'detail-settings', false);
     if (next !== 'phone') setClass(shell, 'phone-keypad-mode', false);
-    if (next !== state.page) state.reordering = false;
+    // 재배치는 앱 페이지끼리 넘길 때 이어진다(숨긴 타일이 있는 뒤 페이지까지 가야 하므로).
+    if (next !== state.page && state.reordering && !isAppsPage(next)) { state.reordering = false; invalidateAppsCache(); }
     if (next !== 'settings' && next !== 'search') settingsSection = '';
     state.page = next;
     if (next === 'home') layoutHomeCards();
@@ -6991,6 +7054,8 @@ var stockSub = '';
     var pbars = document.querySelectorAll('.home-pager [data-page]');
     for (var i = 0; i < pbars.length; i++) {
       pbars[i].setAttribute('aria-current', String(pbars[i].getAttribute('data-page') === next));
+      var barPage = pbars[i].getAttribute('data-page');
+      pbars[i].hidden = isAppsPage(barPage) && !appsPageUsed(barPage);
     }
     var reorderBtn = document.getElementById('reorder-toggle-btn');
     reorderBtn.hidden = !isAppsPage(next);
@@ -6998,7 +7063,7 @@ var stockSub = '';
 
     document.getElementById('pager-left-btn').textContent = next === 'standby' ? '홈 화면 ›' : '‹ 배경화면';
     document.getElementById('pager-right-btn').textContent =
-      !isAppsPage(next) ? '전체 메뉴 ›' : next === appPages[appPages.length - 1] ? '‹ 홈 화면' : '다음 페이지 ›';
+      !isAppsPage(next) ? '전체 메뉴 ›' : next === lastAppsPage() ? '‹ 홈 화면' : '다음 페이지 ›';
 
     updateAllStatuses();
     if (next === 'search') renderSearch();
@@ -8169,15 +8234,12 @@ var stockSub = '';
     else showPage('standby');
   });
   document.getElementById('pager-right-btn').addEventListener('click', function () {
-    var nextIndex = appPages.indexOf(state.page) + 1;
-    showPage(appPages[nextIndex] || 'home');
+    var nextPage = appPages[appPages.indexOf(state.page) + 1];
+    showPage(nextPage && appsPageUsed(nextPage) ? nextPage : 'home');
   });
   document.getElementById('reorder-toggle-btn').addEventListener('click', function () {
     if (!state.reordering) { showNotice('카드를 1초간 누른 뒤 옮기세요.'); return; }
-    state.reordering = false;
-    this.setAttribute('aria-pressed', String(state.reordering));
-    var curApps = appsPanelFor(state.page);
-    if (curApps) setClass(curApps, 'reordering', false);
+    setReordering(false);
     showNotice('아이콘 재배치가 완료되었습니다.');
   });
   document.getElementById('bg-toggle-btn').addEventListener('click', function () {
@@ -8332,7 +8394,7 @@ var stockSub = '';
     var edgeW = vw * EDGE_RATIO;
     var dir = clientX <= edgeW ? -1 : (clientX >= vw - edgeW ? 1 : 0);
     var curIdx = homeOrder.indexOf(state.page);
-    var nextDest = dir && curIdx >= 0 ? homeOrder[curIdx + dir] : null;
+    var nextDest = dir && curIdx >= 0 ? deckPage(curIdx + dir) : null;
     if (!nextDest || nextDest === 'standby') dir = 0;
     if (dir === (g.edgeDir || 0)) return;
     window.clearTimeout(g.edgeTimer);
@@ -8345,7 +8407,7 @@ var stockSub = '';
         if (gesture !== g || !g.held || g.edgeDir !== dir) return;
         if (slide && slide.settling) { scheduleEdge(); return; }
         var idxNow = homeOrder.indexOf(state.page);
-        var dest = idxNow >= 0 ? homeOrder[idxNow + dir] : null;
+        var dest = idxNow >= 0 ? deckPage(idxNow + dir) : null;
         if (!dest || dest === 'standby') { g.edgeDir = 0; return; }
         if (g.targetCard) { g.targetCard.classList.remove('card-target'); g.targetCard = null; }
         createSlide(dest, dir);
@@ -8362,7 +8424,7 @@ var stockSub = '';
           updateHeldTarget(g, g.lastClientX, g.lastClientY);
           if (g.edgeDir === dir) {
             var nextIdx = homeOrder.indexOf(state.page);
-            var afterDest = nextIdx >= 0 ? homeOrder[nextIdx + dir] : null;
+            var afterDest = nextIdx >= 0 ? deckPage(nextIdx + dir) : null;
             if (afterDest && afterDest !== 'standby') scheduleEdge();
             else g.edgeDir = 0;
           }
@@ -8455,27 +8517,31 @@ var stockSub = '';
           return true;
         }
       } else if (isAppsPage(state.page)) {
+        // 제자리에서 길게 눌렀다 떼면 아이콘 재배치(숨기기). 손 뗀 자리가 자기 카드여도 같다(차 WebView 는 뗀 좌표가 0,0 일 수 있어 마지막 움직임 좌표로 본다).
+        if ((!target || target === g.card) && state.page === g.startPage &&
+            Math.abs(g.lastClientX - g.x) <= HOLD_SLOP && Math.abs(g.lastClientY - g.y) <= HOLD_SLOP) {
+          setReordering(true);
+          return true;
+        }
         if (target && target.hasAttribute('data-idx')) {
           var toA = Number(target.getAttribute('data-idx'));
           if (fromA >= 0 && toA >= 0 && fromA !== toA) {
             state.appTiles.splice(toA, 0, state.appTiles.splice(fromA, 1)[0]);
+            sortHiddenLast();
             moved = true;
           }
         } else if (ev) {
           var sameSpot = state.page === g.startPage &&
             Math.abs(ev.clientX - g.x) <= HOLD_SLOP && Math.abs(ev.clientY - g.y) <= HOLD_SLOP;
           if (sameSpot) {
-            state.reordering = true;
-            document.getElementById('reorder-toggle-btn').setAttribute('aria-pressed', 'true');
-            var curApps = appsPanelFor(state.page);
-            if (curApps) setClass(curApps, 'reordering', true);
-            syncNativeMapSlot();
+            setReordering(true);
             return true;
           }
           var pIdx = appPages.indexOf(state.page);
           var toEnd = Math.min(state.appTiles.length - 1, (pIdx + 1) * tilesPerPage - 1);
           if (fromA >= 0 && toEnd >= 0 && fromA !== toEnd) {
             state.appTiles.splice(toEnd, 0, state.appTiles.splice(fromA, 1)[0]);
+            sortHiddenLast();
             moved = true;
           }
         }
@@ -8727,7 +8793,7 @@ var stockSub = '';
     g.lastClientX = ev.clientX;
     g.lastClientY = ev.clientY;
     var idx = homeOrder.indexOf(state.page);
-    var canSwipe = g.deck && idx >= 0 && !state.reordering && qcDrawer.hidden;
+    var canSwipe = g.deck && idx >= 0 && qcDrawer.hidden;
     // 누른 직후(180ms 이내) 가로로 10px 넘게 분명히 밀면 꾹 누르기 대신 즉시 페이지 넘김으로 전환한다.
     // 180ms 넘게 가만히 대고 있으면 꾹 누르기 손떨림 허용(24px)을 유지한다.
     var quickSwipe = canSwipe && !g.held && (now - g.startAt < 180) && Math.abs(dx) > 10 && Math.abs(dx) > 1.15 * Math.abs(dy);
@@ -8756,7 +8822,7 @@ var stockSub = '';
     g.samples.push({ x: ev.clientX, t: now });
     while (g.samples.length > 2 && now - g.samples[0].t > 120) g.samples.shift();
     var dir = dragDx < 0 ? 1 : (dragDx > 0 ? -1 : (dx < 0 ? 1 : -1));
-    var next = homeOrder[idx + dir];
+    var next = deckPage(idx + dir);
     if (!next || !dragDx) {
       if (slide && !next) { clearPageSlide(); syncNativeMapSlot(); }
       return true;
