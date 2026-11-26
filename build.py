@@ -62,6 +62,9 @@ def build(sdk, jdk, output):
             apk.write(ROOT / "assets" / "marquee.js", "assets/marquee.js")
             apk.write(ROOT / "assets" / "route_panel.html", "assets/route_panel.html")
             apk.write(ROOT / "assets" / "media_sheet.html", "assets/media_sheet.html")   # test57 내비 재생 상세 시트(빠져 있었음)
+            apk.write(ROOT / "assets" / "climate_sheet.html", "assets/climate_sheet.html")   # test66 시트·공조 팝업
+            apk.write(ROOT / "assets" / "licenses" / "MDI-LICENSE.txt", "assets/licenses/MDI-LICENSE.txt")   # 팝업 아이콘 라이선스
+            apk.write(ROOT / "assets" / "licenses" / "MATERIAL-SYMBOLS-LICENSE.txt", "assets/licenses/MATERIAL-SYMBOLS-LICENSE.txt")   # 내기·외기 아이콘(구글) 라이선스
             apk.write(ROOT / "assets" / "radio_logos.tsv", "assets/radio_logos.tsv")
             for icon in sorted((ROOT / "assets" / "icons").glob("*.png")):
                 apk.write(icon, "assets/icons/" + icon.name)

@@ -9073,6 +9073,9 @@ var stockSub = '';
       inSplit: document.getElementById('split-card').contains(ev.target),
       inMediaBox: document.getElementById('bb-media-btn').contains(ev.target),
       fromTop: ev.clientY < 48 && !inCcTab(ev.target),   // ccNC 재생 목록·가사 탭은 위 끝이라 누르다 끌려도 상단바를 내리지 않는다
+      // test66: 화면 아래 가운데 띠(하단바 가운데·홈 페이지 점 자리)에서 위로 쓸면 시트·공조 팝업
+      fromBottom: ev.clientY > window.innerHeight * 0.86 && ev.clientX > window.innerWidth * 0.3 && ev.clientX < window.innerWidth * 0.7 &&
+        !document.getElementById('bb-media-btn').contains(ev.target),
       deck: deck.contains(ev.target),
       lastX: ev.clientX,
       lastClientX: ev.clientX,
@@ -9089,7 +9092,7 @@ var stockSub = '';
     // WebView starts its own scroll and then delivers touchmove only every ~200 ms (choppy swipes).
     // Pages that never scroll (home pager, app tiles) and held cards cancel all moves.
     g.noScroll = (g.deck && homeOrder.indexOf(state.page) >= 0) || !!cardAt(ev.target) ||
-      g.fromTop || g.inSplit || g.inMediaBox;
+      g.fromTop || g.inSplit || g.inMediaBox || g.fromBottom;
     if (g.inSplit) {
       var splitCard = document.getElementById('split-card');
       splitCard.classList.add('touching');
@@ -9192,6 +9195,11 @@ var stockSub = '';
       return true;
     }
 
+    if (g.fromBottom && qcDrawer.hidden && dy < -40 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      g.fromBottom = false;   // 한 번만
+      host('climate-sheet');
+      return true;
+    }
     if (g.fromTop && dy > 45 && Math.abs(dy) > Math.abs(dx)) {
       qcDrawer.hidden = false;
       syncNativeMapSlot();

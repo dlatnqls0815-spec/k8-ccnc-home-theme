@@ -381,6 +381,10 @@ public final class NavBarService extends Service {
     }
 
     private void handle(String action) {
+        if ("climate-sheet".equals(action)) {   // test66: 미디어 칸 밖에서 위로 쓸면 시트·공조 팝업
+            ClimateSheetService.open(this);
+            return;
+        }
         if ("home".equals(action) || "menu".equals(action)) {
             endSession();
             try {

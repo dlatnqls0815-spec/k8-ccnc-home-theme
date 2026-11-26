@@ -383,6 +383,29 @@ button.bb-idle { padding: 0; white-space: nowrap; }
   }, false);
   mediaZone.addEventListener('touchend', function (event) { finishSwipe(event.changedTouches[0], event); });
   mediaZone.addEventListener('touchcancel', function () { swipeStart = null; });
+  // test66: 미디어 칸 밖(뒤로·홈·메뉴·길안내 알약)에서 위로 쓸면 시트·공조 팝업. 쓴 뒤의 단추 누름은 막는다.
+  var upStart = null, upBlockUntil = 0, barEl = document.getElementById('detail-bottom-bar');
+  barEl.addEventListener('touchstart', function (event) {
+    upStart = event.touches.length === 1 && !mediaZone.contains(event.target)
+      ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null;
+  }, false);
+  barEl.addEventListener('touchmove', function (event) {
+    if (!upStart) return;
+    var t = event.touches[0], dx = t.clientX - upStart.x, dy = t.clientY - upStart.y;
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) event.preventDefault();   // Chrome 30: 막지 않으면 터치를 가져간다
+    if (dy < -40 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      upStart = null;
+      upBlockUntil = Date.now() + 500;
+      send('climate-sheet');
+    }
+  }, false);
+  barEl.addEventListener('touchend', function () { upStart = null; }, false);
+  barEl.addEventListener('touchcancel', function () { upStart = null; }, false);
+  barEl.addEventListener('click', function (event) {
+    if (Date.now() >= upBlockUntil) return;
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }, true);
   mediaZone.addEventListener('mousedown', function (event) { if (event.button === 0) startSwipe(event); });
   mediaZone.addEventListener('mouseup', function (event) { finishSwipe(event, event); });
   mediaZone.addEventListener('mouseleave', function () { swipeStart = null; });

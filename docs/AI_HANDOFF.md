@@ -1,5 +1,18 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test66 시트·공조 팝업(위 시트, 아래 공조), 아래에서 위로 쓸어 열기 (2026-11-26, Claude, 차 확인 전·사용자 제어 허락, NEMESIS sha256 526ca27a…fb44)
+- 여는 곳: 테마 화면 아래 가운데 띠(높이 아래 14%, 가로 30~70%, 미디어 칸 제외)에서 위로 쓸기 → `host('climate-sheet')`. 순정 내비 위 ccNC 하단바는 미디어 칸 밖에서 위로 쓸기(`navbar.html` → `climate-sheet`). 차의 물리 시트 버튼은 순정 그대로(사용자 결정).
+- `ClimateSheetService`: 전체 화면 투명 창(HW 가속), `climate_sheet.html`. 아래에서 올라옴, 왼쪽 위 X·바깥 누르기·아래로 120px 끌기로 닫힘. 떠 있는 동안 0.7초마다 상태 다시 읽음.
+- `StockCabin`(이름으로 부름, 번호 안 씀 — K8 `automotive.dex` 에서 이름 확인): 시트 `USMManager.getFrontSeatHeat_Drv/AstOption·State`, `getRearSeatHeat_Left/RightOption·State`, `setFrontSeatHeatDrv/AstStep`, `setRearSeatHeatLeft/RightStep`(상태 값 2 끔, 3~5 통풍, 6~8 열선; 누르면 8→7→6→끔 / 5→4→3→끔), 핸들 `setSWRC_SteeringwheelWarmerSet(1→0.15초 뒤 0)`. 공조 `DATCManager.setFrontClimateControl(id, 값)`: AUTO 0x8·A/C 0x9·앞유리 0xa·내외기 0xb·SYNC 0x16(1 켬/0 끔), 바람 0x5(2~9), 온도 0x32 운전석/0x31 조수석(1 올림/2 내림), OFF 0x33. **값은 JacobPantuso/ccnc-gen5w(MIT) 의 정리이고 그쪽도 가정값 → K8 실차에서 `K8Cabin SENT` 로그와 실제 반응으로 하나씩 확인할 것.** 뒷유리 열선은 번호를 몰라 뺐다.
+- 좌석 옵션(0 없음, 1·2 열선, 3·4 통풍, 5·6 둘 다)으로 없는 버튼은 숨김 → 하이브리드 K8 처럼 뒷좌석 통풍 없는 차는 통풍 버튼이 안 보이고, 있는 차는 자동으로 생김. 값을 못 읽으면(-1) 둘 다 보임. 한 좌석에 버튼이 하나만 보이면(열선만) 그 좌석 칸 가운데로 옮긴다(`GROUP` 좌표). `supportFrontClimateControl()==0` 이면 공조 버튼을 흐리게 막고 안내.
+- **K8 펌웨어 번호표로 공조 값 확인**(`automotive.dex` `DATCFlag$DATCControl`): AC 9, AIR_CLEANING 7, AUTO 8, BLOWER_LEVEL 5(BLOWER_LEVEL1~8 = 2~9), FRONT_DEFOG 10, INTAKE 11(INTAKE_REC_ON 1/OFF 0), SYNC 22, TEMP_DR_UPDN 50·TEMP_PS_UPDN 49(UP 1/DOWN 2), OFF_REQ 51, ON 1/OFF 0 → 넣은 값과 같다. 실제 반응은 여전히 차 확인.
+- **뒷유리·사이드미러 열선은 못 넣음**: DATCControl·DATCFlag·USM·BCM 어디에도 켜는 함수가 없다(BCM 은 사이드미러 접힘 상태만). 물리 버튼 전용.
+- X 버튼 없앰(사용자): 닫기는 아래로 끌기·바깥 누르기. 위 좌석 칸·아래 줄 단추를 팝업 가운데(888) 기준 좌우 대칭으로. 아래 줄은 보이는 단추만 가운데로 다시 늘어놓음.
+- 내기/외기: 글자 없이 아이콘(차 옆모습 윤곽 안에서 도는 화살표 = 내기, 밖에서 들어오는 화살표 = 외기, 굵기 2·채운 화살촉, Astryx 규칙으로 직접 그림).
+- 공기청정: `isAirPurifier()==1` 인 차에서만 단추(MDI air-purifier), 켜짐 `getClimateInfo(7)`, 조작 `setFrontClimateControl(7, 1/0)`. 공기질 값 `getClimateInfo(0x22)`·`getAirCleaningStepColor()` 는 상태에 실어 보내기만(아직 화면 표시 안 함).
+- 아이콘: Material Design Icons(Pictogrammers, Apache 2.0) SVG 경로를 HTML 에 넣음, 라이선스 `assets/licenses/MDI-LICENSE.txt`. 현대·기아 그림은 쓰지 않음.
+- 검사: c30_check 0, c30_preview 오류 0, 팝업 파일을 PC 에서 가짜 상태로 띄워 JS 오류 0·모양 확인(차 확인 아님).
+
 ## 0.5.0-test65 실차 검수·배포용 (2026-11-26, Claude, K8 실차 무선 ADB·사용자 "다 된다")
 - **운전자 이름 잘림 진짜 원인**: 실차 CDP — `#driver-name` 칸 56px, 글자 `scrollWidth` 65px(Chrome 30 이 vw 글자 칸 너비를 덜 잼). test63 은 틀린 칸 너비로 재서 효과 없었다. `fitDriverName` 이 `scrollWidth` 로 이름 칸·버튼 `min-width` 를 준다(실차 65/125px 확인).
 - **모서리 미디어 상자 제목·가수 사라짐**: `corners.html` 의 `font-size:28vh/23vh` 가 창 높이 0 일 때 한 번 재여 0px 로 굳었다(실차: title 높이 0). html 글자 크기를 창 높이 1% 로 스크립트가 맞추고 글자는 `rem`(실차 20/16px 확인).
@@ -1735,3 +1748,13 @@ adb shell am start -n io.github.k8home/.HomeActivity
 - 작업공간의 `deliverables/K8-하단바-예시안/index.html`을 열면 하단 뒤로·홈·전체 앱·내비·미디어와 오른쪽 위젯 전환을 체험할 수 있다. 미디어의 재생 예시 상태는 홈과 상세 화면에서 같은 값으로 표시한다.
 - Chromium에서 1920×720, 768×432, 390×844의 배치와 홈 복귀·이전 화면 복귀·상태 표시를 확인했다. APK에는 아직 반영하지 않았다. 순정 화면이나 차량 홈 버튼이 발생시키는 동작에서 새 홈으로 돌아가는 경로는 5W 실차에서 확인이 필요하다.
 - [공개 웹 예시안](https://k8-5w-home-demo.plumelf4.chatgpt.site/) 2판에서 홈↔전체 앱의 좌우 마우스 드래그와 터치 스와이프, 지도 카드와 상세 화면의 우리 집·회사 선택, 미디어 카드와 상세 화면의 재생·일시정지를 제공한다. 1920×720 마우스와 390×844·844×390 터치에서 검증했다. 길 안내와 재생 상태는 웹 예시용이다.
+
+### test66 아이콘 교체 (2026-11-26, 사용자 선택)
+- 내기·외기: 구글 Material Symbols `car_fan_recirculate_2`(내기, 차 안 U자 화살표)·`car_fan_recirculate`(외기, 밖에서 들어오는 화살표)의 **outline** 판(사용자 "B안"). Apache 2.0 → `assets/licenses/MATERIAL-SYMBOLS-LICENSE.txt`, build.py 가 APK 에 넣는다.
+- 공기청정: MDI `leaf`(사용자 "P2").
+- USB 묶음 sha256 526ca27ae89abf7e79b2cca3d79ac9d990ef60360a049e1675666fb64ef2fb44. 차 미설치, 미커밋.
+
+### test66 최적화 점검 (2026-11-26)
+- 문제: 팝업이 0.7초마다(공조 리스너 변화 때도) 메인 스레드에서 순정 USM·DATC 함수 약 18개를 바인더로 부르고, HTML 은 값이 같아도 단추·온도·내외기 SVG 를 매번 다시 그렸다 → 올라오기·끌기 중 끊김 가능.
+- 고침: `ClimateSheetService` 에 작업 스레드(HandlerThread). 시트 읽기(`cabin.snapshot`)와 모든 보내기(`send`)는 그 스레드에서만, 밀린 읽기는 하나로 합침, 결과만 메인으로 넘겨 evaluateJavascript. 핸들 열선 뗌(0)도 같은 스레드. HTML 은 받은 JSON 이 직전과 같으면 다시 그리지 않음.
+- 차에서 볼 것: 팝업 열기·끌기 부드러움, 단추 반응 지연 없음(`K8Cabin SENT` 로그).

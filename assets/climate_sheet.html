@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시트·공조</title>
+<!-- test66 시트(위)·공조(아래) 팝업. 아이콘: Material Design Icons(Pictogrammers, Apache 2.0) — assets/licenses/MDI-LICENSE.txt -->
+<style>
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; font-family: sans-serif; color: #eef1f4; -webkit-user-select: none; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+#dim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,.6); opacity: 0; -webkit-transition: opacity .3s; transition: opacity .3s; }
+#dim.on { opacity: 1; }
+#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 720px; -webkit-transform-origin: 0 0; transform-origin: 0 0; pointer-events: none; }
+#sheet { position: absolute; left: 72px; width: 1776px; bottom: 0; height: 612px; background: #262626; border-radius: 24px 24px 0 0; pointer-events: auto;
+  -webkit-backface-visibility: hidden; -webkit-transform: translate3d(0,100%,0); transform: translate3d(0,100%,0);
+  -webkit-transition: -webkit-transform .34s cubic-bezier(.2,.8,.25,1); transition: transform .34s cubic-bezier(.2,.8,.25,1); }
+#sheet.open { -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); }
+#grab { position: absolute; left: 840px; top: 12px; width: 96px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.28); }
+#close { position: absolute; left: 30px; top: 28px; width: 64px; height: 64px; border-radius: 32px; border: 0; background: rgba(255,255,255,.06); padding: 0; }
+#close svg { display: block; margin: 17px auto 0; }
+button { font-family: inherit; color: inherit; outline: none; }
+.abs { position: absolute; }
+.gl { position: absolute; top: 46px; text-align: center; font-size: 26px; color: #c3c9cf; }
+.b { position: absolute; top: 96px; height: 150px; border-radius: 16px; background: #1b1b1b; border: 2px solid rgba(255,255,255,.08); padding: 0; }
+.b svg { position: absolute; left: 50%; top: 26px; margin-left: -29px; }
+.b .lv { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; font-size: 0; }
+.lv i { display: inline-block; width: 28px; height: 5px; border-radius: 3px; background: #4a4a4a; margin: 0 4px; }
+.b.heat { border-color: #e8743b; background: #2a211c; } .b.vent { border-color: #4a9be0; background: #1b222b; }
+.heat .lv i.on { background: #ff7a3d; } .vent .lv i.on { background: #4fa7f0; }
+.b:active, .c:active, .arr:active, .pm:active { background: #333; }
+.sep { position: absolute; top: 80px; width: 1px; height: 190px; background: rgba(255,255,255,.1); }
+.hr { position: absolute; left: 40px; right: 40px; top: 306px; height: 1px; background: rgba(255,255,255,.1); }
+.temp { position: absolute; top: 330px; width: 240px; text-align: center; }
+.arr { display: block; margin: 0 auto; width: 64px; height: 64px; border-radius: 32px; background: #1b1b1b; border: 0; padding: 0; font-size: 24px; }
+.arr.up { color: #ff7a3d; } .arr.dn { color: #4fa7f0; }
+.temp b { display: block; font-size: 72px; font-weight: 300; line-height: 100px; }
+.temp b small { font-size: 30px; vertical-align: 30px; }
+.tl { font-size: 24px; color: #a9b0b8; margin-top: 4px; }
+#fan { position: absolute; left: 718px; top: 372px; width: 340px; height: 88px; border-radius: 44px; background: #1b1b1b; }
+.pm { position: absolute; top: 14px; width: 60px; height: 60px; border-radius: 30px; background: #2e2e2e; border: 0; padding: 0; font-size: 36px; color: #eef1f4; }
+#fan svg { position: absolute; left: 110px; top: 15px; }
+#fanv { position: absolute; left: 178px; top: 12px; width: 50px; text-align: center; font-size: 50px; line-height: 64px; }
+.c { position: absolute; top: 498px; width: 136px; height: 84px; border-radius: 14px; background: #1b1b1b; border: 2px solid rgba(255,255,255,.08); padding: 0; font-size: 28px; }
+.c svg { vertical-align: middle; }
+.c small { font-size: 22px; color: #c3c9cf; margin-left: 6px; vertical-align: middle; }
+.c.on { border-color: #1e8a79; }
+.c.on:after { content: ""; position: absolute; left: 50%; margin-left: -18px; bottom: 10px; width: 36px; height: 4px; border-radius: 2px; background: #2fbfa8; }
+.nocontrol .c, .nocontrol .arr, .nocontrol .pm { opacity: .35; }
+#note { position: absolute; left: 0; right: 0; top: 590px; text-align: center; font-size: 20px; color: #8d949b; }
+</style>
+</head>
+<body>
+<div id="dim"></div>
+<div id="stage"><div id="sheet">
+  <div id="grab"></div>
+
+  <div class="gl" style="left:60px;width:352px">운전석</div>
+  <button type="button" class="b" style="left:60px;width:170px" data-seat="drv" data-kind="heat"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15M13.7 3.4L12.3 6.8L13.7 10.2L11.7 15L10 13.6L11.4 10.2L10 6.8L12 2L13.7 3.4M17.9 3.4L16.5 6.8L17.9 10.2L15.9 15L14.2 13.6L15.6 10.2L14.2 6.8L16.2 2L17.9 3.4M22 3.4L20.6 6.8L22 10.2L20 15L18.3 13.6L19.7 10.2L18.3 6.8L20.3 2L22 3.4"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <button type="button" class="b" style="left:242px;width:170px" data-seat="drv" data-kind="vent"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M20.8 10.2L19.4 10.6L18.2 9.9V8.2L19.4 7.5L20.8 7.9L21.1 6.8L20 6.5L20.3 5.4L19.2 5.1L18.8 6.5L17.6 7.2L16.1 6.3V5L17.1 4L16.3 3.2L15.5 4L14.7 3.2L13.9 4L14.9 5V6.3L13.4 7.2L12.2 6.5L11.9 5.1L10.8 5.4L11.1 6.5L10 6.7L10.3 7.8L11.7 7.4L12.9 8.1V9.8L11.7 10.5L10.3 10.1L10 11.4L11.1 11.7L10.8 12.7L11.9 13L12.3 11.6L13.5 10.9L15 11.8V13.1L14 14.1L14.8 14.9L15.6 14.1L16.4 14.9L17.2 14.1L16.2 13.1V11.8L17.7 10.9L18.9 11.6L19.3 13L20.4 12.7L20 11.6L21.1 11.3L20.8 10.2M14 8.2L15.5 7.3L17 8.2V9.9L15.5 10.8L14 9.9V8.2M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15Z"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <div class="sep" style="left:434px"></div>
+
+  <div class="gl" style="left:457px;width:312px">뒷좌석 왼쪽</div>
+  <button type="button" class="b" style="left:457px;width:150px" data-seat="rl" data-kind="heat"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15M13.7 3.4L12.3 6.8L13.7 10.2L11.7 15L10 13.6L11.4 10.2L10 6.8L12 2L13.7 3.4M17.9 3.4L16.5 6.8L17.9 10.2L15.9 15L14.2 13.6L15.6 10.2L14.2 6.8L16.2 2L17.9 3.4M22 3.4L20.6 6.8L22 10.2L20 15L18.3 13.6L19.7 10.2L18.3 6.8L20.3 2L22 3.4"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <button type="button" class="b" style="left:619px;width:150px" data-seat="rl" data-kind="vent"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M20.8 10.2L19.4 10.6L18.2 9.9V8.2L19.4 7.5L20.8 7.9L21.1 6.8L20 6.5L20.3 5.4L19.2 5.1L18.8 6.5L17.6 7.2L16.1 6.3V5L17.1 4L16.3 3.2L15.5 4L14.7 3.2L13.9 4L14.9 5V6.3L13.4 7.2L12.2 6.5L11.9 5.1L10.8 5.4L11.1 6.5L10 6.7L10.3 7.8L11.7 7.4L12.9 8.1V9.8L11.7 10.5L10.3 10.1L10 11.4L11.1 11.7L10.8 12.7L11.9 13L12.3 11.6L13.5 10.9L15 11.8V13.1L14 14.1L14.8 14.9L15.6 14.1L16.4 14.9L17.2 14.1L16.2 13.1V11.8L17.7 10.9L18.9 11.6L19.3 13L20.4 12.7L20 11.6L21.1 11.3L20.8 10.2M14 8.2L15.5 7.3L17 8.2V9.9L15.5 10.8L14 9.9V8.2M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15Z"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+
+  <div class="gl" style="left:813px;width:150px">핸들</div>
+  <button type="button" class="b" style="left:813px;width:150px" id="wheel"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M13,19.92C14.8,19.7 16.35,18.95 17.65,17.65C18.95,16.35 19.7,14.8 19.92,13H16.92C16.7,14 16.24,14.84 15.54,15.54C14.84,16.24 14,16.7 13,16.92V19.92M10,8H14L17,11H19.92C19.67,9.05 18.79,7.38 17.27,6C15.76,4.66 14,4 12,4C10,4 8.24,4.66 6.73,6C5.21,7.38 4.33,9.05 4.08,11H7L10,8M11,19.92V16.92C10,16.7 9.16,16.24 8.46,15.54C7.76,14.84 7.3,14 7.08,13H4.08C4.3,14.77 5.05,16.3 6.35,17.6C7.65,18.9 9.2,19.67 11,19.92M12,2C14.75,2 17.1,3 19.05,4.95C21,6.9 22,9.25 22,12C22,14.75 21,17.1 19.05,19.05C17.1,21 14.75,22 12,22C9.25,22 6.9,21 4.95,19.05C3,17.1 2,14.75 2,12C2,9.25 3,6.9 4.95,4.95C6.9,3 9.25,2 12,2Z"/></svg><span class="lv"><i style="width:44px"></i></span></button>
+
+  <div class="gl" style="left:1007px;width:312px">뒷좌석 오른쪽</div>
+  <button type="button" class="b" style="left:1007px;width:150px" data-seat="rr" data-kind="heat"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15M13.7 3.4L12.3 6.8L13.7 10.2L11.7 15L10 13.6L11.4 10.2L10 6.8L12 2L13.7 3.4M17.9 3.4L16.5 6.8L17.9 10.2L15.9 15L14.2 13.6L15.6 10.2L14.2 6.8L16.2 2L17.9 3.4M22 3.4L20.6 6.8L22 10.2L20 15L18.3 13.6L19.7 10.2L18.3 6.8L20.3 2L22 3.4"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <button type="button" class="b" style="left:1169px;width:150px" data-seat="rr" data-kind="vent"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M20.8 10.2L19.4 10.6L18.2 9.9V8.2L19.4 7.5L20.8 7.9L21.1 6.8L20 6.5L20.3 5.4L19.2 5.1L18.8 6.5L17.6 7.2L16.1 6.3V5L17.1 4L16.3 3.2L15.5 4L14.7 3.2L13.9 4L14.9 5V6.3L13.4 7.2L12.2 6.5L11.9 5.1L10.8 5.4L11.1 6.5L10 6.7L10.3 7.8L11.7 7.4L12.9 8.1V9.8L11.7 10.5L10.3 10.1L10 11.4L11.1 11.7L10.8 12.7L11.9 13L12.3 11.6L13.5 10.9L15 11.8V13.1L14 14.1L14.8 14.9L15.6 14.1L16.4 14.9L17.2 14.1L16.2 13.1V11.8L17.7 10.9L18.9 11.6L19.3 13L20.4 12.7L20 11.6L21.1 11.3L20.8 10.2M14 8.2L15.5 7.3L17 8.2V9.9L15.5 10.8L14 9.9V8.2M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15Z"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <div class="sep" style="left:1342px"></div>
+
+  <div class="gl" style="left:1364px;width:352px">조수석</div>
+  <button type="button" class="b" style="left:1364px;width:170px" data-seat="ast" data-kind="heat"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15M13.7 3.4L12.3 6.8L13.7 10.2L11.7 15L10 13.6L11.4 10.2L10 6.8L12 2L13.7 3.4M17.9 3.4L16.5 6.8L17.9 10.2L15.9 15L14.2 13.6L15.6 10.2L14.2 6.8L16.2 2L17.9 3.4M22 3.4L20.6 6.8L22 10.2L20 15L18.3 13.6L19.7 10.2L18.3 6.8L20.3 2L22 3.4"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+  <button type="button" class="b" style="left:1546px;width:170px" data-seat="ast" data-kind="vent"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M20.8 10.2L19.4 10.6L18.2 9.9V8.2L19.4 7.5L20.8 7.9L21.1 6.8L20 6.5L20.3 5.4L19.2 5.1L18.8 6.5L17.6 7.2L16.1 6.3V5L17.1 4L16.3 3.2L15.5 4L14.7 3.2L13.9 4L14.9 5V6.3L13.4 7.2L12.2 6.5L11.9 5.1L10.8 5.4L11.1 6.5L10 6.7L10.3 7.8L11.7 7.4L12.9 8.1V9.8L11.7 10.5L10.3 10.1L10 11.4L11.1 11.7L10.8 12.7L11.9 13L12.3 11.6L13.5 10.9L15 11.8V13.1L14 14.1L14.8 14.9L15.6 14.1L16.4 14.9L17.2 14.1L16.2 13.1V11.8L17.7 10.9L18.9 11.6L19.3 13L20.4 12.7L20 11.6L21.1 11.3L20.8 10.2M14 8.2L15.5 7.3L17 8.2V9.9L15.5 10.8L14 9.9V8.2M5 18C5 18 2 10 2 6S4 2 4 2H5C5 2 6 2 6 3S5 4 5 6 8 10 8 13 5 18 5 18M15 17C16.1 17 17 17.9 17 19V20C17 21.1 16.1 22 15 22H9C7 22 6 20.2 6 20.2C5.8 20 5.7 19.6 6 19.4C6 19.4 9 16.9 10 16.9H15Z"/></svg><span class="lv"><i></i><i></i><i></i></span></button>
+
+  <div class="hr"></div>
+
+  <div class="temp" style="left:60px"><button type="button" class="arr up" data-temp="temp-dr" data-dir="1">&#9650;</button><b id="tdr">--</b><button type="button" class="arr dn" data-temp="temp-dr" data-dir="2">&#9660;</button><div class="tl">운전석</div></div>
+  <div id="fan"><button type="button" class="pm" style="left:14px" data-fan="-1">−</button><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#eef1f4" d="M12,11A1,1 0 0,0 11,12A1,1 0 0,0 12,13A1,1 0 0,0 13,12A1,1 0 0,0 12,11M12.5,2C17,2 17.11,5.57 14.75,6.75C13.76,7.24 13.32,8.29 13.13,9.22C13.61,9.42 14.03,9.73 14.35,10.13C18.05,8.13 22.03,8.92 22.03,12.5C22.03,17 18.46,17.1 17.28,14.73C16.78,13.74 15.72,13.3 14.79,13.11C14.59,13.59 14.28,14 13.88,14.34C15.87,18.03 15.08,22 11.5,22C7,22 6.91,18.42 9.27,17.24C10.25,16.75 10.69,15.71 10.89,14.79C10.4,14.59 9.97,14.27 9.65,13.87C5.96,15.85 2,15.07 2,11.5C2,7 5.56,6.89 6.74,9.26C7.24,10.25 8.29,10.68 9.22,10.87C9.41,10.39 9.73,9.97 10.14,9.65C8.15,5.96 8.94,2 12.5,2Z"/></svg><span id="fanv">-</span><button type="button" class="pm" style="left:266px" data-fan="1">+</button></div>
+  <button type="button" class="c" style="left:450px" data-tog="auto">AUTO</button>
+  <button type="button" class="c" style="left:598px" data-tog="ac">A/C</button>
+  <button type="button" class="c" style="left:746px" data-tog="sync">SYNC</button>
+  <button type="button" class="c" style="left:894px" data-tog="defog"><svg width="44" height="44" viewBox="0 0 24 24"><path fill="#eef1f4" d="M15,23C14.7,23 14.5,22.9 14.3,22.7C13.9,22.3 14,21.7 14.4,21.3V21.3C14.9,20.9 16.1,19.5 16.1,18.4C16.1,17.8 15.7,17.2 15.3,16.5C14.8,15.7 14.1,14.7 14.1,13.5C14.1,11.2 15.4,10.3 15.6,10.2C16.1,9.9 16.7,10.1 17,10.5C17.3,11 17.1,11.6 16.7,11.9V11.9C16.7,11.9 16.2,12.3 16.2,13.5C16.2,14.1 16.6,14.7 17,15.4C17.5,16.2 18.2,17.2 18.2,18.4C18.2,20.6 16.1,22.6 15.9,22.8C15.5,22.9 15.2,23 15,23M11.7,22.7C11.9,22.5 14,20.5 14,18.3C14,17.1 13.4,16.1 12.8,15.3C12.4,14.6 12,14 12,13.4C12,12.2 12.5,11.8 12.5,11.8V11.8C13,11.5 13.1,10.9 12.8,10.4C12.5,9.9 11.9,9.8 11.4,10.1C11.2,10.2 9.9,11.1 9.9,13.4C9.9,14.6 10.5,15.6 11.1,16.4C11.5,17.1 11.9,17.7 11.9,18.3C11.9,19.4 10.7,20.8 10.2,21.2V21.2C9.8,21.6 9.8,22.2 10.1,22.6C10.3,22.8 10.6,22.9 10.8,22.9C11.2,23 11.5,22.9 11.7,22.7M7.7,22.7C7.9,22.5 10,20.5 10,18.3C10,17.1 9.4,16.1 8.8,15.3C8.4,14.7 8,14.1 8,13.4C8,12.2 8.5,11.8 8.5,11.8V11.8C9,11.5 9.1,10.9 8.8,10.4C8.6,10 7.9,9.9 7.5,10.1C7.3,10.2 6,11.1 6,13.4C6,14.6 6.6,15.6 7.2,16.4C7.6,17.1 8,17.7 8,18.3C8,19.4 6.8,20.8 6.3,21.2V21.2C5.9,21.6 5.9,22.2 6.2,22.6C6.5,22.9 6.7,23 7,23C7.2,23 7.5,22.9 7.7,22.7M12,3C9.4,3 1,3.3 1,7C1,9.4 2.2,15.4 2.8,18H4L4.8,18H5V16H4.4C3.8,13.1 3,8.8 3,7C3,6 7.4,5 12,5C16.6,5 21,6 21,7C21,8.8 20.2,13.1 19.6,16H19V18H19.2L20,18H21.2C21.8,15.4 23,9.4 23,7C23,3.3 14.6,3 12,3Z"/></svg></button>
+  <button type="button" class="c" style="left:1042px" data-tog="intake" aria-label="내기 외기"><span id="intakeIcon"></span></button>
+  <button type="button" class="c" style="left:1190px" data-tog="aircln" aria-label="공기청정" hidden><svg width="44" height="44" viewBox="0 0 24 24"><path fill="#eef1f4" d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg></button>
+  <button type="button" class="c" style="left:1190px" data-tog="off">OFF</button>
+  <div class="temp" style="left:1476px"><button type="button" class="arr up" data-temp="temp-ps" data-dir="1">&#9650;</button><b id="tps">--</b><button type="button" class="arr dn" data-temp="temp-ps" data-dir="2">&#9660;</button><div class="tl">조수석</div></div>
+  <div id="note" hidden></div>
+</div></div>
+<script>
+(function () {
+  'use strict';
+  var stage = document.getElementById('stage'), sheet = document.getElementById('sheet'), dim = document.getElementById('dim');
+  var st = {}, closing = false, lastJson = null;
+  var RECIRC = '<svg width="50" height="50" viewBox="0 0 24 24"><path fill="#eef1f4" d="m9.25 15l1.05-1.05l-.675-.7h2q1.2 0 2.038-.837t.837-2.038t-.837-2.037t-2.038-.838H7.25V9h4.375q.575 0 .975.4t.4.975t-.4.975t-.975.4h-2l.675-.675L9.25 10l-2.5 2.5zM6.5 20q-1.025 0-1.875-.537T3.35 18H0v-6q0-.825.588-1.412T2 10h1l1.5-4.175q.225-.6.738-.962T6.4 4.5h7.45q.525 0 .988.263t.737.712L18 9.5l4.175.35q.825.075 1.325.625t.5 1.375V18h-3.35q-.425.925-1.275 1.463T17.5 20t-1.875-.537T14.35 18h-4.7q-.425.925-1.275 1.463T6.5 20m0-2q.625 0 1.063-.437T8 16.5V16h8v.5q0 .625.438 1.063T17.5 18t1.063-.437T19 16.5V16h3v-4.15l-5.2-.45l-2.925-4.9H6.4l-2 5.5H2v4h3v.5q0 .625.438 1.063T6.5 18m5.5-5.75"/></svg>';  // Google Material Symbols car_fan_recirculate_2 (Apache 2.0)
+  var FRESH = '<svg width="50" height="50" viewBox="0 0 24 24"><path fill="#eef1f4" d="M6.5 20q-1.025 0-1.875-.537T3.35 18H0v-6q0-.825.588-1.412T2 10h1l1.5-4.175q.225-.6.738-.962T6.4 4.5h7.45q.525 0 .988.263t.737.712l.85 1.4l-1.375 1.6L13.875 6.5H6.4l-2 5.5H2v4h3v.5q0 .625.438 1.063T6.5 18t1.063-.437T8 16.5V16h8v.5q0 .625.438 1.063T17.5 18t1.063-.437T19 16.5V16h3v-4.15l-3.65-.325l1.6-1.85l2.225.175q.825.075 1.325.625t.5 1.375V18h-3.35q-.425.925-1.275 1.463T17.5 20t-1.875-.537T14.35 18h-4.7q-.425.925-1.275 1.463T6.5 20m3.5-5.5l1.05-1.05l-.675-.7h4.95L21.55 5.5l-1.125-1l-5.775 6.75h-4.275l.675-.7L10 9.5L7.5 12z"/></svg>';  // Google Material Symbols car_fan_recirculate (Apache 2.0)
+  function send(action, value) { if (window.K8Climate) window.K8Climate.action(action, value || 0); }
+  function fit() { var s = (window.innerWidth || 1920) / 1920; stage.style.webkitTransform = stage.style.transform = 'scale(' + s + ')';
+    stage.style.top = ((window.innerHeight || 720) - 720 * s) + 'px'; }
+  function all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function close() {
+    if (closing) return;
+    closing = true;
+    sheet.style.webkitTransition = sheet.style.transition = '';
+    sheet.style.webkitTransform = sheet.style.transform = '';
+    sheet.className = '';
+    dim.className = '';
+    setTimeout(function () { send('close'); }, 330);
+  }
+  // 옵션: 0 없음, 1·2 열선, 3·4 통풍, 5·6 둘 다, -1 모름(둘 다 보임)
+  function hasHeat(o) { return o < 0 || o === 1 || o === 2 || o === 5 || o === 6; }
+  function hasVent(o) { return o < 0 || o === 3 || o === 4 || o === 5 || o === 6; }
+  function level(s, heat) { return heat ? (s >= 6 && s <= 8 ? s - 5 : 0) : (s >= 3 && s <= 5 ? s - 2 : 0); }
+  function bars(b, n) { var i = b.querySelectorAll('.lv i'); for (var k = 0; k < i.length; k++) i[k].className = k < n ? 'on' : ''; }
+  function temp(v, unit) { if (typeof v !== 'number') return '--'; return (unit === 1 ? Math.round(v * 9 / 5 + 32) : v.toFixed(1)) + '<small>°</small>'; }
+  function render() {
+    all('[data-seat]').forEach(function (b) {
+      var seat = b.getAttribute('data-seat'), heat = b.getAttribute('data-kind') === 'heat';
+      var opt = typeof st[seat + 'Opt'] === 'number' ? st[seat + 'Opt'] : -1, s = typeof st[seat] === 'number' ? st[seat] : -1;
+      b.hidden = heat ? !hasHeat(opt) : !hasVent(opt);
+      var n = level(s, heat);
+      b.className = 'b' + (n ? (heat ? ' heat' : ' vent') : '');
+      bars(b, n);
+    });
+    // 좌석 칸 안에서 보이는 버튼만 놓는다: 하나(예: 열선만 있는 뒷좌석)면 칸 가운데, 둘이면 나란히
+    var GROUP = { drv: [60, 352], rl: [457, 312], rr: [1007, 312], ast: [1364, 352] };
+    Object.keys(GROUP).forEach(function (seat) {
+      var shown = all('[data-seat="' + seat + '"]').filter(function (b) { return !b.hidden; });
+      if (!shown.length) return;
+      var x = GROUP[seat][0], w = GROUP[seat][1], bw = parseInt(shown[0].style.width, 10);
+      if (shown.length === 1) shown[0].style.left = (x + (w - bw) / 2) + 'px';
+      else { shown[0].style.left = x + 'px'; shown[1].style.left = (x + w - bw) + 'px'; }
+    });
+    var wheel = document.getElementById('wheel');
+    wheel.hidden = st.swOpt === 0;
+    var won = st.swStep2 === 1 || st.swStep1 === 1;
+    wheel.className = 'b' + (won ? ' heat' : '');
+    bars(wheel, won ? 1 : 0);
+    var c = st.climate || {};
+    document.getElementById('tdr').innerHTML = temp(c.driver, c.unit);
+    document.getElementById('tps').innerHTML = temp(c.passenger, c.unit);
+    document.getElementById('fanv').textContent = typeof c.blower === 'number' ? String(c.blower) : '-';
+    var on = { auto: c.auto === 1, ac: c.ac === 1, sync: st.sync === 1, defog: st.defog === 1, intake: c.intake === 1, aircln: st.airClean === 1, off: c.power === 0 };
+    all('[data-tog]').forEach(function (b) { b.className = 'c' + (on[b.getAttribute('data-tog')] ? ' on' : ''); });
+    // 내기(차 안에서 도는 화살표) / 외기(밖에서 들어오는 화살표) — 표준 공조 기호 모양을 직접 그림
+    // 공기청정기가 있는 차에서만 공기청정 단추를 보이고, 아래 줄 단추는 보이는 것만 가운데(888) 기준으로 늘어놓는다
+    document.querySelector('[data-tog="aircln"]').hidden = st.purifier !== 1;
+    var chips = all('[data-tog]').filter(function (b) { return !b.hidden; });
+    var cx = 888 - (chips.length * 136 + (chips.length - 1) * 12) / 2;
+    chips.forEach(function (b, i) { b.style.left = (cx + i * 148) + 'px'; });
+    document.getElementById('intakeIcon').innerHTML = c.intake === 1 ? RECIRC : FRESH;
+    var noControl = st.frontControl === 0;
+    all('[data-tog], [data-temp], [data-fan]').forEach(function (b) { b.disabled = noControl; });
+    document.body.className = noControl ? 'nocontrol' : '';
+    var note = document.getElementById('note');
+    note.hidden = !noControl;
+    note.textContent = noControl ? '이 차는 화면에서 공조를 바꾸는 기능을 지원하지 않습니다.' : '';
+  }
+  all('[data-seat]').forEach(function (b) {
+    b.onclick = function () { var seat = b.getAttribute('data-seat'); send('seat-' + seat + '-' + b.getAttribute('data-kind'), typeof st[seat] === 'number' ? st[seat] : 2); };
+  });
+  document.getElementById('wheel').onclick = function () { send('wheel'); };
+  all('[data-tog]').forEach(function (b) {
+    b.onclick = function () {
+      var k = b.getAttribute('data-tog'), c = st.climate || {};
+      var cur = k === 'auto' ? c.auto : k === 'ac' ? c.ac : k === 'intake' ? c.intake : k === 'sync' ? st.sync : k === 'defog' ? st.defog : k === 'aircln' ? st.airClean : 0;
+      send(k, cur === 1 ? 1 : 0);
+    };
+  });
+  all('[data-temp]').forEach(function (b) { b.onclick = function () { send(b.getAttribute('data-temp'), +b.getAttribute('data-dir')); }; });
+  all('[data-fan]').forEach(function (b) {
+    b.onclick = function () {
+      var cur = (st.climate || {}).blower;
+      var next = Math.max(1, Math.min(8, (typeof cur === 'number' ? cur : 0) + (+b.getAttribute('data-fan'))));
+      send('fan', next);
+    };
+  });
+  dim.onclick = close;
+  // 아래로 끌어 닫기: 손가락을 따라 내려가고 120px 넘게 내리면 닫힘
+  var y0 = null, dy = 0, SLIDE = '-webkit-transform .34s cubic-bezier(.2,.8,.25,1)';
+  function move(y) { sheet.style.webkitTransform = sheet.style.transform = y === null ? '' : 'translate3d(0,' + y + 'px,0)'; }
+  sheet.addEventListener('touchstart', function (e) { if (!closing) { y0 = e.touches[0].screenY; dy = 0; } }, false);
+  sheet.addEventListener('touchmove', function (e) {
+    if (y0 === null) return;
+    dy = Math.max(0, (e.touches[0].screenY - y0) / ((window.innerWidth || 1920) / 1920));
+    if (dy > 12) { e.preventDefault(); sheet.style.webkitTransition = 'none'; move(dy); }
+  }, false);
+  function end() {
+    if (y0 === null) return;
+    y0 = null;
+    sheet.style.webkitTransition = SLIDE;
+    if (dy > 120) close(); else move(null);
+  }
+  sheet.addEventListener('touchend', end, false);
+  sheet.addEventListener('touchcancel', end, false);
+  window.K8Sheet = {
+    // 0.7초마다 같은 값이 오면 다시 그리지 않는다(구형 WebView 에서 매번 다시 배치·그리기를 막는다)
+    state: function (json) { if (json === lastJson) return; lastJson = json; try { st = JSON.parse(json) || {}; } catch (e) { st = {}; } render(); },
+    close: close
+  };
+  fit();
+  window.addEventListener('resize', fit);
+  render();
+  requestAnimationFrame(function () { requestAnimationFrame(function () {
+    setTimeout(function () { sheet.className = 'open'; dim.className = 'on'; }, 60);
+  }); });
+})();
+</script>
+</body>
+</html>

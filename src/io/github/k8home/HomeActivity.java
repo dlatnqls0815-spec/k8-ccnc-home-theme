@@ -1362,6 +1362,8 @@ public class HomeActivity extends Activity {
                 .setNegativeButton("닫기", null).show();
         } else if ("androidauto".equals(action)) {
             openProjectionScreen("aa");   // 순정 Android Auto 화면 바로(폰 프로젝션 설정 아님)
+        } else if ("climate-sheet".equals(action)) {
+            ClimateSheetService.open(this);   // test66 시트·공조 팝업(하단 가운데에서 위로 쓸기)
         } else if ("save-log".equals(action)) {
             toast("진단 로그를 USB에 저장하는 중…");
             new Thread(new Runnable() {
