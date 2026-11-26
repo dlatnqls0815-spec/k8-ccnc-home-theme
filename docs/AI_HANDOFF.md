@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test61 렉 줄이기: 음악 화면 부분 갱신, 넘김 중 곡 정보 갱신 미루기 (2026-11-26, Claude, 차 없이 코드 분석·차 확인 전)
+- 원인 1: 음악 화면(`renderCcncScreen`)과 테마 재생 시트(`renderSheet`)가 재생 시간·가사 줄이 바뀔 때마다 `innerHTML` 로 통째로 다시 그려 앨범 그림 `<img>`·단추까지 새로 만들었다. → `patchCcncChildren`: 맨 위 조각 수가 같으면 바뀐 조각(시간·진행 막대·가사 칸)만 갈아 끼운다. 단추 묶기는 `bindCcncButtons`(`k8Bound` 로 두 번 묶지 않음).
+- 원인 2: `K8Home.mediaChanged` 가 홈에서 매번 `updateAllStatuses`(레이아웃 계산·지도 위치 알림·카드 그리기)를 돌려, 넘김·카드 끌기 중에도 끼어들었다. → `statusesWhenIdle`: `slide`/`gesture` 중이면 250ms 뒤로 미루고 여러 번 와도 한 번만 실행.
+- 검사: c30_check 0곳, c30_preview 화면 오류 0, bar_guard 36개 화면 기준값과 같음. `c30_preview`·`bar_guard` 는 `K8_PLAYWRIGHT=C:/AI-Work/2026-11-16-rhythmstar-app/node_modules/playwright-core` 로 돌렸다(기본 경로 폴더가 없어짐). bar_guard 첫 실행에 screenlayout 세로선 3곳 실패가 한 번 나왔고 다시 돌리면 통과(고치기 전 코드도 통과) — 측정 흔들림으로 봄.
+- 빌드: `.build/k8-ccnc-home-0.5.0-test61.apk`, `.build/nemesis/K8-ccNC-Home-NEMESIS-0.5.0-test61-USB.zip`(sha256 9bfb359d…224e).
+- 차에서 확인할 것: 음악 화면 가사·시간이 끊김 없이 바뀌는지, 단추(재생·이전·다음·탭)가 한 번씩만 눌리는지, 곡 재생 중 홈 좌우 넘김이 부드러운지. CDP 로 `renderCcncScreen` 시간 재기.
+
 ## 0.5.0-test60 ccNC 탭 누르면 상단바 서랍 내려오던 것, 자연의 소리 팝업 더 빨리 닫기 (2026-11-25, Claude)
 
 - 원인(실차·PC 확인): 라디오·음악·자연의 소리 ccNC 화면의 위 가운데 탭(재생 목록·가사 등, y 18~88)을 테마 상단바 `#top-bar`(z 10)가 덮고 있어 탭 대신 상단바와 그 서랍 손잡이 `#qc-open-btn`(x 876~1044)이 눌렸다. 위 48px 안 터치는 `fromTop`이라 조금만 끌려도 서랍이 내려왔다.
