@@ -196,6 +196,7 @@ public final class NavBarService extends Service {
         }
         if (web == null) buildBar();
         sessionEnded = false;
+        sessionActive = true;
         searchSuspended = searching;
         if (searching) detach();
         resumeAfter = 0;
@@ -680,8 +681,12 @@ public final class NavBarService extends Service {
         if (pageReady && attached) web.evaluateJavascript("window.K8NavBarView.cover(" + quote(coverImage) + ")", null);
     }
 
+    /** CornerService 가 본다: 내비가 앞인데 하단바가 없으면(MAP·NAV 버튼, 공조에서 돌아옴 등) 다시 켠다. */
+    static volatile boolean sessionActive;
+
     private void endSession() {
         sessionEnded = true;
+        sessionActive = false;
         transport.close();
         detach();
         handler.removeCallbacksAndMessages(null);
@@ -800,6 +805,7 @@ public final class NavBarService extends Service {
 
     @Override public void onDestroy() {
         sessionEnded = true;
+        sessionActive = false;
         transport.close();
         coverArt.close();
         handler.removeCallbacksAndMessages(null);

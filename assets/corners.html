@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>K8 ccNC 모서리 버튼</title>
+<script>
+(function () {
+  function fit() { document.documentElement.style.fontSize = (window.innerHeight / 100) + 'px'; }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+})();
+</script>
 <style>
 /* ccNC 하단 모서리 두 조각(D-settings_theme_widget.png 실측). 창 크기는 화면의 24.4%/24.8% × 12.5%.
    창은 투명하고, 화면 안쪽 위 모서리만 둥글다(1920 기준 12px). */
@@ -37,8 +45,10 @@ button:active { background-color: #262626; }
 .off-icon { width: 66%; height: 66%; fill: none; stroke: #eef3f9; stroke-width: 1.6; stroke-linejoin: round; }
 .meta { min-width: 0; flex: 1; }
 .meta strong, .meta span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
-.meta strong { font-size: 28vh; }
-.meta span { font-size: 23vh; color: #8d96a2; margin-top: 1px; }
+/* test65: Chrome 30 은 vh 글자 크기를 창이 높이 0 일 때 한 번 재고 다시 안 재서 제목·가수가 0px 로 사라졌다(실차).
+   글자만 rem 으로: 아래 스크립트가 html 글자 크기를 창 높이의 1% 로 맞추고 크기가 바뀔 때마다 다시 맞춘다. */
+.meta strong { font-size: 28vh; font-size: 28rem; }
+.meta span { font-size: 23vh; font-size: 23rem; color: #8d96a2; margin-top: 1px; }
 /* Chrome 30 (car WebView) ignores flex inside <button>: keys centre their icon with margins, the media box
    floats its cover and lets the text take the rest. */
 .key .icon { display: block; margin: 0 auto; }

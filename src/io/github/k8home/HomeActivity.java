@@ -1317,6 +1317,7 @@ public class HomeActivity extends Activity {
             boolean on = !ThemePrefs.navBar(this);
             ThemePrefs.setNavBar(this, on);
             if (!on) stopService(new Intent(this, NavBarService.class));
+            CornerService.sync(this);   // 내비 하단바 자동 켜기 감시도 이 서비스가 한다
             syncFlags();
             toast(on ? "테마에서 지도를 열면 하단바 시험이 시작됩니다." : "순정 하단줄을 사용합니다.");
         } else if ("corners-toggle".equals(action)) {

@@ -2946,7 +2946,7 @@ var stockSub = '';
   var searchRecent = [];
   var profileMode = 'detail';
   /* Switches that the native side owns: boot auto start and the bar over the stock navigation. */
-  var flags = { autoStart:true, navBar:true, corners:true, naviSkin:false, stockWrite:false, soundWrite:true, customKeyHome:true };
+  var flags = { autoStart:true, navBar:true, corners:false, naviSkin:false, stockWrite:false, soundWrite:true, customKeyHome:true };
   var profileSelected = 0;
   var editingProfileName = false;
   var standbyClockOptions = false;
@@ -5102,13 +5102,16 @@ var stockSub = '';
   function fitDriverName() {
     var btn = document.getElementById('profile-btn'), name = document.getElementById('driver-name');
     if (!btn || !name) return;
-    btn.style.minWidth = '';
+    btn.style.minWidth = name.style.minWidth = '';
     var b = btn.getBoundingClientRect(), n = name.getBoundingClientRect();
     if (!b.width || !n.width) { name.k8Fit = false; return; }
     name.k8Fit = true;
+    // 실차(test64): 글자 칸은 56px 로 잡히고 글자는 65px(scrollWidth) — 칸 너비도 틀리므로 글자 실제 너비로 잰다.
+    var text = Math.max(n.width, name.scrollWidth);
+    if (text <= n.width + 1) return;   // PC·제대로 잰 차: 그대로
+    name.style.minWidth = Math.ceil(text) + 'px';
     var pad = parseFloat(getComputedStyle(btn).paddingRight) || 0;
-    var need = Math.ceil(n.right - b.left + pad);
-    if (need > b.width + 1) btn.style.minWidth = need + 'px';   // 1px 안쪽 반올림 차이는 그대로 둔다
+    btn.style.minWidth = Math.ceil(n.left - b.left + text + pad) + 'px';
   }
   window.addEventListener('resize', function () { var n = document.getElementById('driver-name'); if (n) n.k8Fit = false; });
 

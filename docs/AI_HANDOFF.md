@@ -1,5 +1,14 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test65 실차 검수·배포용 (2026-11-26, Claude, K8 실차 무선 ADB·사용자 "다 된다")
+- **운전자 이름 잘림 진짜 원인**: 실차 CDP — `#driver-name` 칸 56px, 글자 `scrollWidth` 65px(Chrome 30 이 vw 글자 칸 너비를 덜 잼). test63 은 틀린 칸 너비로 재서 효과 없었다. `fitDriverName` 이 `scrollWidth` 로 이름 칸·버튼 `min-width` 를 준다(실차 65/125px 확인).
+- **모서리 미디어 상자 제목·가수 사라짐**: `corners.html` 의 `font-size:28vh/23vh` 가 창 높이 0 일 때 한 번 재여 0px 로 굳었다(실차: title 높이 0). html 글자 크기를 창 높이 1% 로 스크립트가 맞추고 글자는 `rem`(실차 20/16px 확인).
+- **내비 하단바가 MAP·NAV 버튼/공조에서 돌아오면 없음**: `NavBarService` 는 테마가 지도를 열 때만 켜졌다. `CornerService` 감시(400ms)가 순정 지도가 앞인데 `NavBarService.sessionActive` 가 아니면 `OPENED_MAP` 으로 켠다(3초 간격). 모서리 스위치가 꺼져 있어도 내비 하단바 스위치가 켜져 있으면 `CornerService` 는 돌고 모서리만 안 붙인다(`sync`·`nav-bar-toggle`).
+- **업데이트 직후 서비스 꺼짐**: `BootReceiver` 에 `MY_PACKAGE_REPLACED` → `CornerService.sync`·`PopupGuardService.start`(실차: 설치 직후 테마 안 열어도 두 서비스 켜짐).
+- **순정 화면 모서리 버튼 기본값 꺼짐**(`ThemePrefs.corners` 기본 false, 화면 `flags.corners:false`). 사용자가 직접 켠 값은 그대로.
+- 실차 확인: test64 물리 버튼 — MAP 테마 앞 `isViewHandled=false`→순정 내비 열림, ☆ 짧게=ccNC 홈/길게=순정 5W 홈(`K8CustomKey onAllKeyForService`), 사용자가 NAV·SETUP·공조·하단바까지 "다 된다" 확인. USB 로그 저장은 USB 없어 앱→도우미 `fail` 응답까지만 확인.
+- 빌드 `.build/k8-ccnc-home-0.5.0-test65.apk`, `.build/nemesis/K8-ccNC-Home-NEMESIS-0.5.0-test65-USB.zip`(sha256 aed17d18…bac9). c30_check 0, c30_preview 오류 0, bar_guard 36개 같음. 차에는 APK(`pm install -r`)로 넣었고 도우미는 test64 것 그대로(같은 코드).
+
 ## 0.5.0-test64 차 물리 버튼(공조·MAP·NAV·SETUP)이 테마 앞에서 안 되던 것 (2026-11-26, Claude, 테스터 제보·차 확인 전)
 - 원인(추정, test30 곡 넘기기와 같음): 테마가 앞이면 차 키 분배기가 키를 먼저 테마에 주고, WebView 가 처리함(`isViewHandled=true`)을 돌려줘 순정이 그 버튼 동작을 하지 않았다.
 - 고침: `HomeActivity.dispatchKeyEvent` 가 테마가 쓰는 키(`themeUsesKey`: 뒤로, 글자판의 지우기·엔터·탭·스페이스·방향, 글자 키)만 WebView 에 주고 나머지는 `false`(처리 안 함). ☆ 279·핸들 곡 키 처리는 그대로.

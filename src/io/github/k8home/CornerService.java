@@ -52,7 +52,7 @@ public final class CornerService extends Service {
     private WebView keys, mediaBox;
     private boolean keysReady, mediaReady, attached, running, rearView;
     // Elapsed-time marks; 0 = not shown. A missed close broadcast expires after the limit below.
-    private long keyboardAt, voiceAt;
+    private long keyboardAt, voiceAt, navBarRetryAt;
     private static final long INPUT_LIMIT_MS = 120000;
     // Stock Korean keyboard and navi keyboard (split screen listens to the same), voice recognition.
     private static final String[] KEYBOARD_SHOW = {"com.android.inputmethod.Korean.action.showwindow", "com.mobis.intent.action.navi_keyboard_show"};
@@ -76,7 +76,8 @@ public final class CornerService extends Service {
     static void sync(Context context) {
         Intent intent = new Intent(context, CornerService.class);
         try {
-            if (ThemePrefs.corners(context)) context.startService(intent);
+            // 모서리 버튼이 꺼져 있어도 내비 하단바가 켜져 있으면 돈다(MAP·NAV 버튼으로 연 내비에 하단바 켜기).
+            if (ThemePrefs.corners(context) || ThemePrefs.navBar(context)) context.startService(intent);
             else context.stopService(intent);
         } catch (RuntimeException failure) {
             Log.w(TAG, "Corner service unavailable", failure);
@@ -112,11 +113,25 @@ public final class CornerService extends Service {
     private final Runnable poll = new Runnable() {
         @Override public void run() {
             if (!running) return;
-            if (!ThemePrefs.corners(CornerService.this)) {
+            boolean cornersOn = ThemePrefs.corners(CornerService.this);
+            if (!cornersOn && !ThemePrefs.navBar(CornerService.this)) {
                 stopSelf();
                 return;
             }
-            boolean want = !rearView && !recent(keyboardAt) && !recent(voiceAt) && keysReady && mediaReady && screenOn() && allowed(StockNavigation.foreground(CornerService.this));
+            ComponentName top = StockNavigation.foreground(CornerService.this);
+            // test65: ccNC 하단바는 테마에서 지도를 열 때만 켜져, MAP·NAV 버튼이나 공조 화면에서 내비로 돌아오면 없었다(실차).
+            // 순정 지도가 앞인데 하단바가 꺼져 있으면 여기서 켠다(3초에 한 번까지).
+            long nowMs = android.os.SystemClock.elapsedRealtime();
+            if (StockNavigation.MAP.equals(top) && !rearView && !NavBarService.sessionActive
+                    && ThemePrefs.navBar(CornerService.this) && nowMs >= navBarRetryAt) {
+                navBarRetryAt = nowMs + 3000;
+                try {
+                    startService(new Intent(CornerService.this, NavBarService.class).setAction(NavBarService.OPENED_MAP));
+                } catch (RuntimeException failure) {
+                    Log.w(TAG, "nav bar restart failed", failure);
+                }
+            }
+            boolean want = cornersOn && !rearView && !recent(keyboardAt) && !recent(voiceAt) && keysReady && mediaReady && screenOn() && allowed(top);
             if (want && !attached) attach();
             else if (!want && attached) detach();
             handler.postDelayed(this, POLL_MS);

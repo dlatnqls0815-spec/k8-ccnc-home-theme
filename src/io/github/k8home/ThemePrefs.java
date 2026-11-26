@@ -43,7 +43,7 @@ final class ThemePrefs {
 
     /** Float the ccNC back/home/menu keys and the now-playing box over stock screens. */
     static boolean corners(Context context) {
-        return of(context).getBoolean(CORNERS, true);
+        return of(context).getBoolean(CORNERS, false);   // test65: 배포 기본은 꺼짐(사용자가 켠 값은 그대로 유지)
     }
 
     static void setCorners(Context context, boolean value) {
