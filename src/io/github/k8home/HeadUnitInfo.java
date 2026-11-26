@@ -306,6 +306,7 @@ final class HeadUnitInfo {
             String name = StockMedia.text(api.getMethod("getUserName", int.class).invoke(manager, user));
             if (name.isEmpty() && user > 0) name = "운전자 " + user;
             if (!name.isEmpty()) info.put("profileName", name);
+            info.put("profileUser", user);   // 테마 홈 왼쪽 위 이름: 1 → 운전자 1 자리, 2 → 운전자 2 자리
             return user;
         } catch (Exception | LinkageError ignored) {
             // The automotive library is optional and the firmware may require its own permissions.

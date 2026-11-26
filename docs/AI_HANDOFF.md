@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test63 홈 왼쪽 위 운전자 이름: 잘림 고침, 순정 프로필 이름 연동 (2026-11-26, Claude, 아이오닉5 사진 제보·차 확인 전)
+- 제보: 아이오닉5(5W) 홈 왼쪽 위 "운전자 2" 의 "2" 가 반쯤 잘림. Chrome 30 의 `<button>` 은 넘친 내용을 잘라 그리는데, 버튼 너비를 글자보다 좁게 잰 것으로 봄(vw 글꼴).
+- 고침: `fitDriverName()` 이 이름을 바꿀 때(그리고 창 크기가 바뀐 뒤 첫 갱신) `#driver-name` 의 실제 오른쪽 끝 + 버튼 오른쪽 여백까지 `#profile-btn` 의 `min-width` 를 준다. 1px 이하 차이는 두어 PC·차흉내 기준값은 그대로(bar_guard 36개 같음).
+- 연동: `HeadUnitInfo.profile()` 이 이미 읽던 `UserProfileManager.getUserName(getUserType())` 에 `profileUser` 를 더 보내고, `K8Home.systemSettingsChanged` 가 사용자 1·2 의 순정 이름을 `state.drivers[0/1]` 에 넣는다(게스트는 그대로 "게스트"). 이름이 비면 Java 가 "운전자 N".
+- 검사: c30_check 0곳, c30_preview 화면 오류 0, bar_guard 36개 같음. 빌드 `.build/k8-ccnc-home-0.5.0-test63.apk`, `.build/nemesis/K8-ccNC-Home-NEMESIS-0.5.0-test63-USB.zip`(sha256 dbc291cf…2b98).
+- 차에서 확인: 이름 끝까지 보이는지, 순정 설정 › 사용자 프로필 이름이 홈에 뜨는지, 운전자 바꾸면 따라 바뀌는지.
+
 ## 0.5.0-test62 내비 위 재생 시트: 끊김 없이 올라오기, ≡ 누르면 홈 안 거치고 미디어로 (2026-11-26, Claude, 차 확인 전)
 - 끊김: `NavBarService.openSheet` 창(`K8HomeMediaSheet`)이 서비스에서 붙인 창이라 하드웨어 가속이 없어 CSS `translate3d` 가 CPU 로 그려졌다. → `FLAG_HARDWARE_ACCELERATED` 추가(시트 창만, 하단바 창은 그대로).
 - 두 번 넘어감: `K8Home.openMedia` 가 `openHome()`(=`showPage('home')`, 지도 켜기·카드 그리기) 뒤 미디어로 갔고, 활동이 앞에 올 때 지난번 홈의 순정 지도 창이 먼저 비쳤다. → `openMedia` 는 서랍만 닫고 바로 `navigateTo('media')`, 뒤로는 홈(`history=['home']`). `HomeActivity.onNewIntent` 에서 미디어로 갈 때 `mapSlot` 알파 0(웹이 홈에서 `updateBounds`/`setMapLiveVisible` 하면 `applyMapLiveVisibility` 가 되살림).
