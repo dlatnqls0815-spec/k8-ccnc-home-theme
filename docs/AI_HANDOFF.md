@@ -1,5 +1,11 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test62 내비 위 재생 시트: 끊김 없이 올라오기, ≡ 누르면 홈 안 거치고 미디어로 (2026-11-26, Claude, 차 확인 전)
+- 끊김: `NavBarService.openSheet` 창(`K8HomeMediaSheet`)이 서비스에서 붙인 창이라 하드웨어 가속이 없어 CSS `translate3d` 가 CPU 로 그려졌다. → `FLAG_HARDWARE_ACCELERATED` 추가(시트 창만, 하단바 창은 그대로).
+- 두 번 넘어감: `K8Home.openMedia` 가 `openHome()`(=`showPage('home')`, 지도 켜기·카드 그리기) 뒤 미디어로 갔고, 활동이 앞에 올 때 지난번 홈의 순정 지도 창이 먼저 비쳤다. → `openMedia` 는 서랍만 닫고 바로 `navigateTo('media')`, 뒤로는 홈(`history=['home']`). `HomeActivity.onNewIntent` 에서 미디어로 갈 때 `mapSlot` 알파 0(웹이 홈에서 `updateBounds`/`setMapLiveVisible` 하면 `applyMapLiveVisibility` 가 되살림).
+- 검사: c30_check 0곳, c30_preview 화면 오류 0, bar_guard 36개 같음. 빌드 `.build/k8-ccnc-home-0.5.0-test62.apk`, `.build/nemesis/K8-ccNC-Home-NEMESIS-0.5.0-test62-USB.zip`(sha256 a59a65a2…df93).
+- 차에서 확인: 시트 올라오기·끌어 내리기 부드러움, ≡ → 음악 화면 한 번에, 그 뒤 뒤로 → 홈에 지도 다시 보임.
+
 ## 0.5.0-test61 렉 줄이기: 음악 화면 부분 갱신, 넘김 중 곡 정보 갱신 미루기 (2026-11-26, Claude, 차 없이 코드 분석·차 확인 전)
 - 원인 1: 음악 화면(`renderCcncScreen`)과 테마 재생 시트(`renderSheet`)가 재생 시간·가사 줄이 바뀔 때마다 `innerHTML` 로 통째로 다시 그려 앨범 그림 `<img>`·단추까지 새로 만들었다. → `patchCcncChildren`: 맨 위 조각 수가 같으면 바뀐 조각(시간·진행 막대·가사 칸)만 갈아 끼운다. 단추 묶기는 `bindCcncButtons`(`k8Bound` 로 두 번 묶지 않음).
 - 원인 2: `K8Home.mediaChanged` 가 홈에서 매번 `updateAllStatuses`(레이아웃 계산·지도 위치 알림·카드 그리기)를 돌려, 넘김·카드 끌기 중에도 끼어들었다. → `statusesWhenIdle`: `slide`/`gesture` 중이면 250ms 뒤로 미루고 여러 번 와도 한 번만 실행.

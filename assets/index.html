@@ -7601,8 +7601,12 @@ var stockSub = '';
     },
     // 내비 시트의 ≡: 홈을 거치지 않고(같은 틱이라 홈은 안 그려짐) 지금 소스의 ccNC 재생 화면으로 한 번에. 뒤로는 홈.
     openMedia: function () {
-      window.K8Home.openHome();
+      // 홈을 먼저 열면(showPage('home')) 지도·카드까지 켜졌다가 넘어가 두 번 보였다: 서랍만 닫고 바로 간다.
+      if (qcDraft) closeQuickEditor();
+      document.getElementById('qc-drawer').hidden = true;
       navigateTo('media');
+      state.history.length = 0;
+      state.history.push('home');
     },
     back: function () {
       if (sheetOpen) { closeSheet(); return; }

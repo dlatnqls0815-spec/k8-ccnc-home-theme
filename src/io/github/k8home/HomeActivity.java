@@ -401,6 +401,8 @@ public class HomeActivity extends Activity {
         pendingMedia = intent != null && intent.getBooleanExtra(EXTRA_OPEN_MEDIA, false);
         pendingMediaSource = intent != null ? intent.getStringExtra(EXTRA_OPEN_MEDIA_SOURCE) : null;
         if (pendingMediaSource == null) pendingMediaSource = "";
+        // 미디어로 바로 갈 때: 지난번 홈의 지도가 먼저 비쳐 "홈 → 미디어" 두 번 넘어가 보였다. 웹이 홈으로 돌아오면 다시 켠다(setMapLiveVisible).
+        if (pendingMedia && mapSlot.getVisibility() == View.VISIBLE) mapSlot.setAlpha(0f);
         openPendingHome();
     }
 

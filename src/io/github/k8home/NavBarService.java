@@ -522,7 +522,9 @@ public final class NavBarService extends Service {
             size.x, Math.round(size.y * (REFERENCE_HEIGHT - SHEET_TOP) / (float) REFERENCE_HEIGHT),
             WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                // 서비스가 붙인 창은 이 깃발이 없으면 CPU 로 그려 올라오는 움직임이 뚝뚝 끊긴다(활동 창만 기본 GPU).
+                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.BOTTOM | Gravity.LEFT;
         params.setTitle("K8HomeMediaSheet");
         try {
