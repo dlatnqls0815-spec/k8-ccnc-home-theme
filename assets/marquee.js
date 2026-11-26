@@ -12,6 +12,8 @@
     // !important: page rules such as ".caption span { display:block; position:absolute }" also hit the wrapper.
     '.mq-on > .mq { display: inline-block !important; position: static !important; float: none !important; ' +
     'width: auto !important; max-width: none !important; min-width: 0 !important; margin: 0 !important; ' +
+    // 부모가 flex(홈 카드 부제)면 틀이 칸 폭으로 줄어 '안 넘친다'로 보고 풀었다 감쌌다를 끝없이 반복한다(화면 멈춤).
+    '-webkit-flex-shrink: 0 !important; flex-shrink: 0 !important; ' +
     'padding: 0 !important; overflow: visible !important; white-space: nowrap !important; vertical-align: top; ' +
     // 글자 모양은 원래 글자와 똑같이(굵기 하나). 감싸는 틀이 생겼다고 굵기가 바뀌면 안 된다.
     'font-weight: inherit !important; font-style: inherit !important; font-family: inherit !important; ' +
@@ -99,6 +101,9 @@
     new MutationObserver(function (records) {
       for (var i = 0; i < records.length; i++) {
         var target = records[i].target;
+        // class·숨김 변화(넘김 중 is-sliding 등)는 글자가 바뀐 게 아니다: 그때마다 전부 재면 넘김 첫 프레임이 끊긴다.
+        // 0.25초 뒤 한 번만 본다. 글자 변화만 아래에서 바로 다시 감싼다.
+        if (records[i].type === 'attributes') { later(); continue; }
         // Our own wrap/unwrap is not a text change.
         if (target.nodeType === 1 && (target.className === 'mq' || /(^|\s)mq-on(\s|$)/.test(target.className))) {
           if (records[i].type === 'childList' && records[i].addedNodes.length === 1 &&

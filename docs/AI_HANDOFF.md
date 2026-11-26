@@ -1,5 +1,13 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test67 긴 글자 흐르기 무한 반복 막기·넘김 끊김 줄이기 (2026-11-26, Claude, 차 확인 전, NEMESIS sha256 383cd7d7…5794)
+다른 AI 점검 결과를 코드·Edge 실행으로 확인하고 맞는 것 중 작은 세 가지만 고침.
+- `marquee.js`: 부모가 flex(홈 카드 부제 `.hcard-caption-main span`)면 감싼 `.mq` 가 칸 폭으로 줄어 "안 넘침"→풀기→감싸기를 끝없이 반복(Edge 에서 index.html 이 열자마자 멈춤 재현, marquee.js 만 막으면 11ms 응답). `.mq` 에 `flex-shrink:0 !important` 로 고침 → Edge 정상, 긴 부제가 흐름(틀 569px / 칸 197px). 차 Chrome 30 은 test65 에서 정상이라 차에서는 안 터졌던 것으로 보임.
+- `marquee.js`: class·hidden 속성 변화는 바로 전부 재지 않고 0.25초 뒤 한 번(`later`). 글자 변화는 지금처럼 바로 다시 감쌈.
+- `index.html renderTopStatus`: 상단·전화 칸 아이콘 HTML 이 직전과 같으면 innerHTML 을 다시 쓰지 않음.
+- 확인했지만 안 고친 것: 지도 스냅샷 getBitmap(이미 3.5초 무조작 때만), 연락처 동기 읽기·숨긴 DOM(열 때 한 번), 라디오 로고(시작 4초 뒤 미리 읽고 캐시, recycle 없음은 4.4 에서 GC 가 회수), getprop 18회(백그라운드), saveDisplay commit(배치 바꿀 때만), WebView 여러 개(기능상 필요).
+- 차에서 볼 것: 홈 긴 곡 제목·부제 흐름, 홈↔앱스 넘김 첫 프레임.
+
 ## 0.5.0-test66 시트·공조 팝업(위 시트, 아래 공조), 아래에서 위로 쓸어 열기 (2026-11-26, Claude, 차 확인 전·사용자 제어 허락, NEMESIS sha256 526ca27a…fb44)
 - 여는 곳: 테마 화면 아래 가운데 띠(높이 아래 14%, 가로 30~70%, 미디어 칸 제외)에서 위로 쓸기 → `host('climate-sheet')`. 순정 내비 위 ccNC 하단바는 미디어 칸 밖에서 위로 쓸기(`navbar.html` → `climate-sheet`). 차의 물리 시트 버튼은 순정 그대로(사용자 결정).
 - `ClimateSheetService`: 전체 화면 투명 창(HW 가속), `climate_sheet.html`. 아래에서 올라옴, 왼쪽 위 X·바깥 누르기·아래로 120px 끌기로 닫힘. 떠 있는 동안 0.7초마다 상태 다시 읽음.
