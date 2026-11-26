@@ -99,11 +99,20 @@ final class MediaKeys {
         return askHelper(which);
     }
 
+    /** 테스터 진단 로그를 도우미가 USB 에 쓴다("ok usb0" / "fail" / "" 도우미 없음). 몇 초 걸리니 UI 스레드 밖에서. */
+    static String saveDiagnosticLog() {
+        return askHelper("log", 30000);
+    }
+
     private static String askHelper(String command) {
+        return askHelper(command, 2000);
+    }
+
+    private static String askHelper(String command, int timeoutMs) {
         LocalSocket socket = new LocalSocket();
         try {
             socket.connect(new LocalSocketAddress(SOCKET));
-            socket.setSoTimeout(2000);
+            socket.setSoTimeout(timeoutMs);
             socket.getOutputStream().write((command + "\n").getBytes("US-ASCII"));
             InputStream in = socket.getInputStream();
             byte[] buf = new byte[16];

@@ -1361,6 +1361,21 @@ public class HomeActivity extends Activity {
                 .setNegativeButton("닫기", null).show();
         } else if ("androidauto".equals(action)) {
             openProjectionScreen("aa");   // 순정 Android Auto 화면 바로(폰 프로젝션 설정 아님)
+        } else if ("save-log".equals(action)) {
+            toast("진단 로그를 USB에 저장하는 중…");
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    final String reply = MediaKeys.saveDiagnosticLog();
+                    runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            if (reply.startsWith("ok")) toast("USB(" + reply.substring(2).trim() + ")에 K8-ccNC-log 파일을 저장했습니다.");
+                            else if ("busy".equals(reply)) toast("잠시 뒤 다시 눌러 주세요.");
+                            else if (reply.isEmpty()) toast("도우미가 없어 로그를 저장하지 못했습니다. NEMESIS 묶음으로 설치해 주세요.");
+                            else toast("USB를 찾지 못했거나 쓸 수 없습니다. USB를 꽂고 다시 눌러 주세요.");
+                        }
+                    });
+                }
+            }, "save-log").start();
         } else {
             for (int i = 0; i < SHORTCUTS.length; i++) {
                 if (!SHORTCUTS[i].equals(action)) continue;
@@ -1791,6 +1806,18 @@ public class HomeActivity extends Activity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    private static boolean themeUsesKey(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_BACK: case KeyEvent.KEYCODE_DEL: case KeyEvent.KEYCODE_FORWARD_DEL:
+            case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_TAB:
+            case KeyEvent.KEYCODE_SPACE: case KeyEvent.KEYCODE_DPAD_LEFT: case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_UP: case KeyEvent.KEYCODE_DPAD_DOWN:
+                return true;
+            default:
+                return event.isPrintingKey() || event.getKeyCode() == KeyEvent.KEYCODE_UNKNOWN;   // 글자판이 보내는 문자열 키
+        }
+    }
+
     /**
      * 핸들 곡 넘기기·재생 키(166 이전, 167 다음, 91 재생/정지)는 테마가 받지 않는다.
      * 차의 키 분배기는 앞 화면이 키를 "처리했다"고 하면 블루투스 플레이어로 넘기지 않는데, WebView 가 이 키를 처리한 것으로
@@ -1806,6 +1833,9 @@ public class HomeActivity extends Activity {
             if (code != MediaKeys.WHEEL_PLAY_PAUSE && event.getAction() == KeyEvent.ACTION_DOWN) MediaKeys.cancelStockPopup(this);
             return false;
         }
+        // test64: 차 물리 버튼(MAP·NAV·SETUP·공조 등)도 같은 이유로 WebView 가 "처리함"을 돌려줘 순정이 무시했다(테스터 제보).
+        // 테마가 쓰는 키(뒤로, 글자 입력·편집)만 테마에 주고 나머지는 처리 안 함으로 돌려 순정 키 분배기가 맡게 한다.
+        if (!themeUsesKey(event)) return false;
         return super.dispatchKeyEvent(event);
     }
 

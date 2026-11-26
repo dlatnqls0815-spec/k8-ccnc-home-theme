@@ -46,6 +46,8 @@ public final class KeyHelper {
      * the stock launcher opens them the same way. Fixed components only.
      */
     static final int AA = 1002, CARPLAY = 1003;
+    /** "log": 테스터 진단 로그를 USB 에 저장(saveLog). */
+    static final int SAVE_LOG = 1004;
     static final String AA_COMPONENT = "com.google.android.projection.sink/.ui.MainActivity";
     static final String CARPLAY_COMPONENT = "com.daudio.app.dipo/.ui.DipoActivity";
     static final float GUIDE_X = 1850f, GUIDE_Y = 675f;
@@ -119,6 +121,10 @@ public final class KeyHelper {
             sendBackKey();
         } else if (code == AA || code == CARPLAY) {
             startActivity(code == AA ? AA_COMPONENT : CARPLAY_COMPONENT);
+        } else if (code == SAVE_LOG) {
+            String where = saveLog();
+            out.write(((where != null ? "ok " + where : "fail") + "\n").getBytes("US-ASCII"));
+            return;
         } else {
             sendKey(code);
         }
@@ -136,6 +142,7 @@ public final class KeyHelper {
         if ("back".equals(s)) return BACK;
         if ("aa".equals(s)) return AA;
         if ("carplay".equals(s)) return CARPLAY;
+        if ("log".equals(s)) return SAVE_LOG;
         return -1;
     }
 
@@ -263,6 +270,94 @@ public final class KeyHelper {
 
     static final String LOG = "/data/nemesis/logs/k8home.keys/keys.log";
     static final long LOG_LIMIT = 256 * 1024;
+
+    /**
+     * 테스터 진단 로그: 차 전체 logcat(main·system) + 테마 버전 + 이 도우미 기록을 꽂힌 USB 맨 위에
+     * K8-ccNC-log-날짜.txt 로 쓴다. 시스템 uid 라서 다른 앱 로그도 읽힌다. 돌려주는 값: "usb0" 같은 자리, 실패면 null.
+     */
+    static String saveLog() {
+        String stamp = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
+        for (String dir : usbDirs()) {
+            File file = new File(dir, "K8-ccNC-log-" + stamp + ".txt");
+            try {
+                writeLog(file, stamp);
+                log("log saved " + file + " (" + file.length() + " bytes)");
+                return dir.substring(dir.lastIndexOf('/') + 1);
+            } catch (Exception e) {
+                log("log save " + dir + ": " + e);
+                file.delete();
+            }
+        }
+        return null;
+    }
+
+    /** /proc/mounts 의 USB 자리(/storage/usbN 먼저, 그다음 /mnt/media_rw/usbN). */
+    static java.util.List<String> usbDirs() {
+        java.util.List<String> storage = new java.util.ArrayList<>(), raw = new java.util.ArrayList<>();
+        try {
+            BufferedReader r = new BufferedReader(new FileReader("/proc/mounts"));
+            try {
+                String line;
+                while ((line = r.readLine()) != null) {
+                    String[] f = line.split(" ");
+                    if (f.length < 2) continue;
+                    if (f[1].matches("/storage/usb[0-9]") && !storage.contains(f[1])) storage.add(f[1]);
+                    else if (f[1].matches("/mnt/media_rw/usb[0-9]") && !raw.contains(f[1])) raw.add(f[1]);
+                }
+            } finally {
+                r.close();
+            }
+        } catch (IOException e) {
+            log("mounts: " + e);
+        }
+        storage.addAll(raw);
+        return storage;
+    }
+
+    static void writeLog(File file, String stamp) throws Exception {
+        java.io.FileOutputStream out = new java.io.FileOutputStream(file);
+        try {
+            out.write(("K8 ccNC 진단 로그 " + stamp + "\n").getBytes("UTF-8"));
+            section(out, "theme version", new String[] {"dumpsys", "package", "io.github.k8home"}, "versionName");
+            section(out, "focus", new String[] {"dumpsys", "window", "windows"}, "mCurrentFocus");
+            section(out, "logcat main+system", new String[] {"logcat", "-d", "-v", "time", "-b", "main", "-b", "system"}, null);
+            out.write("\n===== helper keys.log =====\n".getBytes("UTF-8"));
+            File own = new File(LOG);
+            if (own.exists()) {
+                InputStream in = new java.io.FileInputStream(own);
+                try { copy(in, out); } finally { in.close(); }
+            }
+            out.flush();
+            out.getFD().sync();   // 바로 뽑아도 파일이 다 써져 있게
+        } finally {
+            out.close();
+        }
+    }
+
+    /** 명령 출력을 쓴다. grep 이 있으면 그 글자가 든 줄만. */
+    static void section(OutputStream out, String title, String[] cmd, String grep) throws Exception {
+        out.write(("\n===== " + title + " =====\n").getBytes("UTF-8"));
+        Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+        InputStream in = p.getInputStream();
+        try {
+            if (grep == null) {
+                copy(in, out);
+            } else {
+                BufferedReader r = new BufferedReader(new java.io.InputStreamReader(in, "UTF-8"));
+                String line;
+                while ((line = r.readLine()) != null) if (line.contains(grep)) out.write((line.trim() + "\n").getBytes("UTF-8"));
+            }
+        } finally {
+            in.close();
+            p.waitFor();
+        }
+    }
+
+    static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[16384];
+        int n;
+        while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+    }
 
     /**
      * 테마를 업데이트하면 NEMESIS 가 새 도우미를 띄우지만 앞 도우미는 살아서 소켓을 쥐고 있어, 새 도우미가 60초씩 실패를 되풀이하고

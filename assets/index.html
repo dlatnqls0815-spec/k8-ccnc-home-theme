@@ -6734,7 +6734,9 @@ var stockSub = '';
         stockWriteSwitch() +
           '<button type="button" class="detail-settings-row" data-host="sound-write-toggle" data-switch-desc="' +
           '사운드 › 고음/중음/저음·전후/좌우를 순정 설정을 열지 않고 테마에서 바로 바꿉니다.">' +
-          '<span>사운드 직접 변경</span><output id="theme-sound-write">' + (flags.soundWrite ? '켜짐' : '꺼짐') + '</output></button>';
+          '<span>사운드 직접 변경</span><output id="theme-sound-write">' + (flags.soundWrite ? '켜짐' : '꺼짐') + '</output></button>' +
+          // 테스터: 문제가 생긴 직후 누르면 도우미가 차 로그를 USB 에 K8-ccNC-log-날짜.txt 로 저장한다.
+          slExternal('save-log', '<span>진단 로그 USB에 저장<small class="stock-row-note">문제가 생긴 직후 USB를 꽂고 누르세요. 블루투스 기기 이름 같은 정보가 들어갈 수 있습니다.</small></span>', 'detail-settings-row');
       updateControlLabels();
       panel.onclick = function (event) {
         var b = event.target;

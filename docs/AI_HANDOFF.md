@@ -1,5 +1,12 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test64 차 물리 버튼(공조·MAP·NAV·SETUP)이 테마 앞에서 안 되던 것 (2026-11-26, Claude, 테스터 제보·차 확인 전)
+- 원인(추정, test30 곡 넘기기와 같음): 테마가 앞이면 차 키 분배기가 키를 먼저 테마에 주고, WebView 가 처리함(`isViewHandled=true`)을 돌려줘 순정이 그 버튼 동작을 하지 않았다.
+- 고침: `HomeActivity.dispatchKeyEvent` 가 테마가 쓰는 키(`themeUsesKey`: 뒤로, 글자판의 지우기·엔터·탭·스페이스·방향, 글자 키)만 WebView 에 주고 나머지는 `false`(처리 안 함). ☆ 279·핸들 곡 키 처리는 그대로.
+- 남은 가능성: 다른 앱(순정 내비 등)이 앞에 있어도 버튼이 안 되면 테마 원인이 아니거나, ☆ 키용 `CustomKeyGuard` 의 `registerModeKeyListener(ALLKEY)` 가 키를 가로채는 것일 수 있다 → 테스터 로그로 `isViewHandled`·키 코드 확인 필요.
+- **테스터 진단 로그**: 화면구성 › 테마 탭 맨 아래 "진단 로그 USB에 저장" → `HomeActivity` `save-log` → `MediaKeys.saveDiagnosticLog()`(도우미 소켓 "log", 30초 대기, 백그라운드 스레드) → `KeyHelper.saveLog()`(system uid)가 `/proc/mounts` 의 `/storage/usbN`(없으면 `/mnt/media_rw/usbN`) 맨 위에 `K8-ccNC-log-yyyyMMdd-HHmmss.txt`: 테마 versionName, 현재 포커스 창, `logcat -d -v time -b main -b system`, 도우미 keys.log. 저장 뒤 `fsync`. 결과는 토스트(USB 자리 / USB 없음·쓰기 실패 / 도우미 없음). 개인 정보(블루투스 기기 이름 등)가 섞일 수 있어 자동 전송은 만들지 않았다. **system uid 가 USB 에 쓸 수 있는지는 실차 확인 전**(안 되면 `/mnt/media_rw` 자리나 앱 쪽 저장으로 바꿀 것).
+- 빌드 `.build/k8-ccnc-home-0.5.0-test64.apk`, `.build/nemesis/K8-ccNC-Home-NEMESIS-0.5.0-test64-USB.zip`(sha256 78f1c5e8…3562, 도우미 dex 에 saveLog 들어감 확인). c30_check 0곳, c30_preview 화면 오류 0, bar_guard 36개 같음.
+
 ## 0.5.0-test63 홈 왼쪽 위 운전자 이름: 잘림 고침, 순정 프로필 이름 연동 (2026-11-26, Claude, 아이오닉5 사진 제보·차 확인 전)
 - 제보: 아이오닉5(5W) 홈 왼쪽 위 "운전자 2" 의 "2" 가 반쯤 잘림. Chrome 30 의 `<button>` 은 넘친 내용을 잘라 그리는데, 버튼 너비를 글자보다 좁게 잰 것으로 봄(vw 글꼴).
 - 고침: `fitDriverName()` 이 이름을 바꿀 때(그리고 창 크기가 바뀐 뒤 첫 갱신) `#driver-name` 의 실제 오른쪽 끝 + 버튼 오른쪽 여백까지 `#profile-btn` 의 `min-width` 를 준다. 1px 이하 차이는 두어 PC·차흉내 기준값은 그대로(bar_guard 36개 같음).
