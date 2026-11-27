@@ -2,17 +2,22 @@
 
 기아 K8 Gen5W(1920×720, Android 4.4 / API 19)에서 사용할 수 있도록 기아 ccNC 공식 매뉴얼의 화면을 구현하는 프로젝트입니다.
 
-## ⬇️ 내려받기 (0.5.0-test68, 2026-11-27)
+## ⬇️ 내려받기 (0.5.0-test69, 2026-11-27)
 
 | 파일 | 용도 |
 |---|---|
 | [**최신 배포용 내려받기 (Releases · Latest)**](https://github.com/dlatnqls0815-spec/k8-ccnc-home-theme/releases/latest) | 항상 최신 ✅ 배포용으로 연결되는 주소. **이 주소를 공유하세요.** 🧪 테스터용(Pre-release)은 받지 마세요 |
-| [**K8-ccNC-Home-NEMESIS-0.5.0-test68-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test68-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기·AA 실행·진단 로그 도우미). USB 로 설치. 테마 앱만 필요하면 안의 `packages/…zip` 속 `app/k8-home.apk` |
-| [**k8home-0.5.0-test68.apk**](https://github.com/dlatnqls0815-spec/k8-ccnc-home-theme/releases/download/v0.5.0-test68/k8home-0.5.0-test68.apk) | 테마 앱 단독 APK (도우미 없이 앱만 설치) |
+| [**K8-ccNC-Home-NEMESIS-0.5.0-test69-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test69-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기·AA 실행·진단 로그 도우미). USB 로 설치. 테마 앱만 필요하면 안의 `packages/…zip` 속 `app/k8-home.apk` |
+| [**k8home-0.5.0-test69.apk**](https://github.com/dlatnqls0815-spec/k8-ccnc-home-theme/releases/download/v0.5.0-test69/k8home-0.5.0-test69.apk) | 테마 앱 단독 APK (도우미 없이 앱만 설치) |
 
 **설치(USB)**: zip 을 풀어 안의 `NEMESIS.data` 와 `packages` 폴더를 USB 최상위에 둔다(기존 `NEMESIS.data` 가 있으면 백업) → 정차 상태에서 NEMESIS 매니저 **Package Store → USB → K8 ccNC Home Theme** 설치 → **My Packages → K8 ccNC Home Theme → Launch**. 자세한 것은 [네메시스 설치 안내](docs/NEMESIS_INSTALL.md).
 
-**test65 이후 바뀐 것 (test68, 2026-11-26~27 K8 실차 확인)**
+**test69 (2026-11-27 K8 실차 확인)**
+- **테마 멈춤 자동 복구**: 다른 앱(네메시스·와이파이 설정 등)에 갔다 돌아온 뒤 테마 화면이 멈춰 헤드유닛을 리셋해야 하던 현상 → 화면이 12초 넘게 응답이 없으면 테마가 스스로 다시 켜짐(실차: 멈춤 12초 만에 재시작·정상 복귀)
+- **테마 강제종료 수정**: 예전 이름(별칭)으로 테마가 열릴 때 시작 중 강제종료되던 문제
+- **앨범 표지·곡 정보 늦게 뜸 수정**: 버튼을 누르자마자 내비·플레이어로 가면 돌아와서 표지·곡 정보 그리기가 계속 미뤄지던 문제(실차: 내비 갔다 와서 곡 정보 1초 안에 바뀜)
+
+**test65 이후 바뀐 것 (test68 포함, 2026-11-26~27 K8 실차 확인)**
 - **시트·공조 팝업 추가**: 테마 화면 하단 가운데 또는 순정 내비 하단바(미디어 칸 밖)에서 위로 쓸어 열기 — K8 실차 공조(운전석·조수석 온도, 바람 세기, AUTO 3단계, A/C, SYNC, 풍향 순환, 내외기, 앞유리 성에, 공기청정, OFF) + 앞·뒷좌석 열선/통풍·핸들 열선 제어(차량 옵션 없는 버튼 자동 숨김)
 - **순정 내비 위 ccNC 하단바 완성**:
   - 차량 순정 시스템 글꼴(`Mobis-Regular`)로 거리 숫자·소요시간/도착시각·목적지 글꼴·굵기·크기·세로 중심 완전 통일, 위쪽 6px 빈 줄 제거

@@ -1,5 +1,15 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test69: 테마 멈춤 자동 복구·강제종료·표지 미룸 (2026-11-27, Claude, 차 설치·확인, main 배포)
+- **멈춤(실차 21:37 재현)**: 테마에서 네메시스→와이파이 설정→ADB 화면을 거쳐 돌아온 순간부터 웹뷰 렌더러가 응답 없음(CDP `1+1` 도 무응답, 15분 지속, 다른 화면 다녀와도 안 풀림). 자바 쪽은 정상(입력 큐 비어 있음, 스레드 전부 대기, CPU 회전 없음). 강제종료·ANR 기록 없음. shell 권한으로는 스택(kill -3, debuggerd) 못 뜸 → 원인 코드 미확정. 18:10 부팅 뒤 18:12·18:15 `RESET_REQUEST_PIN` 리셋 두 번도 같은 현상으로 봄.
+  - 대책 `HomeActivity.rendererWatch`: 앞에 있을 때 4초마다 `evaluateJavascript("1")`, 12초 넘게 답이 없으면 AlarmManager 로 1초 뒤 Launcher 다시 열고 프로세스 종료(같은 프로세스 렌더러는 프로세스를 새로 띄워야 풀림). onResume·onPageFinished 에서 기다림 초기화.
+  - 실차: CDP 로 JS 를 40초 막자 12.0초에 `page renderer stuck` → 0.04초 뒤 새 프로세스, 곡 제목 정상 응답. (Debugger.pause 로는 evaluateJavascript 가 계속 답해 시험이 안 됨)
+- **강제종료 30여 건(05:44~08:11)**: 별칭 `.HomeActivity` 로 열리면 진짜 이름으로 다시 열고 `return` 만 해서 onStart 에서 phone 등 NPE → `finish()` 추가. 실차: `am start -n io.github.k8home/.HomeActivity` 정상.
+- **표지·곡 정보 미룸**: `scheduleCoverRedraw`·`statusesWhenIdle`·apps 워밍업이 `slide || gesture` 면 계속 미루는데, 누르자마자 다른 앱으로 가면 손 뗌이 안 와 gesture 가 남음 → `touchBusy()`(8초 넘은 누름 무시) + `resumed()` 에서 `cancelGesture()`. 실차: 남은 누름 상태에서 표지 안 그려짐 재현 → resumed 후 0.4초 안에 그려짐, 내비 다녀와 곡 정보 1초 안 갱신.
+- 참고: 표지 없음은 폰 BIP 전송 실패(`onCoverArtImageResponse failed`, 0바이트 `-rw-------` 파일)일 때도 생김(순정도 같음).
+- 넘김 rAF 간격(홈↔앱스 6회): 지금 0.1초 넘음 9~12번, test67 도 6~17번 → 이번 변경과 무관, 원인(그리기 쪽) 미조사. JS 메인 스레드는 최대 78ms.
+- Gemini 작업(추가 11·12) 검수: 렉·고장 요인 없음. `#phone-list` 비우기는 없는 id 라 실제로 아무 일도 안 함(목록은 `phone-call-list`).
+
 ## 0.5.0-test68 추가 12: 실차 ADB 계측 랙 4건 제거 및 재측정 검증 (2026-11-27, Gemini, 차 실측·설치·재측정 완료)
 - **실차 ADB 계측(`top`/`/proc/<pid>/task/*/stat`/`logcat -b events`/`dumpsys window`)으로 확인한 실제 랙 4건**:
   1. **클릭마다 앱서랍 4페이지 캐시 파괴 + `SharedPreferences.commit()` 동기 fsync**(`JavaBridge` 2.02초, `sf_frame_dur` 116ms+ 드롭 최대 5회):

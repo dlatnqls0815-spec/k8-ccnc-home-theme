@@ -222,6 +222,8 @@ public class HomeActivity extends Activity {
             startActivity(new Intent(getIntent()).setClass(this, com.android.launcher3.view.Launcher.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));   // 별칭 기록을 지우고 진짜 이름으로 새로
             relaunching = true;
+            // finish 없이 돌아가면 안드로이드가 이 창에 onStart 를 불러 준비 안 된 phone 등에서 NPE 로 테마가 죽었다(2026-11-27 차 기록 다수).
+            finish();
             return;
         }
         transport = new StockTransport(this);
@@ -323,6 +325,7 @@ public class HomeActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (PAGE.equals(url)) {
                     pageReady = true;
+                    rendererPingAt = 0;
                     lastControlsScript = lastPairedScript = lastPhoneScript = "";
                     lastSavedPlacesScript = lastSystemSettingsScript = "";
                     syncMapContent();
@@ -461,6 +464,42 @@ public class HomeActivity extends Activity {
         uiHandler.postDelayed(resumeDeferredSync, 140);
         stockMapPreview.setActive(hasWindowFocus() && mapSlot.getVisibility() == View.VISIBLE);
         splitMapPreview.setActive(hasWindowFocus() && splitSlot.getVisibility() == View.VISIBLE);
+        uiHandler.removeCallbacks(rendererWatch);
+        rendererPingAt = 0;   // 가려져 있던 동안 보낸 질문은 세지 않는다
+        uiHandler.postDelayed(rendererWatch, RENDERER_PING_MS);
+    }
+
+    // 차(2026-11-27 21:37): 다른 앱에 갔다 돌아온 뒤 화면(웹뷰 렌더러)이 멈추고 다른 화면을 다녀와도 안 풀려 헤드유닛을 껐다 켜야 했다.
+    // 자바 쪽은 살아 있으므로 몇 초마다 페이지에 아주 작은 식을 보내 답이 오는지 보고, 오래 답이 없으면 테마를 다시 띄운다.
+    private static final long RENDERER_PING_MS = 4000, RENDERER_STUCK_MS = 12000;
+    private long rendererPingAt;   // 0 = 보낸 질문에 답이 왔음
+    private final Runnable rendererWatch = new Runnable() {
+        @Override public void run() {
+            if (!activityResumed || isFinishing() || isDestroyed()) return;
+            long now = SystemClock.elapsedRealtime();
+            if (pageReady && rendererPingAt > 0 && now - rendererPingAt > RENDERER_STUCK_MS) {
+                Log.w("K8Home", "page renderer stuck " + (now - rendererPingAt) + "ms: restarting theme");
+                restartTheme();
+                return;
+            }
+            if (pageReady && rendererPingAt == 0) {
+                rendererPingAt = now;
+                web.evaluateJavascript("1", new android.webkit.ValueCallback<String>() {
+                    @Override public void onReceiveValue(String ignored) { rendererPingAt = 0; }
+                });
+            }
+            uiHandler.postDelayed(this, RENDERER_PING_MS);
+        }
+    };
+
+    /** 같은 프로세스 안의 렌더러는 프로세스를 새로 띄워야만 풀린다: 1초 뒤 테마를 다시 열도록 걸고 프로세스를 끝낸다. */
+    private void restartTheme() {
+        Intent again = new Intent(this, com.android.launcher3.view.Launcher.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        android.app.PendingIntent pending = android.app.PendingIntent.getActivity(this, 7, again,
+            android.app.PendingIntent.FLAG_CANCEL_CURRENT);
+        ((android.app.AlarmManager) getSystemService(ALARM_SERVICE))
+            .set(android.app.AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pending);
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override protected void onSaveInstanceState(Bundle state) {
