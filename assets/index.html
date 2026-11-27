@@ -1835,6 +1835,9 @@ button.detail-settings-row.switch-row:hover, button.detail-settings-row.switch-r
 }
 .circle-btn .ico-cut { stroke: #1d1e20; }
 .circle-btn .ico-cut-fill { fill: #1d1e20; }
+/* 음악 카드 재생·소스 버튼도 지도 카드처럼 색 테두리(사용자 요청 2026-11-27), 아이콘은 흰색 그대로 */
+.circle-btn.media-ring { border-color: #8a7360; }
+.circle-btn.media-ring .ico-grey { color: #dcdcdc; }
 /* 0.4.57 D-media_bluetooth_main2.png(1920×720) 겹침: 기기 이름 글자 위 123, 제목 187~251, 가수 277~310,
    앨범 340~365, 재생 버튼 450~487(이전 48·일시정지 43·다음 48 폭), 진행 막대 539~543(538~1400), 시간 557~579.
    차 WebView에선 ".legacy … > * + *" 여백 규칙이 위 간격을 덮어써서 id로 고정한다. */
@@ -2453,10 +2456,10 @@ button.detail-settings-row.switch-row .stock-row-note {
             <span id="home-media-sub">Who-ya Extended · 스마트폰 추천 · 무손실</span>
           </button>
           <div class="hcard-circles" aria-label="미디어 제어">
-            <button type="button" class="circle-btn" id="home-play-btn" title="재생 / 일시정지" aria-label="재생 또는 일시정지">
+            <button type="button" class="circle-btn media-ring" id="home-play-btn" title="재생 / 일시정지" aria-label="재생 또는 일시정지">
               <svg class="ico ico-fill" id="home-play-ico" viewBox="0 0 24 24"><rect x="5.15" y="3.7" width="3.4" height="16.6" rx=".6"/><rect x="15.45" y="3.7" width="3.4" height="16.6" rx=".6"/></svg>
             </button>
-            <button type="button" class="circle-btn" id="home-source-btn" title="미디어 소스 전환 (블루투스 / 자연의 소리 / FM)" aria-label="미디어 소스 전환">
+            <button type="button" class="circle-btn media-ring" id="home-source-btn" title="미디어 소스 전환 (블루투스 / 자연의 소리 / FM)" aria-label="미디어 소스 전환">
               <svg class="ico ico-fill ico-grey" viewBox="0 0 24 24"><path d="M5.5 4.5h13v2h-13zM4.6 7.6h14.8V9H4.6z"/><path d="M3.5 10h17v10.5h-17z"/><path class="ico-cut-fill" d="M13.8 11.8v5.2a1.9 1.9 0 1 1-1.2-1.8v-2.6l-3 .7v4.2a1.9 1.9 0 1 1-1.2-1.8v-3.4z"/></svg>
             </button>
           </div>
@@ -3175,7 +3178,7 @@ var stockSub = '';
 
   function sourceLabel(source) {
     return {bt:'블루투스 오디오', usb:'USB 오디오', fm:'FM 라디오', am:'AM 라디오',
-      radio:'라디오', nature:'자연의 소리', carplay:'CarPlay 오디오'}[source] || '';
+      radio:'라디오', nature:'자연의 소리', carplay:'CarPlay 오디오', aa:'Android Auto 오디오'}[source] || '';
   }
 
   // 앱 페이지(apps1~apps4)마다 독립된 상설 <section>을 유지해 전환 끝 DOM 재조립·깜빡임과 뚝 점프를 없앤다.
@@ -3246,21 +3249,40 @@ var stockSub = '';
     return true;
   }
 
+  var lastSavedDisplay = '';
+  var lastAppsCacheSig = '';
+  function appsCacheSignature() {
+    return [
+      state.bgMode, state.graphicStyle, state.homeThirdTile,
+      hiddenTiles.join(','),
+      state.appTiles.map(function (item) { return item.id; }).join(',')
+    ].join('|');
+  }
+  function serializeDisplay() {
+    return JSON.stringify({
+      design: 2, bgMode: state.bgMode, graphicStyle: state.graphicStyle, gaugeStyle: state.gaugeStyle,
+      standbyMode: state.standbyMode, settingsGrid6x1: state.settingsGrid6x1, clock24: state.clock24,
+      standbyClock:state.standbyClock, warmth:state.warmth,
+      splitOpen: state.splitOpen, driverIndex: state.driverIndex,
+      driverNames: state.drivers.slice(0, 2), qcOrder:qcOrder, qcHidden:qcHidden, searchRecent:searchRecent,
+      homeCards: state.homeCards,
+      homeThirdTile: state.homeThirdTile,
+      tiles: state.appTiles.map(function (item) { return item.id; }), hiddenTiles: hiddenTiles,
+      widgets: state.splitWidgets.map(function (item) { return { id:item.id, enabled:item.enabled }; })
+    });
+  }
   function saveDisplay() {
-    invalidateAppsCache();
-    scheduleAppsWarmup(260);
     try {
-      var saved = JSON.stringify({
-        design: 2, bgMode: state.bgMode, graphicStyle: state.graphicStyle, gaugeStyle: state.gaugeStyle,
-        standbyMode: state.standbyMode, settingsGrid6x1: state.settingsGrid6x1, clock24: state.clock24,
-        standbyClock:state.standbyClock, warmth:state.warmth,
-        splitOpen: state.splitOpen, driverIndex: state.driverIndex,
-        driverNames: state.drivers.slice(0, 2), qcOrder:qcOrder, qcHidden:qcHidden, searchRecent:searchRecent,
-        homeCards: state.homeCards,
-        homeThirdTile: state.homeThirdTile,
-        tiles: state.appTiles.map(function (item) { return item.id; }), hiddenTiles: hiddenTiles,
-        widgets: state.splitWidgets.map(function (item) { return { id:item.id, enabled:item.enabled }; })
-      });
+      var saved = serializeDisplay();
+      // 변경이 없으면 클릭마다 캐시 파괴·워밍업·localStorage/JavaBridge 디스크 쓰기를 반복하지 않는다(실차 2026-11-27).
+      if (saved === lastSavedDisplay) return;
+      lastSavedDisplay = saved;
+      var appsSig = appsCacheSignature();
+      if (appsSig !== lastAppsCacheSig) {
+        lastAppsCacheSig = appsSig;
+        invalidateAppsCache();
+        scheduleAppsWarmup(260);
+      }
       localStorage.setItem(saveKey, saved);
       // test60: Chrome 30 localStorage 는 디스크에 늦게 써서 업데이트로 앱이 곧 끝나면 바뀐 배치가 사라졌다 → 앱 설정에도 바로 저장.
       if (window.K8Host && window.K8Host.saveDisplay) window.K8Host.saveDisplay(saved);
@@ -3324,6 +3346,10 @@ var stockSub = '';
       }).map(function (t) { return t.id; });
       sortHiddenLast();
       state.splitWidgets = order(state.splitWidgets, data.widgets, function (item) { return item && item.id; });
+    } catch (ignored) {}
+    try {
+      lastSavedDisplay = serializeDisplay();
+      lastAppsCacheSig = appsCacheSignature();
     } catch (ignored) {}
   }
   /**
@@ -3400,6 +3426,15 @@ var stockSub = '';
   var liveMapReady = false;
   var mediaCover = null;
   var requestedCover = null;
+  var coverCache = null, coverRedrawTimer = 0, lastMediaKey = '';
+  function scheduleCoverRedraw() {   // 표지 비움·새 표지가 잇따라 와도 다시 그리기는 한 번, 넘기는 중이면 끝난 뒤
+    clearTimeout(coverRedrawTimer);
+    coverRedrawTimer = setTimeout(function () {
+      coverRedrawTimer = 0;
+      if (slide || gesture) { scheduleCoverRedraw(); return; }
+      redrawMediaCover();
+    }, 30);
+  }
 
   function showNotice(msg) {
     notice.textContent = msg;
@@ -3411,8 +3446,14 @@ var stockSub = '';
   /* ====== Canvas Drawing Helpers ====== */
   function setupCanvas(canvas) {
     if (!canvas) return null;
-    var w = canvas.clientWidth || canvas.width || 300;
-    var h = canvas.clientHeight || canvas.height || 180;
+    // 숨은 캔버스는 clientWidth 가 0 이라 전엔 지난 픽셀 크기(canvas.width)에 배율 1.5 를 또 곱했다. 다시 그릴 때마다 1.5배로 커져
+    // 하단바 썸네일(48px)이 9368x9368 이 되고 한 번 그리는 데 4.4초 걸렸다(곡 넘길 때 버벅임, 2026-11-27 차 실측).
+    // 마지막으로 보였을 때의 CSS 크기(없으면 HTML 속성 크기)를 쓴다.
+    // (canvas.width 를 바꾸면 width 속성도 같이 바뀌므로 처음 크기는 처음 한 번만 적어 둔다)
+    if (!canvas.k8Base) canvas.k8Base = [parseInt(canvas.getAttribute('width'), 10) || 300, parseInt(canvas.getAttribute('height'), 10) || 180];
+    if (canvas.clientWidth > 0) { canvas.k8W = canvas.clientWidth; canvas.k8H = canvas.clientHeight; }
+    var w = canvas.clientWidth || canvas.k8W || canvas.k8Base[0];
+    var h = canvas.clientHeight || canvas.k8H || canvas.k8Base[1];
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
@@ -4483,11 +4524,8 @@ var stockSub = '';
     radioLists[view] = rows;
     return rows;
   }
-  // 목록은 순정 앱에서 동기로 읽어(0.7초) 화면을 붙잡는다: 있던 목록으로 먼저 그리고 0.4초 뒤 새로 읽는다.
+  // 목록은 순정 앱에서 동기로 읽어(0.7초) 화면을 붙잡는다: 부팅 4초 뒤 강제 프리로드를 빼고 라디오 진입 시에만 읽는다(실차 2026-11-27).
   var radioRefreshTimer = 0, radioShowAll = true;
-  if (inVehicle) setTimeout(function () {   // 시작 뒤 한가할 때 목록과 로고를 미리 읽어 둔다
-    ['fm', 'am', 'fav'].forEach(function (v) { radioRows(v).forEach(function (r) { radioLogo(r.name); }); });
-  }, 4000);
   function scheduleRadioRefresh() {
     clearTimeout(radioRefreshTimer);
     radioShowAll = false;   // 먼저 화면에 보이는 8줄만 그린다(FM 56곳을 한꺼번에 그리면 1초 걸림, 실차)
@@ -4517,9 +4555,10 @@ var stockSub = '';
   function radioLogo(name) {
     if (!name || !inVehicle || !window.K8Host.radioLogo) return '';
     if (name in radioLogos) return radioLogos[name];
-    if (!logoQueued[name]) { logoQueued[name] = true; logoQueue.push(name); }
-    if (!logoTimer) logoTimer = setTimeout(pumpLogos, 30);
-    return '';
+    // StockRadio.logo()는 PNG 디코딩 없이 k8radio URL만 즉시(<0.1ms) 반환하고, 실제 바이트는 shouldInterceptRequest 워커가 서빙한다.
+    var url = window.K8Host.radioLogo(name) || '';
+    radioLogos[name] = blobUrl(url);
+    return radioLogos[name];
   }
   function pumpLogos() {
     logoTimer = 0;
@@ -5114,6 +5153,22 @@ var stockSub = '';
     btn.style.minWidth = Math.ceil(n.left - b.left + text + pad) + 'px';
   }
   window.addEventListener('resize', function () { var n = document.getElementById('driver-name'); if (n) n.k8Fit = false; });
+  // Chrome 30(차): vw 는 창이 처음 만들어질 때 크기로 굳어, 설치 직후 첫 실행처럼 창이 작게 시작했다가 커지면
+  // vw 로 잡은 버튼·글자가 작은 채로 남았다(홈 원형 버튼 98px → 76px, 2026-11-27). 창 크기가 바뀌면 스타일시트를
+  // 껐다 켜서 vw 를 지금 창 크기로 다시 계산하게 한다(크기가 바뀔 때만, 드묾).
+  var lastVwWidth = window.innerWidth;
+  function refreshViewportUnits() {
+    var playBtn = document.getElementById('home-play-btn');
+    var shrunk = playBtn && playBtn.offsetWidth > 0 && playBtn.offsetWidth < 56;
+    if (window.innerWidth === lastVwWidth && !shrunk) return;
+    lastVwWidth = window.innerWidth;
+    Array.prototype.forEach.call(document.styleSheets, function (sheet) {
+      try { sheet.disabled = true; sheet.disabled = false; } catch (e) { }
+    });
+    var n = document.getElementById('driver-name'); if (n) n.k8Fit = false;
+  }
+  window.addEventListener('resize', refreshViewportUnits);
+  setTimeout(refreshViewportUnits, 600);
 
   /* 곡 정보가 넘김·끌기 중에 오면 화면 갱신(레이아웃 다시 계산·지도 위치 알림)을 손을 뗀 뒤로 미룬다. 여러 번 와도 한 번만. */
   var statusTimer = 0;
@@ -6593,7 +6648,7 @@ var stockSub = '';
     if (bluetooth) bluetooth.textContent = controls.bluetooth === null ? '블루투스 상태 대기' :
       controls.bluetooth ? '블루투스 켜짐' : '블루투스 꺼짐';
     var connectionRows = {'bt-call':phoneData.calls.join(', '), 'bt-audio':phoneData.audio.join(', '),
-      projection:state.mediaSource === 'carplay' ? 'CarPlay 오디오' :
+      projection:state.mediaSource === 'carplay' ? 'CarPlay 오디오' : state.mediaSource === 'aa' ? 'Android Auto 오디오' :
         phoneData.source === 'Apple CarPlay' && phoneData.state ? 'CarPlay 통화' : ''};
     Object.keys(connectionRows).forEach(function (name) {
       var row = document.getElementById('theme-' + name + '-row');
@@ -7214,7 +7269,8 @@ var stockSub = '';
     document.getElementById('navi-lane-box').hidden = !state.dest;
 
     var driverEl = document.getElementById('driver-name');
-    if (driverEl.textContent !== state.drivers[state.driverIndex] || !driverEl.k8Fit) {
+    // 한 번 잰 칸이 글자보다 좁게 남으면(차: 글자 65px 인데 칸 48px 고정, 2026-11-27) 다시 잰다.
+    if (driverEl.textContent !== state.drivers[state.driverIndex] || !driverEl.k8Fit || driverEl.scrollWidth > driverEl.clientWidth + 1) {
       driverEl.textContent = state.drivers[state.driverIndex];
       fitDriverName();
     }
@@ -7268,7 +7324,14 @@ var stockSub = '';
     if (state.page === 'memo' && next !== 'memo' && inVehicle) host('memo-stop');
     if (next !== 'settings') setClass(shell, 'sound-mode', false);
     if (next !== 'settings') setClass(shell, 'detail-settings', false);
-    if (next !== 'phone') setClass(shell, 'phone-keypad-mode', false);
+    if (next !== 'phone') {
+      setClass(shell, 'phone-keypad-mode', false);
+      // 연락처(185명+) 1,500개 이상 DOM 노드가 다른 화면에서도 남아 스타일·레이아웃 계산을 느리게 하므로 나올 때 비운다.
+      if (state.page === 'phone') {
+        var plist = document.getElementById('phone-list');
+        if (plist) plist.innerHTML = '';
+      }
+    }
     // 재배치는 앱 페이지끼리 넘길 때 이어진다(숨긴 타일이 있는 뒤 페이지까지 가야 하므로).
     if (next !== state.page && state.reordering && !isAppsPage(next)) { state.reordering = false; invalidateAppsCache(); }
     if (next !== 'settings' && next !== 'search') settingsSection = '';
@@ -7517,7 +7580,7 @@ var stockSub = '';
   }
 
   window.setInterval(function () {
-    if (slide) return;
+    if (slide || state.page !== 'home') return;
     var slot = document.getElementById('map-slot');
     if (!slot || !window.K8Host) return;
     var r = slot.getBoundingClientRect();
@@ -7527,14 +7590,14 @@ var stockSub = '';
 
   var lastTouchAt = 0;
   var lastInputAt = 0;
-  // 홈 화면이 아무 조작 없이 정지해 있을 때만 가끔(8초 주기, 마지막 터치 후 3.5초 이상 경과)
-  // 라이브 지도 스냅샷을 갱신해 넘김 첫 순간의 getBitmap() UI 스레드 프리즈(230ms)를 없앤다.
+  // 홈 화면이 아무 조작 없이 정지해 있을 때만 가끔(25초 주기, 마지막 터치 후 5초 이상 경과)
+  // 라이브 지도 스냅샷을 갱신해 getBitmap() UI 스레드 프리즈(230ms) 빈도를 크게 줄인다.
   window.setInterval(function () {
     if (!slide && !gesture && state.page === 'home' && document.getElementById('qc-drawer').hidden &&
-        Date.now() - lastInputAt > 3500) {
+        Date.now() - lastInputAt > 5000) {
       requestMapSnapshot();
     }
-  }, 8000);
+  }, 25000);
 
   // 초기 로드 유휴 시점과 카드 배치 변경 후 apps1~apps4를 1페이지씩 시간차로 화면 밖 실제 크기에 미리 그려
   // 전체 메뉴 어느 페이지로 넘겨도 첫 프레임 캔버스 생성 끊김과 아이콘 비율 왜곡을 없앤다.
@@ -7587,6 +7650,7 @@ var stockSub = '';
       return;
     }
     if (state.page === 'home') {
+      if (mapIdleTimer) { clearTimeout(mapIdleTimer); mapIdleTimer = 0; }
       var rect = slot.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
         homeMapRect = {
@@ -7606,12 +7670,19 @@ var stockSub = '';
     }
     // 홈 덱의 다른 페이지(standby, apps1, apps2)에서는 지도를 끄지 않고 표시만 숨겨 두어
     // 홈으로 돌아올 때 순정 지도 재시작·깜빡임을 없앤다.
+    // 단, 순정 지도는 안 보여도 프레임을 계속 받아 창 전체를 초당 40번 넘게 다시 그린다(차에서 CPU 15%, 2026-11-27).
+    // 홈을 떠나 5초가 지나면 끈다. 다시 홈으로 오면 스냅샷이 먼저 보이고 라이브 지도가 이어 붙는다.
     if (mapAlive && homeMapRect) {
       setMapLiveVisible(false);
+      if (!mapIdleTimer) mapIdleTimer = setTimeout(function () {
+        mapIdleTimer = 0;
+        if (state.page !== 'home' && !slide && !gesture) hideNativeMapSlot();
+      }, 5000);
     } else {
       hideNativeMapSlot();
     }
   }
+  var mapIdleTimer = 0;
 
   window.K8Home = {
     /** Opens the media screen on a given source ("bt", "usb", "fm", ...). */
@@ -7742,16 +7813,25 @@ var stockSub = '';
       img.hidden = false;
     },
     coverArtChanged: function (uri) {
+      // 테마가 가려지면 표지가 비워졌다가 돌아올 때 같은 표지가 다시 온다(차에서 한 번에 0.58초 멈춤, 2026-11-27).
+      // 풀어 둔 그림을 다시 쓰고, 다시 그리기는 한 번으로 모은다.
       requestedCover = null;
-      mediaCover = null;
-      redrawMediaCover();
-      if (!uri || uri.indexOf('data:image/jpeg;base64,') !== 0) return;
+      if (!uri || uri.indexOf('data:image/jpeg;base64,') !== 0) {
+        if (mediaCover) { mediaCover = null; scheduleCoverRedraw(); }
+        return;
+      }
+      if (coverCache && coverCache.uri === uri) {
+        if (mediaCover !== coverCache.image) { mediaCover = coverCache.image; scheduleCoverRedraw(); }
+        return;
+      }
+      if (mediaCover) { mediaCover = null; scheduleCoverRedraw(); }
       var image = new Image();
       requestedCover = image;
       image.onload = function () {
         if (requestedCover !== image) return;
+        coverCache = { uri: uri, image: image };
         mediaCover = image;
-        redrawMediaCover();
+        scheduleCoverRedraw();
       };
       image.src = uri;
     },
@@ -7810,6 +7890,18 @@ var stockSub = '';
       track.dur = format(duration);
       track.pct = duration > 0 ? Math.max(0, Math.min(100, 100 * position / duration)) : 0;
       if (position >= 0) { mediaPos = position; mediaPosAt = Date.now(); }
+      // 곡·재생 상태가 그대로고 재생 위치만 바뀐 방송(재생 중 0.3~0.5초마다 옴)은 진행 막대와 재생 시트만 고친다.
+      // 전엔 매번 홈 전체를 다시 그려 차에서 한 번에 12~36ms 씩 화면을 붙잡았다(2026-11-27).
+      var mediaKey = [title, artist, playing, source, settings, duration].join('|');
+      if (mediaKey === lastMediaKey) {
+        var prog = document.getElementById('home-media-prog');
+        if (prog) prog.style.width = track.pct + '%';
+        renderSheet();
+        if (state.page === 'media') renderMediaStage();
+        else if (state.page === 'music') renderCcncScreen();
+        return;
+      }
+      lastMediaKey = mediaKey;
       requestLyrics(title || '', artist || '', duration);
       renderSheet();
       if (natureTarget >= 0 && state.mediaSource === 'nature' && natureIndex() >= 0) {
@@ -9322,6 +9414,8 @@ var stockSub = '';
 
   /* ====== Clock ====== */
   function updateClock() {
+    var dn = document.getElementById('driver-name');   // 이름 칸이 글자보다 좁게 남았으면 다시 맞춘다
+    if (dn && dn.scrollWidth > dn.clientWidth + 1) fitDriverName();
     var now = new Date();
     var h24 = now.getHours();
     var ampm = h24 >= 12 ? 'PM' : 'AM';

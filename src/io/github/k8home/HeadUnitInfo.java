@@ -357,7 +357,24 @@ final class HeadUnitInfo {
         if (flag == 0 || flag == 1) info.put(field, flag == 1 ? "켜짐" : "꺼짐");
     }
 
+    private static java.lang.reflect.Method sysPropGet;
+    private static boolean sysPropChecked;
+
     private static String property(String key) {
+        // android.os.SystemProperties.get 를 먼저 써서 onResume 마다 /system/bin/getprop 프로세스를 18번 fork 하는 CPU 랙을 없앤다.
+        if (!sysPropChecked) {
+            sysPropChecked = true;
+            try {
+                sysPropGet = Class.forName("android.os.SystemProperties").getMethod("get", String.class, String.class);
+            } catch (Throwable ignored) { }
+        }
+        if (sysPropGet != null) {
+            try {
+                String text = StockMedia.text((String) sysPropGet.invoke(null, key, ""));
+                if (text.matches("[A-Za-z0-9._-]{1,64}")) return text;
+                if (text.isEmpty()) return "";
+            } catch (Throwable ignored) { }
+        }
         Process process = null;
         try {
             process = new ProcessBuilder("/system/bin/getprop", key).redirectErrorStream(true).start();

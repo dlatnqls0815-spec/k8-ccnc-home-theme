@@ -13,6 +13,8 @@ final class StockMedia {
     static final String RADIO = "com.hkmc.radio.widgetupdate";
     private static final String NATURE = "com.hkmc.nature_sound.widgetupdate";
     private static final String CARPLAY = "com.hkmc.dipoaudio.widgetupdate";
+    // Android Auto 음악(순정 HKMC_GPM): 블루투스·USB 와 같은 항목(filename·artist_name·playstate·audio_*_time), 2026-11-27 K8 확인
+    private static final String ANDROID_AUTO = "com.hkmc.gpmaudio.widgetupdate";
 
     /** ModeManager.ACTION_MODE_CHANGED with ModeConstants$ModeType in EXTRA_MODE_TYPE (automotive.odex). */
     static final String MODE_CHANGED = "com.hkmc.intent.action.MODE_CHANGED";
@@ -44,6 +46,7 @@ final class StockMedia {
         filter.addAction(RADIO);
         filter.addAction(NATURE);
         filter.addAction(CARPLAY);
+        filter.addAction(ANDROID_AUTO);
         filter.addAction(MODE_CHANGED);
     }
 
@@ -56,6 +59,7 @@ final class StockMedia {
             case 0x21: case 0x31: return new String[] {"usb", "USB 음악"};
             case 0x81: return new String[] {"nature", "자연의 소리"};
             case 0x73: return new String[] {"carplay", "CarPlay"};
+            case 0x74: return new String[] {"aa", "Android Auto"};   // ModeType.GPM
             default: return null;
         }
     }
@@ -76,6 +80,7 @@ final class StockMedia {
         else if (USB.equals(action)) nextSource = "usb";
         else if (NATURE.equals(action)) nextSource = "nature";
         else if (CARPLAY.equals(action)) nextSource = "carplay";
+        else if (ANDROID_AUTO.equals(action)) { nextSource = "aa"; android.util.Log.i("K8Media", "aa widget keys " + data.keySet()); }
         else return this;
 
         if (Boolean.TRUE.equals(flag(data.get("invisible")))

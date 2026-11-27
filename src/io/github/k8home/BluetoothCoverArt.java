@@ -37,6 +37,12 @@ final class BluetoothCoverArt {
     }
 
     void setTrack(String nextTrack) {
+        setTrack(nextTrack, 0);
+    }
+
+    /** notBefore: 이 시각(ms) 뒤에 생긴 표지도 받는다. 테마가 가려져 있는 동안 곡이 바뀌면 표지 파일이 4초보다 오래돼
+     *  돌아왔을 때 못 찾았다(2026-11-27): 가려진 시각부터 찾게 한다. 0 이면 평소처럼 4초 안. */
+    void setTrack(String nextTrack, long notBefore) {
         if (track.equals(nextTrack)) return;
         track = nextTrack;
         int request = ++generation;
@@ -49,7 +55,7 @@ final class BluetoothCoverArt {
         listener.changed("");
         if (track.isEmpty()) return;
         String previousFile = lastFile.isEmpty() ? cachedFile : lastFile;
-        long earliest = System.currentTimeMillis() - 4000;
+        long earliest = notBefore > 0 ? Math.min(notBefore, System.currentTimeMillis() - 4000) : System.currentTimeMillis() - 4000;
         long deadline = SystemClock.elapsedRealtime() + 10000;
         final boolean[] retried = {false};
         worker.post(new Runnable() {
@@ -109,8 +115,17 @@ final class BluetoothCoverArt {
         options.inJustDecodeBounds = false;
         options.inSampleSize = 1;
         while (side / options.inSampleSize > 512) options.inSampleSize *= 2;
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), options);
-        if (bitmap == null) return "";
+        // 화면에 그리는 크기(최대 약 384px)로 줄여 보낸다: 차 WebView 가 처음 그릴 때 그림을 푸는 데 96ms 걸렸다(2026-11-27).
+        Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
+        if (decoded == null) return "";
+        int big = Math.max(decoded.getWidth(), decoded.getHeight());
+        Bitmap bitmap = decoded;
+        if (big > 384) {
+            float k = 384f / big;
+            bitmap = Bitmap.createScaledBitmap(decoded, Math.max(1, Math.round(decoded.getWidth() * k)),
+                Math.max(1, Math.round(decoded.getHeight() * k)), true);
+            if (bitmap != decoded) decoded.recycle();
+        }
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 85, output)) return "";

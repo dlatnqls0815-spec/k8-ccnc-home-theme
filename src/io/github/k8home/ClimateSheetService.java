@@ -101,6 +101,8 @@ public final class ClimateSheetService extends Service {
         try {
             windows.addView(web, params);
             climate.start();
+            worker.post(new Runnable() { @Override public void run() { cabin.listen(true); cabin.listenVr(true); } });
+            cabin.useDatc(climate.manager());
             web.loadUrl(PAGE);
             handler.post(poll);
         } catch (RuntimeException failure) {
@@ -110,6 +112,7 @@ public final class ClimateSheetService extends Service {
     }
 
     private volatile JSONObject climateState = new JSONObject();
+    private String lastState = "";
 
     private void push() {
         if (web == null || !ready) return;
@@ -122,9 +125,11 @@ public final class ClimateSheetService extends Service {
         @Override public void run() {
             JSONObject state = cabin.snapshot();
             try {
-                state.put("climate", climateState);
+                if (!state.has("climate")) state.put("climate", climateState);
             } catch (JSONException ignored) { }
-            final String script = "window.K8Sheet && window.K8Sheet.state(" + JSONObject.quote(state.toString()) + ")";
+            String text = state.toString();
+            if (!text.equals(lastState)) { lastState = text; Log.i(TAG, "state " + text); }   // 차에서 읽은 값 확인용
+            final String script = "window.K8Sheet && window.K8Sheet.state(" + JSONObject.quote(text) + ")";
             handler.post(new Runnable() {
                 @Override public void run() {
                     if (web != null && ready) web.evaluateJavascript(script, null);
@@ -136,6 +141,7 @@ public final class ClimateSheetService extends Service {
     private void close() {
         handler.removeCallbacks(poll);
         if (climate != null) climate.stop();
+        if (web != null && worker != null) worker.post(new Runnable() { @Override public void run() { cabin.listen(false); cabin.listenVr(false); } });
         if (web != null) {
             WebView view = web;
             web = null;
@@ -163,7 +169,7 @@ public final class ClimateSheetService extends Service {
         } else if ("wheel".equals(action)) {
             cabin.wheel();
         } else if ("auto".equals(action)) {
-            cabin.climate(StockCabin.C_AUTO, value == 1 ? 0 : 1);
+            cabin.climate(StockCabin.C_AUTO, 1);   // K8: AUTO 는 누름(1)만 받는다. 0 은 무시됨(2026-11-27 차). 다시 누르면 단계가 돈다
         } else if ("ac".equals(action)) {
             cabin.climate(StockCabin.C_AC, value == 1 ? 0 : 1);
         } else if ("defog".equals(action)) {
@@ -171,9 +177,11 @@ public final class ClimateSheetService extends Service {
         } else if ("intake".equals(action)) {
             cabin.climate(StockCabin.C_INTAKE, value == 1 ? 0 : 1);
         } else if ("sync".equals(action)) {
-            cabin.climate(StockCabin.C_SYNC, value == 1 ? 0 : 1);
+            cabin.climate(StockCabin.C_SYNC, value == 1 ? 1 : 2);   // K8: SYNC 켜기 2, 끄기 1(0 은 무시, 2026-11-27 차)
         } else if ("aircln".equals(action)) {
             cabin.climate(StockCabin.C_AIR_CLEANING, value == 1 ? 0 : 1);
+        } else if ("mode".equals(action)) {   // 바람 방향: 1 정면, 2 정면+발, 3 발, 4 발+앞유리, 5 앞유리
+            if (value >= 1 && value <= 5) cabin.climate(StockCabin.C_BLOWER_MODE, value);
         } else if ("off".equals(action)) {
             cabin.climate(StockCabin.C_OFF_REQ, 1);
         } else if ("fan".equals(action)) {   // value = 원하는 바람 단계 1..8, 순정은 2..9 를 받는다

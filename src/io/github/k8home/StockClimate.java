@@ -59,6 +59,11 @@ final class StockClimate {
         binding = null;
     }
 
+    /** 서비스에 붙어 있는 순정 DATCManager(없으면 null). 새로 만든 DATCManager 는 서비스가 비어 보내기가 NPE 로 거절됐다(2026-11-27 K8). */
+    Object manager() {
+        return binding == null ? null : binding.manager;
+    }
+
     JSONObject snapshot() {
         JSONObject info = new JSONObject();
         try {
