@@ -3431,7 +3431,7 @@ var stockSub = '';
     clearTimeout(coverRedrawTimer);
     coverRedrawTimer = setTimeout(function () {
       coverRedrawTimer = 0;
-      if (slide || gesture) { scheduleCoverRedraw(); return; }
+      if (touchBusy()) { scheduleCoverRedraw(); return; }
       redrawMediaCover();
     }, 30);
   }
@@ -5174,7 +5174,7 @@ var stockSub = '';
   var statusTimer = 0;
   function statusesWhenIdle() {
     clearTimeout(statusTimer);
-    if (slide || gesture) { statusTimer = setTimeout(statusesWhenIdle, 250); return; }
+    if (touchBusy()) { statusTimer = setTimeout(statusesWhenIdle, 250); return; }
     statusTimer = 0;
     if (!isAppsPage(state.page) && !(isDetailPage(state.page) && state.page !== 'media')) updateAllStatuses();
   }
@@ -7603,7 +7603,7 @@ var stockSub = '';
   // 전체 메뉴 어느 페이지로 넘겨도 첫 프레임 캔버스 생성 끊김과 아이콘 비율 왜곡을 없앤다.
   function warmupSingleAppsPage(page) {
     if (appsPageRendered[page]) return;
-    if (slide || gesture || homeOrder.indexOf(state.page) < 0) {
+    if (touchBusy() || homeOrder.indexOf(state.page) < 0) {
       appsWarmupTimers.push(window.setTimeout(function () { warmupSingleAppsPage(page); }, 700));
       return;
     }
@@ -7868,6 +7868,7 @@ var stockSub = '';
     },
     mediaPosition: function (ms) { mediaPos = ms; mediaPosAt = Date.now(); },   // 블루투스 1초 위치 방송(가사 줄 맞추기)
     resumed: function () {   // 테마가 다시 앞에 옴: 다른 화면으로 가느라 못 지운 눌림 색을 지운다
+      if (gesture) cancelGesture();   // 누르자마자 내비·플레이어로 가면 손 뗌이 안 와 '누르는 중'이 남아 표지·곡 정보 그리기가 계속 미뤄졌다
       Array.prototype.forEach.call(document.querySelectorAll('.circle-btn.holding'), function (b) { b.classList.remove('holding'); });
     },
     mediaChanged: function (title, artist, playing, position, duration, source, settings) {
@@ -8776,6 +8777,8 @@ var stockSub = '';
 
   /* ====== Touch & Pointer Gestures ====== */
   var gesture = null;
+  // 넘김·끌기 중이면 무거운 다시 그리기를 미룬다. 손 뗌을 못 받아 남은 누름(8초 넘음)은 누르는 중으로 보지 않는다.
+  function touchBusy() { return !!slide || !!gesture && Date.now() - gesture.startAt < 8000; }
   var homeOrder = ['standby', 'home'].concat(appPages);
   var deck = document.getElementById('deck');
   var slide = null;
