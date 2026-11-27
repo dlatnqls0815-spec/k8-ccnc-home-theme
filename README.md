@@ -2,23 +2,26 @@
 
 기아 K8 Gen5W(1920×720, Android 4.4 / API 19)에서 사용할 수 있도록 기아 ccNC 공식 매뉴얼의 화면을 구현하는 프로젝트입니다.
 
-## ⬇️ 내려받기 (0.5.0-test65, 2026-11-26)
+## ⬇️ 내려받기 (0.5.0-test68, 2026-11-27)
 
 | 파일 | 용도 |
 |---|---|
 | [**최신 배포용 내려받기 (Releases · Latest)**](https://github.com/dlatnqls0815-spec/k8-ccnc-home-theme/releases/latest) | 항상 최신 ✅ 배포용으로 연결되는 주소. **이 주소를 공유하세요.** 🧪 테스터용(Pre-release)은 받지 마세요 |
-| [**K8-ccNC-Home-NEMESIS-0.5.0-test65-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test65-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기·AA 실행 도우미). USB 로 설치. 테마 앱만 필요하면 안의 `packages/…zip` 속 `app/k8-home.apk` |
+| [**K8-ccNC-Home-NEMESIS-0.5.0-test68-USB.zip**](downloads/K8-ccNC-Home-NEMESIS-0.5.0-test68-USB.zip?raw=1) | NEMESIS 설치 묶음(테마 앱 + 곡 넘기기·AA 실행·진단 로그 도우미). USB 로 설치. 테마 앱만 필요하면 안의 `packages/…zip` 속 `app/k8-home.apk` |
+| [**k8home-0.5.0-test68.apk**](https://github.com/dlatnqls0815-spec/k8-ccnc-home-theme/releases/download/v0.5.0-test68/k8home-0.5.0-test68.apk) | 테마 앱 단독 APK (도우미 없이 앱만 설치) |
 
 **설치(USB)**: zip 을 풀어 안의 `NEMESIS.data` 와 `packages` 폴더를 USB 최상위에 둔다(기존 `NEMESIS.data` 가 있으면 백업) → 정차 상태에서 NEMESIS 매니저 **Package Store → USB → K8 ccNC Home Theme** 설치 → **My Packages → K8 ccNC Home Theme → Launch**. 자세한 것은 [네메시스 설치 안내](docs/NEMESIS_INSTALL.md).
 
-**test60 이후 바뀐 것 (test65, K8 실차 확인)**
-- 테마가 앞에 있어도 **공조·MAP·NAV·SETUP 차 버튼**이 순정대로 동작, **즐겨찾기(☆)** 짧게 ccNC 테마 / 길게 순정 5W 홈
-- MAP·NAV 버튼이나 공조 화면에서 돌아와도 **순정 내비 위 ccNC 하단바**가 자동으로 켜짐, 업데이트 직후에도 바로 동작
-- 홈 왼쪽 위 **운전자 이름 잘림** 고침 + 순정 사용자 프로필 이름 표시
-- 내비 위 **재생 팝업 부드럽게**, 팝업 `≡` → 홈을 거치지 않고 바로 음악 화면
-- 음악 화면·홈 넘김 **렉 줄이기**
-- 테스터용 **진단 로그 USB 저장**(화면구성 › 테마 맨 아래)
-- **순정 화면 위 하단 모서리 버튼은 기본 꺼짐**(화면구성 › 테마 › "순정 화면에도 하단 버튼 띄우기"로 켬)
+**test65 이후 바뀐 것 (test68, 2026-11-26~27 K8 실차 확인)**
+- **시트·공조 팝업 추가**: 테마 화면 하단 가운데 또는 순정 내비 하단바(미디어 칸 밖)에서 위로 쓸어 열기 — K8 실차 공조(운전석·조수석 온도, 바람 세기, AUTO 3단계, A/C, SYNC, 풍향 순환, 내외기, 앞유리 성에, 공기청정, OFF) + 앞·뒷좌석 열선/통풍·핸들 열선 제어(차량 옵션 없는 버튼 자동 숨김)
+- **순정 내비 위 ccNC 하단바 완성**:
+  - 차량 순정 시스템 글꼴(`Mobis-Regular`)로 거리 숫자·소요시간/도착시각·목적지 글꼴·굵기·크기·세로 중심 완전 통일, 위쪽 6px 빈 줄 제거
+  - 남은 시간·도착 시각 5초 교대 시 구분선·깃발·목적지 흔들림 방지, 0~9분 구간 시간 사라짐 버그 수정, 정차 중 남은 시간 재조회
+  - 순정 내비 지도 터치(좌표 찍기) 시 하단바 자동 숨김(18초 후 복귀), 하단바·홈 복귀 시 앨범 표지 누락 수정
+- **실차 랙 원인 규명 및 대폭 개선 (ADB·CDP 실측)**:
+  - 숨은 캔버스 1.5배 반복 증식(곡 넘김 2.4초 멈춤) 해결, 커버 JPEG 384px 축소, 재생 위치만 바뀔 때 홈 전체 재렌더 생략, 홈 이탈 5초 뒤 숨은 지도 `TextureView` 중지, 긴 글자 흐르기(`marquee`) 무한 반복·슬라이드 중 재계산 차단
+  - 화면 클릭마다 앱서랍 4페이지 캐시 파괴 + 디스크 동기 저장(`commit`) 제거, 자연의 소리 PNG 10장·라디오 로고 56장 지연/원본 PNG 워커 서빙 전환(`JavaBridge` CPU 2.02초 → 0.04초), 홈 복귀 시 `getprop` 18회 `fork` 제거·블루투스 조회 백그라운드 분리(실차 홈 `rAF` 평균 17.6ms ≈ 60fps)
+- **홈·Android Auto**: 홈 왼쪽 위 운전자 이름 끝 잘림 재발 방지(20자 실차 확인), 재설치 직후 원형 버튼 축소 수정, Android Auto 오디오(`HKMC_GPM`) 미디어 정보 수신 추가
 
 **이 판에서 되는 것**
 - **기아 ccNC 검정·청록 통일 화면**: 홈·전체 앱(재배치·타일 숨기기)·미디어(`main2` 통일)·전화·설정(6×2 + `5W 설정` 카드)·ccNC 테마 설정 타일

@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -107,6 +108,22 @@ public class HomeActivity extends Activity {
     private String pendingPlacePrevCoord = "";
     private int pendingNatureIndex = -1;
     private final Handler uiHandler = new Handler(Looper.getMainLooper());
+    private android.os.HandlerThread controlsThread;
+    private Handler controlsWorker;
+    private String lastControlsScript = "", lastPairedScript = "", lastPhoneScript = "";
+    private String lastSavedPlacesScript = "", lastSystemSettingsScript = "";
+    private final Runnable syncControlsTask = new Runnable() {
+        @Override public void run() { runControlsSyncOffUi(); }
+    };
+    private final Runnable resumeDeferredSync = new Runnable() {
+        @Override public void run() {
+            if (isFinishing() || isDestroyed() || !activityResumed) return;
+            checkPendingSavedPlace();
+            syncSavedPlaces();
+            syncSystemSettings();
+            refreshVehicleSettings();
+        }
+    };
     private final Runnable applyPendingNature = new Runnable() {
         @Override public void run() {
             if (isDestroyed() || pendingNatureIndex < 0) return;
@@ -173,7 +190,9 @@ public class HomeActivity extends Activity {
             if (!media.source.equals(next.source)) transport.close();
             // 곡이 바뀔 때 순정 곡 팝업 닫기는 항상 떠 있는 PopupGuardService 가 맡는다.
             media = next;
-            coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "");
+            // 돌아온 뒤 5초 안의 곡 바뀜은 가려진 동안 바뀐 것일 수 있다: 가려진 시각 뒤 표지도 찾는다.
+            long notBefore = SystemClock.elapsedRealtime() - startedAt < 5000 && stoppedAtWall > 0 ? stoppedAtWall - 2000 : 0;
+            coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "", notBefore);
             if ("nature".equals(media.source) && pendingNatureIndex >= 0) {
                 int idx = pendingNatureIndex;
                 pendingNatureIndex = -1;
@@ -183,11 +202,17 @@ public class HomeActivity extends Activity {
                     StockRadio.requestMediaRefresh(HomeActivity.this);
                 }
             }
-            syncMedia();
+            // 곡이 바뀔 때 제목·가수·재생 상태 방송이 잇따라 온다: 40ms 안의 것은 한 번에 넘긴다(화면 한 번만 그림).
+            uiHandler.removeCallbacks(syncMediaSoon);
+            uiHandler.postDelayed(syncMediaSoon, 40);
         }
+    };
+    private final Runnable syncMediaSoon = new Runnable() {
+        @Override public void run() { syncMedia(); }
     };
 
     private boolean relaunching;
+    private long startedAt, stoppedAtWall;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -278,6 +303,10 @@ public class HomeActivity extends Activity {
                     byte[] art = radio == null ? null : radio.natureArt(url);
                     return art == null ? null : new android.webkit.WebResourceResponse("image/jpeg", null, new java.io.ByteArrayInputStream(art));
                 }
+                if (url.startsWith(StockRadio.RADIO_LOGO_URL)) {
+                    byte[] logo = radio == null ? null : radio.logoBytes(url);
+                    return logo == null ? null : new android.webkit.WebResourceResponse("image/png", null, new java.io.ByteArrayInputStream(logo));
+                }
                 if (!url.startsWith(PHOTO_URL)) return null;
                 String target = url.substring(PHOTO_URL.length()).replaceAll("[-?].*$", "");
                 String data = shortcuts.getString("photo-" + target, "");
@@ -294,6 +323,8 @@ public class HomeActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (PAGE.equals(url)) {
                     pageReady = true;
+                    lastControlsScript = lastPairedScript = lastPhoneScript = "";
+                    lastSavedPlacesScript = lastSystemSettingsScript = "";
                     syncMapContent();
                     syncRoute();
                     syncMedia();
@@ -351,6 +382,7 @@ public class HomeActivity extends Activity {
 
     @Override protected void onStart() {
         super.onStart();
+        startedAt = SystemClock.elapsedRealtime();
         PopupGuardService.start(this); // 테마가 닫혀 있어도 곡이 바뀌면 순정 곡 팝업을 닫는다
         IntentFilter filter = new IntentFilter();
         StockMedia.addActions(filter);
@@ -408,6 +440,7 @@ public class HomeActivity extends Activity {
 
     @Override protected void onPause() {
         activityResumed = false;
+        uiHandler.removeCallbacks(resumeDeferredSync);
         stockMapPreview.setActive(false);
         splitMapPreview.setActive(false);
         memos.stop();
@@ -423,10 +456,9 @@ public class HomeActivity extends Activity {
         // 단추를 누르자마자 다른 화면(내비·플레이어)으로 가면 손 뗌이 안 와 눌림 색이 남았다: 돌아오면 지운다.
         if (pageReady) web.evaluateJavascript("window.K8Home && window.K8Home.resumed && window.K8Home.resumed()", null);
         if (media.source.isEmpty()) syncVehicle();   // 테마가 다시 켜진 뒤 소스를 모르면(자연의 소리는 바뀔 때만 알림) 순정 모드를 읽는다
-        checkPendingSavedPlace();
-        syncSavedPlaces();
-        syncSystemSettings();
-        refreshVehicleSettings();
+        // 홈 복귀 첫 프레임 직후에 설정·저장장소 동기화를 실행해 복귀 600ms 프리징을 줄인다(실차 2026-11-27).
+        uiHandler.removeCallbacks(resumeDeferredSync);
+        uiHandler.postDelayed(resumeDeferredSync, 140);
         stockMapPreview.setActive(hasWindowFocus() && mapSlot.getVisibility() == View.VISIBLE);
         splitMapPreview.setActive(hasWindowFocus() && splitSlot.getVisibility() == View.VISIBLE);
     }
@@ -446,9 +478,9 @@ public class HomeActivity extends Activity {
         vehicle.stop();
         transport.close();
         syncPhone();
-        media = StockMedia.EMPTY;
-        coverArt.setTrack("");
-        syncMedia();
+        stoppedAtWall = System.currentTimeMillis();
+        // 곡 정보·표지는 비우지 않는다: 돌아오면 onStart 의 StockMedia.REQUEST 로 순정이 지금 곡을 다시 보낸다.
+        // 전엔 비웠다가 같은 곡을 다시 받아 홈 전체를 다시 그려 내비에서 돌아올 때 멈칫했다(2026-11-27 차 측정).
         super.onStop();
     }
 
@@ -466,6 +498,7 @@ public class HomeActivity extends Activity {
     private void syncRoute() {
         if (!pageReady || route == null) return;
         StockRoute.Snapshot data = route.snapshot();
+        if (data.active && data.remaining.isEmpty() && data.arrival.isEmpty()) route.refresh();   // 남은 시간 다시 묻기
         web.evaluateJavascript("window.K8Home.routeChanged(" + data.known + "," + data.active + ","
             + javascriptString(data.destination) + "," + javascriptString(data.address) + ","
             + javascriptString(data.distance) + "," + javascriptString(data.remaining) + ","
@@ -528,8 +561,35 @@ public class HomeActivity extends Activity {
             + javascriptString(coverImage) + ")", null);
     }
 
+    private synchronized Handler controlsWorker() {
+        if (controlsWorker == null && !isDestroyed()) {
+            controlsThread = new android.os.HandlerThread("k8home-controls");
+            controlsThread.start();
+            controlsWorker = new Handler(controlsThread.getLooper());
+        }
+        return controlsWorker;
+    }
+
     private void syncControls() {
-        if (!pageReady) return;
+        syncControls(120);
+    }
+
+    private void syncControlsNow() {
+        syncControls(0);
+    }
+
+    private void syncControls(long delayMs) {
+        if (!pageReady || isDestroyed()) return;
+        Handler w = controlsWorker();
+        if (w == null) return;
+        w.removeCallbacks(syncControlsTask);
+        if (delayMs <= 0) w.post(syncControlsTask);
+        else w.postDelayed(syncControlsTask, delayMs);
+    }
+
+    /** 블루투스 Binder IPC(getBondedDevices/getConnectedDevices)를 UI 스레드 밖에서 읽고 바뀐 값만 WebView에 넘긴다. */
+    private void runControlsSyncOffUi() {
+        if (!pageReady || isDestroyed()) return;
         AudioManager audio = (AudioManager) getSystemService(AUDIO_SERVICE);
         BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
         Boolean bluetoothEnabled = null;
@@ -548,27 +608,67 @@ public class HomeActivity extends Activity {
                 }
             }
         } catch (SecurityException ignored) { }
-        web.evaluateJavascript("window.K8Home.controlsChanged("
+        final String controlsScript = "window.K8Home.controlsChanged("
             + (audio == null ? "null" : String.valueOf(audio.getStreamVolume(AudioManager.STREAM_MUSIC)))
             + "," + (audio == null ? 0 : audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
-            + "," + brightness + "," + bluetoothEnabled + ")", null);
+            + "," + brightness + "," + bluetoothEnabled + ")";
         String deviceNames = String.valueOf(names).replace("\u2028", "\\u2028").replace("\u2029", "\\u2029");
-        web.evaluateJavascript("window.K8Home.pairedDevicesChanged(" + deviceNames + ")", null);
-        syncPhone();
+        final String pairedScript = "window.K8Home.pairedDevicesChanged(" + deviceNames + ")";
+        final String phoneScript = buildPhoneScript();
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                if (!pageReady || isDestroyed()) return;
+                if (!controlsScript.equals(lastControlsScript)) {
+                    lastControlsScript = controlsScript;
+                    web.evaluateJavascript(controlsScript, null);
+                }
+                if (!pairedScript.equals(lastPairedScript)) {
+                    lastPairedScript = pairedScript;
+                    web.evaluateJavascript(pairedScript, null);
+                }
+                if (!phoneScript.equals(lastPhoneScript)) {
+                    lastPhoneScript = phoneScript;
+                    web.evaluateJavascript(phoneScript, null);
+                }
+            }
+        });
+    }
+
+    private String buildPhoneScript() {
+        return "window.K8Home.phoneChanged(" + javascriptString(phone.callDevices().toString())
+            + "," + javascriptString(phone.audioDevices().toString()) + "," + javascriptString(phone.callState())
+            + "," + javascriptString(phone.caller()) + "," + javascriptString(phone.callSource()) + ")";
     }
 
     private void syncPhone() {
-        if (!pageReady) return;
-        web.evaluateJavascript("window.K8Home.phoneChanged(" + javascriptString(phone.callDevices().toString())
-            + "," + javascriptString(phone.audioDevices().toString()) + "," + javascriptString(phone.callState())
-            + "," + javascriptString(phone.caller()) + "," + javascriptString(phone.callSource()) + ")", null);
+        if (!pageReady || isDestroyed()) return;
+        Handler w = controlsWorker();
+        if (w == null) return;
+        w.post(new Runnable() {
+            @Override public void run() {
+                if (!pageReady || isDestroyed()) return;
+                final String phoneScript = buildPhoneScript();
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        if (!pageReady || isDestroyed()) return;
+                        if (!phoneScript.equals(lastPhoneScript)) {
+                            lastPhoneScript = phoneScript;
+                            web.evaluateJavascript(phoneScript, null);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private void syncSystemSettings() {
         if (!pageReady) return;
-        web.evaluateJavascript("window.K8Home.systemSettingsChanged("
+        String script = "window.K8Home.systemSettingsChanged("
             + javascriptString(HeadUnitInfo.androidSettings(this).toString()) + ","
-            + javascriptString(vehicleSettings.toString()) + ")", null);
+            + javascriptString(vehicleSettings.toString()) + ")";
+        if (script.equals(lastSystemSettingsScript)) return;
+        lastSystemSettingsScript = script;
+        web.evaluateJavascript(script, null);
     }
 
     private void refreshVehicleSettings() {
@@ -608,7 +708,7 @@ public class HomeActivity extends Activity {
         brightness = level < 0 ? -1 : Math.max(25, Math.min(100, level));
         applyBrightness();
         shortcuts.edit().putInt("theme-brightness", brightness).apply();
-        syncControls();
+        syncControlsNow();
     }
 
     private void adjustVolume(String action) {
@@ -631,7 +731,7 @@ public class HomeActivity extends Activity {
         } catch (SecurityException ignored) {
             toast("이 기기에서 미디어 음량을 변경할 수 없습니다.");
         }
-        syncControls();
+        syncControlsNow();
     }
 
     /**
@@ -870,7 +970,8 @@ public class HomeActivity extends Activity {
     public final class HomeBridge {
         /** Home layout (cards, tile order, hidden tiles…) written at once, so an update right after a change keeps it. */
         @JavascriptInterface public void saveDisplay(String json) {
-            if (json != null && json.length() < 200000) getSharedPreferences("display", MODE_PRIVATE).edit().putString("layout", json).commit();
+            // apply()는 메모리에 즉시 반영하고 디스크 fsync는 비동기 처리해 JavaBridge 동기 블로킹을 없앤다(실차 2026-11-27).
+            if (json != null && json.length() < 200000) getSharedPreferences("display", MODE_PRIVATE).edit().putString("layout", json).apply();
         }
 
         @JavascriptInterface public String loadDisplay() {
@@ -1273,7 +1374,8 @@ public class HomeActivity extends Activity {
         } else if ("media-refresh".equals(action)) {
             sendBroadcast(new Intent(StockMedia.REQUEST));
         } else if ("media-player".equals(action)) {
-            if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
+            if ("aa".equals(media.source)) openProjectionScreen("aa");   // AA 음악은 AA 화면에서 연다
+            else if (!StockApps.openPlayer(this, media.source)) toast("순정 플레이어를 열 수 없습니다.");
         } else if ("nav-home".equals(action) || "nav-work".equals(action)) {
             savedPlace("nav-home".equals(action) ? "home" : "work", false);
         } else if ("nav-home-edit".equals(action) || "nav-work-edit".equals(action)) {
@@ -1362,6 +1464,8 @@ public class HomeActivity extends Activity {
                 .setNegativeButton("닫기", null).show();
         } else if ("androidauto".equals(action)) {
             openProjectionScreen("aa");   // 순정 Android Auto 화면 바로(폰 프로젝션 설정 아님)
+        } else if ("climate-sheet".equals(action)) {
+            ClimateSheetService.open(this);   // test66 시트·공조 팝업(하단 가운데에서 위로 쓸기)
         } else if ("save-log".equals(action)) {
             toast("진단 로그를 USB에 저장하는 중…");
             new Thread(new Runnable() {
@@ -1724,9 +1828,12 @@ public class HomeActivity extends Activity {
             && !shortcuts.getString("place-work-lon", "").isEmpty();
         String homeName = shortcuts.getString("place-home-name", "");
         String workName = shortcuts.getString("place-work-name", "");
-        web.evaluateJavascript("window.K8Home.savedPlacesChanged("
+        String script = "window.K8Home.savedPlacesChanged("
             + homeSaved + "," + javascriptString(homeName) + ","
-            + workSaved + "," + javascriptString(workName) + ")", null);
+            + workSaved + "," + javascriptString(workName) + ")";
+        if (script.equals(lastSavedPlacesScript)) return;
+        lastSavedPlacesScript = script;
+        web.evaluateJavascript(script, null);
     }
 
     private void openNavigationCommand(String action) {
@@ -1848,6 +1955,12 @@ public class HomeActivity extends Activity {
     @Override protected void onDestroy() {
         if (relaunching) { super.onDestroy(); return; }
         pageReady = false;
+        uiHandler.removeCallbacksAndMessages(null);
+        synchronized (this) {
+            if (controlsWorker != null) controlsWorker.removeCallbacksAndMessages(null);
+            controlsWorker = null;
+            if (controlsThread != null) { controlsThread.quit(); controlsThread = null; }
+        }
         coverArt.close();
         stockMapPreview.setActive(false);
         splitMapPreview.setActive(false);

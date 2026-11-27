@@ -54,8 +54,10 @@ public final class NavBarService extends Service {
     private static final int REFERENCE_HEIGHT = 720;
     // The live 1920×720 stock strip begins at y=627, including its upper edge.
     private static final int ROW_HEIGHT = 94;
-    private static final long POLL_MS = 250;
+    // 250ms 마다 메인 스레드에서 Binder IPC 3개를 돌리면 순정 내비 주행 중 버벅임이 생긴다 → 400ms + 버튼 재확인 간격 완화.
+    private static final long POLL_MS = 400;
     private static final long ENTRY_TIMEOUT_MS = 10000;
+    private int splitBtnPollSkip;
 
     private final Handler handler = new Handler();
     private WindowManager windows;
@@ -101,8 +103,9 @@ public final class NavBarService extends Service {
     private boolean searchSuspended;
     private boolean cancelPending;
     private StockMedia media = StockMedia.EMPTY;
-    private long entryDeadline, resumeAfter;
+    private long entryDeadline, resumeAfter, sessionStartedAt;
     private StockRoute route;
+    static final String NAVI_SCREEN_CHANGED = "com.mnsoft.navi.action.Navi_Screen_Changed";
     private StockTransport transport;
 
     private final StockRoute.Listener routeListener = new StockRoute.Listener() {
@@ -126,12 +129,21 @@ public final class NavBarService extends Service {
                 endSession(); // never draw over the rear camera; the stock row comes back
                 return;
             }
+            if (NAVI_SCREEN_CHANGED.equals(action)) {   // 순정 내비 화면 바뀜: 지도 좌표 찍기 등에서 하단바를 내리려고 값을 본다
+                StringBuilder v = new StringBuilder();
+                android.os.Bundle x = intent.getExtras();
+                if (x != null) for (String k : x.keySet()) v.append(k).append('=').append(x.get(k)).append(' ');
+                Log.i(TAG, "navi screen " + v);
+                return;
+            }
             StockMedia next = media.update(action, intent.getExtras());
             if (next == media) return;
             if (!media.source.equals(next.source)) transport.close();
             // 곡이 바뀔 때 순정 곡 팝업 닫기는 항상 떠 있는 PopupGuardService 가 맡는다.
             media = next;
-            coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "");
+            // 하단바가 뜬 직후 받은 곡은 하단바가 뜨기 전에 시작됐을 수 있다: 10분 안 표지 파일도 찾는다(전엔 4초 안만 봐 표지가 안 떴다).
+            long notBefore = SystemClock.elapsedRealtime() - sessionStartedAt < 5000 ? System.currentTimeMillis() - 600000 : 0;
+            coverArt.setTrack("bt".equals(media.source) ? media.title + "\n" + media.artist : "", notBefore);
             pushMedia();
         }
     };
@@ -182,6 +194,7 @@ public final class NavBarService extends Service {
         windows = (WindowManager) getSystemService(WINDOW_SERVICE);
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         filter.addAction(StockNavigation.REARVIEW_ON);
+        filter.addAction(NAVI_SCREEN_CHANGED);
         StockMedia.addActions(filter);
         registerReceiver(receiver, filter);
         route = StockRoute.of(this);
@@ -196,6 +209,7 @@ public final class NavBarService extends Service {
         }
         if (web == null) buildBar();
         sessionEnded = false;
+        if (!sessionActive) sessionStartedAt = SystemClock.elapsedRealtime();
         sessionActive = true;
         searchSuspended = searching;
         if (searching) detach();
@@ -261,8 +275,10 @@ public final class NavBarService extends Service {
         if (skin == null) return;
         if (!hideStock) {
             showStockButton();   // 분할 중에 순정 손잡이를 끄면 순정이 분할을 닫는다(차 로그 isBtnOff). 그동안은 순정 ▶ 로 닫는다.
-        } else if (!stockButtonHidden || Boolean.TRUE.equals(split("isSplitButtonOn", new Class<?>[0]))) {
-            // 순정 회색 손잡이는 우리 창보다 높은 층이라 가린다(내비가 다시 켜도 다음 폴에서 또 끈다).
+            splitBtnPollSkip = 0;
+        } else if (!stockButtonHidden || (++splitBtnPollSkip >= 3 && Boolean.TRUE.equals(split("isSplitButtonOn", new Class<?>[0])))) {
+            splitBtnPollSkip = 0;
+            // 순정 회색 손잡이는 우리 창보다 높은 층이라 가린다(내비가 다시 켜도 다음 확인에서 또 끈다).
             stockButtonHidden = Boolean.TRUE.equals(split("addBtnOffScreen", new Class<?>[] {String.class}, NAVI_SCREEN));
         }
         if (skinAttached) return;
@@ -381,6 +397,10 @@ public final class NavBarService extends Service {
     }
 
     private void handle(String action) {
+        if ("climate-sheet".equals(action)) {   // test66: 미디어 칸 밖에서 위로 쓸면 시트·공조 팝업
+            ClimateSheetService.open(this);
+            return;
+        }
         if ("home".equals(action) || "menu".equals(action)) {
             endSession();
             try {
@@ -600,6 +620,22 @@ public final class NavBarService extends Service {
         view.destroy();
     }
 
+    // 순정 내비 지도를 누르면 좌표 찍기 화면이 되고 순정 하단줄에 그 화면 단추가 나온다. 내비가 이를 알려 주지 않아
+    // (Navi_Screen_Changed 안 옴, 2026-11-27 차) 하단바 밖을 누르면(다른 앱 창이라 좌표가 0,0) 하단바를 내리고,
+    // 좌표 찍기가 저절로 끝나는 시간(실측 15~18초) 뒤 다시 올린다. 테마 자신의 창(손잡이 등)을 누른 건 좌표가 있어 빼낸다.
+    static final long PICK_HIDE_MS = 18000;
+    private final View.OnTouchListener outsideTouch = new View.OnTouchListener() {
+        @Override public boolean onTouch(View v, MotionEvent event) {
+            if (event.getActionMasked() == MotionEvent.ACTION_OUTSIDE && event.getX() == 0 && event.getY() == 0
+                    && attached && mapInFront()) {
+                Log.i(TAG, "map touched: hide bar for stock pick mode");
+                resumeAfter = SystemClock.elapsedRealtime() + PICK_HIDE_MS;
+                handler.post(new Runnable() { @Override public void run() { if (attached) detach(); } });
+            }
+            return false;
+        }
+    };
+
     private boolean attach() {
         if (windows == null) return false;
         Point size = new Point();
@@ -609,11 +645,12 @@ public final class NavBarService extends Service {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
             size.x, height, WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.OPAQUE);
         params.gravity = Gravity.BOTTOM | Gravity.LEFT;
         params.setTitle("K8HomeNavBar");
         try {
+            web.setOnTouchListener(outsideTouch);
             windows.addView(web, params);
             rowParams = params;
             attached = true;
@@ -654,6 +691,9 @@ public final class NavBarService extends Service {
     private void pushRoute() {
         if (!pageReady || !attached) return;
         StockRoute.Snapshot data = route.snapshot();
+        // 길안내 중인데 남은 시간·도착 시각이 비면(테마가 다시 뜬 직후, 차가 멈춰 순정이 시간을 안 보낼 때) 목적지 정보를 다시
+        // 묻는다. 답(DestRemainTime)에 남은 시간이 온다(1.5초 간격 제한은 refresh 안에 있다).
+        if (data.active && data.remaining.isEmpty() && data.arrival.isEmpty()) route.refresh();
         syncGuide(data.active);
         web.evaluateJavascript("window.K8NavBarView.route(" + quote(data.distance) + ","
             + quote(data.remaining) + "," + quote(data.destination) + "," + data.active + ","

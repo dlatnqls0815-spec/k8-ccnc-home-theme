@@ -1,5 +1,140 @@
 # K8 Gen5W 홈
 
+## 0.5.0-test68 추가 12: 실차 ADB 계측 랙 4건 제거 및 재측정 검증 (2026-11-27, Gemini, 차 실측·설치·재측정 완료)
+- **실차 ADB 계측(`top`/`/proc/<pid>/task/*/stat`/`logcat -b events`/`dumpsys window`)으로 확인한 실제 랙 4건**:
+  1. **클릭마다 앱서랍 4페이지 캐시 파괴 + `SharedPreferences.commit()` 동기 fsync**(`JavaBridge` 2.02초, `sf_frame_dur` 116ms+ 드롭 최대 5회):
+     - `assets/index.html` `saveDisplay()`가 모든 클릭마다 변경 여부 없이 `invalidateAppsCache()` + `scheduleAppsWarmup(260)` + `K8Host.saveDisplay()`를 실행하던 문제 → `lastSavedDisplay` 비교로 미변경 시 완전 스킵, 앱서랍 캐시 무효화는 배치·테마 시그니처(`lastAppsCacheSig`)가 바뀔 때만 실행.
+     - `HomeActivity.HomeBridge.saveDisplay()`: `.commit()` → `.apply()`(비동기 디스크 쓰기).
+  2. **부팅 직후 자연의 소리 PNG 10장 일괄 디코딩(`k8home-mode` 2.91초, CPU 2위) + 4초 뒤 라디오 목록·로고 56장 동기 PNG 재압축(`JavaBridge` 2.02초, CPU 4위)**:
+     - `StockRadio`: `natureList()`는 이름·리소스 ID·URL만 `<5ms`에 구성하고, 실제 JPEG 디코딩은 `shouldInterceptRequest`(`natureArt`)에서 화면에 필요한 1장씩 지연 처리·캐시.
+     - `StockRadio.logo()` / `logoBytes()`: PNG 디코딩·재압축·Base64 대신 `file:///android_asset/k8radio/<drawable>.png` URL만 `<0.1ms`에 즉시 반환하고, `HomeActivity.shouldInterceptRequest` 워커가 순정 리소스의 원본 PNG 바이트(`openRawResource`)를 재압축 없이 바로 서빙. `assets/index.html`의 4초 뒤 강제 `radioRows` 동기 프리로드 제거.
+  3. **홈 복귀 시 550~720ms 프리징**(`performance_logging_vendor` 6회 실측 550~720ms, `mLastDisplayFreezeDuration=+447ms`, `.ProcessManager` 커널 CPU 0.52초, 복귀 2초간 블루투스 `getConnectedDevices()` 4회 연속 UI 호출):
+     - `HeadUnitInfo.property()`: `android.os.SystemProperties.get` 우선 호출로 `/system/bin/getprop` 18회 fork 제거.
+     - `HomeActivity`: 블루투스 조회(`syncControls`/`syncPhone`)를 전용 백그라운드 스레드(`k8home-controls`) + 120ms 디바운스로 분리하고 직전 스크립트와 같으면 `evaluateJavascript` 생략. `onResume`의 설정·저장장소 동기화를 첫 프레임 직후(`140ms`)로 분산.
+  4. **상시 폴링·리플렉션·레이아웃 부하**:
+     - `StockVehicle`: 48개 getter 리플렉션 `Method` 캐시 + 유휴 폴링 `3초 → 6초`(이벤트 방송 시 즉시 갱신 유지).
+     - `NavBarService`(`POLL_MS` 250→400, `isSplitButtonOn` 3회당 1회), `assets/navbar.html`(`measureTimeSlot` 키 캐시), `assets/index.html`(`refreshViewportUnits` 축소 조건·700ms `map-slot` 홈 제한·지도 스냅샷 8s→25s·전화 이탈 시 `#phone-list` 정리), `assets/marquee.js`(`mutating` 가드·`is-sliding` 보류·유휴 폴링 3s→10s).
+- **실차 설치 후 재측정 결과(PID 17065)**:
+  - `k8home-mode`: **2.91초 → TOP 15 이탈(`<0.04초`)**
+  - `JavaBridge`: **2.02초 → 0.04초(약 50배 감소)**
+  - `.ProcessManager`: **0.52초 → TOP 15 이탈(0회 fork)**
+  - 홈 화면 3초간 `rAF`: **169프레임, 평균 17.6ms, p50 17ms(≈60fps), p95 23ms, 100ms 초과 0건**, 경고·에러 로그 0건.
+
+## 0.5.0-test68 추가 11: 순정 내비 하단바 글꼴·굵기·크기·색 통일 (2026-11-27, Gemini 이어받기, 차 실측·설치, 미커밋)
+- 진짜 원인(실차 Chrome 30 프로브 확인): `/system/etc/system_fonts.xml` 환경에서 CSS `Roboto` 를 쓰면 `<div>`(`#bb-distance-metric`, 312)는 `NanumGothic`(폭 59.99·높이 38, 가늘음)으로, `<button>`(`#bb-time-metric`, 11:46·3·21)은 `Roboto-Regular`(폭 55.59·높이 41, 굵음)로 서로 다른 글꼴이 그려졌고, 목적지 한글(`#bb-dest-text`)도 가늘고 어두운(`#e4e2df`) `NanumGothic` 이었다.
+- 해결(`assets/navbar.html`):
+  - 차량 순정 시스템 글꼴 `devicedefault`(=`Mobis-Regular.ttf`)로 통일 → 실측 `div`·`button`·숫자·영문·한글 모두 동일 글꼴·동일 메트릭(52.98×50 / 85.85×50).
+  - 크기·색·정렬 통일: Mobis-Regular 에서 숫자(68%)·한글(89%) 글자 높이 비율 차이를 실측 보정해 숫자 `38px`(실제 `27px`) · 목적지/대기 주소 `29px`(실제 `27px`) · 영문 단위(`km`/`AM`) `25px` · 한글 단위(`시간`/`분`) `22px`, 전부 `#f4f2ef`·`400` 통일, `.bb-dest` `max-width: none`, `layoutRoute()` 의 옛 Roboto 보정 `x -= 8` 제거, `#bb-distance-metric`/`.bb-time` `top: -5px` 로 세로 중심 맞춤.
+- **소요시간·도착시각 0~9분 구간 사라짐 수정(`RouteMetrics.java`)**: 실차 로그에서 순정 `Response_Info_Destination` 이 `"오후 12 시 2 분"`처럼 1자리 분(또는 정각 `"오후 12 시"`)을 보내는데 `CLOCK` 정규식이 `(\\d{2})` 만 받아 매 시각 `:00~:09` 10분 동안 시간·소요시간이 모두 비었다 → `시` 뒤 `0~2자리 분` 허용으로 수정.
+- 실차 설치본(`0.5.0-test68`) 양모드 촬영 픽셀 실측(Quick Share 참고 사진 1920 환산 `28px` 과 대조):
+  - 도착 시각(`12:04 PM`): 거리(`312`) `y=662..688(h=27)` · 시간(`12:04`) `y=662..688(h=27)` · 목적지 `y=662..688(h=27)` — 0.0px 일치.
+  - 남은 시간(`3시간 21분`): 거리 `y=662..688(h=27)` · 시간 `y=662..689(h=28)` · 목적지 `y=662..688(h=27)` — 5초 교대 시 구분선·깃발·목적지 고정(`timeSlot=139`).
+- 검사: `c30_check` 0곳, `bar_guard` 홈·상세 36화면 통과(내비 하단바 40곳은 추가 7~8 의도 변경으로 기존과 동일, 기준값 갱신은 사용자 확인 대기).
+
+## 0.5.0-test68 추가 10: 곡 넘김 버벅임 진짜 원인·하단바 시간 칸 고정·단위 글자 (2026-11-27, Claude, 차 실측, 미커밋)
+- 곡 넘김 버벅임 원인: `setupCanvas` 가 숨은 캔버스(clientWidth 0)에서 지난 픽셀 크기(canvas.width)에 배율 1.5 를 또 곱했다 → 다시 그릴 때마다 1.5배. 하단바 썸네일(48px)이 9368x9368 까지 커져 drawImage 한 번에 4.4초(Timeline: index.html 표지 다시 그리기 타이머 2417ms/1178ms). 처음 크기(k8Base)·마지막 보인 크기(k8W/H)를 쓰게 고침. canvas.width 를 바꾸면 width 속성도 바뀌어 처음 크기는 한 번만 적는다. 실측: 곡 넘김 5번 화면 멈춤 최대 110ms(전 150~2461ms), 썸네일 72 고정.
+- 함께: 표지 JPEG 를 384px 로 줄여 보냄(BluetoothCoverArt), marquee 는 글자가 바뀐 칸만 다시 잼.
+- 하단바: 남은 시간·도착 시각이 5초마다 바뀌어도 구분선·깃발·목적지가 안 움직이게 시간 칸을 둘 중 넓은 쪽 너비로(숨은 복사본으로 잼). 실측 깃발 913·목적지 957 고정.
+- 단위 글자: 같은 23px 이면 한글 "분" 21px·"km" 13~18·"AM" 17 로 보여 한글 단위를 19px(긴 시간 17px), 숫자~단위 간격을 글자 옆 여백 보정(km 2·분 4·AM 6)으로 눈에 8px 로. 실측 "분" 16px, 간격 7~8.
+
+## 0.5.0-test68 추가 9: 좌표 찍기 때 하단바 내리기·남은 시간·하단바 표지 (2026-11-27, Claude, 차 확인, 미커밋)
+- 순정 내비 지도 누름(좌표 찍기, 십자선·위 주소 띠·아래 "목적지 설정/경유지 추가/위치 저장/주변 검색")은 Navi_Screen_Changed 등 알림이 없다(시험: 들어갈 때·나올 때 모두 안 옴). 저절로 끝나는 시간 실측 15~18초.
+  → 하단바 창에 FLAG_WATCH_OUTSIDE_TOUCH. 다른 앱 창을 누르면(ACTION_OUTSIDE, 좌표 0,0) 하단바를 내리고 resumeAfter=18초 뒤 다시 올림. 테마 자신의 창 누름은 좌표가 있어 제외. 실차: 누르자 순정 단추 4개가 보이고 19초 뒤 하단바가 돌아옴. 한계: 내비 왼쪽 확대·축소 단추를 눌러도 18초 내려간다.
+- 남은 시간 안 보임: 테마가 새로 뜬 뒤 차가 서 있으면 순정이 시간을 다시 안 보냄 → 길안내 중인데 남은 시간·도착 시각이 비면 route.refresh()(목적지 정보 다시 묻기, 1.5초 제한). 실차: 19분 / 8:16 AM 표시.
+- 표지 안 뜸: 곡이 하단바·홈이 뜨기 전에(또는 가려진 동안) 바뀌면 표지 파일이 4초보다 오래돼 못 찾았다 → BluetoothCoverArt.setTrack(track, notBefore). 홈은 돌아온 뒤 5초 안 곡 바뀜에 가려진 시각-2초부터, 하단바는 뜬 뒤 5초 안 곡에 10분 안 파일까지. 실차: 하단바에 표지 나옴.
+
+## 0.5.0-test68 추가 8: 하단바 굵기·첫 표시·홈 버튼 (2026-11-27, Claude, 차 확인, 미커밋)
+- "9.2"가 "19"보다 가늘어 보임: 소수 px 위치(자간 -0.25px, 간격 계산 소수, 세로 off 3.25)에 놓인 글자가 흐려졌다. 위치·간격·off 를 정수로, 숫자 자간 0. 실측 밝은 획 평균 219.0 / 220.8 로 같아짐. 간격 X원→거리 38, 거리→시간 35, 시간→구분선→깃발 35·36, 깃발→목적지 19.
+- 첫 표시 때 크기·정렬 깨짐: 창 크기가 정해지기 전에 fitBar/layoutRoute 를 한 번만 했다 → resize 때와 뜬 뒤 0.1/0.4/1.2초에 다시(refit).
+- 홈 원형 버튼이 한 번 작아짐(98→76px, 재설치 직후 첫 실행): Chrome 30 vw 가 처음 창 크기로 굳음 → 창 폭이 바뀌면 스타일시트를 껐다 켜 vw 재계산(refreshViewportUnits). 재설치 직후 실측 66.5(정상).
+- 음악 카드 재생·소스 버튼에 지도 카드와 같은 색 테두리(#8a7360, class media-ring).
+- bar_guard: 순정 내비 하단바 40곳 바뀜(플레이어 위 0·높이 63, 왼쪽 키·알약 위 4→2, 대기 알약 높이 54→53) — 의도한 변경, 기준값 갱신은 사용자 확인 대기. 홈 상·하단바는 그대로.
+
+## 0.5.0-test68 추가 7: 순정 내비 하단바 정렬 (2026-11-27, Claude, 차 실측, 미커밋)
+- 차: 하단바 창은 94.5px(1920 기준)인데 바를 88px 로 그려 아래에 붙였다 → 위 6px 빈 줄, 오른쪽 플레이어(앨범·진행 막대)가 바 위 경계보다 6px 아래(632)에서 시작.
+  → `fitBar()` 가 바 높이를 창 높이로(같은 배율), 왼쪽 키·알약은 (h-88)/2 내려 세로 가운데, 플레이어·글자 칸은 창 높이 전체. 실측 앨범 시작 y627(바 위 626).
+- 글꼴·굵기: 거리·시간 숫자 500, 나머지 400 → 전부 400, 같은 글꼴.
+- 간격: 알약 안 거리·시간·구분선·깃발·목적지를 `layoutRoute()` 가 글자 실제 너비로 놓는다(간격 34, 깃발~글자 14, 숫자 여백 보정 -8). 글자 칸 시작 136→112(X 원 끝에서도 같은 간격). 거리·시간 줄은 2px 내림(세로 가운데 673 에 맞춤).
+- 최종 실측(9.2km·19분·사무실): X 원 끝→거리 38, 거리→시간 35, 시간→구분선→깃발 약 35·36, 깃발→목적지 19. 모든 글자·아이콘 세로 가운데 673. 앨범 시작 y627(바 위 626).
+- 주의: 순정 내비를 monkey 로 바로 열면 재설치 직후엔 CornerService 가 안 떠서 하단바가 안 뜬다(홈 지도 카드로 열면 뜸).
+
+## 0.5.0-test68 추가 6: 운전자 이름 다시 잘림 (2026-11-27, Claude, 차 확인, 미커밋)
+- 차: 글자 65px 인데 칸이 `min-width:48px` 로 고정돼 끝 글자가 잘렸다. fitDriverName 이 한 번 잴 때 글자를 좁게 잰 뒤 다시 재지 않았다(k8Fit). 곡 정보 갱신을 가볍게 바꾼 뒤 updateAllStatuses 가 덜 돌아 더 오래 남았다.
+- 고침: updateAllStatuses 와 10초 시계 갱신에서 `scrollWidth > clientWidth + 1` 이면 다시 잼.
+- 실차 확인: 임수환 65/65, 한글 10자 216/216, 영문 20자 240/240, 한글 20자(최대) 432/432 — 모두 안 잘림. 20자 끝 515px, 오른쪽 상태 아이콘 1012px 라 겹치지 않음. 시험 이름은 화면에만 넣었고 테마 복귀 때 실제 이름으로 돌아옴.
+
+## 0.5.0-test68 추가 5: 앞좌석 열선·통풍·핸들 열선 (2026-11-27, Claude, 차에서 확인, 미커밋)
+- K8 은 USM 앞좌석·핸들 값이 -1(핸들 버튼으로 시트를 다루는 차용). 순정 음성 앱(HKMC_VoiceHandler) 경로를 쓴다.
+  - 읽기: BCM 서비스 `com.hkmc.micom.bcm`(IBCMService getDrvSeatHeatOption 20/State 21, Ast 22/23, getStrgWhlHeatingOpt 62). 값 = BCMConstants DrvSeatHeatState(2 끔, 3·4·5 통풍 약중강, 6·7·8 열선 약중강).
+  - 보내기: VR 서비스 `com.hkmc.vr`(IVRService set_FLSeatHeatVRcmd_Cmd_AVN 30 / FR 31, 값 = 위 상태 그대로). 실차: 30(6/5/4/3/2), 31(7/6/2/8) 모두 BCM 값이 그대로 바뀜.
+  - 핸들: set_StrgWhlHeated_Cmd_AVN 16, **1 켜기 / 0 끄기**(2 는 무반응). 상태는 BCM 리스너(registerBCMListener 1) onRemoteTeleHeatingStatusChanged(20) 첫 값 1/0, 바뀔 때만 옴. VR 리스너 37(onExist_C_StrgWhlHeatedCmdAVN)은 "지원함" 표시라 상태 아님. 처음 상태를 모르면 켜기를 보내고 1초 안에 알림이 없으면 이미 켜진 것으로 본다.
+- 시트 상태는 BCM 50(onDrvSeatHeaterStatusChanged)·VR 28 로도 온다(지금은 0.7초 읽기로 충분).
+- 시험 뒤 운전석 통풍 3단·조수석 열선 2단·핸들 켜짐으로 되돌림(사용자가 차 안에서 함께 누름).
+
+## 0.5.0-test68 추가 4: 공조 버튼 전부 실차 확인 (2026-11-27, Claude, 차 ADB, 시험 뒤 원래 상태로 되돌림, 미커밋)
+| 버튼 | 보냄(setFrontClimateControl) | 차 반응(DatcStatus) |
+|---|---|---|
+| 운전석·조수석 ▲▼ | 50·49, 1 올림 / 2 내림 | 0.5도씩. 온도는 onTemperatureInformation(거래 1, float/int×8: 운전석C, F, 조수석C, F, 바깥C …)로 온다. 조수석을 바꾸면 SYNC 꺼짐 |
+| 바람 +/− | 5, 2..9 | blowerLevel. − 는 AUTO 도 끔. 꺼진 상태에서 + 는 켬 |
+| AUTO | 8, 1 만(0 무시) | 누를 때마다 MltAutoBlrTxt 2→4→3 |
+| A/C | 9, 1/0 | getAirconOnOff |
+| SYNC | 22, **2 켜기 / 1 끄기**(0 무시) | getDual·getSyncDisp |
+| 내외기 | 11, 1 내기 / 0 외기 | getIntake 1 내기·2 외기 |
+| 풍향 | 6, 1~4 | getModeDrive 1~4 |
+| 앞유리 성에 | 10, 1/0 | modeDrive 10, A/C·바람 같이 켜짐. 끄면 원래대로 |
+| 공기청정 | 7, 1/0 | getArClnIND 2 켜짐·1 꺼짐, 켜면 내기로 |
+| OFF | 51, 1 | op 2(꺼짐), 바람 0 |
+- 공조 리스너는 팝업이 떠 있을 때만 붙인다(닫으면 떼기). 앞좌석·핸들 열선은 이 차에 화면 조작이 없다(숨김).
+
+## 0.5.0-test68 추가 3: 공조 실시간 값·제어 실차 확인 (2026-11-27, Claude, 차 ADB, 미커밋)
+- 순정 공조 앱 `HKMC_Climate`(com.hkmc.telematics.service.apps.climate) 은 `DATCListener.onDatcStatus(DatcStatus)` 로 값을 받는다. 테마도 `IDATCService` 거래 1(registerDATCListener)로 직접 만든 `IDATCListener` 바인더를 붙인다(거래 3 onDatcStatus → `DatcStatus.CREATOR` 로 풀고 getter 를 읽음). 일반 앱에서도 등록 0(성공).
+- 받은 값(차, 공조 켜짐): op 1, drTemp/psTemp 23.0, outTemp 8, blowerLevel 3(=2단), modeDrive 3(발), intakeRaw 2(외기), sync(getDual) 1, ac 0, auto 0, MltAutoBlrTxt.
+- 제어 확인: 바람 +(setFrontClimateControl(5,3)) → blowerLevel 2→3. AUTO(8,1) → auto 1. AUTO 는 1(누름)만 받고 0 은 무시(`HU_DATC_AutoSet(0)` 은 바뀌지 않음). AUTO 를 다시 누를 때마다 MltAutoBlrTxt 2→4→3→2 → 바람 AUTO 3단계로 표시(막대 1~3 = 값-1, 어느 쪽이 약·강인지는 순정 화면과 대조 필요). 바람 - 는 AUTO 를 끄고 한 단 내린다. 시험 뒤 원래 상태(AUTO 끔, 2단)로 되돌림.
+- 풍향은 실시간 modeDrive(5·6 은 앞유리 → 성에 칩 켜짐), 내외기 intakeRaw 1=내기.
+- 남은 것: 온도 ▲▼·A/C·SYNC·OFF·풍향·내외기·성에·공기청정 버튼의 실제 반응은 아직 하나씩 안 눌러 봄. 순정 SystemUI·HKMC_Climate·automotive odex 는 `private/vehicle/oem-climate-20261127/`(커밋 안 함).
+
+## 0.5.0-test68 추가 2: 풍향 한 버튼·바람 AUTO·지도 미리보기 CPU (2026-11-27, Claude, 차 설치·측정, 미커밋)
+- 풍향: 4개 → 한 버튼(지금 방향 그림, 누르면 정면→정면+발→발→발+앞유리→정면, BLOWER_MODE 6).
+- 바람세기 AUTO: 팬 알약 오른쪽 `AUTO`(data-tog=auto, 누를 때마다 DATC AUTO 8 에 1). 사용자: AUTO 가 3단계. 순정에 `AutoIndicatorType AUTO_MULTI`, `DATC_AutoStep` 이 있어 AUTO 를 다시 누르면 단계가 도는 것으로 본다. 단계 값은 리스너로만 와서 아직 표시 못 함. 아래 줄 AUTO 칩은 뺐다.
+- 버벅임 측정(차, JS 메인 스레드 막힘): 홈↔앱스 넘김 최대 84ms, 음악 카드 101ms, ≡ 메뉴 136ms, 재생 시트 98ms → 100ms 넘는 건 한 번씩뿐.
+- CPU: 테마가 가만히 있어도 15%(창이 초당 40장 넘게 다시 그려짐). 원인은 순정 지도 미리보기(TextureView)가 홈 덱의 다른 쪽(앱스)에서도 켜져 프레임을 계속 받던 것. 홈을 떠나 5초 뒤 `hideNativeMapSlot()` → 앱스 CPU 0~1%, 홈 7~10%. 돌아오면 지도 바로 보임(0.4초 뒤 화면 확인).
+- 측정 도구 주의: `car_cdp.cjs -e` 식 안에 `;` 를 쓰면 문법 오류로 실행이 안 되고 이전 결과가 나온다(쉼표 식이나 함수로 감쌀 것).
+
+## 0.5.0-test68 추가: 공조 직접 호출·바람 방향·곡 정보 끊김 (2026-11-27, Claude, 차 설치·측정함, 미커밋)
+- 공조: `DATCManager` 는 일반 앱에서 서비스를 못 잡는다(`ensureAddListener` NPE, 홈의 `StockClimate` 도 `climate service unavailable`). `StockCabin` 이 `ServiceManager.getService("com.hkmc.micom.datc")` 바인더에 직접 거래한다(IDATCService$Stub: getClimateInfo 38, setFrontClimateControl 65, supportFrontClimateControl 64, getClimateType 31, isAirPurifier 71, getAirCleaningStepColor 61, getTemperatureUnit 3).
+  - `getClimateInfo` 는 USM 저장값만 준다: 바람 5(2..9=1..8단), 풍향 6, 내외기 11(1 내기·2 외기), 온도 28/29(차에서 0·-1, 해석 못 함). A/C·AUTO·앞유리·SYNC·공기청정·켜짐(7·8·9·10·12·22)은 "flag error" → 읽지 않음. 실시간 값은 DATC 리스너로만 오는 듯(아직 못 붙임).
+  - 바람 + 를 한 번 보냈으나(SENT setFrontClimateControl(5,3)) 값이 그대로였다. 차 시동·공조 켜짐 상태를 몰라 반응은 미확인.
+- 바람 방향 버튼 4개(BLOWER_MODE 6: 1 정면, 2 정면+발, 3 발, 4 발+앞유리), 앞유리(5)는 기존 성에 단추.
+- 앞좌석 열선·통풍·핸들 열선: 이 K8 은 `persist.sys.showSWRCFrontSeat=000`, USM 이 앞좌석·핸들 값을 -1 로 준다(서비스 직접 호출도 -1) → 화면 조작이 없는 차. 팝업에서 숨기고 남은 칸(뒷좌석)을 가운데로 모은다. 순정 SeatWheelHeatService 는 핸들에 시트 버튼이 있는 차(SWRCFrontSeat)용.
+- 곡 정보 끊김(차 CDP 측정): 재생 중 위치만 바뀐 mediaChanged 가 0.3~0.5초마다 홈 전체를 다시 그려 12~36ms → 곡·상태가 같으면 진행 막대·재생 시트만(0ms). 내비에서 돌아올 때 coverArtChanged 583ms(같은 표지 다시 풀기) → 풀어 둔 그림 재사용·다시 그리기 한 번(0ms). onStop 에서 곡·표지를 비우던 것 제거(돌아오면 StockMedia.REQUEST 로 다시 옴) → 복귀 때 mediaChanged 100ms → 1ms. Java 쪽 미디어 방송은 40ms 안의 것을 모아 한 번 넘김.
+- 주의: 이번 작업 중 index.html 에 문법 오류(줄바꿈이 문자열에 들어감)가 들어가 차 테마가 약 3분간 먹통이었다. `c30_check` 는 문법 오류를 못 잡는다 → 고친 뒤 Edge 로 `K8Home` 확인.
+
+## 0.5.0-test68 Android Auto 음악 정보 받기 (2026-11-27, Claude, 차 설치함·AA 연결 상태 확인 전, 미커밋)
+- 근거(차): 순정 AA 앱 `HKMC_GPM`(com.google.android.projection.sink) 이 곡이 바뀔 때 `MediaPlaybackInfo : updateWidget` 로 `com.hkmc.gpmaudio.widgetupdate` 를 보낸다. odex 문자열에 `filename`·`artist_name`·`playstate`·`audio_current_time`·`audio_total_time`·`invisible` 이 있어 BT/USB 와 같은 항목으로 본다. 모드 번호 `ModeType.GPM = 0x74`(automotive.dex).
+- 구현: `StockMedia` 가 그 방송과 0x74 를 소스 `aa`("Android Auto 오디오")로 받는다. 받은 항목 이름을 `K8Media aa widget keys` 로그에 남긴다(확인 뒤 지워도 됨). 플레이어 열기는 AA 화면(`openProjectionScreen("aa")`).
+- 남은 확인: AA 연결·재생 중 `logcat -s K8Media` 로 항목 이름, 홈 카드 제목·가수·시간, 이전/다음 키가 AA 로 가는지. 차에는 test68 이 깔려 있다(릴리스 안 함).
+
+## 0.5.0-test67 긴 글자 흐르기 무한 반복 막기·넘김 끊김 줄이기 (2026-11-26, Claude, 차 확인 전, NEMESIS sha256 383cd7d7…5794)
+다른 AI 점검 결과를 코드·Edge 실행으로 확인하고 맞는 것 중 작은 세 가지만 고침.
+- `marquee.js`: 부모가 flex(홈 카드 부제 `.hcard-caption-main span`)면 감싼 `.mq` 가 칸 폭으로 줄어 "안 넘침"→풀기→감싸기를 끝없이 반복(Edge 에서 index.html 이 열자마자 멈춤 재현, marquee.js 만 막으면 11ms 응답). `.mq` 에 `flex-shrink:0 !important` 로 고침 → Edge 정상, 긴 부제가 흐름(틀 569px / 칸 197px). 차 Chrome 30 은 test65 에서 정상이라 차에서는 안 터졌던 것으로 보임.
+- `marquee.js`: class·hidden 속성 변화는 바로 전부 재지 않고 0.25초 뒤 한 번(`later`). 글자 변화는 지금처럼 바로 다시 감쌈.
+- `index.html renderTopStatus`: 상단·전화 칸 아이콘 HTML 이 직전과 같으면 innerHTML 을 다시 쓰지 않음.
+- 확인했지만 안 고친 것: 지도 스냅샷 getBitmap(이미 3.5초 무조작 때만), 연락처 동기 읽기·숨긴 DOM(열 때 한 번), 라디오 로고(시작 4초 뒤 미리 읽고 캐시, recycle 없음은 4.4 에서 GC 가 회수), getprop 18회(백그라운드), saveDisplay commit(배치 바꿀 때만), WebView 여러 개(기능상 필요).
+- 차에서 볼 것: 홈 긴 곡 제목·부제 흐름, 홈↔앱스 넘김 첫 프레임.
+
+## 0.5.0-test66 시트·공조 팝업(위 시트, 아래 공조), 아래에서 위로 쓸어 열기 (2026-11-26, Claude, 차 확인 전·사용자 제어 허락, NEMESIS sha256 526ca27a…fb44)
+- 여는 곳: 테마 화면 아래 가운데 띠(높이 아래 14%, 가로 30~70%, 미디어 칸 제외)에서 위로 쓸기 → `host('climate-sheet')`. 순정 내비 위 ccNC 하단바는 미디어 칸 밖에서 위로 쓸기(`navbar.html` → `climate-sheet`). 차의 물리 시트 버튼은 순정 그대로(사용자 결정).
+- `ClimateSheetService`: 전체 화면 투명 창(HW 가속), `climate_sheet.html`. 아래에서 올라옴, 왼쪽 위 X·바깥 누르기·아래로 120px 끌기로 닫힘. 떠 있는 동안 0.7초마다 상태 다시 읽음.
+- `StockCabin`(이름으로 부름, 번호 안 씀 — K8 `automotive.dex` 에서 이름 확인): 시트 `USMManager.getFrontSeatHeat_Drv/AstOption·State`, `getRearSeatHeat_Left/RightOption·State`, `setFrontSeatHeatDrv/AstStep`, `setRearSeatHeatLeft/RightStep`(상태 값 2 끔, 3~5 통풍, 6~8 열선; 누르면 8→7→6→끔 / 5→4→3→끔), 핸들 `setSWRC_SteeringwheelWarmerSet(1→0.15초 뒤 0)`. 공조 `DATCManager.setFrontClimateControl(id, 값)`: AUTO 0x8·A/C 0x9·앞유리 0xa·내외기 0xb·SYNC 0x16(1 켬/0 끔), 바람 0x5(2~9), 온도 0x32 운전석/0x31 조수석(1 올림/2 내림), OFF 0x33. **값은 JacobPantuso/ccnc-gen5w(MIT) 의 정리이고 그쪽도 가정값 → K8 실차에서 `K8Cabin SENT` 로그와 실제 반응으로 하나씩 확인할 것.** 뒷유리 열선은 번호를 몰라 뺐다.
+- 좌석 옵션(0 없음, 1·2 열선, 3·4 통풍, 5·6 둘 다)으로 없는 버튼은 숨김 → 하이브리드 K8 처럼 뒷좌석 통풍 없는 차는 통풍 버튼이 안 보이고, 있는 차는 자동으로 생김. 값을 못 읽으면(-1) 둘 다 보임. 한 좌석에 버튼이 하나만 보이면(열선만) 그 좌석 칸 가운데로 옮긴다(`GROUP` 좌표). `supportFrontClimateControl()==0` 이면 공조 버튼을 흐리게 막고 안내.
+- **K8 펌웨어 번호표로 공조 값 확인**(`automotive.dex` `DATCFlag$DATCControl`): AC 9, AIR_CLEANING 7, AUTO 8, BLOWER_LEVEL 5(BLOWER_LEVEL1~8 = 2~9), FRONT_DEFOG 10, INTAKE 11(INTAKE_REC_ON 1/OFF 0), SYNC 22, TEMP_DR_UPDN 50·TEMP_PS_UPDN 49(UP 1/DOWN 2), OFF_REQ 51, ON 1/OFF 0 → 넣은 값과 같다. 실제 반응은 여전히 차 확인.
+- **뒷유리·사이드미러 열선은 못 넣음**: DATCControl·DATCFlag·USM·BCM 어디에도 켜는 함수가 없다(BCM 은 사이드미러 접힘 상태만). 물리 버튼 전용.
+- X 버튼 없앰(사용자): 닫기는 아래로 끌기·바깥 누르기. 위 좌석 칸·아래 줄 단추를 팝업 가운데(888) 기준 좌우 대칭으로. 아래 줄은 보이는 단추만 가운데로 다시 늘어놓음.
+- 내기/외기: 글자 없이 아이콘(차 옆모습 윤곽 안에서 도는 화살표 = 내기, 밖에서 들어오는 화살표 = 외기, 굵기 2·채운 화살촉, Astryx 규칙으로 직접 그림).
+- 공기청정: `isAirPurifier()==1` 인 차에서만 단추(MDI air-purifier), 켜짐 `getClimateInfo(7)`, 조작 `setFrontClimateControl(7, 1/0)`. 공기질 값 `getClimateInfo(0x22)`·`getAirCleaningStepColor()` 는 상태에 실어 보내기만(아직 화면 표시 안 함).
+- 아이콘: Material Design Icons(Pictogrammers, Apache 2.0) SVG 경로를 HTML 에 넣음, 라이선스 `assets/licenses/MDI-LICENSE.txt`. 현대·기아 그림은 쓰지 않음.
+- 검사: c30_check 0, c30_preview 오류 0, 팝업 파일을 PC 에서 가짜 상태로 띄워 JS 오류 0·모양 확인(차 확인 아님).
+
 ## 0.5.0-test65 실차 검수·배포용 (2026-11-26, Claude, K8 실차 무선 ADB·사용자 "다 된다")
 - **운전자 이름 잘림 진짜 원인**: 실차 CDP — `#driver-name` 칸 56px, 글자 `scrollWidth` 65px(Chrome 30 이 vw 글자 칸 너비를 덜 잼). test63 은 틀린 칸 너비로 재서 효과 없었다. `fitDriverName` 이 `scrollWidth` 로 이름 칸·버튼 `min-width` 를 준다(실차 65/125px 확인).
 - **모서리 미디어 상자 제목·가수 사라짐**: `corners.html` 의 `font-size:28vh/23vh` 가 창 높이 0 일 때 한 번 재여 0px 로 굳었다(실차: title 높이 0). html 글자 크기를 창 높이 1% 로 스크립트가 맞추고 글자는 `rem`(실차 20/16px 확인).
@@ -1735,3 +1870,13 @@ adb shell am start -n io.github.k8home/.HomeActivity
 - 작업공간의 `deliverables/K8-하단바-예시안/index.html`을 열면 하단 뒤로·홈·전체 앱·내비·미디어와 오른쪽 위젯 전환을 체험할 수 있다. 미디어의 재생 예시 상태는 홈과 상세 화면에서 같은 값으로 표시한다.
 - Chromium에서 1920×720, 768×432, 390×844의 배치와 홈 복귀·이전 화면 복귀·상태 표시를 확인했다. APK에는 아직 반영하지 않았다. 순정 화면이나 차량 홈 버튼이 발생시키는 동작에서 새 홈으로 돌아가는 경로는 5W 실차에서 확인이 필요하다.
 - [공개 웹 예시안](https://k8-5w-home-demo.plumelf4.chatgpt.site/) 2판에서 홈↔전체 앱의 좌우 마우스 드래그와 터치 스와이프, 지도 카드와 상세 화면의 우리 집·회사 선택, 미디어 카드와 상세 화면의 재생·일시정지를 제공한다. 1920×720 마우스와 390×844·844×390 터치에서 검증했다. 길 안내와 재생 상태는 웹 예시용이다.
+
+### test66 아이콘 교체 (2026-11-26, 사용자 선택)
+- 내기·외기: 구글 Material Symbols `car_fan_recirculate_2`(내기, 차 안 U자 화살표)·`car_fan_recirculate`(외기, 밖에서 들어오는 화살표)의 **outline** 판(사용자 "B안"). Apache 2.0 → `assets/licenses/MATERIAL-SYMBOLS-LICENSE.txt`, build.py 가 APK 에 넣는다.
+- 공기청정: MDI `leaf`(사용자 "P2").
+- USB 묶음 sha256 526ca27ae89abf7e79b2cca3d79ac9d990ef60360a049e1675666fb64ef2fb44. 차 미설치, 미커밋.
+
+### test66 최적화 점검 (2026-11-26)
+- 문제: 팝업이 0.7초마다(공조 리스너 변화 때도) 메인 스레드에서 순정 USM·DATC 함수 약 18개를 바인더로 부르고, HTML 은 값이 같아도 단추·온도·내외기 SVG 를 매번 다시 그렸다 → 올라오기·끌기 중 끊김 가능.
+- 고침: `ClimateSheetService` 에 작업 스레드(HandlerThread). 시트 읽기(`cabin.snapshot`)와 모든 보내기(`send`)는 그 스레드에서만, 밀린 읽기는 하나로 합침, 결과만 메인으로 넘겨 evaluateJavascript. 핸들 열선 뗌(0)도 같은 스레드. HTML 은 받은 JSON 이 직전과 같으면 다시 그리지 않음.
+- 차에서 볼 것: 팝업 열기·끌기 부드러움, 단추 반응 지연 없음(`K8Cabin SENT` 로그).

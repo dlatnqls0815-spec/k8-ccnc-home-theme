@@ -22,7 +22,8 @@ import java.lang.reflect.Method;
  */
 final class StockVehicle {
     private static final String TAG = "K8StockVehicle";
-    private static final long POLL_MS = 3000;
+    // 이벤트 방송 수신 시에는 즉시 폴링하고, 평상시 주기 폴링은 6초 간격으로 낮춰 48개 Binder IPC 부하를 절반으로 줄인다.
+    private static final long POLL_MS = 6000;
 
     /** {class, getter, json key}. */
     private static final String[][] READS = {
@@ -106,6 +107,7 @@ final class StockVehicle {
     private final Runnable changed;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final java.util.Map<String, Object> managers = new java.util.HashMap<String, Object>();
+    private final java.util.Map<String, Method> methods = new java.util.HashMap<String, Method>();
     private final java.util.Set<String> missing = new java.util.HashSet<String>();
     private final java.util.Set<String> warned = new java.util.HashSet<String>();
     private HandlerThread thread;
@@ -232,7 +234,12 @@ final class StockVehicle {
                 managers.put(className, manager);
                 Log.i(TAG, "connected " + className);
             }
-            Method method = manager.getClass().getMethod(getter);
+            String methodKey = className + "#" + getter;
+            Method method = methods.get(methodKey);
+            if (method == null) {
+                method = manager.getClass().getMethod(getter);
+                methods.put(methodKey, method);
+            }
             Object value = method.invoke(manager);
             if (value instanceof Boolean) return value;
             if (value instanceof String) {

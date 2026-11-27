@@ -14,7 +14,9 @@ html { -webkit-tap-highlight-color: rgba(0,0,0,0); }
 html, body {
   margin: 0; width: 100%; height: 100%; overflow: hidden;
   background: #686765; color: #f4f2ef;
-  font: 400 26px/1.2 Roboto, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  /* 차(Gen5W Android 4.4)에서 Roboto 는 div(NanumGothic)와 button(Roboto)이 서로 다른 글꼴로 그려졌다(실측).
+     차량 순정 시스템 글꼴 devicedefault(Mobis-Regular.ttf)를 쓰면 div·button·숫자·영문·한글이 모두 한 글꼴·한 굵기로 맞는다. */
+  font: 400 26px/1.2 devicedefault, Roboto, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   user-select: none; -webkit-user-select: none;
 }
 button { border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
@@ -61,7 +63,7 @@ img { -webkit-user-drag: none; user-select: none; }
   display: flex; align-items: baseline; padding: 0; min-height: 48px;
   margin-right: 0; text-align: left;
 }
-.bb-route-value { font-size: 30px; font-weight: 500; letter-spacing: -.25px; line-height: 48px; }
+.bb-route-value { font-size: 30px; font-weight: 500; letter-spacing: 0; line-height: 48px; }   /* 소수 자간은 글자를 흐리게 했다 */
 .bb-route-unit { font-size: 21px; font-weight: 400; line-height: 48px; }
 .bb-route-unit:not(:empty) { margin-left: 4px; }
 .bb-route-divider {
@@ -74,7 +76,7 @@ img { -webkit-user-drag: none; user-select: none; }
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   background: none; padding: 0; text-align: left; height: 48px;
 }
-.bb-idle { display: flex; align-items: center; padding-left: 68px; color: #e6e3df; text-align: left; }
+.bb-idle { display: flex; align-items: center; padding-left: 68px; color: #f4f2ef; text-align: left; }
 .bb-idle .bb-icon { margin-right: 20px; }
 
 /* 오른쪽 앨범과 현재 곡. 영역 안의 좌우 제스처는 곡을 바꾼다. */
@@ -138,7 +140,7 @@ button.bb-idle { display: block; text-align: left; line-height: 68px; }
 .bb-route-info .bb-metric { display: inline-block; height: 48px; line-height: 48px; vertical-align: middle; }
 .bb-route-info .bb-metric > span { display: inline; line-height: normal; vertical-align: baseline; }
 .bb-time { width: auto; line-height: 48px; }
-.bb-dest { line-height: 48px; max-width: 300px; }
+.bb-dest { line-height: 48px; max-width: none; }
 .bb-media-zone { left: 1423px; width: 497px; }
 .bb-media-play { position: absolute; left: 0; top: 0; display: block; }
 .bb-media-play .bb-media-default { position: absolute; left: 50%; top: 50%; margin: -23px 0 0 -23px; display: block; }
@@ -177,6 +179,7 @@ button.bb-idle { line-height: 80px; }
 .bb-route-info .bb-route-value { font-size: 33px; }
 .bb-route-info .bb-route-unit { font-size: 23px; }
 #bb-route-time2:not(:empty) { margin-left: 6px; }
+.bb-time > span:nth-child(3):not(:empty) { margin-left: 6px; }   /* 너비 재는 복사본(id 없음)도 같게 */
 /* "12시간 59분"처럼 시간이 두 자리면 구분선에 닿으므로 그때만 줄인다(글자 크기 통일의 예외). */
 .bb-route-info .bb-time.is-hm-long .bb-route-value { font-size: 29px; }
 .bb-route-info .bb-time.is-hm-long .bb-route-unit { font-size: 20px; }
@@ -197,12 +200,33 @@ button.bb-idle { line-height: 80px; }
    (깃발 왼쪽 68, 알약 높이 80 가운데, 글자는 깃발 오른쪽 20). */
 button.bb-idle { padding: 0; white-space: nowrap; }
 .bb-idle .bb-location { position: absolute; left: 68px; top: 24px; margin: 0; }
-#bb-idle-label { position: absolute; left: 120px; top: 0; height: 80px; line-height: 80px; font-size: 26px; }
+#bb-idle-label { position: absolute; left: 120px; top: 0; height: 80px; line-height: 80px; font-size: 29px; }
 /* 실차(Chrome 30)에서 경로 알약도 줄이 넘어가 깃발·목적지가 둘째 줄로 밀려 안 보였다.
    구분선·깃발·목적지는 알약 안 좌표로 고정한다(설명서 구분선 942, 깃발 976, 목적지 1032 = 알약 글자 칸 왼쪽 649 기준). */
 .bb-route-info .bb-route-divider { position: absolute; left: 293px; top: 10px; margin: 0; }
 .bb-route-info .bb-location { position: absolute; left: 326px; top: 9px; margin: 0; }
 .bb-route-info .bb-dest { position: absolute; left: 380px; top: 0; height: 48px; line-height: 48px; margin: 0; }
+/* 2026-11-27 실차 정리: 차량 순정 글꼴(devicedefault = Mobis-Regular) · 굵기 400 · 색 #f4f2ef 통일.
+   Mobis-Regular 에서 숫자(0~9)는 글자 크기의 68%, 한글은 89% 높이로 그려지므로
+   숫자 38px(실측 27px) · 목적지/대기 주소 한글 29px(실측 26px) 로 화면상 실제 높이를 1:1 로 맞췄다. */
+.bb-route-value, .bb-route-unit, .bb-dest, .bb-dest-text, .bb-media-meta strong, .bb-media-meta span,
+#bb-idle-label, .bb-media-off { font-weight: 400; font-family: inherit; }
+.bb-route-info .bb-time { min-width: 0; }
+/* X 원(지름 76) 오른쪽 끝에서 거리 글자까지도 같은 간격(34)이 되게 글자 칸을 당긴다(전 136 → 112). */
+.bb-route-info { left: 112px; }
+.bb-route-info .bb-route-value { font-size: 38px; color: #f4f2ef; }
+.bb-route-info .bb-route-unit { font-size: 25px; color: #f4f2ef; }
+.bb-route-info .bb-route-unit.is-ko { font-size: 22px; margin-left: 3px; }
+.bb-route-info .bb-route-unit.is-lower { font-size: 25px; margin-left: 4px; }
+.bb-route-info .bb-route-unit.is-upper { font-size: 25px; margin-left: 6px; }
+.bb-route-info .bb-time.is-hm-long .bb-route-value { font-size: 33px; }
+.bb-route-info .bb-time.is-hm-long .bb-route-unit { font-size: 22px; }
+.bb-route-info .bb-time.is-hm-long .bb-route-unit.is-ko { font-size: 19px; }
+#bb-route-time2:not(:empty), .bb-time > span:nth-child(3):not(:empty) { margin-left: 7px; }
+.bb-route-info .bb-dest { font-size: 29px; color: #f4f2ef; max-width: none; top: 0; }
+.bb-route-info .bb-dest-text { font-size: 29px; color: #f4f2ef; }
+.bb-route-info #bb-distance-metric, .bb-route-info .bb-time { position: absolute; top: -5px; }
+.bb-route-info .bb-time.is-hm-long { top: -1px; }
 </style>
 </head>
 <body>
@@ -287,37 +311,67 @@ button.bb-idle { padding: 0; white-space: nowrap; }
   var currentRemain = '', currentArrival = '';
   var timeToggleTimer = 0;
   var TIME_TOGGLE_MS = 5000; // 순정 내비처럼 5초마다 소요시간과 도착 예정 시간을 번갈아 표시
-  function renderTime() {
-    var showArrival = arrivalMode && currentArrival || !currentRemain && currentArrival;
-    var time = showArrival ? currentArrival : currentRemain;
+  function timeParts(time, showArrival) {
     var clock = showArrival && /^(\d{1,2}:\d{2})(?:\s+(AM|PM))?$/i.exec(time);
     var hm = !showArrival && /^(\d+)\s*시간\s+(\d+)\s*분$/.exec(time);
     var single = !showArrival && !hm && /^(\d+)\s*(시간|분)$/.exec(time);
-    var metric = document.getElementById('bb-time-metric');
-    metric.hidden = !time;
-    metric.className = hm ? 'bb-metric bb-time is-hm' + (hm[1].length > 1 ? ' is-hm-long' : '') : 'bb-metric bb-time';
-    metric.setAttribute('aria-label', (showArrival ? '도착 예정 ' : '남은 시간 ') + time);
-    if (clock) {
-      document.getElementById('bb-route-time').textContent = clock[1];
-      document.getElementById('bb-route-period').textContent = clock[2] || '';
-      document.getElementById('bb-route-time2').textContent = '';
-      document.getElementById('bb-route-unit2').textContent = '';
-    } else if (hm) {
-      document.getElementById('bb-route-time').textContent = hm[1];
-      document.getElementById('bb-route-period').textContent = '시간';
-      document.getElementById('bb-route-time2').textContent = hm[2];
-      document.getElementById('bb-route-unit2').textContent = '분';
-    } else if (single) {
-      document.getElementById('bb-route-time').textContent = single[1];
-      document.getElementById('bb-route-period').textContent = single[2];
-      document.getElementById('bb-route-time2').textContent = '';
-      document.getElementById('bb-route-unit2').textContent = '';
-    } else {
-      document.getElementById('bb-route-time').textContent = time;
-      document.getElementById('bb-route-period').textContent = '';
-      document.getElementById('bb-route-time2').textContent = '';
-      document.getElementById('bb-route-unit2').textContent = '';
+    if (clock) return { parts: [clock[1], clock[2] || '', '', ''], hm: null };
+    if (hm) return { parts: [hm[1], '시간', hm[2], '분'], hm: hm };
+    if (single) return { parts: [single[1], single[2], '', ''], hm: null };
+    return { parts: [time, '', '', ''], hm: null };
+  }
+  // 단위 글자 모양: 같은 px 이면 한글(분·시간)이 영문(km·AM)보다 커 보였다(차 실측 21px 대 17px). 한글은 한 단계 작게,
+  // 숫자~단위 사이는 글자 옆 여백 차이를 메워 눈에 보이는 간격이 8px 로 같게(km 10→, 분 8, AM 6 실측).
+  function unitClass(el, text) {
+    el.className = 'bb-route-unit' + (/[가-힣]/.test(text) ? ' is-ko' : /^[A-Z]+$/.test(text) ? ' is-upper' : text ? ' is-lower' : '');
+  }
+  function fillTime(metric, info) {
+    var kids = metric.children;
+    for (var i = 0; i < 4 && i < kids.length; i++) {
+      kids[i].textContent = info.parts[i];
+      if (i % 2) unitClass(kids[i], info.parts[i]);
     }
+    metric.className = info.hm ? 'bb-metric bb-time is-hm' + (info.hm[1].length > 1 ? ' is-hm-long' : '') : 'bb-metric bb-time';
+  }
+  // 남은 시간과 도착 시각이 5초마다 번갈아 바뀌어도 구분선·깃발·목적지가 움직이지 않게, 둘 중 넓은 쪽 너비로 시간 칸을 잡는다.
+  // 단, 5초 교대만 일어날 때는 이미 잰 timeSlot 을 그대로 써서 불필요한 리플로우·마키 재스캔을 없앤다.
+  var timeSlot = 0, timeMeasure = null, lastTimeSlotKey = '';
+  function measureTimeSlot(force) {
+    var key = currentRemain + '|' + currentArrival;
+    if (!force && timeSlot > 0 && key === lastTimeSlotKey) return false;
+    lastTimeSlotKey = key;
+    var metric = document.getElementById('bb-time-metric');
+    if (!timeMeasure) {
+      timeMeasure = metric.cloneNode(true);
+      timeMeasure.removeAttribute('id');
+      Array.prototype.forEach.call(timeMeasure.querySelectorAll('[id]'), function (n) { n.removeAttribute('id'); });
+      timeMeasure.style.visibility = 'hidden';
+      timeMeasure.setAttribute('aria-hidden', 'true');
+      metric.parentNode.appendChild(timeMeasure);
+    }
+    timeMeasure.hidden = false;
+    var w = 0;
+    [[currentRemain, false], [currentArrival, true]].forEach(function (c) {
+      if (!c[0]) return;
+      fillTime(timeMeasure, timeParts(c[0], c[1]));
+      w = Math.max(w, textWidth(timeMeasure));
+    });
+    timeMeasure.hidden = true;
+    var nextSlot = Math.ceil(w);
+    var changed = nextSlot !== timeSlot;
+    timeSlot = nextSlot;
+    return changed;
+  }
+  function renderTime(skipLayout) {
+    var showArrival = arrivalMode && currentArrival || !currentRemain && currentArrival;
+    var time = showArrival ? currentArrival : currentRemain;
+    var metric = document.getElementById('bb-time-metric');
+    var wasHidden = metric.hidden;
+    metric.hidden = !time;
+    fillTime(metric, timeParts(time, showArrival));
+    metric.setAttribute('aria-label', (showArrival ? '도착 예정 ' : '남은 시간 ') + time);
+    var slotChanged = measureTimeSlot(false);
+    if (!skipLayout && (slotChanged || wasHidden !== metric.hidden)) layoutRoute();
   }
   function syncTimeToggle(restart) {
     if (restart && timeToggleTimer) {
@@ -347,14 +401,58 @@ button.bb-idle { padding: 0; white-space: nowrap; }
   function fitBar() {
     var root = document.documentElement;
     var widthScale = root.clientWidth / 1920;
-    var contentHeight = Math.min(root.clientHeight, Math.round(88 * widthScale));
-    var scale = 'scale(' + widthScale + ',' + contentHeight / 88 + ')';
+    // 바 높이 = 창 높이(같은 배율, 글자가 세로로 늘지 않게). 남는 높이는 왼쪽 키·알약을 가운데로 내리고
+    // 플레이어(앨범·진행 막대)는 위 끝부터 창 끝까지 채운다.
+    // 위치는 정수 px 로(소수 px 에 놓인 글자는 흐려 얇아 보였다: 9.2 와 19 굵기 차이, 2026-11-27 차)
+    var h = Math.max(88, Math.round(root.clientHeight / widthScale)), off = Math.round((h - 88) / 2);
     var bar = document.getElementById('detail-bottom-bar');
+    bar.style.height = h + 'px';
+    var scale = 'scale(' + widthScale + ')';
     bar.style.webkitTransform = scale;
     bar.style.transform = scale;
+    var keys = bar.querySelector('.bb-nav-keys'), center = bar.querySelector('.bb-center');
+    keys.style.top = center.style.top = off + 'px';
+    var zone = document.getElementById('bb-media-zone');
+    zone.style.height = h + 'px';
+    document.getElementById('bb-media-btn').style.height = h + 'px';
+    document.getElementById('bb-media-body').style.height = h + 'px';
+    var offText = document.getElementById('bb-media-off');
+    offText.style.height = offText.style.lineHeight = h + 'px';
   }
-  window.addEventListener('resize', fitBar);
+  // 상자 너비가 아니라 안의 글자(첫 조각 왼쪽~마지막 조각 오른쪽) 너비로 잰다. 차에서 거리 상자가 글자보다 넓게 잡혀
+  // 거리~시간 간격만 63px 로 벌어졌다(2026-11-27). getBoundingClientRect 는 축소된 화면 값이라 배율로 되돌린다.
+  function textWidth(el) {
+    var scale = (document.documentElement.clientWidth || 1920) / 1920;
+    var kids = Array.prototype.filter.call(el.children, function (k) { return k.textContent; });
+    if (!kids.length) return el.offsetWidth;
+    return (kids[kids.length - 1].getBoundingClientRect().right - kids[0].getBoundingClientRect().left) / scale;
+  }
+  // 알약 안 항목을 실제 너비로 같은 간격에 놓는다. 시간 칸은 남은 시간·도착 시각 중 넓은 쪽 너비로 고정.
+  function layoutRoute() {
+    var GAP = 34, ICON_GAP = 14, x = 0;
+    var place = function (el, w) { if (!el || el.hidden || el.getAttribute('hidden') !== null) return; el.style.left = Math.round(x) + 'px'; x = Math.round(x + w + GAP); };
+    var dist = document.getElementById('bb-distance-metric'), time = document.getElementById('bb-time-metric');
+    var width = textWidth;
+    // Mobis 순정 글꼴(devicedefault)은 숫자·영문·한글 여백이 고르므로 모든 항목을 같은 간격(GAP)으로 놓는다.
+    if (!dist.hidden) place(dist, width(dist));
+    if (!time.hidden) place(time, Math.max(timeSlot, width(time)));
+    var divider = document.getElementById('bb-route-divider'), flag = document.getElementById('bb-route-flag');
+    var dest = document.getElementById('bb-dest-info');
+    if (!divider.hidden) {
+      x = Math.round(x);
+      divider.style.left = x + 'px'; x += 1 + GAP;
+      flag.style.left = x + 'px'; x += 31 + ICON_GAP;
+      dest.style.left = x + 'px';
+      var info = document.querySelector('.bb-route-info');
+      document.getElementById('bb-dest-text').style.maxWidth = Math.max(80, info.offsetWidth - x) + 'px';
+    }
+  }
+  // 창이 처음 뜰 때 크기가 정해지기 전에 재면 바가 작게 그려지고 글자 자리가 어긋났다(차에서 한 번씩). 크기가 바뀔 때마다,
+  // 그리고 뜬 직후 몇 번 다시 잰다.
+  function refit() { fitBar(); measureTimeSlot(true); layoutRoute(); }
+  window.addEventListener('resize', refit);
   fitBar();
+  [100, 400, 1200].forEach(function (ms) { setTimeout(refit, ms); });
   document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
 
   var mediaZone = document.getElementById('bb-media-zone');
@@ -383,6 +481,29 @@ button.bb-idle { padding: 0; white-space: nowrap; }
   }, false);
   mediaZone.addEventListener('touchend', function (event) { finishSwipe(event.changedTouches[0], event); });
   mediaZone.addEventListener('touchcancel', function () { swipeStart = null; });
+  // test66: 미디어 칸 밖(뒤로·홈·메뉴·길안내 알약)에서 위로 쓸면 시트·공조 팝업. 쓴 뒤의 단추 누름은 막는다.
+  var upStart = null, upBlockUntil = 0, barEl = document.getElementById('detail-bottom-bar');
+  barEl.addEventListener('touchstart', function (event) {
+    upStart = event.touches.length === 1 && !mediaZone.contains(event.target)
+      ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null;
+  }, false);
+  barEl.addEventListener('touchmove', function (event) {
+    if (!upStart) return;
+    var t = event.touches[0], dx = t.clientX - upStart.x, dy = t.clientY - upStart.y;
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) event.preventDefault();   // Chrome 30: 막지 않으면 터치를 가져간다
+    if (dy < -40 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      upStart = null;
+      upBlockUntil = Date.now() + 500;
+      send('climate-sheet');
+    }
+  }, false);
+  barEl.addEventListener('touchend', function () { upStart = null; }, false);
+  barEl.addEventListener('touchcancel', function () { upStart = null; }, false);
+  barEl.addEventListener('click', function (event) {
+    if (Date.now() >= upBlockUntil) return;
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }, true);
   mediaZone.addEventListener('mousedown', function (event) { if (event.button === 0) startSwipe(event); });
   mediaZone.addEventListener('mouseup', function (event) { finishSwipe(event, event); });
   mediaZone.addEventListener('mouseleave', function () { swipeStart = null; });
@@ -470,6 +591,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       var parts = String(dist || '').match(/^([0-9][0-9.,]*)\s*(km|m|mi)$/i);
       document.getElementById('bb-route-dist').textContent = parts ? parts[1] : '';
       document.getElementById('bb-route-unit').textContent = parts ? parts[2] : '';
+      unitClass(document.getElementById('bb-route-unit'), parts ? parts[2] : '');
       currentRemain = remain || '';
       currentArrival = arrival || '';
       document.getElementById('bb-distance-metric').hidden = !parts;
@@ -481,6 +603,7 @@ button.bb-idle { padding: 0; white-space: nowrap; }
       renderTime();
       syncTimeToggle(false);
       document.getElementById('bb-dest-text').textContent = hasDest ? dest : '';
+      layoutRoute();
     }
   };
 </script>

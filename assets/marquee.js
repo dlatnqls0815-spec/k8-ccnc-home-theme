@@ -12,6 +12,8 @@
     // !important: page rules such as ".caption span { display:block; position:absolute }" also hit the wrapper.
     '.mq-on > .mq { display: inline-block !important; position: static !important; float: none !important; ' +
     'width: auto !important; max-width: none !important; min-width: 0 !important; margin: 0 !important; ' +
+    // 부모가 flex(홈 카드 부제)면 틀이 칸 폭으로 줄어 '안 넘친다'로 보고 풀었다 감쌌다를 끝없이 반복한다(화면 멈춤).
+    '-webkit-flex-shrink: 0 !important; flex-shrink: 0 !important; ' +
     'padding: 0 !important; overflow: visible !important; white-space: nowrap !important; vertical-align: top; ' +
     // 글자 모양은 원래 글자와 똑같이(굵기 하나). 감싸는 틀이 생겼다고 굵기가 바뀌면 안 된다.
     'font-weight: inherit !important; font-style: inherit !important; font-family: inherit !important; ' +
@@ -86,34 +88,68 @@
     place(el);
   }
 
-  var pending = 0;
+  var pending = 0, mutating = false;
+  function safeUpdate(el) {
+    mutating = true;
+    try { update(el); } finally { mutating = false; }
+  }
   function scan() {
     pending = 0;
-    var list = document.querySelectorAll(selector);
-    for (var i = 0; i < list.length; i++) update(list[i]);
+    if (document.hidden) return;
+    var dk = document.getElementById('deck');
+    if (dk && dk.classList.contains('is-sliding')) { later(); return; }
+    mutating = true;
+    try {
+      var list = document.querySelectorAll(selector);
+      for (var i = 0; i < list.length; i++) update(list[i]);
+    } finally {
+      mutating = false;
+    }
   }
   function later() {
     if (!pending) pending = window.setTimeout(scan, 250);
   }
   if (window.MutationObserver) {
+    // 글자가 바뀐 곳의 흐르기 칸만 다시 잰다(중복 노드는 1번만 검사, 자체 감싸기 중 재진입 차단).
+    var matchesFn = Element.prototype.matches || Element.prototype.webkitMatchesSelector;
+    var touched = function (records) {
+      var found = [], seen = [];
+      var add = function (el) { if (found.indexOf(el) < 0) found.push(el); };
+      for (var i = 0; i < records.length; i++) {
+        if (records[i].type === 'attributes') continue;
+        var node = records[i].target;
+        if (node.nodeType !== 1) node = node.parentNode;
+        if (!node || seen.indexOf(node) >= 0) continue;
+        seen.push(node);
+        for (var up = node; up && up !== document.body; up = up.parentNode) {
+          if (up.nodeType === 1 && matchesFn.call(up, selector)) { add(up); break; }
+        }
+        if (node !== document.body && node.querySelectorAll) {
+          var inner = node.querySelectorAll(selector);
+          for (var k = 0; k < inner.length; k++) add(inner[k]);
+        }
+      }
+      return found;
+    };
     new MutationObserver(function (records) {
+      if (mutating) return;
       for (var i = 0; i < records.length; i++) {
         var target = records[i].target;
+        // class·숨김 변화(넘김 중 is-sliding 등)는 글자가 바뀐 게 아니다: 그때마다 전부 재면 넘김 첫 프레임이 끊긴다.
+        if (records[i].type === 'attributes') { later(); continue; }
         // Our own wrap/unwrap is not a text change.
         if (target.nodeType === 1 && (target.className === 'mq' || /(^|\s)mq-on(\s|$)/.test(target.className))) {
           if (records[i].type === 'childList' && records[i].addedNodes.length === 1 &&
               records[i].addedNodes[0].className === 'mq') continue;
         }
-        // 글자가 다시 쓰이면 흐르기 틀이 벗겨진다. 0.25초 뒤가 아니라 그리기 전에(지금) 다시 감싸야
-        // 굵기가 바뀌어 보이거나 처음 위치로 튀는 깜빡임이 없다(차 Chrome 30 에서 보임).
-        scan();
+        touched(records).forEach(safeUpdate);
         return;
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true,
       attributeFilter: ['hidden', 'class'] });
   }
   window.addEventListener('resize', later);
-  window.setInterval(scan, 3000);
+  window.setInterval(scan, 10000);
   later();
   window.K8Marquee = { scan: scan };
 })();

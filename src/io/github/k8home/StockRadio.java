@@ -56,6 +56,9 @@ final class StockRadio {
     private Map<String, String> logoNames;
     private Map<String, String> logoNamesLower;
     private final Map<String, String> logoCache = new HashMap<>();
+    private final Map<String, byte[]> logoBytesCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private Resources cachedRadioRes;
+    private Resources cachedNatureRes;
 
     private static synchronized Handler modeWorker() {
         if (modeWorker == null) {
@@ -271,8 +274,9 @@ final class StockRadio {
         {"meditation_sound", "sound_bg_temple"}, {"spring_sound", "sound_bg_spring"}, {"summer_sound", "sound_bg_summer"},
         {"autumn_sound", "sound_bg_autumn"}};
     private volatile String natureJson;
+    private final Map<Integer, Integer> natureResIds = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /** 첫 자연의 소리 진입 때 UI가 멈추지 않도록 백그라운드에서 목록·배경을 미리 준비한다. */
+    /** 첫 자연의 소리 진입 때 UI가 멈추지 않도록 목록 이름·리소스 ID만 미리 준비한다(그림 디코딩은 화면에 보일 때 1장씩). */
     void preloadNatureList() {
         if (natureJson != null) return;
         modeWorker().post(new Runnable() {
@@ -280,21 +284,43 @@ final class StockRadio {
         });
     }
 
+    private synchronized Resources natureResources() {
+        if (cachedNatureRes != null) return cachedNatureRes;
+        try {
+            cachedNatureRes = app.createPackageContext(NATURE, 0).getResources();
+        } catch (Exception failure) {
+            Log.w(TAG, "nature resources failed: " + failure);
+        }
+        return cachedNatureRes;
+    }
+
+    private synchronized Resources radioResources() {
+        if (cachedRadioRes != null) return cachedRadioRes;
+        try {
+            cachedRadioRes = app.createPackageContext(PACKAGE, 0).getResources();
+        } catch (Exception failure) {
+            Log.w(TAG, "radio resources failed: " + failure);
+        }
+        return cachedRadioRes;
+    }
+
     synchronized String natureList() {
         if (natureJson != null) return natureJson;
         JSONArray out = new JSONArray();
         try {
-            Resources res = app.createPackageContext(NATURE, 0).getResources();
-            for (String[] sound : NATURE_SOUNDS) {
-                int name = res.getIdentifier(sound[0], "string", NATURE);
-                if (name == 0) continue;
-                int art = sound[1].isEmpty() ? 0 : res.getIdentifier(sound[1], "drawable", NATURE);
-                // 사진은 주소만 보낸다(바이트는 HomeActivity.shouldInterceptRequest 가 natureArt 로 답함):
-                // 960px 10장을 base64 로 넘기면 1.6MB 라 테마 첫 화면에서 스와이프가 멈췄다(실차 2026-11-25).
-                byte[] jpeg = art == 0 ? null : jpeg(res, art, 960);
-                if (jpeg != null) natureArt.put(out.length(), jpeg);
-                out.put(new JSONObject().put("name", res.getString(name))
-                    .put("art", jpeg == null ? "" : NATURE_ART_URL + out.length() + ".jpg"));
+            Resources res = natureResources();
+            if (res != null) {
+                for (String[] sound : NATURE_SOUNDS) {
+                    int name = res.getIdentifier(sound[0], "string", NATURE);
+                    if (name == 0) continue;
+                    int art = sound[1].isEmpty() ? 0 : res.getIdentifier(sound[1], "drawable", NATURE);
+                    int idx = out.length();
+                    if (art != 0) natureResIds.put(idx, art);
+                    // 사진 바이트는 shouldInterceptRequest(natureArt)가 화면에 실제로 필요한 항목만 지연 디코딩·캐시한다:
+                    // 부팅 직후 1~2MB PNG 10장을 한꺼번에 디코딩·압축하면 k8home-mode 스레드가 2.9초 CPU를 점유했다(실차 2026-11-27).
+                    out.put(new JSONObject().put("name", res.getString(name))
+                        .put("art", art == 0 ? "" : NATURE_ART_URL + idx + ".jpg"));
+                }
             }
         } catch (Exception failure) {
             Log.w(TAG, "nature list failed: " + failure);
@@ -305,12 +331,26 @@ final class StockRadio {
     }
 
     static final String NATURE_ART_URL = "file:///android_asset/k8nature/";
+    static final String RADIO_LOGO_URL = "file:///android_asset/k8radio/";
     private final Map<Integer, byte[]> natureArt = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /** JPEG bytes for a nature list picture link ("…/k8nature/3.jpg"), or null. */
+    /** JPEG bytes for a nature list picture link ("…/k8nature/3.jpg"), decoded lazily on WebView worker thread. */
     byte[] natureArt(String url) {
         try {
-            return natureArt.get(Integer.parseInt(url.substring(NATURE_ART_URL.length()).replaceAll("\\.jpg.*$", "")));
+            int idx = Integer.parseInt(url.substring(NATURE_ART_URL.length()).replaceAll("\\.jpg.*$", ""));
+            byte[] cached = natureArt.get(idx);
+            if (cached != null) return cached;
+            Integer resId = natureResIds.get(idx);
+            if (resId == null || resId == 0) {
+                natureList();
+                resId = natureResIds.get(idx);
+            }
+            if (resId == null || resId == 0) return null;
+            Resources res = natureResources();
+            if (res == null) return null;
+            byte[] jpeg = jpeg(res, resId, 960);
+            if (jpeg != null) natureArt.put(idx, jpeg);
+            return jpeg;
         } catch (RuntimeException bad) {
             return null;
         }
@@ -344,7 +384,7 @@ final class StockRadio {
         }
     }
 
-    /** data: URL of the stock logo for a station name ("KBS 2FM (Cool FM) [수도권]"), or "" when none. */
+    /** URL of the stock logo for a station name ("KBS 2FM (Cool FM) [수도권]"), served by shouldInterceptRequest. */
     String logo(String station) {
         if (station == null) return "";
         String name = station.replaceAll("\\s*\\[[^\\]]*\\]\\s*$", "").trim();
@@ -352,23 +392,51 @@ final class StockRadio {
         if (logoCache.containsKey(name)) return logoCache.get(name);
         String drawable = names().get(name);
         if (drawable == null && logoNamesLower != null) drawable = logoNamesLower.get(name.toLowerCase(Locale.ROOT));
-        String url = "";
-        if (drawable != null) {
-            try {
-                Context radio = app.createPackageContext(PACKAGE, 0);
-                int id = radio.getResources().getIdentifier(drawable, "drawable", PACKAGE);
-                Bitmap bitmap = id == 0 ? null : BitmapFactory.decodeResource(radio.getResources(), id);
-                if (bitmap != null) {
-                    ByteArrayOutputStream png = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, png);
-                    url = "data:image/png;base64," + Base64.encodeToString(png.toByteArray(), Base64.NO_WRAP);
-                }
-            } catch (Exception failure) {
-                Log.w(TAG, "logo " + name + " failed: " + failure);
-            }
-        }
+        String url = (drawable != null && !drawable.isEmpty()) ? RADIO_LOGO_URL + drawable + ".png" : "";
         logoCache.put(name, url);
         return url;
+    }
+
+    /** PNG bytes for a radio logo URL ("…/k8radio/img_radio_logo_0xNN.png"), loaded on WebView worker thread. */
+    byte[] logoBytes(String url) {
+        if (url == null || !url.startsWith(RADIO_LOGO_URL)) return null;
+        String drawable = url.substring(RADIO_LOGO_URL.length()).replaceAll("\\.png.*$", "");
+        if (drawable.isEmpty() || !drawable.matches("[A-Za-z0-9_]+")) return null;
+        byte[] cached = logoBytesCache.get(drawable);
+        if (cached != null) return cached.length == 0 ? null : cached;
+        Resources res = radioResources();
+        if (res == null) return null;
+        byte[] result = null;
+        try {
+            int id = res.getIdentifier(drawable, "drawable", PACKAGE);
+            if (id != 0) {
+                android.util.TypedValue tv = new android.util.TypedValue();
+                res.getValue(id, tv, true);
+                String path = tv.string == null ? "" : tv.string.toString().toLowerCase(Locale.ROOT);
+                if (path.endsWith(".png") && !path.endsWith(".9.png")) {
+                    // 원본 PNG 바이트를 디코딩·재압축 없이 그대로 읽어 JavaBridge/CPU 랙을 없앤다(실차 2026-11-27).
+                    try (java.io.InputStream in = res.openRawResource(id)) {
+                        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                        byte[] chunk = new byte[4096];
+                        int n;
+                        while ((n = in.read(chunk)) >= 0) buf.write(chunk, 0, n);
+                        result = buf.toByteArray();
+                    }
+                } else {
+                    Bitmap bitmap = BitmapFactory.decodeResource(res, id);
+                    if (bitmap != null) {
+                        ByteArrayOutputStream png = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, png);
+                        bitmap.recycle();
+                        result = png.toByteArray();
+                    }
+                }
+            }
+        } catch (Exception failure) {
+            Log.w(TAG, "logoBytes " + drawable + " failed: " + failure);
+        }
+        logoBytesCache.put(drawable, result == null ? new byte[0] : result);
+        return result;
     }
 
     private Map<String, String> names() {

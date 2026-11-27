@@ -10,8 +10,10 @@ final class RouteMetrics {
     private static final Pattern DISTANCE = Pattern.compile("([0-9][0-9.,]*)\\s*(km|m|mi)", Pattern.CASE_INSENSITIVE);
     private static final Pattern DURATION = Pattern.compile("(?:(\\d{1,3})\\s*(?:시간|h)\\s*)?"
         + "(?:(\\d{1,4})\\s*(?:분|min|m)\\s*)?", Pattern.CASE_INSENSITIVE);
+    // 차 순정 Response_Info_Destination 은 "오후 12 시 2 분"처럼 분이 한 자리이거나 정각("오후 12 시")일 수 있다.
     private static final Pattern CLOCK = Pattern.compile("(?:(AM|PM|오전|오후)\\s*)?"
-        + "(\\d{1,2})\\s*(?::|시)\\s*(\\d{2})\\s*분?\\s*(AM|PM|오전|오후)?", Pattern.CASE_INSENSITIVE);
+        + "(\\d{1,2})(?:\\s*:\\s*(\\d{2})|\\s*시(?:\\s*(\\d{1,2})\\s*분?)?)\\s*(AM|PM|오전|오후)?",
+        Pattern.CASE_INSENSITIVE);
     private static final Pattern COMPACT_CLOCK = Pattern.compile("(\\d{2})(\\d{2})");
 
     private RouteMetrics() {}
@@ -52,8 +54,9 @@ final class RouteMetrics {
         int minute;
         if (clock.matches()) {
             hour = Integer.parseInt(clock.group(2));
-            minute = Integer.parseInt(clock.group(3));
-            String period = clock.group(1) == null ? clock.group(4) : clock.group(1);
+            String minStr = clock.group(3) != null ? clock.group(3) : clock.group(4);
+            minute = minStr == null ? 0 : Integer.parseInt(minStr);
+            String period = clock.group(1) == null ? clock.group(5) : clock.group(1);
             if (period != null) {
                 if (hour < 1 || hour > 12) return -1;
                 hour %= 12;
